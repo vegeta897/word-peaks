@@ -4,27 +4,32 @@
 		['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'],
 		['z', 'x', 'c', 'v', 'b', 'n', 'm'],
 	]
+	export let typeLetter
+	export let submitRow
+	export let undoLetter
 </script>
 
-<div style="user-select: none; width: 500px;">
+<div style="user-select: none; width: 484px; margin:0 8px;">
 	<div class="key-row">
 		{#each keyboardLayout[0] as key}
-			<button>{key}</button>
+			<button on:click={() => typeLetter(key)}>{key}</button>
 		{/each}
 	</div>
 	<div class="key-row">
 		<div class="flex-one-half" />
 		{#each keyboardLayout[1] as key}
-			<button>{key}</button>
+			<button on:click={() => typeLetter(key)}>{key}</button>
 		{/each}
 		<div class="flex-one-half" />
 	</div>
 	<div class="key-row">
-		<button class="flex-three-half">enter</button>
+		<button on:click={submitRow} class="flex-three-half big" style="">⮡</button>
 		{#each keyboardLayout[2] as key}
-			<button>{key}</button>
+			<button on:click={() => typeLetter(key)}>{key}</button>
 		{/each}
-		<button class="flex-three-half">✖</button>
+		<button on:click={undoLetter} class="flex-three-half big" style="padding-bottom: 0.3rem;"
+			>⬅</button
+		>
 	</div>
 </div>
 
@@ -42,14 +47,25 @@
 		text-transform: uppercase;
 		flex: 1;
 		margin: 0 6px 0 0;
+		padding: 0;
 		height: 58px;
 		border-radius: 4px;
+		border: 0;
 		font-weight: bold;
 	}
+
+	.key-row button:last-of-type {
+		margin: 0;
+	}
+
 	.flex-one-half {
 		flex: 0.5;
 	}
-	.flex-three-half {
+	.key-row button.flex-three-half {
 		flex: 1.5;
+	}
+
+	.big {
+		font-size: 2rem;
 	}
 </style>

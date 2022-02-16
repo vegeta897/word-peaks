@@ -78,6 +78,11 @@ button {
 	font-family: inherit;
 }
 
+button {
+	color: var(--text-color);
+	background: var(--primary-color)
+}
+
 button:focus:not(:focus-visible) {
 	outline: none;
 }
