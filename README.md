@@ -1,2 +1,3 @@
-# wordle-peaks
+# Wordle Peaks
+
 A Wordle spin-off
