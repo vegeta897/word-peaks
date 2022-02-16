@@ -32,7 +32,6 @@
 		{/each}
 	</div>
 	<div class="key-row">
-		<div class="flex-one-half" />
 		{#each keyboardLayout[1] as key}
 			<button
 				on:click={() => typeLetter(key)}
@@ -40,10 +39,9 @@
 				class:invalid={invalidLetters.has(key)}>{key}</button
 			>
 		{/each}
-		<div class="flex-one-half" />
 	</div>
 	<div class="key-row">
-		<button on:click={submitRow} class="flex-three-half big" style="">⮡</button>
+		<button on:click={submitRow} class="wide">Enter</button>
 		{#each keyboardLayout[2] as key}
 			<button
 				on:click={() => typeLetter(key)}
@@ -51,23 +49,21 @@
 				class:invalid={invalidLetters.has(key)}>{key}</button
 			>
 		{/each}
-		<button on:click={undoLetter} class="flex-three-half big" style="padding-bottom: 0.3rem;"
-			>⬅</button
-		>
+		<button on:click={undoLetter} class="wide">Delete</button>
 	</div>
 </div>
 
 <style>
 	.keyboard {
 		user-select: none;
-		width: 484px;
-		margin: auto 8px 0;
+		padding: 0 4px;
+		touch-action: manipulation;
 	}
 
 	.key-row {
 		display: flex;
-		margin: 0 auto 8px;
-		width: 100%;
+		justify-content: center;
+		margin-bottom: 0.25rem;
 	}
 	.key-row button {
 		cursor: pointer;
@@ -75,13 +71,14 @@
 		justify-content: center;
 		align-items: center;
 		text-transform: uppercase;
-		flex: 1;
-		margin: 0 6px 0 0;
 		padding: 0;
+		margin-left: 0.125rem;
+		margin-right: 0.125rem;
+		width: 40px;
 		height: 58px;
 		border-radius: 4px;
 		border: 0;
-		font-weight: bold;
+		font-weight: 700;
 	}
 
 	.key-row button.correct {
@@ -93,18 +90,8 @@
 		color: #777;
 	}
 
-	.key-row button:last-of-type {
-		margin: 0;
-	}
-
-	.flex-one-half {
-		flex: 0.5;
-	}
-	.key-row button.flex-three-half {
-		flex: 1.5;
-	}
-
-	.big {
-		font-size: 2rem;
+	.key-row button.wide {
+		width: 62px;
+		text-transform: none;
 	}
 </style>

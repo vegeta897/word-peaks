@@ -2,9 +2,9 @@
 	import '../app.css'
 </script>
 
-<main>
+<div id="main">
 	<slot />
-</main>
+</div>
 
 <footer>
 	<p>
@@ -14,14 +14,9 @@
 </footer>
 
 <style>
-	main {
-		flex: 1;
-		display: flex;
-		flex-direction: column;
-		width: 100%;
-		max-width: 1024px;
+	#main {
+		max-width: 80rem;
 		margin: 0 auto;
-		box-sizing: border-box;
 	}
 
 	footer {
