@@ -5,6 +5,7 @@
 <script lang="ts">
 	import dictionary from '../lib/data/dictionary-filtered.json'
 	import targets from '../lib/data/targets-filtered.json'
+	import Keyboard from '../lib/keyboard.svelte'
 
 	let answer = targets[Math.floor(Math.random() * targets.length)]
 </script>
@@ -17,6 +18,7 @@
 	<h1>Wordle Peaks</h1>
 	The answer is
 	<pre>{answer}</pre>
+	<Keyboard />
 </section>
 
 <style>
