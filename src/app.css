@@ -8,6 +8,7 @@
 	--secondary-color: #241f2a;
 	--tertiary-color: #2d272f;
 	--accent-color: #36c5f4;
+	--cta-color: #3859b3;
 	--correct-color: #26854c;
 	--heading-color: rgba(255, 255, 255, 0.8);
 	--text-color: #cccccc;
@@ -70,6 +71,7 @@ pre {
 
 input,
 button {
+	cursor: pointer;
 	font-size: inherit;
 	font-family: inherit;
 }

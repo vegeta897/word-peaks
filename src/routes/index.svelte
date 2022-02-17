@@ -3,21 +3,38 @@
 </script>
 
 <script lang="ts">
+	import { getContext } from 'svelte'
+	const { open, close } = getContext('simple-modal')
 	import dictionary from '$lib/data/dictionary-filtered.json'
 	import targets from '$lib/data/targets-filtered.json'
 	import Board from '$lib/board.svelte'
 	import Keyboard from '$lib/keyboard.svelte'
+	import Results from '$lib/results.svelte'
 	import { alphabet, createNewBoard } from '$lib/data-model'
 
-	let answer = targets[Math.floor(Math.random() * targets.length)]
-	let boardContent = createNewBoard()
-	let currentRow = 0
-	let currentTile = 0
-	let error = null
-	let correctLetter = ''
-	let invalidLetters = new Set()
+	const ROWS = 6
 
-	console.log(answer)
+	let answer: string
+	let boardContent
+	let currentRow: number
+	let currentTile: number
+	let error: null | string
+	let correctLetter: string
+	let invalidLetters: Set<string>
+
+	function newWord() {
+		close()
+		answer = targets[Math.floor(Math.random() * targets.length)]
+		boardContent = createNewBoard(ROWS)
+		currentRow = 0
+		currentTile = 0
+		error = null
+		correctLetter = ''
+		invalidLetters = new Set()
+		console.log(answer)
+	}
+
+	newWord()
 
 	function typeLetter(letter: string) {
 		if (currentTile === boardContent[currentRow].length) return
@@ -43,15 +60,31 @@
 		}
 		const rowWord = boardContent[currentRow].map((t) => t.letter).join('')
 		if (dictionary.includes(rowWord)) {
+			let correctLetters = 0
 			boardContent[currentRow].forEach((t, i) => {
 				t.scored = true
 				t.direction = t.letter > answer[i] ? 1 : -1
-				if (t.letter === answer[i]) t.direction = 0
+				if (t.letter === answer[i]) {
+					correctLetters++
+					t.direction = 0
+				}
 			})
 			boardContent = boardContent
 			currentRow++
 			currentTile = 0
-			updateLetterLists()
+			let gameFinished = false
+			let gameWon = false
+			if (correctLetters === 5) {
+				gameFinished = true
+				gameWon = true
+			} else if (currentRow === ROWS) {
+				gameFinished = true
+			}
+			if (gameFinished) {
+				open(Results, { gameFinished, gameWon, boardContent, newWord })
+			} else {
+				updateLetterLists()
+			}
 		} else {
 			error = 'invalid word'
 		}

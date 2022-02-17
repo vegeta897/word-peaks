@@ -1,9 +1,10 @@
 <script lang="ts">
 	import '../app.css'
+	import Modal from 'svelte-simple-modal'
 </script>
 
 <div id="main">
-	<slot />
+	<Modal styleWindow={{ background: 'var(--tertiary-color)', width: '480px' }}><slot /></Modal>
 </div>
 
 <footer>

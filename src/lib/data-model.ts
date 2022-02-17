@@ -5,9 +5,9 @@ type Tile = {
 }
 type Board = Tile[][]
 
-export function createNewBoard(): Board {
+export function createNewBoard(rows: number): Board {
 	const board = []
-	for (let i = 0; i < 6; i++) {
+	for (let i = 0; i < rows; i++) {
 		const row = []
 		board[i] = row
 		for (let j = 0; j < 5; j++) {

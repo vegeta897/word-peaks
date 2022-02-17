@@ -66,7 +66,6 @@
 		margin-bottom: 0.25rem;
 	}
 	.key-row button {
-		cursor: pointer;
 		display: flex;
 		justify-content: center;
 		align-items: center;
