@@ -62,6 +62,7 @@
 
 	.tile-row {
 		margin-bottom: 0.4rem;
+		display: flex;
 	}
 
 	.tile-row:last-child {
