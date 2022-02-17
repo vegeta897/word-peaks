@@ -109,14 +109,14 @@
 		color: #f6ecd9;
 		border-top-left-radius: 20px;
 		border-top-right-radius: 20px;
-		background: #e99637 linear-gradient(0deg, #e99637 0%, #de793a 100%);
+		background: #de793a linear-gradient(0deg, #e99637 0%, #de793a 100%);
 	}
 
 	.tile.after {
 		color: #e4e3f3;
 		border-bottom-left-radius: 20px;
 		border-bottom-right-radius: 20px;
-		background: #3859b3 linear-gradient(180deg, #3859b3 0%, #3e3b65 100%);
+		background: #4f46c2 linear-gradient(180deg, #5d83ea 0%, #4f46c2 100%);
 	}
 
 	.hint {
