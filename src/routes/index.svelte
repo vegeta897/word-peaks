@@ -80,10 +80,11 @@
 			let correctLetters = 0
 			boardContent[currentRow].forEach((t, i) => {
 				t.scored = true
-				t.direction = t.letter > answer[i] ? 1 : -1
-				if (t.letter === answer[i]) {
+				t.distance = alphabet.indexOf(t.letter) - alphabet.indexOf(answer[i])
+				t.magnitude = ROWS
+				if (t.distance === 0) {
+					t.magnitude = 0
 					correctLetters++
-					t.direction = 0
 				}
 			})
 			boardContent = boardContent
@@ -117,13 +118,13 @@
 		alphabet.forEach((letter) => {
 			for (let i = 0; i < currentRow; i++) {
 				const tile = boardContent[i][currentTile]
-				if (tile.direction === 0 && letter !== tile.letter) {
+				if (tile.distance === 0 && letter !== tile.letter) {
 					invalidLetters.add(letter)
 				}
-				if (tile.direction < 0 && letter <= tile.letter) {
+				if (tile.distance < 0 && letter <= tile.letter) {
 					invalidLetters.add(letter)
 				}
-				if (tile.direction > 0 && letter >= tile.letter) {
+				if (tile.distance > 0 && letter >= tile.letter) {
 					invalidLetters.add(letter)
 				}
 			}
@@ -153,6 +154,6 @@
 
 	h1 {
 		width: 100%;
-		margin: 1.2rem 0;
+		margin: 1rem 0;
 	}
 </style>

@@ -73,7 +73,7 @@
 		padding: 0;
 		margin-left: 0.125rem;
 		margin-right: 0.125rem;
-		width: 40px;
+		width: 48px;
 		height: 58px;
 		border-radius: 4px;
 		border: 0;
@@ -90,7 +90,16 @@
 	}
 
 	.key-row button.wide {
-		width: 62px;
+		width: 74px;
 		text-transform: none;
+	}
+
+	@media (max-width: 480px) {
+		.key-row button {
+			width: 38px;
+		}
+		.key-row button.wide {
+			width: 52px;
+		}
 	}
 </style>

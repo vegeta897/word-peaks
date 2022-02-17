@@ -3,17 +3,18 @@ export const ROWS = 6
 type Tile = {
 	letter: string
 	scored: boolean
-	direction: -1 | 0 | 1
+	distance: number
+	magnitude: number
 }
 type Board = Tile[][]
 
 export function createNewBoard(): Board {
 	const board = []
 	for (let i = 0; i < ROWS; i++) {
-		const row = []
+		const row: Tile[] = []
 		board[i] = row
 		for (let j = 0; j < 5; j++) {
-			row.push({ letter: '', scored: false, direction: 0 })
+			row.push({ letter: '', scored: false, distance: 0, magnitude: 0 })
 		}
 	}
 	return board

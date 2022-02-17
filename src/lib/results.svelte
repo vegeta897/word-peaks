@@ -13,8 +13,8 @@
 			.map((row) =>
 				row
 					.map((tile) => {
-						if (tile.direction === 0) return '🟩'
-						return tile.direction > 0 ? '🔼' : '🔽'
+						if (tile.distance === 0) return '🟩'
+						return tile.distance > 0 ? '🔽' : '🔼'
 					})
 					.join('')
 			)
