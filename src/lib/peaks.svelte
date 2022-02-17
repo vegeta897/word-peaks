@@ -15,9 +15,8 @@
 	$: rows = boardContent.slice(0, currentRow).map((row, r) => [
 		[0, 50 + 100 * r],
 		...row.map((tile, i) => {
-			const dir = tile.distance > 0 ? 1 : -1
 			const height = easeOutQuad(tile.magnitude / (ROWS * 2 - 1))
-			return [i * 100 + 50, Math.round(100 * r + 50 + dir * height * 50)]
+			return [i * 100 + 50, Math.round(100 * r + 50 + tile.polarity * height * 50)]
 		}),
 		[500, 50 + 100 * r],
 	])

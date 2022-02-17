@@ -78,12 +78,27 @@
 		const rowWord = boardContent[currentRow].map((t) => t.letter).join('')
 		if (dictionary.includes(rowWord)) {
 			let correctLetters = 0
-			boardContent[currentRow].forEach((t, i) => {
+			boardContent[currentRow].forEach((t) => {
 				t.scored = true
-				t.distance = alphabet.indexOf(t.letter) - alphabet.indexOf(answer[i])
-				t.magnitude = ROWS
+				t.distance = alphabet.indexOf(t.letter) - alphabet.indexOf(answer[t.id])
+				t.polarity = t.distance > 0 ? 1 : -1
+				if (currentRow === 0) {
+					t.magnitude = ROWS
+				} else {
+					const prevRow = boardContent[currentRow - 1]
+					if (prevRow[t.id].polarity !== t.polarity) {
+						t.magnitude = ROWS
+					} else if (Math.abs(t.distance) > Math.abs(prevRow[t.id].distance)) {
+						t.magnitude = prevRow[t.id].magnitude + 1
+					} else if (Math.abs(t.distance) < Math.abs(prevRow[t.id].distance)) {
+						t.magnitude = prevRow[t.id].magnitude - 1
+					} else if (t.distance === prevRow[t.id].distance) {
+						t.magnitude = prevRow[t.id].magnitude
+					}
+				}
 				if (t.distance === 0) {
 					t.magnitude = 0
+					t.polarity = 0
 					correctLetters++
 				}
 			})

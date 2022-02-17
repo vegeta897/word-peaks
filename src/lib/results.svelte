@@ -14,8 +14,8 @@
 			.map((row) =>
 				row
 					.map((tile) => {
-						if (tile.distance === 0) return '🟩'
-						return tile.distance > 0 ? '🔽' : '🔼'
+						if (tile.polarity === 0) return '🟩'
+						return tile.polarity > 0 ? '🔽' : '🔼'
 					})
 					.join('')
 			)
