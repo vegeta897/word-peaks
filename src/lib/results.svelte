@@ -1,8 +1,10 @@
 <script lang="ts">
+	import { toast } from '@zerodevx/svelte-toast'
+
 	export let gameFinished
 	export let gameWon
-	export let newWord
 	export let boardContent
+	export let newWord
 
 	function share() {
 		const boardContentFiltered = boardContent.filter((row) => row.every((t) => t.letter !== ''))
@@ -18,6 +20,8 @@
 			)
 			.join('\n')
 		navigator.clipboard.writeText(`Wordle Peaks ${score}/6\n\n${emojis}`)
+		toast.pop()
+		toast.push('Score copied!')
 	}
 </script>
 

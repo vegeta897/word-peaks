@@ -10,52 +10,69 @@
 	import Board from '$lib/board.svelte'
 	import Keyboard from '$lib/keyboard.svelte'
 	import Results from '$lib/results.svelte'
-	import { alphabet, createNewBoard } from '$lib/data-model'
-
-	const ROWS = 6
+	import { alphabet, createNewBoard, ROWS } from '$lib/data-model'
+	import { toast } from '@zerodevx/svelte-toast'
 
 	let answer: string
 	let boardContent
 	let currentRow: number
 	let currentTile: number
-	let error: null | string
 	let correctLetter: string
 	let invalidLetters: Set<string>
+	let gameFinished: boolean
+	let gameWon: boolean
 
 	function newWord() {
+		toast.pop()
 		close()
 		answer = targets[Math.floor(Math.random() * targets.length)]
-		boardContent = createNewBoard(ROWS)
+		boardContent = createNewBoard()
 		currentRow = 0
 		currentTile = 0
-		error = null
 		correctLetter = ''
 		invalidLetters = new Set()
+		gameFinished = false
+		gameWon = false
 		console.log(answer)
 	}
 
 	newWord()
 
+	const showError = (m) => {
+		toast.pop()
+		toast.push(m, { theme: { '--toastBackground': 'var(--error-color)' } })
+	}
+
 	function typeLetter(letter: string) {
+		if (gameFinished) {
+			showResults()
+			return
+		}
 		if (currentTile === boardContent[currentRow].length) return
 		boardContent[currentRow][currentTile].letter = letter
 		boardContent = boardContent
 		currentTile++
 		updateLetterLists()
-		error = null
 	}
 
 	function undoLetter() {
+		if (gameFinished) {
+			showResults()
+			return
+		}
 		if (currentTile < 1) return
 		currentTile--
 		boardContent[currentRow][currentTile].letter = ''
 		updateLetterLists()
-		error = null
 	}
 
 	function submitRow() {
+		if (gameFinished) {
+			showResults()
+			return
+		}
 		if (currentTile < boardContent[currentRow].length) {
-			error = 'not enough letters'
+			showError('Not enough letters')
 			return
 		}
 		const rowWord = boardContent[currentRow].map((t) => t.letter).join('')
@@ -72,21 +89,20 @@
 			boardContent = boardContent
 			currentRow++
 			currentTile = 0
-			let gameFinished = false
-			let gameWon = false
 			if (correctLetters === 5) {
-				gameFinished = true
 				gameWon = true
-			} else if (currentRow === ROWS) {
+				currentRow = ROWS
+			}
+			if (currentRow === ROWS) {
 				gameFinished = true
 			}
 			if (gameFinished) {
-				open(Results, { gameFinished, gameWon, boardContent, newWord })
+				showResults()
 			} else {
 				updateLetterLists()
 			}
 		} else {
-			error = 'invalid word'
+			showError('Not a valid word')
 		}
 	}
 
@@ -117,14 +133,15 @@
 			}
 		})
 	}
+
+	function showResults() {
+		open(Results, { gameFinished, gameWon, boardContent, newWord })
+	}
 </script>
 
 <section>
 	<h1>Wordle Peaks</h1>
-	{#if error}
-		{error}
-	{/if}
-	<Board {boardContent} />
+	<Board {currentRow} {currentTile} {boardContent} {gameFinished} />
 	<Keyboard {typeLetter} {submitRow} {undoLetter} {correctLetter} {invalidLetters} />
 </section>
 

@@ -1,7 +1,10 @@
 <script lang="ts">
 	import '../app.css'
 	import Modal from 'svelte-simple-modal'
+	import { SvelteToast } from '@zerodevx/svelte-toast'
 </script>
+
+<SvelteToast options={{ intro: { y: -64 }, duration: 2000 }} />
 
 <div id="main">
 	<Modal styleWindow={{ background: 'var(--tertiary-color)', width: '480px' }}><slot /></Modal>

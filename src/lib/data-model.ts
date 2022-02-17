@@ -1,3 +1,5 @@
+export const ROWS = 6
+
 type Tile = {
 	letter: string
 	scored: boolean
@@ -5,9 +7,9 @@ type Tile = {
 }
 type Board = Tile[][]
 
-export function createNewBoard(rows: number): Board {
+export function createNewBoard(): Board {
 	const board = []
-	for (let i = 0; i < rows; i++) {
+	for (let i = 0; i < ROWS; i++) {
 		const row = []
 		board[i] = row
 		for (let j = 0; j < 5; j++) {

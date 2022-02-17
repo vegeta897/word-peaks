@@ -1,11 +1,15 @@
 <script lang="ts">
+	import { ROWS } from '$lib/data-model'
+
+	export let currentRow
+	export let currentTile
 	export let boardContent
 </script>
 
-<div class="board">
-	{#each boardContent as boardRow}
+<div class="board" class:finished={currentRow === ROWS}>
+	{#each boardContent as boardRow, r}
 		<div class="board-row">
-			{#each boardRow as tile}
+			{#each boardRow as tile, t}
 				<div
 					class="tile"
 					class:filled={tile.letter !== ''}
@@ -13,6 +17,7 @@
 					class:correct={tile.scored && tile.direction === 0}
 					class:before={tile.direction < 0}
 					class:after={tile.direction > 0}
+					class:current={r === currentRow && t === currentTile}
 				>
 					{tile.letter}
 					<!-- Show valid letter range on tile, like [D...N] -->
@@ -50,6 +55,9 @@
 		height: 3.55rem;
 		margin: 0 0.15rem;
 	}
+	.finished .tile {
+		border-color: #444;
+	}
 	.tile.filled {
 		border-color: #888;
 	}
@@ -59,6 +67,10 @@
 	}
 	.tile.correct {
 		background: var(--correct-color);
+	}
+
+	.board:not(.finished) .tile.current {
+		border-color: #bbb;
 	}
 
 	.tile.before {
