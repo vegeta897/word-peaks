@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { alphabet, ROWS } from '$lib/data-model'
+	import { alphabet } from '$lib/data-model'
 	import Peaks from '$lib/peaks.svelte'
 
 	export let currentRow
@@ -7,63 +7,65 @@
 	export let boardContent
 	export let correctLetter
 	export let invalidLetters
+	export let gameFinished
 
 	$: upperValid = alphabet.find((letter) => !invalidLetters.has(letter))
 	$: lowerValid = [...alphabet].reverse().find((letter) => !invalidLetters.has(letter))
-
-	$: points = boardContent.map((row) => [
-		[0, 50],
-		...row.map((tile, i) => {
-			const dir = tile.distance > 0 ? 1 : -1
-			return [i * 100 + 50, 50 + ((dir * tile.magnitude) / ROWS) * 25]
-		}),
-		[500, 50],
-	])
 </script>
 
-<div class="board" class:finished={currentRow === ROWS}>
-	{#each boardContent as boardRow, r}
-		<div class="tile-row">
-			{#each boardRow as tile, t}
-				<div
-					class="tile"
-					class:filled={tile.letter !== ''}
-					class:scored={tile.scored}
-					class:correct={tile.scored && tile.distance === 0}
-					class:before={tile.distance < 0}
-					class:after={tile.distance > 0}
-					class:current={r === currentRow && t === currentTile}
-				>
-					{tile.letter}
-					{#if currentRow > 0 && r === currentRow && t === currentTile}
-						{#if !correctLetter}
-							<span class="hint">{upperValid} <span class="small">...</span> {lowerValid}</span>
+<div class="container">
+	<div class="board" class:finished={gameFinished}>
+		{#each boardContent as boardRow, r}
+			<div class="tile-row">
+				{#each boardRow as tile}
+					<div
+						class="tile"
+						class:filled={tile.letter !== ''}
+						class:scored={tile.scored}
+						class:correct={tile.scored && tile.distance === 0}
+						class:before={tile.distance < 0}
+						class:after={tile.distance > 0}
+						class:current={r === currentRow && tile.id === currentTile}
+					>
+						{tile.letter}
+						{#if !gameFinished && currentRow > 0 && r === currentRow && tile.id === currentTile}
+							{#if !correctLetter}
+								<span class="hint">{upperValid} <span class="small">...</span> {lowerValid}</span>
+							{/if}
+							{#if correctLetter}
+								<span class="hint">{correctLetter}</span>
+							{/if}
 						{/if}
-						{#if correctLetter}
-							<span class="hint">{correctLetter}</span>
-						{/if}
-					{/if}
-				</div>
-			{/each}
-			<!--{#if currentRow > 0}-->
-			<div class="graph" class:minimized={currentRow === 0}>
-				<Peaks points={r < currentRow ? points[r] : []} id={r} />
+					</div>
+				{/each}
 			</div>
-			<!--{/if}-->
-		</div>
-	{/each}
+		{/each}
+	</div>
+
+	<div class="graph" class:minimized={currentRow === 0}>
+		<Peaks {boardContent} {currentRow} />
+	</div>
 </div>
 
 <style>
-	.board {
+	.container {
 		margin: 0 auto 20px;
 		padding: 0 4px;
+		display: flex;
+		justify-content: center;
+	}
+
+	.board {
+		display: flex;
+		flex-direction: column;
 	}
 
 	.tile-row {
-		display: flex;
-		justify-content: center;
 		margin-bottom: 0.4rem;
+	}
+
+	.tile-row:last-child {
+		margin-bottom: 0;
 	}
 
 	.tile {
@@ -130,10 +132,8 @@
 	.graph {
 		margin-left: 0.3rem;
 		width: 204px;
-		height: 3.55rem;
-		transition: width 500ms ease-out;
-		display: flex;
-		align-items: center;
+		transition: width 300ms ease-out;
+		height: 23.25rem;
 	}
 
 	.graph.minimized {
@@ -147,7 +147,7 @@
 		}
 		.graph {
 			width: 118px;
-			height: 3.3rem;
+			height: 21.8rem;
 		}
 	}
 </style>

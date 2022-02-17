@@ -1,43 +1,57 @@
 <script lang="ts">
-	export let points = []
-	export let id
+	import { ROWS } from '$lib/data-model'
 
-	$: linePoints = points.map((p) => p.join(',')).join(' ')
+	const LERPS = 8
+
+	export let boardContent
+	export let currentRow
+
+	type Point = [number, number]
+
+	function easeOutQuad(x: number): number {
+		return 1 - (1 - x) * (1 - x)
+	}
+
+	$: rows = boardContent.slice(0, currentRow).map((row, r) => [
+		[0, 50 + 100 * r],
+		...row.map((tile, i) => {
+			const dir = tile.distance > 0 ? 1 : -1
+			const height = easeOutQuad(tile.magnitude / (ROWS * 2 - 1))
+			return [i * 100 + 50, Math.round(100 * r + 50 + dir * height * 50)]
+		}),
+		[500, 50 + 100 * r],
+	])
+
+	function stringifyPoints(points: Point[]): string {
+		return points.map((p) => p.join(',')).join(' ')
+	}
+
+	function lerpLines(line1: Point[], line2: Point[], x: number, r): Point[] {
+		return line1.map((p, i) => [p[0], p[1] + (line2[i][1] - p[1]) * x])
+	}
 </script>
 
-<svg
-	viewBox="-8 0 516 100"
-	class="chart"
-	preserveAspectRatio="none"
-	xmlns="http://www.w3.org/2000/svg"
->
-	<defs>
-		<linearGradient id="score" x1="0" x2="0" y1="0" y2="1">
-			<stop stop-color="#e99637" offset="20%" />
-			<stop stop-color="#94493a" offset="50%" />
-			<stop stop-color="#3e3b65" offset="50%" />
-			<stop stop-color="#3859b3" offset="80%" />
-		</linearGradient>
-	</defs>
-	{#if points.length > 0}
-		<mask id={`mask${id}`}>
-			<polygon fill="#fff" points={linePoints} />
-		</mask>
-
-		<rect x="0" y="0" width="500" height="100" fill="url(#score)" mask={`url(#mask${id})`} />
-		<!--		<rect x="0" y="50" width="500" height="50" fill="#469" mask={`url(#mask${id})`} />-->
-	{/if}
-
-	<!--	<line-->
-	<!--		stroke="#fff"-->
-	<!--		stroke-width="2"-->
-	<!--		vector-effect="non-scaling-stroke"-->
-	<!--		stroke-opacity="0.2"-->
-	<!--		x1="0"-->
-	<!--		x2="500"-->
-	<!--		y1="50"-->
-	<!--		y2="50"-->
-	<!--	/>-->
+<svg viewBox="0 -1 500 602" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+	{#each rows as row, r}
+		<polyline
+			vector-effect="non-scaling-stroke"
+			stroke="#fffb"
+			fill="none"
+			stroke-width="1"
+			points={stringifyPoints(row)}
+		/>
+		{#if currentRow > r + 1}
+			{#each Array(LERPS) as _, i}
+				<polyline
+					vector-effect="non-scaling-stroke"
+					stroke={`rgba(255,255,255,${0.05 + Math.abs(i - LERPS / 2) / (LERPS * 2)})`}
+					fill="none"
+					stroke-width="1"
+					points={stringifyPoints(lerpLines(row, rows[r + 1], (i + 1) / (LERPS + 1), r))}
+				/>
+			{/each}
+		{/if}
+	{/each}
 </svg>
 
 <style>

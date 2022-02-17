@@ -5,6 +5,7 @@
 	export let gameWon
 	export let boardContent
 	export let newWord
+	export let answer
 
 	function share() {
 		const boardContentFiltered = boardContent.filter((row) => row.every((t) => t.letter !== ''))
@@ -27,7 +28,13 @@
 
 <section>
 	<h2>Results</h2>
-	<p>{gameWon ? 'grats' : 'loser'}</p>
+	{#if gameWon}
+		<h3>You won</h3>
+		<p>Nice job!</p>
+	{:else}
+		<h3>You lost ☹️</h3>
+		<p>The answer was <strong>{answer.toUpperCase()}</strong></p>
+	{/if}
 	<div class="button-group">
 		<button on:click={newWord}>New word</button>
 		<button on:click={share} class="cta">Share</button>
@@ -42,6 +49,9 @@
 	h2 {
 		font-size: 1.5em;
 		text-align: center;
+	}
+	h3 {
+		font-size: 1.2em;
 	}
 
 	.button-group {

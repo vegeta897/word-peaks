@@ -7,13 +7,14 @@
 	--primary-color: #15171c;
 	--secondary-color: #241f2a;
 	--tertiary-color: #2d272f;
-	--accent-color: #36c5f4;
+	--accent-color: #c878af;
 	--cta-color: #3859b3;
 	--correct-color: #26854c;
 	--error-color: #ac2847;
 	--heading-color: rgba(255, 255, 255, 0.8);
 	--text-color: #cccccc;
 	--toastContainerLeft: calc(50vw - 8rem);
+	--toastContainerTop: 2rem;
 	--toastContainerRight: auto;
 	--toastBarHeight: 0;
 	--toastBackground: var(--tertiary-color);
@@ -37,6 +38,7 @@ body {
 
 h1,
 h2,
+h3,
 p {
 	font-weight: 400;
 	color: var(--heading-color);

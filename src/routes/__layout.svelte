@@ -4,7 +4,7 @@
 	import { SvelteToast } from '@zerodevx/svelte-toast'
 </script>
 
-<SvelteToast options={{ intro: { y: -64 }, duration: 2000 }} />
+<SvelteToast options={{ intro: { y: 0 }, duration: 2000 }} />
 
 <div id="main">
 	<Modal styleWindow={{ background: 'var(--tertiary-color)', width: '480px' }}><slot /></Modal>

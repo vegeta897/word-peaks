@@ -92,9 +92,8 @@
 			currentTile = 0
 			if (correctLetters === 5) {
 				gameWon = true
-				currentRow = ROWS
-			}
-			if (currentRow === ROWS) {
+				gameFinished = true
+			} else if (currentRow === ROWS) {
 				gameFinished = true
 			}
 			if (gameFinished) {
@@ -136,13 +135,20 @@
 	}
 
 	function showResults() {
-		open(Results, { gameFinished, gameWon, boardContent, newWord })
+		open(Results, { gameFinished, gameWon, boardContent, newWord, answer })
 	}
 </script>
 
 <section>
 	<h1>Wordle Peaks</h1>
-	<Board {currentRow} {currentTile} {correctLetter} {invalidLetters} {boardContent} />
+	<Board
+		{currentRow}
+		{currentTile}
+		{correctLetter}
+		{invalidLetters}
+		{boardContent}
+		{gameFinished}
+	/>
 	<Keyboard {typeLetter} {submitRow} {undoLetter} {correctLetter} {invalidLetters} />
 </section>
 
