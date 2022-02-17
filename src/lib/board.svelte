@@ -85,6 +85,7 @@
 		height: 3.55rem;
 		margin: 0 0.15rem;
 		color: #eee;
+		transition: border-radius 300ms ease-out;
 	}
 	.finished .tile {
 		border-color: #444;
@@ -108,14 +109,14 @@
 		color: #f6ecd9;
 		border-top-left-radius: 20px;
 		border-top-right-radius: 20px;
-		background: var(--primary-color) linear-gradient(0deg, #e99637 0%, #de793a 100%);
+		background: #e99637 linear-gradient(0deg, #e99637 0%, #de793a 100%);
 	}
 
 	.tile.after {
 		color: #e4e3f3;
 		border-bottom-left-radius: 20px;
 		border-bottom-right-radius: 20px;
-		background: var(--primary-color) linear-gradient(180deg, #3859b3 0%, #3e3b65 100%);
+		background: #3859b3 linear-gradient(180deg, #3859b3 0%, #3e3b65 100%);
 	}
 
 	.hint {

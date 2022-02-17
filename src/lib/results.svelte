@@ -55,6 +55,8 @@
 	}
 
 	.button-group {
+		margin-top: 1.5rem;
+		margin-bottom: 1rem;
 		display: flex;
 		gap: 4rem;
 	}

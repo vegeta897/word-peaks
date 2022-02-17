@@ -112,7 +112,7 @@
 				gameFinished = true
 			}
 			if (gameFinished) {
-				showResults()
+				setTimeout(() => showResults(), 400)
 			} else {
 				updateLetterLists()
 			}
