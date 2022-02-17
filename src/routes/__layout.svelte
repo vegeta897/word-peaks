@@ -13,7 +13,7 @@
 <footer>
 	<p>
 		inspired by <a href="https://www.nytimes.com/games/wordle/index.html">Wordle</a><br />
-		created with <a href="https://kit.svelte.dev">SvelteKit</a>
+		created by <a href="https://github.com/vegeta897/wordle-peaks">vegeta897</a>
 	</p>
 </footer>
 
@@ -30,6 +30,7 @@
 		align-items: center;
 		padding: 4px;
 		margin: auto auto 2px;
+		opacity: 0.8;
 	}
 
 	footer a {
