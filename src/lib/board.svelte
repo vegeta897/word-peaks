@@ -1,9 +1,14 @@
 <script lang="ts">
-	import { ROWS } from '$lib/data-model'
+	import { alphabet, ROWS } from '$lib/data-model'
 
 	export let currentRow
 	export let currentTile
 	export let boardContent
+	export let correctLetter
+	export let invalidLetters
+
+	$: upperValid = alphabet.find((letter) => !invalidLetters.has(letter))
+	$: lowerValid = [...alphabet].reverse().find((letter) => !invalidLetters.has(letter))
 </script>
 
 <div class="board" class:finished={currentRow === ROWS}>
@@ -20,7 +25,14 @@
 					class:current={r === currentRow && t === currentTile}
 				>
 					{tile.letter}
-					<!-- Show valid letter range on tile, like [D...N] -->
+					{#if currentRow > 0 && r === currentRow && t === currentTile}
+						{#if !correctLetter}
+							<span class="hint">{upperValid} <span class="small">...</span> {lowerValid}</span>
+						{/if}
+						{#if correctLetter}
+							<span class="hint">{correctLetter}</span>
+						{/if}
+					{/if}
 				</div>
 			{/each}
 		</div>
@@ -41,7 +53,7 @@
 
 	.tile {
 		font-size: 2rem;
-		font-weight: bold;
+		font-weight: 700;
 		line-height: 2rem;
 		display: inline-flex;
 		justify-content: center;
@@ -85,5 +97,17 @@
 		border-top-left-radius: 20px;
 		border-top-right-radius: 20px;
 		background: var(--primary-color) linear-gradient(0deg, var(--primary-color) 70%, #deceed 800%);
+	}
+
+	.hint {
+		font-size: 0.5em;
+		font-weight: 400;
+		color: #999;
+		padding-top: 12px;
+	}
+
+	.small {
+		line-height: 1em;
+		font-size: 0.7em;
 	}
 </style>

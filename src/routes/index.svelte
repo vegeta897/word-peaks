@@ -117,12 +117,8 @@
 		alphabet.forEach((letter) => {
 			for (let i = 0; i < currentRow; i++) {
 				const tile = boardContent[i][currentTile]
-				if (tile.direction === 0) {
-					if (letter === tile.letter) {
-						correctLetter = letter
-					} else {
-						invalidLetters.add(letter)
-					}
+				if (tile.direction === 0 && letter !== tile.letter) {
+					invalidLetters.add(letter)
 				}
 				if (tile.direction < 0 && letter <= tile.letter) {
 					invalidLetters.add(letter)
@@ -132,6 +128,10 @@
 				}
 			}
 		})
+		if (invalidLetters.size === alphabet.length - 1) {
+			// One non-invalid letter remains
+			correctLetter = alphabet.find((letter) => !invalidLetters.has(letter))
+		}
 	}
 
 	function showResults() {
@@ -141,7 +141,7 @@
 
 <section>
 	<h1>Wordle Peaks</h1>
-	<Board {currentRow} {currentTile} {boardContent} {gameFinished} />
+	<Board {currentRow} {currentTile} {correctLetter} {invalidLetters} {boardContent} />
 	<Keyboard {typeLetter} {submitRow} {undoLetter} {correctLetter} {invalidLetters} />
 </section>
 
