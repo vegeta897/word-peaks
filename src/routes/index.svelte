@@ -96,6 +96,12 @@
 					} else if (t.distance === prevTile.distance) {
 						t.magnitude = prevTile.magnitude
 					}
+					const alreadyGuessed = boardContent.find(
+						(row, i) => i < currentRow && row[t.id].letter === t.letter
+					)
+					if (alreadyGuessed) {
+						t.magnitude = alreadyGuessed[t.id].magnitude
+					}
 				}
 				if (t.distance === 0) {
 					t.magnitude = 0
