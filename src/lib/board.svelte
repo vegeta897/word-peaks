@@ -35,7 +35,7 @@
 							class:correct={tile.distance === 0}
 							class:before={tile.distance < 0}
 							class:after={tile.distance > 0}
-							in:fade={{ easing: quadOut }}
+							in:fade={{ easing: quadOut, delay: tile.id * 40 }}
 						>
 							{tile.letter}
 						</div>
