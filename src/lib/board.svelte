@@ -18,8 +18,10 @@
 		easing: quadOut,
 	}
 
-	$: upperValid = alphabet.find((letter) => !invalidLetters.has(letter))
-	$: lowerValid = [...alphabet].reverse().find((letter) => !invalidLetters.has(letter))
+	$: upperValid = invalidLetters.map((list) => alphabet.find((letter) => !list.has(letter)))
+	$: lowerValid = invalidLetters.map((list) =>
+		[...alphabet].reverse().find((letter) => !list.has(letter))
+	)
 </script>
 
 <div class="container">
@@ -42,11 +44,20 @@
 							class="tile"
 							class:filled={tile.letter !== ''}
 							class:current={r === currentRow && tile.id === currentTile}
+							class:before-pre={r === currentRow &&
+								tile.id <= currentTile &&
+								tile.letter < upperValid[tile.id]}
+							class:after-pre={r === currentRow &&
+								tile.id <= currentTile &&
+								tile.letter > lowerValid[tile.id]}
 						>
 							{#if tile.letter}<div in:fly={letterAnimation}>{tile.letter}</div>{/if}
 							{#if !gameFinished && currentRow > 0 && r === currentRow && tile.id === currentTile}
 								{#if !correctLetter}
-									<span class="hint">{upperValid} <span class="small">...</span> {lowerValid}</span>
+									<span class="hint"
+										>{upperValid[tile.id]} <span class="small">...</span>
+										{lowerValid[tile.id]}</span
+									>
 								{/if}
 								{#if correctLetter}
 									<span class="hint">{correctLetter}</span>
@@ -134,6 +145,16 @@
 		border-bottom-left-radius: 20px;
 		border-bottom-right-radius: 20px;
 		background: #4f46c2 linear-gradient(180deg, #5d83ea 0%, #4f46c2 100%);
+	}
+
+	.tile.before-pre {
+		color: #e99637;
+		border-color: #e99637;
+	}
+
+	.tile.after-pre {
+		color: #5d83ea;
+		border-color: #5d83ea;
 	}
 
 	.hint {

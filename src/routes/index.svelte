@@ -10,7 +10,7 @@
 	import Board from '$lib/board.svelte'
 	import Keyboard from '$lib/keyboard.svelte'
 	import Results from '$lib/results.svelte'
-	import { alphabet, createNewBoard, ROWS } from '$lib/data-model'
+	import { alphabet, createNewBoard, createSetArray, ROWS } from '$lib/data-model'
 	import { toast } from '@zerodevx/svelte-toast'
 
 	let answer: string
@@ -19,7 +19,7 @@
 	let currentRow: number
 	let currentTile: number
 	let correctLetter: string
-	let invalidLetters: Set<string>
+	let invalidLetters: Set<string>[]
 	let gameFinished: boolean
 	let gameWon: boolean
 
@@ -31,7 +31,7 @@
 		currentRow = 0
 		currentTile = 0
 		correctLetter = ''
-		invalidLetters = new Set()
+		invalidLetters = createSetArray()
 		gameFinished = false
 		gameWon = false
 		console.log(answer)
@@ -109,6 +109,7 @@
 			})
 			boardContent = boardContent
 			currentRow++
+			invalidLetters = createSetArray()
 			currentTile = 0
 			boardCommitted = boardContent.slice(0, currentRow)
 			if (correctLetters === 5) {
@@ -129,29 +130,30 @@
 
 	function updateLetterLists() {
 		if (currentTile === boardContent[currentRow].length) {
-			invalidLetters = new Set(alphabet)
+			invalidLetters[currentTile] = new Set(alphabet)
 			return
 		}
 		correctLetter = ''
-		invalidLetters = new Set()
+		const currentInvalidLetters = new Set()
+		invalidLetters[currentTile] = currentInvalidLetters
 		if (currentRow === 0) return
 		alphabet.forEach((letter) => {
 			for (let i = 0; i < currentRow; i++) {
 				const tile = boardContent[i][currentTile]
 				if (tile.distance === 0 && letter !== tile.letter) {
-					invalidLetters.add(letter)
+					currentInvalidLetters.add(letter)
 				}
 				if (tile.distance < 0 && letter <= tile.letter) {
-					invalidLetters.add(letter)
+					currentInvalidLetters.add(letter)
 				}
 				if (tile.distance > 0 && letter >= tile.letter) {
-					invalidLetters.add(letter)
+					currentInvalidLetters.add(letter)
 				}
 			}
 		})
-		if (invalidLetters.size === alphabet.length - 1) {
+		if (currentInvalidLetters.size === alphabet.length - 1) {
 			// One non-invalid letter remains
-			correctLetter = alphabet.find((letter) => !invalidLetters.has(letter))
+			correctLetter = alphabet.find((letter) => !currentInvalidLetters.has(letter))
 		}
 	}
 
@@ -171,7 +173,13 @@
 		{boardCommitted}
 		{gameFinished}
 	/>
-	<Keyboard {typeLetter} {submitRow} {undoLetter} {correctLetter} {invalidLetters} />
+	<Keyboard
+		{typeLetter}
+		{submitRow}
+		{undoLetter}
+		{correctLetter}
+		invalidLetters={invalidLetters[currentTile]}
+	/>
 </section>
 
 <style>

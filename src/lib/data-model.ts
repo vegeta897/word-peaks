@@ -22,4 +22,12 @@ export function createNewBoard(): Board {
 	return board
 }
 
+export function createSetArray(length = 5) {
+	const arr = []
+	for (let i = 0; i < length; i++) {
+		arr.push(new Set())
+	}
+	return arr
+}
+
 export const alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('')
