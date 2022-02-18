@@ -15,6 +15,7 @@
 
 	let answer: string
 	let boardContent
+	let boardCommitted
 	let currentRow: number
 	let currentTile: number
 	let correctLetter: string
@@ -85,15 +86,15 @@
 				if (currentRow === 0) {
 					t.magnitude = ROWS
 				} else {
-					const prevRow = boardContent[currentRow - 1]
-					if (prevRow[t.id].polarity !== t.polarity) {
+					const prevTile = boardContent[currentRow - 1][t.id]
+					if (prevTile.polarity !== t.polarity) {
 						t.magnitude = ROWS
-					} else if (Math.abs(t.distance) > Math.abs(prevRow[t.id].distance)) {
-						t.magnitude = prevRow[t.id].magnitude + 1
-					} else if (Math.abs(t.distance) < Math.abs(prevRow[t.id].distance)) {
-						t.magnitude = prevRow[t.id].magnitude - 1
-					} else if (t.distance === prevRow[t.id].distance) {
-						t.magnitude = prevRow[t.id].magnitude
+					} else if (Math.abs(t.distance) > Math.abs(prevTile.distance)) {
+						t.magnitude = prevTile.magnitude + 1
+					} else if (Math.abs(t.distance) < Math.abs(prevTile.distance)) {
+						t.magnitude = prevTile.magnitude - 1
+					} else if (t.distance === prevTile.distance) {
+						t.magnitude = prevTile.magnitude
 					}
 				}
 				if (t.distance === 0) {
@@ -105,6 +106,7 @@
 			boardContent = boardContent
 			currentRow++
 			currentTile = 0
+			boardCommitted = boardContent.slice(0, currentRow)
 			if (correctLetters === 5) {
 				gameWon = true
 				gameFinished = true
@@ -112,7 +114,7 @@
 				gameFinished = true
 			}
 			if (gameFinished) {
-				setTimeout(() => showResults(), 400)
+				setTimeout(() => showResults(), 1500)
 			} else {
 				updateLetterLists()
 			}
@@ -162,6 +164,7 @@
 		{correctLetter}
 		{invalidLetters}
 		{boardContent}
+		{boardCommitted}
 		{gameFinished}
 	/>
 	<Keyboard {typeLetter} {submitRow} {undoLetter} {correctLetter} {invalidLetters} />

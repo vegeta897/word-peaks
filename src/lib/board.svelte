@@ -5,6 +5,7 @@
 	export let currentRow
 	export let currentTile
 	export let boardContent
+	export let boardCommitted
 	export let correctLetter
 	export let invalidLetters
 	export let gameFinished
@@ -43,7 +44,7 @@
 	</div>
 
 	<div class="graph" class:minimized={currentRow === 0}>
-		<Peaks {boardContent} {currentRow} />
+		<Peaks {boardCommitted} {currentRow} />
 	</div>
 </div>
 
