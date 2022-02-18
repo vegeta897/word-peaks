@@ -44,10 +44,12 @@
 							class="tile"
 							class:filled={tile.letter !== ''}
 							class:current={r === currentRow && tile.id === currentTile}
-							class:before-pre={r === currentRow &&
+							class:before-pre={!gameFinished &&
+								r === currentRow &&
 								tile.id <= currentTile &&
 								tile.letter < upperValid[tile.id]}
-							class:after-pre={r === currentRow &&
+							class:after-pre={!gameFinished &&
+								r === currentRow &&
 								tile.id <= currentTile &&
 								tile.letter > lowerValid[tile.id]}
 						>
