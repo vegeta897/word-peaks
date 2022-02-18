@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { fly, fade } from '$lib/transitions.ts'
+	import { quadOut } from 'svelte/easing'
 	import { alphabet } from '$lib/data-model'
 	import Peaks from '$lib/peaks.svelte'
 
@@ -10,6 +12,12 @@
 	export let invalidLetters
 	export let gameFinished
 
+	const letterAnimation = {
+		duration: 100,
+		from: 'bottom',
+		easing: quadOut,
+	}
+
 	$: upperValid = alphabet.find((letter) => !invalidLetters.has(letter))
 	$: lowerValid = [...alphabet].reverse().find((letter) => !invalidLetters.has(letter))
 </script>
@@ -19,25 +27,33 @@
 		{#each boardContent as boardRow, r}
 			<div class="tile-row">
 				{#each boardRow as tile}
-					<div
-						class="tile"
-						class:filled={tile.letter !== ''}
-						class:scored={tile.scored}
-						class:correct={tile.scored && tile.distance === 0}
-						class:before={tile.distance < 0}
-						class:after={tile.distance > 0}
-						class:current={r === currentRow && tile.id === currentTile}
-					>
-						{tile.letter}
-						{#if !gameFinished && currentRow > 0 && r === currentRow && tile.id === currentTile}
-							{#if !correctLetter}
-								<span class="hint">{upperValid} <span class="small">...</span> {lowerValid}</span>
+					{#if tile.scored}
+						<div
+							class="tile scored filled"
+							class:correct={tile.distance === 0}
+							class:before={tile.distance < 0}
+							class:after={tile.distance > 0}
+							in:fade={{ easing: quadOut }}
+						>
+							{tile.letter}
+						</div>
+					{:else}
+						<div
+							class="tile"
+							class:filled={tile.letter !== ''}
+							class:current={r === currentRow && tile.id === currentTile}
+						>
+							{#if tile.letter}<div in:fly={letterAnimation}>{tile.letter}</div>{/if}
+							{#if !gameFinished && currentRow > 0 && r === currentRow && tile.id === currentTile}
+								{#if !correctLetter}
+									<span class="hint">{upperValid} <span class="small">...</span> {lowerValid}</span>
+								{/if}
+								{#if correctLetter}
+									<span class="hint">{correctLetter}</span>
+								{/if}
 							{/if}
-							{#if correctLetter}
-								<span class="hint">{correctLetter}</span>
-							{/if}
-						{/if}
-					</div>
+						</div>
+					{/if}
 				{/each}
 			</div>
 		{/each}
@@ -135,7 +151,7 @@
 	.graph {
 		margin-left: 0.3rem;
 		width: 204px;
-		transition: width 300ms ease-out;
+		transition: width 400ms ease-out;
 		height: 23.25rem;
 	}
 

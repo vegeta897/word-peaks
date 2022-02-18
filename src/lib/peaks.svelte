@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { ROWS } from '$lib/data-model'
+	import { sineInOut } from 'svelte/easing'
 
 	const LERPS = 8
 	const FIRST_LINE_DUR = 800
@@ -11,22 +12,10 @@
 
 	type Point = [number, number]
 
-	function easeOutQuad(x: number): number {
-		return 1 - (1 - x) * (1 - x)
-	}
-
-	function easeInOutQuad(x: number): number {
-		return x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2
-	}
-
-	function easeInOutSine(x: number): number {
-		return -(Math.cos(Math.PI * x) - 1) / 2
-	}
-
 	$: rows = boardCommitted.map((row, r) => [
 		[0, 50 + 100 * r],
 		...row.map((tile, i) => {
-			const height = easeInOutSine(tile.magnitude / (ROWS * 2 - 1))
+			const height = sineInOut(tile.magnitude / (ROWS * 2 - 1))
 			return [i * 100 + 50, 100 * r + 50 + tile.polarity * height * 50]
 		}),
 		[500, 50 + 100 * r],
@@ -75,7 +64,7 @@
 						id={`line${r}`}
 						attributeName="points"
 						dur={r === 0 ? `${FIRST_LINE_DUR}ms` : LERP_EACH_DUR}
-						begin={r === 0 ? '0s' : `line${r - 1}_${LERPS - 1}.end`}
+						begin={r === 0 ? '400ms' : `line${r - 1}_${LERPS - 1}.end`}
 						from={stringifyPoints(
 							r === 0 ? flatten(row, r) : lerpLines(rows[r - 1], row, LERPS / (LERPS + 1))
 						)}

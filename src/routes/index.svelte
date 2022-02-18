@@ -93,8 +93,6 @@
 						t.magnitude = prevTile.magnitude + 1
 					} else if (Math.abs(t.distance) < Math.abs(prevTile.distance)) {
 						t.magnitude = prevTile.magnitude - 1
-					} else if (t.distance === prevTile.distance) {
-						t.magnitude = prevTile.magnitude
 					}
 					const alreadyGuessed = boardContent.find(
 						(row, i) => i < currentRow && row[t.id].letter === t.letter
@@ -120,7 +118,7 @@
 				gameFinished = true
 			}
 			if (gameFinished) {
-				setTimeout(() => showResults(), 1500)
+				setTimeout(() => showResults(), 1700)
 			} else {
 				updateLetterLists()
 			}
