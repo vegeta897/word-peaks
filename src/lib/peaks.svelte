@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { ROWS } from '$lib/data-model'
-	import { afterUpdate } from 'svelte'
 
 	const LERPS = 8
 	const FIRST_LINE_DUR = 800
@@ -45,12 +44,6 @@
 	function flatten(line: Point[], row: number) {
 		return line.map((p) => [p[0], 50 + row * 100])
 	}
-
-	afterUpdate(() => {
-		document.querySelectorAll('animate').forEach((element) => {
-			if (element.id === `line${currentRow - 2}_0`) element.beginElement()
-		})
-	})
 </script>
 
 {#key stringifyPoints(rows)}
