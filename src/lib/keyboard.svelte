@@ -21,36 +21,20 @@
 
 <svelte:window on:keydown={handleKeydown} />
 
-<div class="keyboard" style="">
-	<div class="key-row">
-		{#each keyboardLayout[0] as key}
-			<button
-				on:click={() => typeLetter(key)}
-				class:correct={correctLetter === key}
-				class:invalid={invalidLetters.has(key)}>{key}</button
-			>
-		{/each}
-	</div>
-	<div class="key-row">
-		{#each keyboardLayout[1] as key}
-			<button
-				on:click={() => typeLetter(key)}
-				class:correct={correctLetter === key}
-				class:invalid={invalidLetters.has(key)}>{key}</button
-			>
-		{/each}
-	</div>
-	<div class="key-row">
-		<button on:click={submitRow} class="wide">Enter</button>
-		{#each keyboardLayout[2] as key}
-			<button
-				on:click={() => typeLetter(key)}
-				class:correct={correctLetter === key}
-				class:invalid={invalidLetters.has(key)}>{key}</button
-			>
-		{/each}
-		<button on:click={undoLetter} class="wide">Delete</button>
-	</div>
+<div class="keyboard">
+	{#each keyboardLayout as keyRow, r}
+		<div class="key-row">
+			{#if r === 2}<button on:click={submitRow} class="wide">Enter</button>{/if}
+			{#each keyRow as key}
+				<button
+					on:click={() => typeLetter(key)}
+					class:correct={correctLetter === key}
+					class:invalid={invalidLetters.has(key)}>{key}</button
+				>
+			{/each}
+			{#if r === 2}<button on:click={undoLetter} class="wide">Delete</button>{/if}
+		</div>
+	{/each}
 </div>
 
 <style>
