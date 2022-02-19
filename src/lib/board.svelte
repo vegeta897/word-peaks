@@ -4,6 +4,7 @@
 	import Peaks from '$lib/peaks.svelte'
 	import { boardContent, currentRow, currentTile, validLetters, gameFinished } from '$lib/store'
 	import { getValidLetterBounds } from '$lib/data-model'
+	import { onMount } from 'svelte'
 
 	const letterAnimation = {
 		duration: 100,
@@ -15,66 +16,75 @@
 	validLetters.subscribe((valid) => {
 		currentValidBounds = getValidLetterBounds(valid)
 	})
+
+	let ready = false
+	// Prevents SSR for board
+	onMount(() => (ready = true))
 </script>
 
 <div class="container">
-	<div class="board" class:finished={$gameFinished}>
-		{#each $boardContent as boardRow, r}
-			<div class="tile-row">
-				{#each boardRow as tile}
-					{#if tile.scored}
-						<div
-							class="tile scored filled"
-							class:correct={tile.distance === 0}
-							class:before={tile.distance < 0}
-							class:after={tile.distance > 0}
-							in:fade={{ easing: quadOut, delay: tile.id * 150 }}
-						>
-							{tile.letter}
-						</div>
-					{:else}
-						<div
-							class="tile"
-							class:filled={tile.letter !== ''}
-							class:current={r === $currentRow && tile.id === $currentTile}
-							class:before-pre={!$gameFinished &&
-								r === $currentRow &&
-								tile.id <= $currentTile &&
-								tile.polarity < 0}
-							class:after-pre={!$gameFinished &&
-								r === $currentRow &&
-								tile.id <= $currentTile &&
-								tile.polarity > 0}
-							class:finished={$gameFinished}
-						>
-							{#if tile.letter}<div in:fly={letterAnimation}>{tile.letter}</div>{/if}
-							{#if !$gameFinished && $currentRow > 0 && r === $currentRow && tile.id === $currentTile}
-								{#if $validLetters.size > 1}
-									<span class="hint"
-										>{currentValidBounds[0]} <span class="small">...</span>
-										{currentValidBounds[1]}</span
-									>
-								{:else}
-									<span class="hint">{currentValidBounds[0]}</span>
+	{#if ready}
+		<div class="board" class:finished={$gameFinished}>
+			{#each $boardContent as boardRow, r}
+				<div class="tile-row">
+					{#each boardRow as tile (r + '.' + tile.id)}
+						{#if tile.scored}
+							<div
+								class="tile scored filled"
+								class:correct={tile.distance === 0}
+								class:before={tile.distance < 0}
+								class:after={tile.distance > 0}
+								in:fade={{ easing: quadOut, delay: tile.id * 150 }}
+							>
+								{tile.letter}
+							</div>
+						{:else}
+							<div
+								class="tile"
+								class:filled={tile.letter !== ''}
+								class:current={r === $currentRow && tile.id === $currentTile}
+								class:before-pre={!$gameFinished &&
+									r === $currentRow &&
+									tile.id <= $currentTile &&
+									tile.polarity < 0}
+								class:after-pre={!$gameFinished &&
+									r === $currentRow &&
+									tile.id <= $currentTile &&
+									tile.polarity > 0}
+								class:finished={$gameFinished}
+							>
+								{#if tile.letter}<div in:fly={letterAnimation}>{tile.letter}</div>{/if}
+								{#if !$gameFinished && $currentRow > 0 && r === $currentRow && tile.id === $currentTile}
+									{#if $validLetters.size > 1}
+										<span class="hint"
+											>{currentValidBounds[0]} <span class="small">...</span>
+											{currentValidBounds[1]}</span
+										>
+									{:else}
+										<span class="hint">{currentValidBounds[0]}</span>
+									{/if}
 								{/if}
-							{/if}
-						</div>
-					{/if}
-				{/each}
-			</div>
-		{/each}
-	</div>
-
-	<div class="graph" class:minimized={$currentRow === 0}>
-		<Peaks />
-	</div>
+							</div>
+						{/if}
+					{/each}
+				</div>
+			{/each}
+		</div>
+		<div class="graph" class:minimized={$currentRow === 0}>
+			<Peaks />
+		</div>
+	{:else}
+		<div class="loading">loading...</div>
+	{/if}
 </div>
 
 <style>
 	.container {
 		margin: 0 auto 20px;
 		padding: 0 4px;
+		height: 23.25rem;
 		display: flex;
+		align-items: center;
 		justify-content: center;
 	}
 
@@ -167,12 +177,17 @@
 	.graph {
 		margin-left: 0.3rem;
 		width: 204px;
-		transition: width 400ms ease-out;
+		transition: width 400ms ease-in-out;
 		height: 23.25rem;
 	}
 
 	.graph.minimized {
 		width: 0;
+	}
+
+	.loading {
+		color: #999;
+		font-size: 1.3em;
 	}
 
 	@media (max-width: 480px) {
