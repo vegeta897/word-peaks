@@ -13,9 +13,10 @@
 	export let invalidLetters
 
 	function handleKeydown({ key }) {
-		if (alphabet.includes(key)) typeLetter(key)
 		if (key === 'Backspace') undoLetter()
 		if (key === 'Enter') submitRow()
+		key = key.toLowerCase()
+		if (alphabet.includes(key)) typeLetter(key)
 	}
 </script>
 
