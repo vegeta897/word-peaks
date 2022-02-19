@@ -13,7 +13,6 @@
 	import Results from '$lib/results.svelte'
 	import {
 		createNewBoard,
-		createSetArray,
 		getBoardRowString,
 		getValidLetterBounds,
 		WORD_LENGTH,
@@ -30,8 +29,6 @@
 		gameWon,
 	} from '$lib/store'
 
-	let invalidLetters: Set<string>[] = createSetArray()
-
 	const showResults = () =>
 		open(Results, { newWord, answer: get(answer), guesses: get(guesses), gameWon: get(gameWon) })
 
@@ -44,7 +41,6 @@
 	answer.subscribe(() => {
 		toast.pop()
 		close()
-		invalidLetters = createSetArray()
 	})
 
 	if (!get(answer)) newWord()
@@ -109,19 +105,7 @@
 </script>
 
 <section>
-	<h1>Wordle Peaks</h1>
+	<h1 style="margin:1rem 0">Wordle Peaks</h1>
 	<Board />
 	<Keyboard {typeLetter} {submitRow} {undoLetter} />
 </section>
-
-<style>
-	section {
-		margin: 0;
-		padding: 0;
-	}
-
-	h1 {
-		width: 100%;
-		margin: 1rem 0;
-	}
-</style>

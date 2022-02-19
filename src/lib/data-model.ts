@@ -86,12 +86,4 @@ export function getValidLetterBounds(list: Set<string>): [string, string] {
 	]
 }
 
-export function createSetArray(length = WORD_LENGTH) {
-	const arr = []
-	for (let i = 0; i < length; i++) {
-		arr.push(new Set())
-	}
-	return arr
-}
-
 export const alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('')
