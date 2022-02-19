@@ -4,40 +4,54 @@
 
 <script lang="ts">
 	import { getContext } from 'svelte'
+	import { get } from 'svelte/store'
 	const { open, close } = getContext('simple-modal')
 	import dictionary from '$lib/data/dictionary-filtered.json'
 	import targets from '$lib/data/targets-filtered.json'
 	import Board from '$lib/board.svelte'
 	import Keyboard from '$lib/keyboard.svelte'
 	import Results from '$lib/results.svelte'
-	import { alphabet, createNewBoard, createSetArray, ROWS } from '$lib/data-model'
+	import {
+		createNewBoard,
+		createSetArray,
+		getBoardRowString,
+		getValidLetterBounds,
+		WORD_LENGTH,
+	} from '$lib/data-model'
 	import { toast } from '@zerodevx/svelte-toast'
+	import {
+		answer,
+		boardContent,
+		guesses,
+		currentRow,
+		currentTile,
+		gameFinished,
+		validLetters,
+		gameWon,
+	} from '$lib/store'
 
-	let answer: string
-	let boardContent
-	let boardCommitted
-	let currentRow: number
-	let currentTile: number
-	let correctLetter: string
-	let invalidLetters: Set<string>[]
-	let gameFinished: boolean
-	let gameWon: boolean
+	let invalidLetters: Set<string>[] = createSetArray()
+
+	const showResults = () =>
+		open(Results, { newWord, answer: get(answer), guesses: get(guesses), gameWon: get(gameWon) })
 
 	function newWord() {
-		toast.pop()
-		close()
-		answer = targets[Math.floor(Math.random() * targets.length)]
-		boardContent = createNewBoard()
-		currentRow = 0
-		currentTile = 0
-		correctLetter = ''
-		invalidLetters = createSetArray()
-		gameFinished = false
-		gameWon = false
-		console.log(answer)
+		answer.set(targets[Math.floor(Math.random() * targets.length)])
+		boardContent.set(createNewBoard())
+		guesses.set([])
 	}
 
-	newWord()
+	answer.subscribe(() => {
+		toast.pop()
+		close()
+		invalidLetters = createSetArray()
+	})
+
+	if (!get(answer)) newWord()
+
+	gameFinished.subscribe((finished) => {
+		if (finished) setTimeout(() => showResults(), 1700)
+	})
 
 	const showError = (m) => {
 		toast.pop()
@@ -45,141 +59,59 @@
 	}
 
 	function typeLetter(letter: string) {
-		if (gameFinished) {
+		if (get(gameFinished)) {
 			showResults()
 			return
 		}
-		if (currentTile === boardContent[currentRow].length) return
-		boardContent[currentRow][currentTile].letter = letter
-		boardContent = boardContent
-		currentTile++
-		updateLetterLists()
+		if (get(currentTile) === WORD_LENGTH) return
+		boardContent.update((content) => {
+			const tile = content[get(currentRow)][get(currentTile)]
+			const [lower, upper] = getValidLetterBounds(get(validLetters))
+			tile.polarity = 0
+			if (letter < lower) {
+				tile.polarity = -1
+			} else if (letter > upper) {
+				tile.polarity = 1
+			}
+			tile.letter = letter
+			return content
+		})
 	}
 
 	function undoLetter() {
-		if (gameFinished) {
+		if (get(gameFinished)) {
 			showResults()
 			return
 		}
-		if (currentTile < 1) return
-		currentTile--
-		boardContent[currentRow][currentTile].letter = ''
-		updateLetterLists()
+		if (get(currentTile) === 0) return
+		boardContent.update((content) => {
+			content[get(currentRow)][get(currentTile) - 1].letter = ''
+			return content
+		})
 	}
 
 	function submitRow() {
-		if (gameFinished) {
+		if (get(gameFinished)) {
 			showResults()
 			return
 		}
-		if (currentTile < boardContent[currentRow].length) {
+		if (get(currentTile) < WORD_LENGTH) {
 			showError('Not enough letters')
 			return
 		}
-		const rowWord = boardContent[currentRow].map((t) => t.letter).join('')
-		if (dictionary.includes(rowWord)) {
-			let correctLetters = 0
-			boardContent[currentRow].forEach((t) => {
-				t.scored = true
-				t.distance = alphabet.indexOf(t.letter) - alphabet.indexOf(answer[t.id])
-				t.polarity = t.distance > 0 ? 1 : -1
-				if (currentRow === 0) {
-					t.magnitude = ROWS
-				} else {
-					const prevTile = boardContent[currentRow - 1][t.id]
-					if (prevTile.polarity !== t.polarity) {
-						t.magnitude = ROWS
-					} else if (Math.abs(t.distance) > Math.abs(prevTile.distance)) {
-						t.magnitude = prevTile.magnitude + 1
-					} else if (Math.abs(t.distance) < Math.abs(prevTile.distance)) {
-						t.magnitude = prevTile.magnitude - 1
-					}
-					const alreadyGuessed = boardContent.find(
-						(row, i) => i < currentRow && row[t.id].letter === t.letter
-					)
-					if (alreadyGuessed) {
-						t.magnitude = alreadyGuessed[t.id].magnitude
-					}
-				}
-				if (t.distance === 0) {
-					t.magnitude = 0
-					t.polarity = 0
-					correctLetters++
-				}
-			})
-			boardContent = boardContent
-			currentRow++
-			invalidLetters = createSetArray()
-			currentTile = 0
-			boardCommitted = boardContent.slice(0, currentRow)
-			if (correctLetters === 5) {
-				gameWon = true
-				gameFinished = true
-			} else if (currentRow === ROWS) {
-				gameFinished = true
-			}
-			if (gameFinished) {
-				setTimeout(() => showResults(), 1700)
-			} else {
-				updateLetterLists()
-			}
-		} else {
+		const submittedWord = getBoardRowString(get(boardContent)[get(currentRow)])
+		if (!dictionary.includes(submittedWord)) {
 			showError('Not a valid word')
-		}
-	}
-
-	function updateLetterLists() {
-		if (currentTile === boardContent[currentRow].length) {
-			invalidLetters[currentTile] = new Set(alphabet)
 			return
 		}
-		correctLetter = ''
-		const currentInvalidLetters = new Set()
-		invalidLetters[currentTile] = currentInvalidLetters
-		if (currentRow === 0) return
-		alphabet.forEach((letter) => {
-			for (let i = 0; i < currentRow; i++) {
-				const tile = boardContent[i][currentTile]
-				if (tile.distance === 0 && letter !== tile.letter) {
-					currentInvalidLetters.add(letter)
-				}
-				if (tile.distance < 0 && letter <= tile.letter) {
-					currentInvalidLetters.add(letter)
-				}
-				if (tile.distance > 0 && letter >= tile.letter) {
-					currentInvalidLetters.add(letter)
-				}
-			}
-		})
-		if (currentInvalidLetters.size === alphabet.length - 1) {
-			// One non-invalid letter remains
-			correctLetter = alphabet.find((letter) => !currentInvalidLetters.has(letter))
-		}
-	}
-
-	function showResults() {
-		open(Results, { gameFinished, gameWon, boardContent, newWord, answer })
+		guesses.update((words) => [...words, submittedWord])
 	}
 </script>
 
 <section>
 	<h1>Wordle Peaks</h1>
-	<Board
-		{currentRow}
-		{currentTile}
-		{correctLetter}
-		{invalidLetters}
-		{boardContent}
-		{boardCommitted}
-		{gameFinished}
-	/>
-	<Keyboard
-		{typeLetter}
-		{submitRow}
-		{undoLetter}
-		{correctLetter}
-		invalidLetters={invalidLetters[currentTile]}
-	/>
+	<Board />
+	<Keyboard {typeLetter} {submitRow} {undoLetter} />
 </section>
 
 <style>

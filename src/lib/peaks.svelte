@@ -1,25 +1,27 @@
 <script lang="ts">
-	import { ROWS } from '$lib/data-model'
 	import { sineInOut } from 'svelte/easing'
+	import { ROWS } from '$lib/data-model'
+	import { boardContent, currentRow } from '$lib/store'
+	import { get } from 'svelte/store'
 
 	const LERPS = 8
 	const FIRST_LINE_DUR = 800
 	const LERP_TOTAL_DUR = 1200
 	const LERP_EACH_DUR = `${Math.round(LERP_TOTAL_DUR / LERPS)}ms`
 
-	export let boardCommitted = []
-	export let currentRow
-
 	type Point = [number, number]
 
-	$: rows = boardCommitted.map((row, r) => [
-		[0, 50 + 100 * r],
-		...row.map((tile, i) => {
-			const height = sineInOut(tile.magnitude / (ROWS * 2 - 1))
-			return [i * 100 + 50, 100 * r + 50 + tile.polarity * height * 50]
-		}),
-		[500, 50 + 100 * r],
-	])
+	let rows
+	boardContent.subscribe((content) => {
+		rows = content.slice(0, get(currentRow)).map((row, r) => [
+			[0, 50 + 100 * r],
+			...row.map((tile, i) => {
+				const height = sineInOut(tile.magnitude / (ROWS * 2 - 1))
+				return [i * 100 + 50, 100 * r + 50 + tile.polarity * height * 50]
+			}),
+			[500, 50 + 100 * r],
+		])
+	})
 
 	function stringifyPoints(points: Point[]): string {
 		// Add .001 to prevent invisible horizontal line bug
@@ -52,14 +54,14 @@
 			<polyline
 				class="polyline"
 				stroke="#fffb"
-				points={r === currentRow - 1
+				points={r === $currentRow - 1
 					? stringifyPoints(
 							r === 0 ? flatten(row, r) : lerpLines(rows[r - 1], row, LERPS / (LERPS + 1))
 					  )
 					: stringifyPoints(row)}
-				opacity={r === currentRow - 1 ? 0 : 1}
+				opacity={r === $currentRow - 1 ? 0 : 1}
 			>
-				{#if r === currentRow - 1}
+				{#if r === $currentRow - 1}
 					<animate
 						id={`line${r}`}
 						attributeName="points"
@@ -86,17 +88,17 @@
 			<!--		>{boardCommitted[r][p].magnitude}</text-->
 			<!--	>-->
 			<!--{/each}-->
-			{#if currentRow > r + 1}
+			{#if $currentRow > r + 1}
 				{#each Array(LERPS) as _, i}
 					<polyline
 						class="polyline"
 						stroke={`rgba(255,255,255,${0.05 + Math.abs(i - LERPS / 2) / (LERPS * 2)})`}
-						points={r === currentRow - 2
+						points={r === $currentRow - 2
 							? stringifyPoints(lerpLines(row, rows[r + 1], i / (LERPS + 1)))
 							: stringifyPoints(lerpLines(row, rows[r + 1], (i + 1) / (LERPS + 1)))}
-						opacity={r === currentRow - 2 ? 0 : 1}
+						opacity={r === $currentRow - 2 ? 0 : 1}
 					>
-						{#if r === currentRow - 2}
+						{#if r === $currentRow - 2}
 							<animate
 								id={`line${r}_${i}`}
 								attributeName="points"

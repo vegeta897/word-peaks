@@ -1,16 +1,9 @@
 <script lang="ts">
 	import { fly, fade } from '$lib/transitions.ts'
 	import { quadOut } from 'svelte/easing'
-	import { alphabet } from '$lib/data-model'
 	import Peaks from '$lib/peaks.svelte'
-
-	export let currentRow
-	export let currentTile
-	export let boardContent
-	export let boardCommitted
-	export let correctLetter
-	export let invalidLetters
-	export let gameFinished
+	import { boardContent, currentRow, currentTile, validLetters, gameFinished } from '$lib/store'
+	import { getValidLetterBounds } from '$lib/data-model'
 
 	const letterAnimation = {
 		duration: 100,
@@ -18,15 +11,15 @@
 		easing: quadOut,
 	}
 
-	$: upperValid = invalidLetters.map((list) => alphabet.find((letter) => !list.has(letter)))
-	$: lowerValid = invalidLetters.map((list) =>
-		[...alphabet].reverse().find((letter) => !list.has(letter))
-	)
+	let currentValidBounds
+	validLetters.subscribe((valid) => {
+		currentValidBounds = getValidLetterBounds(valid)
+	})
 </script>
 
 <div class="container">
-	<div class="board" class:finished={gameFinished}>
-		{#each boardContent as boardRow, r}
+	<div class="board" class:finished={$gameFinished}>
+		{#each $boardContent as boardRow, r}
 			<div class="tile-row">
 				{#each boardRow as tile}
 					{#if tile.scored}
@@ -35,7 +28,7 @@
 							class:correct={tile.distance === 0}
 							class:before={tile.distance < 0}
 							class:after={tile.distance > 0}
-							in:fade={{ easing: quadOut, delay: tile.id * 40 }}
+							in:fade={{ easing: quadOut, delay: tile.id * 150 }}
 						>
 							{tile.letter}
 						</div>
@@ -43,26 +36,26 @@
 						<div
 							class="tile"
 							class:filled={tile.letter !== ''}
-							class:current={r === currentRow && tile.id === currentTile}
-							class:before-pre={!gameFinished &&
-								r === currentRow &&
-								tile.id <= currentTile &&
-								tile.letter < upperValid[tile.id]}
-							class:after-pre={!gameFinished &&
-								r === currentRow &&
-								tile.id <= currentTile &&
-								tile.letter > lowerValid[tile.id]}
+							class:current={r === $currentRow && tile.id === $currentTile}
+							class:before-pre={!$gameFinished &&
+								r === $currentRow &&
+								tile.id <= $currentTile &&
+								tile.polarity < 0}
+							class:after-pre={!$gameFinished &&
+								r === $currentRow &&
+								tile.id <= $currentTile &&
+								tile.polarity > 0}
+							class:finished={$gameFinished}
 						>
 							{#if tile.letter}<div in:fly={letterAnimation}>{tile.letter}</div>{/if}
-							{#if !gameFinished && currentRow > 0 && r === currentRow && tile.id === currentTile}
-								{#if !correctLetter}
+							{#if !$gameFinished && $currentRow > 0 && r === $currentRow && tile.id === $currentTile}
+								{#if $validLetters.size > 1}
 									<span class="hint"
-										>{upperValid[tile.id]} <span class="small">...</span>
-										{lowerValid[tile.id]}</span
+										>{currentValidBounds[0]} <span class="small">...</span>
+										{currentValidBounds[1]}</span
 									>
-								{/if}
-								{#if correctLetter}
-									<span class="hint">{correctLetter}</span>
+								{:else}
+									<span class="hint">{currentValidBounds[0]}</span>
 								{/if}
 							{/if}
 						</div>
@@ -72,8 +65,8 @@
 		{/each}
 	</div>
 
-	<div class="graph" class:minimized={currentRow === 0}>
-		<Peaks {boardCommitted} {currentRow} />
+	<div class="graph" class:minimized={$currentRow === 0}>
+		<Peaks />
 	</div>
 </div>
 

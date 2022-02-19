@@ -1,21 +1,21 @@
 <script lang="ts">
+	import { get } from 'svelte/store'
 	import { toast } from '@zerodevx/svelte-toast'
 
-	export let gameFinished
-	export let gameWon
-	export let boardContent
-	export let newWord
+	// Don't use store, we don't want/need dynamic content for the results
 	export let answer
+	export let guesses
+	export let gameWon
+	export let newWord
 
 	function share() {
-		const boardContentFiltered = boardContent.filter((row) => row.every((t) => t.letter !== ''))
-		const score = gameWon ? boardContentFiltered.length : 'X'
-		const emojis = boardContentFiltered
-			.map((row) =>
-				row
-					.map((tile) => {
-						if (tile.polarity === 0) return '🟩'
-						return tile.polarity > 0 ? '🔽' : '🔼'
+		const score = get(gameWon) ? get(guesses).length : 'X'
+		const emojis = get(guesses)
+			.map((word) =>
+				[...word]
+					.map((letter, l) => {
+						if (letter === get(answer)[l]) return '🟩'
+						return letter > get(answer)[l] ? '🔽' : '🔼'
 					})
 					.join('')
 			)

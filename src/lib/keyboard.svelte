@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { alphabet } from '$lib/data-model'
+	import { validLetters } from '$lib/store'
 
 	const keyboardLayout = [
 		['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
@@ -9,8 +10,6 @@
 	export let typeLetter
 	export let submitRow
 	export let undoLetter
-	export let correctLetter
-	export let invalidLetters
 
 	function handleKeydown({ key }) {
 		if (key === 'Backspace') undoLetter()
@@ -29,8 +28,8 @@
 			{#each keyRow as key}
 				<button
 					on:click={() => typeLetter(key)}
-					class:correct={correctLetter === key}
-					class:invalid={invalidLetters.has(key)}>{key}</button
+					class:correct={$validLetters.size === 1 && $validLetters.has(key)}
+					class:invalid={!$validLetters.has(key)}>{key}</button
 				>
 			{/each}
 			{#if r === 2}<button on:click={undoLetter} class="wide">Delete</button>{/if}
