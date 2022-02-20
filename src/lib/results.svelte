@@ -21,7 +21,6 @@
 			.join('\n')
 		const shareText = `Wordle Peaks ${score}/6\n\n${emojis}`
 		toast.pop()
-		console.log('share text', shareText)
 		navigator.clipboard.writeText(shareText).then(
 			() => toast.push('Score copied!'),
 			() => toast.push("Sorry, couldn't do that!")
