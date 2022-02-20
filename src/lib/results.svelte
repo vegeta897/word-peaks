@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { get } from 'svelte/store'
 	import { toast } from '@zerodevx/svelte-toast'
 
 	// Don't use store, we don't want/need dynamic content for the results
@@ -9,20 +8,24 @@
 	export let newWord
 
 	function share() {
-		const score = get(gameWon) ? get(guesses).length : 'X'
-		const emojis = get(guesses)
+		const score = gameWon ? guesses.length : 'X'
+		const emojis = guesses
 			.map((word) =>
 				[...word]
 					.map((letter, l) => {
-						if (letter === get(answer)[l]) return '🟩'
-						return letter > get(answer)[l] ? '🔽' : '🔼'
+						if (letter === answer[l]) return '🟩'
+						return letter > answer[l] ? '🔽' : '🔼'
 					})
 					.join('')
 			)
 			.join('\n')
-		navigator.clipboard.writeText(`Wordle Peaks ${score}/6\n\n${emojis}`)
+		const shareText = `Wordle Peaks ${score}/6\n\n${emojis}`
 		toast.pop()
-		toast.push('Score copied!')
+		console.log('share text', shareText)
+		navigator.clipboard.writeText(shareText).then(
+			() => toast.push('Score copied!'),
+			() => toast.push("Sorry, couldn't do that!")
+		)
 	}
 </script>
 
