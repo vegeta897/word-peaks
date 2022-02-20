@@ -4,9 +4,9 @@ import { createNewBoard, getValidLetters, ROWS, scoreTile, WORD_LENGTH } from '$
 
 export const answer = storageWritable('wp-answer', '')
 
-export const boardContent = writable(createNewBoard())
-
 export const guesses = storageWritable('wp-guesses', [])
+
+export const boardContent = writable(createNewBoard())
 
 guesses.subscribe((words) => {
 	boardContent.update((content) => {

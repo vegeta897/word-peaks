@@ -4,9 +4,8 @@
 	import { SvelteToast } from '@zerodevx/svelte-toast'
 </script>
 
-<SvelteToast options={{ intro: { y: 0 }, duration: 2000 }} />
-
 <div id="main">
+	<SvelteToast options={{ intro: { y: 0 }, duration: 2000 }} />
 	<Modal styleWindow={{ background: 'var(--tertiary-color)', width: '480px' }}><slot /></Modal>
 </div>
 
@@ -19,7 +18,7 @@
 
 <style>
 	#main {
-		max-width: 80rem;
+		max-width: 528px;
 		margin: 0 auto;
 	}
 

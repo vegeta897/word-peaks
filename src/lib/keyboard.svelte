@@ -100,7 +100,7 @@
 		}
 
 		.key-row button.wide {
-			width: 52px;
+			width: 59px;
 			font-size: 0.9em;
 		}
 

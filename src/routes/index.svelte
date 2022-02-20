@@ -3,7 +3,7 @@
 </script>
 
 <script lang="ts">
-	import { getContext } from 'svelte'
+	import { getContext, onMount } from 'svelte'
 	import { get } from 'svelte/store'
 	const { open, close } = getContext('simple-modal')
 	import dictionary from '$lib/data/dictionary-filtered.json'
@@ -11,6 +11,7 @@
 	import Board from '$lib/board.svelte'
 	import Keyboard from '$lib/keyboard.svelte'
 	import Results from '$lib/results.svelte'
+	import Tutorial from '$lib/tutorial.svelte'
 	import {
 		createNewBoard,
 		getBoardRowString,
@@ -33,17 +34,19 @@
 		open(Results, { newWord, answer: get(answer), guesses: get(guesses), gameWon: get(gameWon) })
 
 	function newWord() {
+		close()
+		toast.pop()
 		answer.set(targets[Math.floor(Math.random() * targets.length)])
 		boardContent.set(createNewBoard())
 		guesses.set([])
 	}
 
-	answer.subscribe(() => {
-		toast.pop()
-		close()
+	onMount(async () => {
+		if (!get(answer)) {
+			await setTimeout(() => {}) // Modal closes itself if we open too quickly
+			open(Tutorial, {}, {}, { onClose: () => newWord() })
+		}
 	})
-
-	if (!get(answer)) newWord()
 
 	gameFinished.subscribe((finished) => {
 		if (finished) setTimeout(() => showResults(), 1700)
@@ -81,7 +84,11 @@
 		}
 		if (get(currentTile) === 0) return
 		boardContent.update((content) => {
-			content[get(currentRow)][get(currentTile) - 1].letter = ''
+			const tile = content[get(currentRow)][get(currentTile) - 1]
+			tile.letter = ''
+			tile.distance = 0
+			tile.polarity = 0
+			tile.magnitude = 0
 			return content
 		})
 	}
@@ -105,7 +112,51 @@
 </script>
 
 <section>
-	<h1 style="margin:1rem 0">Wordle Peaks</h1>
+	<header class:wide={$guesses.length > 0}>
+		<h1>Wordle Peaks</h1>
+		<button on:click={() => open(Tutorial)}>?</button>
+	</header>
 	<Board />
 	<Keyboard {typeLetter} {submitRow} {undoLetter} />
 </section>
+
+<style>
+	header {
+		width: 320px;
+		transition: width 400ms ease-in-out;
+		margin: 1rem auto;
+		padding: 0 8px;
+		box-sizing: border-box;
+		display: flex;
+		align-items: center;
+	}
+
+	header.wide {
+		width: 100%;
+	}
+
+	h1 {
+		text-align: left;
+		margin: 0;
+		flex-grow: 1;
+	}
+
+	header button {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		text-transform: uppercase;
+		padding: 0.3rem 0.7rem;
+		border-radius: 4px;
+		border: 0;
+		font-weight: 700;
+		font-size: 1.4em;
+		background: none;
+		color: #888;
+	}
+
+	header button:hover {
+		color: var(--text-color);
+		background-color: var(--secondary-color);
+	}
+</style>
