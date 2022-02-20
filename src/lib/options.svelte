@@ -6,8 +6,7 @@
 <section>
 	<h2>Options</h2>
 	<Toggle
-		toggled={$highContrast}
-		on:toggle={({ detail }) => highContrast.set(detail)}
+		bind:toggled={$highContrast}
 		hideLabel
 		label="High Contrast Mode"
 		toggledColor="var(--accent-color)"><div class="label">High Contrast Mode</div></Toggle
