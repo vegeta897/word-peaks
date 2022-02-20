@@ -143,24 +143,26 @@
 		color: #f6ecd9;
 		border-top-left-radius: 20px;
 		border-top-right-radius: 20px;
-		background: #de793a linear-gradient(0deg, #e99637 0%, #de793a 100%);
+		background: var(--before-dark-color)
+			linear-gradient(0deg, var(--before-color) 0%, var(--before-dark-color) 100%);
 	}
 
 	.tile.after {
 		color: #e4e3f3;
 		border-bottom-left-radius: 20px;
 		border-bottom-right-radius: 20px;
-		background: #4f46c2 linear-gradient(180deg, #5d83ea 0%, #4f46c2 100%);
+		background: var(--after-dark-color)
+			linear-gradient(180deg, var(--after-color) 0%, var(--after-dark-color) 100%);
 	}
 
 	.tile.before-pre {
-		color: #e99637;
-		border-color: #e99637;
+		color: var(--before-color);
+		border-color: var(--before-color);
 	}
 
 	.tile.after-pre {
-		color: #5d83ea;
-		border-color: #5d83ea;
+		color: var(--after-color);
+		border-color: var(--after-color);
 	}
 
 	.hint {

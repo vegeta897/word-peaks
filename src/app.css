@@ -11,6 +11,10 @@
 	--cta-color: #3859b3;
 	--correct-color: #26854c;
 	--error-color: #ac2847;
+	--before-color: #e99637;
+	--before-dark-color: #de793a;
+	--after-color: #5d83ea;
+	--after-dark-color: #4f46c2;
 	--heading-color: rgba(255, 255, 255, 0.8);
 	--text-color: #cccccc;
 	--toastContainerLeft: calc(50vw - 8rem);
