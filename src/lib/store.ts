@@ -6,6 +6,8 @@ export const answer = storageWritable('wp-answer', '')
 
 export const guesses = storageWritable('wp-guesses', [])
 
+export const highContrast = storageWritable('wp-highContrast', false)
+
 export const boardContent = writable(createNewBoard())
 
 guesses.subscribe((words) => {

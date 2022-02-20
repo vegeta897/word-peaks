@@ -86,7 +86,7 @@
 	}
 
 	.tile.before {
-		color: #f6ecd9;
+		color: var(--before-text-color);
 		border-top-left-radius: 20px;
 		border-top-right-radius: 20px;
 		background: var(--before-dark-color)
@@ -94,7 +94,7 @@
 	}
 
 	.tile.after {
-		color: #e4e3f3;
+		color: var(--after-text-color);
 		border-bottom-left-radius: 20px;
 		border-bottom-right-radius: 20px;
 		background: var(--after-dark-color)
