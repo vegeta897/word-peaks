@@ -33,7 +33,7 @@
 				>
 			{/each}
 			{#if r === 2}<button on:click={undoLetter} class="wide"
-					><svg viewBox="0 0 21 11" xmlns="http://www.w3.org/2000/svg">
+					><svg viewBox="0 0 21 11" xmlns="http://www.w3.org/2000/svg" width="42" height="22">
 						<line x1="7" x2="21" y1="5" y2="5" />
 						<polygon points="3,5 7,2 7,8" />
 						<line x1="1" x2="1" y1="0.5" y2="9.5" />
