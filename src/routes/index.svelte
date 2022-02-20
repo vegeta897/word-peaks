@@ -157,13 +157,14 @@
 		padding: 0;
 		width: 2.8rem;
 		height: 2.8rem;
-		margin-left: 0.2rem;
-		border-radius: 4px;
+		margin-left: 0.6rem;
+		border-radius: 8px;
 		border: 0;
 		font-weight: 700;
 		font-size: 1.4em;
-		background: none;
 		color: #888;
+		background-color: #ffffff0a;
+		transition: background-color 150ms ease-out;
 	}
 
 	header button:hover {
