@@ -91,6 +91,7 @@
 	.board {
 		display: flex;
 		flex-direction: column;
+		user-select: none;
 	}
 
 	.tile-row {
