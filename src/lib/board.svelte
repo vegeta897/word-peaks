@@ -178,12 +178,13 @@
 	.graph {
 		margin-left: 0.3rem;
 		width: 204px;
-		transition: width 400ms ease-in-out;
+		transition: width 400ms ease-in-out, margin-left 400ms ease-in-out;
 		height: 23.25rem;
 	}
 
 	.graph.minimized {
 		width: 0;
+		margin-left: 0;
 	}
 
 	.loading {
