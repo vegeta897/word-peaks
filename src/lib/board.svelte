@@ -21,7 +21,7 @@
 							current={r === $currentRow && tile.id === $currentTile}
 							gameFinished={$gameFinished}
 							validLetterBounds={getValidLetterBounds($validLetters)}
-							showHint={r > 0}
+							showHint={!$gameFinished && r > 0}
 						/>
 					{/each}
 				</div>
