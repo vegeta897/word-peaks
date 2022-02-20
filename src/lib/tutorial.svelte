@@ -15,11 +15,11 @@
 		<p>This tile has the correct letter</p>
 	</div>
 	<div>
-		<div><Tile tile={{ scored: true, letter: 'g', distance: -1, id: 0 }} /></div>
+		<div><Tile tile={{ scored: true, letter: 'p', distance: -1, id: 0 }} /></div>
 		<p>This tile has a letter that is too high for this spot</p>
 	</div>
 	<div>
-		<div><Tile tile={{ scored: true, letter: 'y', distance: 1, id: 0 }} /></div>
+		<div><Tile tile={{ scored: true, letter: 'v', distance: 1, id: 0 }} /></div>
 		<p>This tile has a letter that is too low for this spot</p>
 	</div>
 	<img alt="Help" src="keyboard.png" />
