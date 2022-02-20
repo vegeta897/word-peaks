@@ -23,7 +23,10 @@
 		toast.pop()
 		navigator.clipboard.writeText(shareText).then(
 			() => toast.push('Score copied!'),
-			() => toast.push("Sorry, couldn't do that!")
+			() =>
+				toast.push("Sorry, couldn't do that!", {
+					theme: { '--toastBackground': 'var(--error-color)' },
+				})
 		)
 	}
 </script>
