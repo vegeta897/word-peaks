@@ -9,6 +9,7 @@
 		bind:toggled={$highContrast}
 		hideLabel
 		label="High Contrast Mode"
+		style="transform: scale(1.4);"
 		toggledColor="var(--accent-color)"><div class="label">High Contrast Mode</div></Toggle
 	>
 </section>
@@ -29,6 +30,6 @@
 	.label {
 		order: -1;
 		flex-grow: 1;
-		font-size: 1.1em;
+		font-size: 1.2em;
 	}
 </style>
