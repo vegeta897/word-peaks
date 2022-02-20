@@ -1,9 +1,6 @@
-@import '@fontsource/fira-mono';
-
 :root {
 	font-family: Arial, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
 		Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-	--font-mono: 'Fira Mono', monospace;
 	--primary-color: #15171c;
 	--secondary-color: #241f2a;
 	--tertiary-color: #2d272f;
@@ -68,17 +65,6 @@ h1 {
 
 h2 {
 	font-size: 1rem;
-}
-
-pre {
-	font-size: 16px;
-	font-family: var(--font-mono);
-	background-color: rgba(255, 255, 255, 0.15);
-	border-radius: 3px;
-	box-shadow: 2px 2px 6px rgb(0 0 0 / 25%);
-	padding: 0.5em;
-	overflow-x: auto;
-	color: var(--text-color);
 }
 
 input,
