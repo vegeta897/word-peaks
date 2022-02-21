@@ -6,24 +6,23 @@
 	<h2>How to play</h2>
 	<p>Guess the word in 6 tries!</p>
 	<p>
-		After each guess, the color of the tiles will change to show how close your guess was to the
-		word.
+		After each guess, the tiles show whether your letters occur higher or lower in the alphabet
+		compared to the correct letters.
 	</p>
-	<p />
 	<div>
 		<div><Tile tile={{ scored: true, letter: 'w', distance: 0, id: 0 }} /></div>
-		<p>This tile has the correct letter</p>
+		<p>Letter is correct</p>
 	</div>
 	<div>
 		<div><Tile tile={{ scored: true, letter: 'p', distance: -1, id: 0 }} /></div>
-		<p>This tile has a letter that is too high for this spot</p>
+		<p>Letter is too high in the alphabet</p>
 	</div>
 	<div>
 		<div><Tile tile={{ scored: true, letter: 'v', distance: 1, id: 0 }} /></div>
-		<p>This tile has a letter that is too low for this spot</p>
+		<p>Letter is too low in the alphabet</p>
 	</div>
 	<img alt="Help" src="keyboard.png" />
-	<p>The keyboard will show you the possible letters for each spot as you type!</p>
+	<p>The keyboard shows you the range of possible letters for each tile as you type.</p>
 </section>
 
 <style>
