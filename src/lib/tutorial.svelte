@@ -42,7 +42,8 @@
 		display: flex;
 		align-items: center;
 		gap: 1rem;
-		margin: 0.9rem 0;
+		margin: 0.9rem auto;
+		max-width: 340px;
 	}
 
 	img {
