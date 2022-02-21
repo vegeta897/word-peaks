@@ -6,8 +6,8 @@
 	<h2>How to play</h2>
 	<p>Guess the word in 6 tries!</p>
 	<p>
-		After each guess, the tiles show whether your letters occur in the alphabet before or after
-		the correct letters.
+		After each guess, the tiles show whether your letters occur higher or lower in the alphabet
+		compared to the correct letters.
 	</p>
 	<div>
 		<div><Tile tile={{ scored: true, letter: 'w', distance: 0, id: 0 }} /></div>
@@ -22,7 +22,7 @@
 		<p>Letter is too low in the alphabet</p>
 	</div>
 	<img alt="Help" src="keyboard.png" />
-	<p>The keyboard shows you the range of letters for each tile as you type.</p>
+	<p>The keyboard shows you the range of possible letters for each tile as you type.</p>
 </section>
 
 <style>
