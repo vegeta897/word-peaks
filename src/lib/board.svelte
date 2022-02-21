@@ -5,12 +5,14 @@
 	import { getValidLetterBounds } from '$lib/data-model'
 	import Tile from '$lib/tile.svelte'
 
+	export let showResults
+
 	let ready = false
 	// Prevents SSR for board
 	onMount(() => (ready = true))
 </script>
 
-<div class="container">
+<div class="container" on:click={showResults}>
 	{#if ready}
 		<div class="board">
 			{#each $boardContent as boardRow, r}

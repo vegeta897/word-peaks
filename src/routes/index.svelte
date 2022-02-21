@@ -124,7 +124,7 @@
 			</svg>
 		</button>
 	</header>
-	<Board />
+	<Board {showResults} />
 	<Keyboard {typeLetter} {submitRow} {undoLetter} />
 </section>
 
