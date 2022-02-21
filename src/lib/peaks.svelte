@@ -12,15 +12,17 @@
 	type Point = [number, number]
 
 	let rows
-	boardContent.subscribe((content) => {
-		rows = content.slice(0, get(currentRow)).map((row, r) => [
-			[0, 50 + 100 * r],
-			...row.map((tile, i) => {
-				const height = sineInOut(tile.magnitude / (ROWS * 2 - 1))
-				return [i * 100 + 50, 100 * r + 50 + tile.polarity * height * 50]
-			}),
-			[500, 50 + 100 * r],
-		])
+	currentRow.subscribe((_currentRow) => {
+		rows = get(boardContent)
+			.slice(0, _currentRow)
+			.map((row, r) => [
+				[0, 50 + 100 * r],
+				...row.map((tile, i) => {
+					const height = sineInOut(tile.magnitude / (ROWS * 2 - 1))
+					return [i * 100 + 50, 100 * r + 50 + tile.polarity * height * 50]
+				}),
+				[500, 50 + 100 * r],
+			])
 	})
 
 	function stringifyPoints(points: Point[]): string {
