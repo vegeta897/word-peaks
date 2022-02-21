@@ -66,7 +66,8 @@
 		margin-top: 1.5rem;
 		margin-bottom: 1rem;
 		display: flex;
-		gap: 4rem;
+		justify-content: space-around;
+		gap: 1rem;
 	}
 
 	button {
@@ -77,6 +78,7 @@
 		flex: 1;
 		height: 3rem;
 		font-weight: 700;
+		max-width: 10rem;
 	}
 
 	button:hover {
