@@ -9,7 +9,6 @@
 		After each guess, the tiles show whether your letters occur in the alphabet before or after
 		the correct letters.
 	</p>
-	<p />
 	<div>
 		<div><Tile tile={{ scored: true, letter: 'w', distance: 0, id: 0 }} /></div>
 		<p>Letter is correct</p>
