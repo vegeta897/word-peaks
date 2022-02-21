@@ -5,13 +5,15 @@
 
 <section>
 	<h2>Options</h2>
-	<Toggle
-		bind:toggled={$highContrast}
-		hideLabel
-		label="High Contrast Mode"
-		style="transform: scale(1.4);"
-		toggledColor="var(--accent-color)"><div class="label">High Contrast Mode</div></Toggle
-	>
+	<div class="content">
+		<Toggle
+			bind:toggled={$highContrast}
+			hideLabel
+			label="High Contrast Mode"
+			style="transform: scale(1.4);"
+			toggledColor="var(--accent-color)"><div class="label">High Contrast Mode</div></Toggle
+		>
+	</div>
 </section>
 
 <style>
@@ -25,6 +27,10 @@
 	h2 {
 		font-size: 1.5em;
 		text-align: center;
+	}
+
+	.content {
+		margin: 2.5rem 0;
 	}
 
 	.label {
