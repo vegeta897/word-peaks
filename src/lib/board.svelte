@@ -12,7 +12,7 @@
 	onMount(() => (ready = true))
 </script>
 
-<div class="container" on:click={() => gameFinished && showResults}>
+<div class="container" on:click={() => $gameFinished && showResults()}>
 	{#if ready}
 		<div class="board">
 			{#each $boardContent as boardRow, r}
