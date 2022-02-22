@@ -10,7 +10,7 @@
 			bind:toggled={$highContrast}
 			hideLabel
 			label="High Contrast Mode"
-			style="transform: scale(1.4);"
+			style="transform: scale(1.4); touch-action: manipulation;"
 			toggledColor="var(--accent-color)"><div class="label">High Contrast Mode</div></Toggle
 		>
 	</div>

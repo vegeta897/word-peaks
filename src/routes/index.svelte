@@ -183,10 +183,4 @@
 	header button:hover svg {
 		fill: var(--text-color);
 	}
-
-	@media (max-width: 480px) {
-		header {
-			width: 300px;
-		}
-	}
 </style>
