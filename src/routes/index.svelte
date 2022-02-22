@@ -30,6 +30,7 @@
 		validLetters,
 		gameWon,
 	} from '$lib/store'
+	import { trackEvent } from '$lib/plausible'
 
 	let newUser
 
@@ -54,7 +55,9 @@
 
 	gameFinished.subscribe((finished) => {
 		if (finished) {
+			if (newUser) trackEvent('firstFinish')
 			newUser = false
+			trackEvent(get(gameWon) ? 'gameWon' : 'gameLost')
 			setTimeout(() => showResults(), 1700)
 		}
 	})
@@ -114,6 +117,7 @@
 			showError('Not a valid word')
 			return
 		}
+		trackEvent('submitGuess')
 		guesses.update((words) => [...words, submittedWord])
 	}
 </script>
