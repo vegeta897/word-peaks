@@ -54,12 +54,7 @@
 	})
 
 	gameFinished.subscribe((finished) => {
-		if (finished) {
-			if (newUser) trackEvent('firstFinish')
-			newUser = false
-			trackEvent(get(gameWon) ? 'gameWon' : 'gameLost')
-			setTimeout(() => showResults(), 1700)
-		}
+		if (finished) setTimeout(() => showResults(), 1700)
 	})
 
 	const showError = (m) => {
@@ -119,6 +114,11 @@
 		}
 		trackEvent('submitGuess')
 		guesses.update((words) => [...words, submittedWord])
+		if (get(gameFinished)) {
+			trackEvent(get(gameWon) ? 'gameWon' : 'gameLost')
+			if (newUser) trackEvent('firstFinish')
+			newUser = false
+		}
 	}
 </script>
 
