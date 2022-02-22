@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { toast } from '@zerodevx/svelte-toast'
+	import { trackEvent } from '$lib/plausible'
 
 	// Don't use store, we don't want/need dynamic content for the results
 	export let answer
@@ -8,6 +9,7 @@
 	export let newWord
 
 	function share() {
+		trackEvent('resultShare')
 		const score = gameWon ? guesses.length : 'X'
 		const emojis = guesses
 			.map((word) =>
