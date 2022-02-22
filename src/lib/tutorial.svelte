@@ -10,19 +10,29 @@
 		compared to the correct letters.
 	</p>
 	<div>
-		<div><Tile tile={{ scored: true, letter: 'w', distance: 0, id: 0 }} /></div>
+		<div><Tile tile={{ scored: true, letter: 'p', distance: 0, id: 0 }} /></div>
 		<p>Letter is correct</p>
 	</div>
 	<div>
-		<div><Tile tile={{ scored: true, letter: 'p', distance: -1, id: 0 }} /></div>
+		<div><Tile tile={{ scored: true, letter: 'd', distance: -1, id: 0 }} /></div>
 		<p>Letter is too high in the alphabet</p>
 	</div>
 	<div>
-		<div><Tile tile={{ scored: true, letter: 'v', distance: 1, id: 0 }} /></div>
+		<div><Tile tile={{ scored: true, letter: 'w', distance: 1, id: 0 }} /></div>
 		<p>Letter is too low in the alphabet</p>
 	</div>
-	<img alt="Help" src="keyboard.png" />
-	<p>The keyboard shows you the range of possible letters for each tile as you type.</p>
+	<hr />
+	<div>
+		<div>
+			<Tile
+				tile={{ scored: false, letter: '', distance: 0, id: 0 }}
+				current={true}
+				showHint={true}
+				validLetterBounds={['e', 'v']}
+			/>
+		</div>
+		<p>The range of possible letters is shown on the tile and the keyboard as you type</p>
+	</div>
 </section>
 
 <style>
@@ -43,13 +53,11 @@
 		align-items: center;
 		gap: 1rem;
 		margin: 0.9rem auto;
-		max-width: 340px;
 	}
 
-	img {
-		display: block;
-		max-width: 80%;
-		margin: 1rem auto 0;
+	hr {
+		max-width: 63%;
+		border: 1px solid #666;
 	}
 
 	@media (max-width: 480px) {
