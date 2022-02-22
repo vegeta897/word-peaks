@@ -31,6 +31,8 @@
 		gameWon,
 	} from '$lib/store'
 
+	let newUser
+
 	const showResults = () =>
 		open(Results, { newWord, answer: get(answer), guesses: get(guesses), gameWon: get(gameWon) })
 
@@ -46,11 +48,15 @@
 		if (!get(answer)) {
 			await setTimeout(() => {}) // Modal closes itself if we open too quickly
 			open(Tutorial, {}, {}, { onClose: () => newWord() })
+			newUser = true
 		}
 	})
 
 	gameFinished.subscribe((finished) => {
-		if (finished) setTimeout(() => showResults(), 1700)
+		if (finished) {
+			newUser = false
+			setTimeout(() => showResults(), 1700)
+		}
 	})
 
 	const showError = (m) => {
@@ -113,7 +119,7 @@
 </script>
 
 <section>
-	<header class:wide={$guesses.length > 0}>
+	<header>
 		<h1>Wordle Peaks</h1>
 		<button on:click={() => open(Tutorial)}>?</button>
 		<button on:click={() => open(Options)}>
@@ -124,23 +130,18 @@
 			</svg>
 		</button>
 	</header>
-	<Board {showResults} />
+	<Board {showResults} {newUser} />
 	<Keyboard {typeLetter} {submitRow} {undoLetter} />
 </section>
 
 <style>
 	header {
-		width: 320px;
 		transition: width 400ms ease-in-out;
 		margin: 0.6rem auto;
 		padding: 0 8px;
 		box-sizing: border-box;
 		display: flex;
 		align-items: center;
-	}
-
-	header.wide {
-		width: 100%;
 	}
 
 	h1 {

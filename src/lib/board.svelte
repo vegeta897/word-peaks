@@ -6,6 +6,7 @@
 	import Tile from '$lib/tile.svelte'
 
 	export let showResults
+	export let newUser
 
 	let ready = false
 	// Prevents SSR for board
@@ -29,7 +30,11 @@
 				</div>
 			{/each}
 		</div>
-		<div class="graph" class:minimized={$currentRow === 0}>
+		<div
+			class="graph"
+			class:minimized={newUser && $currentRow === 0}
+			class:invisible={!newUser && $currentRow === 0}
+		>
 			<Peaks />
 		</div>
 	{:else}
@@ -65,13 +70,17 @@
 	.graph {
 		margin-left: 0.3rem;
 		width: 204px;
-		transition: width 400ms ease-in-out, margin-left 400ms ease-in-out;
+		transition: width 400ms ease-in-out, margin-left 400ms ease-in-out, opacity 200ms ease-out;
 		height: 23.25rem;
 	}
 
 	.graph.minimized {
 		width: 0;
 		margin-left: 0;
+	}
+
+	.graph.invisible {
+		opacity: 0;
 	}
 
 	.loading {
