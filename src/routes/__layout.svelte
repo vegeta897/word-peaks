@@ -1,7 +1,6 @@
 <script lang="ts" context="module">
 	import { trackPageview } from '$lib/plausible'
-	import { browser } from '$app/env'
-	if (browser) trackPageview()
+	trackPageview()
 </script>
 
 <script lang="ts">
