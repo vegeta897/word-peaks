@@ -1,54 +1,72 @@
 <script lang="ts">
-	import { fly, fade } from '$lib/transitions.ts'
-	import { quadOut } from 'svelte/easing'
+	import { fly, squish } from '$lib/transitions.ts'
+	import { quadIn, quadOut } from 'svelte/easing'
 
 	export let tile
 	export let current = false
 	export let gameFinished = false
 	export let validLetterBounds = []
 	export let showHint = false
+	export let animate = false
 
-	const letterAnimation = {
+	let tileFlipDuration = animate && !tile.scored ? 250 : 0
+	let tileFlipDelay = animate && !tile.scored ? 150 : 0
+
+	const typeAnimation = {
 		duration: 100,
 		from: 'bottom',
 		easing: quadOut,
 	}
 </script>
 
-{#if tile.scored}
-	<div
-		class="tile scored filled"
-		class:correct={tile.distance === 0}
-		class:before={tile.distance < 0}
-		class:after={tile.distance > 0}
-		in:fade={{ easing: quadOut, delay: tile.id * 150 }}
-	>
-		{tile.letter}
-	</div>
-{:else}
-	<div
-		class="tile"
-		class:filled={tile.letter !== ''}
-		class:current
-		class:before-pre={!tile.scored && tile.polarity < 0}
-		class:after-pre={!tile.scored && tile.polarity > 0}
-		class:finished={gameFinished}
-	>
-		{#if tile.letter}<div in:fly={letterAnimation}>{tile.letter}</div>{/if}
-		{#if showHint && current}
-			{#if validLetterBounds[0] !== validLetterBounds[1]}
-				<span class="hint"
-					>{validLetterBounds[0]} <span class="small">...</span>
-					{validLetterBounds[1]}</span
-				>
-			{:else}
-				<span class="hint">{validLetterBounds[0]}</span>
+<div class="tile-container">
+	{#if tile.scored}
+		<div
+			class="tile scored filled"
+			class:correct={tile.distance === 0}
+			class:before={tile.distance < 0}
+			class:after={tile.distance > 0}
+			in:squish={{
+				easing: quadOut,
+				delay: (tile.id + 1) * tileFlipDelay,
+				duration: tileFlipDuration,
+			}}
+		>
+			{tile.letter}
+		</div>
+	{:else}
+		<div
+			class="tile"
+			class:filled={tile.letter !== ''}
+			class:current
+			class:before-pre={!tile.scored && tile.polarity < 0}
+			class:after-pre={!tile.scored && tile.polarity > 0}
+			class:finished={gameFinished}
+			out:squish={{ easing: quadIn, delay: tile.id * tileFlipDelay, duration: tileFlipDuration }}
+		>
+			{#if tile.letter}<div in:fly={typeAnimation}>{tile.letter}</div>{/if}
+			{#if showHint && current}
+				{#if validLetterBounds[0] !== validLetterBounds[1]}
+					<span class="hint"
+						>{validLetterBounds[0]} <span class="small">...</span>
+						{validLetterBounds[1]}</span
+					>
+				{:else}
+					<span class="hint">{validLetterBounds[0]}</span>
+				{/if}
 			{/if}
-		{/if}
-	</div>
-{/if}
+		</div>
+	{/if}
+</div>
 
 <style>
+	.tile-container {
+		position: relative;
+		width: 3.55rem;
+		height: 3.55rem;
+		margin: 0 0.15rem;
+	}
+
 	.tile {
 		font-size: 2rem;
 		font-weight: 700;
@@ -59,14 +77,14 @@
 		text-transform: uppercase;
 		box-sizing: border-box;
 		border: 2px solid #666;
-		position: relative;
+		position: absolute;
 		border-radius: 4px;
-		width: 3.55rem;
-		height: 3.55rem;
-		margin: 0 0.15rem;
+		width: 100%;
+		height: 100%;
 		color: #eee;
 		transition: border-radius 300ms ease-out;
 		text-shadow: 1px 1px 1px #0006;
+		user-select: none;
 	}
 	.tile.finished {
 		border-color: #444;
@@ -123,7 +141,7 @@
 	}
 
 	@media (max-width: 480px) {
-		.tile {
+		.tile-container {
 			width: 3.3rem;
 			height: 3.3rem;
 		}

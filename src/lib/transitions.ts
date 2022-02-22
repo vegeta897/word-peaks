@@ -21,8 +21,17 @@ export const fly = function (node: HTMLElement, { from = 'top', ...opts }) {
 export const fade = function (node: HTMLElement, opts: any) {
 	return {
 		...opts,
-		tick: (t: number, u: number) => {
+		tick: (t: number) => {
 			node.style.setProperty('opacity', `${t}`)
+		},
+	}
+}
+
+export const squish = function (node: HTMLElement, opts: any) {
+	return {
+		...opts,
+		tick: (t: number) => {
+			node.style.setProperty('transform', `scaleX(${t})`)
 		},
 	}
 }

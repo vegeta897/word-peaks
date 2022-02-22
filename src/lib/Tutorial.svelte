@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Tile from '$lib/tile.svelte'
+	import Tile from '$lib/Tile.svelte'
 </script>
 
 <section>

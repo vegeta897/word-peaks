@@ -8,11 +8,11 @@
 	const { open, close } = getContext('simple-modal')
 	import dictionary from '$lib/data/dictionary-filtered.json'
 	import targets from '$lib/data/targets-filtered.json'
-	import Board from '$lib/board.svelte'
-	import Keyboard from '$lib/keyboard.svelte'
-	import Results from '$lib/results.svelte'
-	import Tutorial from '$lib/tutorial.svelte'
-	import Options from '$lib/options.svelte'
+	import Board from '$lib/Board.svelte'
+	import Keyboard from '$lib/Keyboard.svelte'
+	import Results from '$lib/Results.svelte'
+	import Tutorial from '$lib/Tutorial.svelte'
+	import Options from '$lib/Options.svelte'
 	import {
 		createNewBoard,
 		getBoardRowString,

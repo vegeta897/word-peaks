@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { onMount } from 'svelte'
-	import Peaks from '$lib/peaks.svelte'
+	import Peaks from '$lib/Peaks.svelte'
 	import { boardContent, currentRow, currentTile, validLetters, gameFinished } from '$lib/store'
 	import { getValidLetterBounds } from '$lib/data-model'
-	import Tile from '$lib/tile.svelte'
+	import Tile from '$lib/Tile.svelte'
 
 	export let showResults
 	export let newUser
@@ -25,6 +25,7 @@
 							gameFinished={$gameFinished}
 							validLetterBounds={getValidLetterBounds($validLetters)}
 							showHint={!$gameFinished && r > 0}
+							animate={r >= $currentRow - 1}
 						/>
 					{/each}
 				</div>
@@ -55,7 +56,6 @@
 	.board {
 		display: flex;
 		flex-direction: column;
-		user-select: none;
 	}
 
 	.tile-row {
