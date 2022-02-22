@@ -66,6 +66,7 @@
 		margin: 0 0.15rem;
 		color: #eee;
 		transition: border-radius 300ms ease-out;
+		text-shadow: 1px 1px 1px #0006;
 	}
 	.tile.finished {
 		border-color: #444;
