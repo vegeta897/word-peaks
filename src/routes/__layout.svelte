@@ -13,7 +13,7 @@
 <div
 	id="main"
 	style={$highContrast
-		? '--before-color: #dc267f; --before-dark-color: #b61a66; --before-text-color: #f6dae8; --correct-color: #64ba2e;'
+		? '--before-color: #dc267f; --before-text-color: #f6dae8; --correct-color: #64ba2e;'
 		: ''}
 >
 	<SvelteToast options={{ intro: { y: 0 }, duration: 2000 }} />

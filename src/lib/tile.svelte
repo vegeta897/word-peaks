@@ -90,16 +90,14 @@
 		color: var(--before-text-color);
 		border-top-left-radius: 20px;
 		border-top-right-radius: 20px;
-		background: var(--before-dark-color)
-			linear-gradient(0deg, var(--before-color) 0%, var(--before-dark-color) 100%);
+		background: var(--before-color);
 	}
 
 	.tile.after {
 		color: var(--after-text-color);
 		border-bottom-left-radius: 20px;
 		border-bottom-right-radius: 20px;
-		background: var(--after-dark-color)
-			linear-gradient(180deg, var(--after-color) 0%, var(--after-dark-color) 100%);
+		background: var(--after-color);
 	}
 
 	.tile.before-pre:not(.finished) {
