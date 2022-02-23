@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boardContent, currentRow, guesses, gameFinished, gameWon } from '$lib/store'
+	import { boardContent, currentRow, guesses, gameFinished, gameWon, answer } from '$lib/store'
 	import { get } from 'svelte/store'
 
 	declare global {
@@ -54,9 +54,7 @@
 	function submitGuess(guess: string) {
 		get(boardContent)
 			[get(currentRow)].filter((t) => t.letter)
-			.forEach((t) => {
-				undoLetter()
-			})
+			.forEach(() => undoLetter())
 		;[...guess].forEach((letter) => typeLetter(letter))
 		submitRow()
 	}
@@ -75,8 +73,14 @@
 	gameFinished.subscribe((finished) => {
 		if (!finished) return
 		if (get(gameWon)) {
-			console.log('%cYou won, %cnice job!', 'font-weight:bold', '')
+			console.log('%cYou won, %cnice job! 🎉', 'font-weight:bold', '')
 		} else {
+			console.log(
+				`%cYou lost, %cthe answer was %c${get(answer).toUpperCase()}`,
+				'font-weight:bold',
+				'',
+				'font-weight:bold'
+			)
 		}
 	})
 </script>
