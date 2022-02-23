@@ -8,20 +8,22 @@
 	export let gameWon
 	export let newWord
 
+	const score = gameWon ? guesses.length : 'X'
+	const emojis = guesses
+		.map((word) =>
+			[...word]
+				.map((letter, l) => {
+					if (letter === answer[l]) return '🟩'
+					return letter > answer[l] ? '🔽' : '🔼'
+				})
+				.join('')
+		)
+		.join('\n')
+
+	const shareText = `Wordle Peaks ${score}/6\n\n${emojis}`
+
 	function share() {
 		trackEvent('resultShare')
-		const score = gameWon ? guesses.length : 'X'
-		const emojis = guesses
-			.map((word) =>
-				[...word]
-					.map((letter, l) => {
-						if (letter === answer[l]) return '🟩'
-						return letter > answer[l] ? '🔽' : '🔼'
-					})
-					.join('')
-			)
-			.join('\n')
-		const shareText = `Wordle Peaks ${score}/6\n\n${emojis}`
 		toast.pop()
 		navigator.clipboard.writeText(shareText).then(
 			() =>
@@ -45,15 +47,18 @@
 		<h3>You lost ☹️</h3>
 		<p>The answer was <strong>{answer.toUpperCase()}</strong></p>
 	{/if}
-	<div class="button-group">
-		<button on:click={newWord}>New word</button>
-		<button on:click={share} class="cta">Share</button>
-	</div>
+	{#if shareText}<div class="share">
+			<pre>{shareText}</pre>
+			<div class="button-group">
+				<button on:click={share} class="cta">Share</button>
+				<button on:click={newWord}>New word</button>
+			</div>
+		</div>{/if}
 </section>
 
 <style>
 	section {
-		padding: 0 1rem;
+		padding: 0 1rem 1rem;
 	}
 
 	h2 {
@@ -64,11 +69,29 @@
 		font-size: 1.2em;
 	}
 
-	.button-group {
-		margin-top: 1.5rem;
-		margin-bottom: 1rem;
+	.share {
 		display: flex;
 		justify-content: space-around;
+		align-items: center;
+		gap: 1rem;
+		flex-wrap: wrap;
+	}
+
+	pre {
+		white-space: pre-line;
+		font-size: 1.2em;
+		margin: 0;
+		padding: 1rem;
+		color: var(--text-color);
+		background: var(--secondary-color);
+		border-radius: 8px;
+	}
+
+	.button-group {
+		display: flex;
+		justify-content: space-around;
+		flex-direction: column;
+		align-items: center;
 		gap: 1rem;
 	}
 
@@ -76,11 +99,10 @@
 		background: var(--primary-color);
 		border-radius: 4px;
 		border: 0;
-		padding: 0;
-		flex: 1;
+		padding: 0 1.2rem;
 		height: 3rem;
 		font-weight: 700;
-		max-width: 10rem;
+		width: 9rem;
 	}
 
 	button:hover {
