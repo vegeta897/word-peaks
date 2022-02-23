@@ -7,7 +7,7 @@ const plausible = browser
 	? Plausible({
 			domain: 'vegeta897.github.io/wordle-peaks',
 	  })
-	: { trackPageview() {}, trackEvent() {} } // TODO: Still necessary?
+	: { trackPageview() {}, trackEvent() {} }
 
 export const trackPageview = () => !dev && plausible.trackPageview()
 export const trackEvent = (eventName: EventName) => !dev && plausible.trackEvent(eventName)
