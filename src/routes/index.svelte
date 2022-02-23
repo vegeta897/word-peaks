@@ -31,6 +31,7 @@
 		gameWon,
 	} from '$lib/store'
 	import { trackEvent } from '$lib/plausible'
+	import { browser } from '$app/env'
 
 	let newUser
 
@@ -120,6 +121,12 @@
 			newUser = false
 		}
 	}
+
+	let consoleMode
+	if (browser)
+		window.wp_start = () => {
+			consoleMode = true
+		}
 </script>
 
 <section>
@@ -136,6 +143,11 @@
 	</header>
 	<Board {showResults} {newUser} />
 	<Keyboard {typeLetter} {submitRow} {undoLetter} />
+	{#if consoleMode}
+		{#await import('$lib/Console.svelte') then c}
+			<svelte:component this={c.default} {typeLetter} {submitRow} {undoLetter} />
+		{/await}
+	{/if}
 </section>
 
 <style>

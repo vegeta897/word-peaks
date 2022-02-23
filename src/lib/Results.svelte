@@ -39,7 +39,7 @@
 <section>
 	<h2>Results</h2>
 	{#if gameWon}
-		<h3>You won</h3>
+		<h3>You won 🎉</h3>
 		<p>Nice job!</p>
 	{:else}
 		<h3>You lost ☹️</h3>

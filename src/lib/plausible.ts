@@ -1,5 +1,5 @@
 import Plausible from 'plausible-tracker'
-import { browser } from '$app/env'
+import { browser, dev } from '$app/env'
 
 type EventName = 'gameWon' | 'firstFinish' | 'submitGuess' | 'resultShare' | 'gameLost'
 
@@ -9,6 +9,5 @@ const plausible = browser
 	  })
 	: { trackPageview() {}, trackEvent() {} } // TODO: Still necessary?
 
-export const { trackPageview } = plausible
-
-export const trackEvent = (eventName: EventName) => plausible.trackEvent(eventName)
+export const trackPageview = () => !dev && plausible.trackPageview()
+export const trackEvent = (eventName: EventName) => !dev && plausible.trackEvent(eventName)
