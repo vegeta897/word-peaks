@@ -9,8 +9,8 @@
 	export let showHint = false
 	export let animate = false
 
-	let tileFlipDuration = animate && !tile.scored ? 250 : 0
-	let tileFlipDelay = animate && !tile.scored ? 150 : 0
+	$: tileFlipDuration = animate ? 250 : 0
+	$: tileFlipDelay = animate ? 150 : 0
 
 	const typeAnimation = {
 		duration: 100,

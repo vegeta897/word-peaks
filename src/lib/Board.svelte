@@ -1,14 +1,27 @@
 <script lang="ts">
 	import { onMount } from 'svelte'
 	import Peaks from '$lib/Peaks.svelte'
-	import { boardContent, currentRow, currentTile, validLetters, gameFinished } from '$lib/store'
+	import {
+		boardContent,
+		currentRow,
+		currentTile,
+		validLetters,
+		gameFinished,
+		guesses,
+	} from '$lib/store'
 	import { getValidLetterBounds } from '$lib/data-model'
 	import Tile from '$lib/Tile.svelte'
+	import { get } from 'svelte/store'
 
 	export let showResults
 	export let newUser
 
+	let preloadedRows = get(guesses).length
 	let ready = false
+
+	gameFinished.subscribe(() => {
+		if (ready) preloadedRows = 0
+	})
 	// Prevents SSR for board
 	onMount(() => (ready = true))
 </script>
@@ -25,7 +38,7 @@
 							gameFinished={$gameFinished}
 							validLetterBounds={getValidLetterBounds($validLetters)}
 							showHint={!$gameFinished && r > 0}
-							animate={r >= $currentRow - 1}
+							animate={r >= preloadedRows && r >= $currentRow - 1}
 						/>
 					{/each}
 				</div>
