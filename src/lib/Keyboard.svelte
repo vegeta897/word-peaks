@@ -11,7 +11,8 @@
 	export let submitRow
 	export let undoLetter
 
-	function handleKeydown({ key }) {
+	function handleKeydown({ key, ctrlKey }) {
+		if (ctrlKey) return
 		if (key === 'Backspace') undoLetter()
 		if (key === 'Enter') submitRow()
 		key = key.toLowerCase()
