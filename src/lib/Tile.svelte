@@ -76,18 +76,18 @@
 		align-items: center;
 		text-transform: uppercase;
 		box-sizing: border-box;
-		border: 2px solid #666;
+		border: 2px solid #5b505e;
 		position: absolute;
 		border-radius: 4px;
 		width: 100%;
 		height: 100%;
 		color: #eee;
-		transition: border-radius 300ms ease-out;
+		transition: border-color 100ms ease-out;
 		text-shadow: 1px 1px 1px #0006;
 		user-select: none;
 	}
 	.tile.finished {
-		border-color: #444;
+		border-color: #433a46;
 	}
 	.tile.filled {
 		border-color: #888;

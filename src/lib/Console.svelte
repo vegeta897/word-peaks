@@ -28,7 +28,7 @@
 			...board
 				.map((row) => [
 					...row.map((tile) => {
-						let tileColor = '#2d272f'
+						let tileColor = '#312236'
 						let borderColor = '#666;'
 						let borderCorners = ''
 						if (tile.scored) {

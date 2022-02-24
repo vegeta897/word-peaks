@@ -1,4 +1,4 @@
-// Because the in: direction seems to be broken
+// Because the in: directive seems to be broken
 // Reference: https://svelte.dev/repl/e177537996964518a97c27dd0bee2d43?version=3.42.4
 
 const dirs = {
