@@ -29,7 +29,7 @@
 				.map((row) => [
 					...row.map((tile) => {
 						let tileColor = '#312236'
-						let borderColor = '#666;'
+						let borderColor = '#5b505e'
 						let borderCorners = ''
 						if (tile.scored) {
 							if (tile.distance === 0) {
@@ -43,7 +43,7 @@
 							}
 							borderColor = '#0000;'
 						}
-						return `font-size: 16px;display:inline-block;margin:2px;padding:1px 6px;background-color:${tileColor};color:#eee; border: 1px solid ${borderColor}; border-radius: 2px; text-shadow: 1px 1px 1px #0004; ${borderCorners}`
+						return `font-size: 16px; display:inline-block; margin:2px; padding:1px 6px; background-color:${tileColor}; color:#eee; border: 1px solid ${borderColor}; border-radius: 2px; text-shadow: 1px 1px 1px #0004; ${borderCorners}`
 					}),
 					'',
 				])

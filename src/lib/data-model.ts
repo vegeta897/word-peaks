@@ -1,3 +1,5 @@
+import targets from '$lib/data/targets-filtered.json'
+
 export const ROWS = 6
 export const WORD_LENGTH = 5
 
@@ -85,5 +87,14 @@ export function getValidLetterBounds(list: Set<string>): [string, string] {
 		[...alphabet].reverse().find((letter) => list.has(letter))!,
 	]
 }
+
+const epoch = new Date(2022, 0).getTime() // 2022-01-01
+const msPerDay = 86400000
+
+export const getDayNumber = () => Math.floor((Date.now() - epoch) / msPerDay)
+
+export const getWordByDay = (day: number) => targets[day % targets.length]
+
+export const getDayEnd = (day: number) => new Date(epoch + (day + 1) * msPerDay)
 
 export const alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('')

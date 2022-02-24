@@ -7,7 +7,6 @@
 	import { get } from 'svelte/store'
 	const { open, close } = getContext('simple-modal')
 	import dictionary from '$lib/data/dictionary-filtered.json'
-	import targets from '$lib/data/targets-filtered.json'
 	import Board from '$lib/Board.svelte'
 	import Keyboard from '$lib/Keyboard.svelte'
 	import Results from '$lib/Results.svelte'
@@ -16,6 +15,8 @@
 	import {
 		createNewBoard,
 		getBoardRowString,
+		getDayNumber,
+		getWordByDay,
 		getValidLetterBounds,
 		WORD_LENGTH,
 	} from '$lib/data-model'
@@ -34,23 +35,33 @@
 	import { browser } from '$app/env'
 
 	let newUser
+	let dayNumber = getDayNumber()
 
 	const showResults = () =>
-		open(Results, { newWord, answer: get(answer), guesses: get(guesses), gameWon: get(gameWon) })
+		open(Results, {
+			newWord,
+			answer: get(answer),
+			guesses: get(guesses),
+			gameWon: get(gameWon),
+			dayNumber,
+		})
 
 	function newWord() {
 		close()
 		toast.pop()
-		answer.set(targets[Math.floor(Math.random() * targets.length)])
+		dayNumber = getDayNumber()
+		answer.set(getWordByDay(dayNumber))
 		boardContent.set(createNewBoard())
 		guesses.set([])
 	}
 
 	onMount(async () => {
 		if (!get(answer)) {
-			await setTimeout(() => {}) // Modal closes itself if we open too quickly
+			await setTimeout(() => {}) // Tutorial closes itself if we open too quickly
 			open(Tutorial, {}, {}, { onClose: () => newWord() })
 			newUser = true
+		} else if (get(answer) !== getWordByDay(dayNumber)) {
+			newWord()
 		}
 	})
 
