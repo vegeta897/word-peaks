@@ -90,7 +90,7 @@
 		border-color: #433a46;
 	}
 	.tile.filled {
-		border-color: #888;
+		border-color: #988a9d;
 	}
 	.tile.scored {
 		background: var(--primary-color);

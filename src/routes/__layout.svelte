@@ -10,12 +10,22 @@
 	import { highContrast } from '$lib/store'
 </script>
 
-<div
-	id="main"
-	style={$highContrast
-		? '--before-color: #dc267f; --before-text-color: #f6dae8; --correct-color: #64ba2e;'
-		: ''}
->
+<svelte:head>
+	{#if $highContrast}
+		<style>
+			body {
+				--before-color: #da3f8b;
+				--before-text-color: #f6dae8;
+				--correct-color: #64ba2e;
+				--primary-color: #000;
+				--secondary-color: #0e1118;
+				--tertiary-color: #161a25;
+			}
+		</style>
+	{/if}
+</svelte:head>
+
+<div id="main">
 	<SvelteToast options={{ intro: { y: 0 }, duration: 2000 }} />
 	<Modal styleWindow={{ background: 'var(--tertiary-color)', width: '480px' }}><slot /></Modal>
 </div>
