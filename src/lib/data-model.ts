@@ -97,4 +97,20 @@ export const getWordByDay = (day: number) => targets[day % targets.length]
 
 export const getDayEnd = (day: number) => new Date(epoch + (day + 1) * msPerDay)
 
+export function encodeWord(word: string) {
+	let sum = 0
+	for (const [l, letter] of [...word].entries()) {
+		sum += alphabet.indexOf(letter) << (l * 5)
+	}
+	return sum.toString(36)
+}
+
+export function decodeWord(hash: string) {
+	let word = ''
+	for (let i = 0; i < WORD_LENGTH; i++) {
+		word += alphabet[(parseInt(hash, 36) & (0b11111 << (i * 5))) >> (i * 5)]
+	}
+	return word
+}
+
 export const alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('')
