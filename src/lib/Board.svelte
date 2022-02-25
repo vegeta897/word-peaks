@@ -102,9 +102,21 @@
 	}
 
 	@media (max-width: 480px) {
+		.container {
+			height: 21.8rem;
+		}
 		.graph {
 			width: 118px;
 			height: 21.8rem;
+		}
+	}
+	@media (max-width: 360px) {
+		.container {
+			height: 20rem;
+			margin-bottom: 16px;
+		}
+		.graph {
+			height: 20rem;
 		}
 	}
 </style>

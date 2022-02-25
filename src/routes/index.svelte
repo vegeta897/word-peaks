@@ -246,4 +246,10 @@
 	header button:hover svg {
 		fill: var(--text-color);
 	}
+
+	@media (max-width: 360px) {
+		h1 {
+			font-size: 1.4em;
+		}
+	}
 </style>

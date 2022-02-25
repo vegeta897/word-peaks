@@ -146,4 +146,10 @@
 			height: 3.3rem;
 		}
 	}
+	@media (max-width: 360px) {
+		.tile-container {
+			width: 3rem;
+			height: 3rem;
+		}
+	}
 </style>
