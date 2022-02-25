@@ -202,10 +202,10 @@
 		<h1>Wordle Peaks</h1>
 		<button on:click={() => open(Tutorial)}>?</button>
 		<button on:click={() => showResults()}>
-			<svg viewBox="0 -1 8 10" xmlns="http://www.w3.org/2000/svg" width="20" height="20">
-				<rect x="0" y="6" height="3" width="2" />
-				<rect x="3" y="3" height="6" width="2" />
-				<rect x="6" y="0" height="9" width="2" />
+			<svg viewBox="0 0 9 9" xmlns="http://www.w3.org/2000/svg" width="20" height="20">
+				<rect x="0" y="6.5" height="2" width="2" />
+				<rect x="3" y="3.5" height="5" width="2" />
+				<rect x="6" y="0.5" height="8" width="2" />
 			</svg>
 		</button>
 		<button on:click={() => open(Options)}>
