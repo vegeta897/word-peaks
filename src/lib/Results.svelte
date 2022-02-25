@@ -24,7 +24,7 @@
 
 	$: nextWordReady = nextMS < 0
 
-	const highestDistribution = stats.distribution.reduce((a, b) => Math.max(a, b), 0)
+	const highestDistribution = stats.distribution.reduce((a, b) => Math.max(a, b), 1)
 
 	const HOUR = 3600000
 	const MINUTE = 60000
