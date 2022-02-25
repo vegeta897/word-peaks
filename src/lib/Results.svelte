@@ -1,14 +1,16 @@
 <script lang="ts">
 	import { toast } from '@zerodevx/svelte-toast'
 	import { trackEvent } from '$lib/plausible'
-	import { getDayEnd } from '$lib/data-model'
+	import { encodeWord, getDayEnd } from '$lib/data-model'
 
 	// Don't use store, we don't want/need dynamic content for the results
 	export let answer
 	export let guesses
+	export let gameMode
 	export let gameWon
-	export let newWord
 	export let dayNumber
+	export let playDaily
+	export let playRandom
 
 	let nextMS
 	const updateNextMS = () => (nextMS = getDayEnd(dayNumber) - new Date())
@@ -34,8 +36,10 @@
 				.join('')
 		)
 		.join('\n  ')
-
-	const shareText = `Wordle Peaks #${dayNumber} ${score}/6\n\n  ${emojis}`
+	let day = gameMode === 'random' ? '∞ ' : `#${dayNumber} `
+	let shareText = `Wordle Peaks ${day}${score}/6\n\n  ${emojis}`
+	if (gameMode === 'random')
+		shareText += `\nhttps://vegeta897.github.io/wordle-peaks/#${encodeWord(answer)}`
 
 	function share() {
 		trackEvent('resultShare')
@@ -62,27 +66,30 @@
 		<h3>You lost ☹️</h3>
 		<p>The answer was <strong>{answer.toUpperCase()}</strong></p>
 	{/if}
-	{#if shareText}<div class="share">
-			<pre>{shareText}</pre>
-			<div class="button-group">
-				<button on:click={share} class="cta">Share</button>
-				{#if nextWordReady}
-					<button on:click={newWord}>New word</button>
-				{:else}
-					<div class="countdown">
-						<h4>Next word</h4>
-						<strong
-							>{`${Math.floor(nextMS / HOUR)}`.padStart(2, '0')}:{`${Math.floor(
-								(nextMS % HOUR) / MINUTE
-							)}`.padStart(2, '0')}:{`${Math.floor((nextMS % MINUTE) / 1000)}`.padStart(
-								2,
-								'0'
-							)}</strong
-						>
-					</div>
-				{/if}
-			</div>
-		</div>{/if}
+	<div class="share">
+		<div class="column">
+			{#if nextWordReady}
+				<div class="daily-text">Try today's word!</div>
+				<button on:click={playDaily} class="daily-button">Play Daily</button>
+			{:else}
+				<div class="countdown">
+					<h4>Next word</h4>
+					<strong
+						>{`${Math.floor(nextMS / HOUR)}`.padStart(2, '0')}:{`${Math.floor(
+							(nextMS % HOUR) / MINUTE
+						)}`.padStart(2, '0')}:{`${Math.floor((nextMS % MINUTE) / 1000)}`.padStart(
+							2,
+							'0'
+						)}</strong
+					>
+				</div>
+			{/if}
+		</div>
+		<div class="column">
+			<button on:click={share} class="share-button">Share</button>
+			<button on:click={playRandom}>Play Random</button>
+		</div>
+	</div>
 </section>
 
 <style>
@@ -94,8 +101,14 @@
 		font-size: 1.5em;
 		text-align: center;
 	}
+
 	h3 {
 		font-size: 1.2em;
+	}
+
+	h4 {
+		width: 6rem;
+		margin: 0.5rem 0;
 	}
 
 	.share {
@@ -112,22 +125,22 @@
 		font-size: 1.2em;
 		margin: 0;
 		padding: 1rem;
-		min-width: 8rem;
+		min-width: 12rem;
 		color: var(--text-color);
 		background: var(--secondary-color);
 		border-radius: 8px;
 	}
 
-	.button-group {
+	.column {
 		display: flex;
 		justify-content: space-around;
 		flex-direction: column;
-		align-items: center;
+		align-items: stretch;
 		gap: 1rem;
 	}
 
 	pre,
-	.button-group {
+	.column {
 		flex: 1 1 0;
 	}
 
@@ -139,7 +152,7 @@
 		height: 3rem;
 		font-size: 1.2em;
 		font-weight: 700;
-		width: 9rem;
+		min-width: 10rem;
 	}
 
 	button:hover {
@@ -151,30 +164,51 @@
 		outline-offset: 2px;
 	}
 
-	button.cta {
+	button.share-button {
 		background: var(--cta-color);
 	}
 
-	button.cta:hover {
+	button.share-button:hover {
 		background: #3388de;
+	}
+
+	button.daily-button {
+		background: #04883b;
+	}
+
+	button.daily-button:hover {
+		background: var(--correct-color);
+	}
+
+	.daily-text {
+		height: 3rem;
+		font-size: 1.2em;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 	}
 
 	.countdown {
 		display: flex;
 		flex-wrap: wrap;
-		align-items: center;
+		align-items: baseline;
 		justify-content: center;
 		align-content: space-around;
 		text-align: center;
-	}
-
-	h4 {
-		width: 6rem;
-		margin: 0.5rem 0;
+		font-size: 1.2em;
 	}
 
 	.countdown strong {
-		font-size: 1.4em;
+		font-size: 1.6em;
 		padding: 0 0.6rem;
+	}
+
+	@media (max-width: 480px) {
+		.column {
+			flex-basis: max-content;
+		}
+		.countdown strong {
+			font-size: 1.2em;
+		}
 	}
 </style>

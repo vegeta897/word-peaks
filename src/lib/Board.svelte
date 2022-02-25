@@ -14,7 +14,7 @@
 	import { get } from 'svelte/store'
 
 	export let showResults
-	export let newUser
+	export let startCentered
 
 	let preloadedRows = get(guesses).length
 	let ready = false
@@ -46,8 +46,8 @@
 		</div>
 		<div
 			class="graph"
-			class:minimized={newUser && $currentRow === 0}
-			class:invisible={!newUser && $currentRow === 0}
+			class:minimized={startCentered && $currentRow === 0}
+			class:invisible={!startCentered && $currentRow === 0}
 		>
 			<Peaks />
 		</div>

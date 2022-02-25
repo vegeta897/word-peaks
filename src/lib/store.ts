@@ -1,14 +1,38 @@
 import { writable, derived, get } from 'svelte/store'
+import type { Writable, Updater } from 'svelte/store'
 import { writable as storageWritable } from 'svelte-local-storage-store'
+import type { GameMode } from '$lib/data-model'
 import { createNewBoard, getValidLetters, ROWS, scoreTile, WORD_LENGTH } from '$lib/data-model'
 
-export const answer = storageWritable('wp-answer', '')
+export const answerDaily = storageWritable('wp-answer', '')
+export const answerRandom = storageWritable('wp-answerRandom', '')
 
-export const guesses = storageWritable('wp-guesses', [])
+export const guessesDaily: Writable<string[]> = storageWritable('wp-guesses', [])
+export const guessesRandom: Writable<string[]> = storageWritable('wp-guessesRandom', [])
 
 export const highContrast = storageWritable('wp-highContrast', false)
 
+export const lastPlayedDaily = storageWritable('wp-lastPlayedDaily', -1)
+
+export const gameMode: Writable<GameMode> = writable('daily')
+
 export const boardContent = writable(createNewBoard())
+
+export const answer = derived(
+	[gameMode, answerDaily, answerRandom],
+	([$gameMode, $answerDaily, $answerRandom]) =>
+		$gameMode === 'daily' ? $answerDaily : $answerRandom
+)
+
+export const guesses = derived(
+	[gameMode, guessesDaily, guessesRandom],
+	([$gameMode, $guessesDaily, $guessesRandom]) =>
+		$gameMode === 'daily' ? $guessesDaily : $guessesRandom
+)
+
+export function updateGuesses(fn: Updater<string[]>) {
+	;(get(gameMode) === 'daily' ? guessesDaily : guessesRandom).update(fn)
+}
 
 guesses.subscribe((words) => {
 	boardContent.update((content) => {
