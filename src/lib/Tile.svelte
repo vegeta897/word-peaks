@@ -64,7 +64,7 @@
 		position: relative;
 		width: 3.55rem;
 		height: 3.55rem;
-		margin: 0 0.15rem;
+		margin: 0 3px;
 	}
 
 	.tile {
