@@ -43,7 +43,6 @@
 	import { page } from '$app/stores'
 
 	let newUser
-	let dayNumber = getDayNumber()
 
 	onMount(async () => {
 		if (!get(answerDaily) && !get(answerRandom)) {
@@ -61,7 +60,7 @@
 		let wordFromHash = decodeWord(hash?.slice(1))
 		gameMode.set(wordFromHash ? 'random' : 'daily')
 		if (!wordFromHash) {
-			if (get(lastPlayedDaily) < dayNumber) playDaily()
+			if (get(lastPlayedDaily) < getDayNumber()) playDaily()
 		} else if (wordFromHash !== get(answerRandom)) {
 			playRandom(wordFromHash)
 		}
@@ -88,7 +87,8 @@
 		history.replaceState('', document.title, window.location.pathname + window.location.search) // Remove # from URL
 		resetBoard()
 		guessesDaily.set([])
-		dayNumber = getDayNumber()
+		const dayNumber = getDayNumber()
+		lastPlayedDaily.set(dayNumber)
 		answerDaily.set(getWordByDay(dayNumber))
 	}
 
@@ -152,7 +152,6 @@
 		if (get(gameFinished)) {
 			trackEvent(get(gameWon) ? 'gameWon' : 'gameLost')
 			if (newUser) trackEvent('firstFinish')
-			if (get(gameMode) === 'daily') lastPlayedDaily.set(dayNumber)
 			newUser = false
 		}
 	}
