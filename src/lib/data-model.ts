@@ -98,6 +98,22 @@ export const getWordByDay = (day: number) => targets[day % targets.length]
 
 export const getDayEnd = (day: number) => new Date(epoch + (day + 1) * msPerDay)
 
+export type Stats = {
+	currentStreak: number
+	bestStreak: number
+	totalGames: number
+	wonGames: number
+	distribution: number[]
+}
+
+export const newStats = (): Stats => ({
+	currentStreak: 0,
+	bestStreak: 0,
+	totalGames: 0,
+	wonGames: 0,
+	distribution: new Array(ROWS).fill(0),
+})
+
 export const getRandomWord = () => targets[Math.floor(Math.random() * targets.length)]
 
 export function encodeWord(word: string) {

@@ -7,10 +7,12 @@
 	export let answer
 	export let guesses
 	export let gameMode
+	export let gameFinished
 	export let gameWon
 	export let dayNumber
 	export let playDaily
 	export let playRandom
+	export let stats
 
 	let nextMS
 	const updateNextMS = () => (nextMS = getDayEnd(dayNumber) - new Date())
@@ -21,6 +23,8 @@
 	}, 1000)
 
 	$: nextWordReady = nextMS < 0
+
+	const highestDistribution = stats.distribution.reduce((a, b) => Math.max(a, b), 0)
 
 	const HOUR = 3600000
 	const MINUTE = 60000
@@ -58,14 +62,42 @@
 </script>
 
 <section>
-	<h2>Results</h2>
-	{#if gameWon}
-		<h3>You won 🎉</h3>
-		<p>Nice job!</p>
-	{:else}
-		<h3>You lost ☹️</h3>
+	<h2>{gameFinished ? (gameWon ? 'You got it! 🎉' : 'Oh no! ☹️') : 'Stats'}</h2>
+	{#if gameFinished && !gameWon}
 		<p>The answer was <strong>{answer.toUpperCase()}</strong></p>
 	{/if}
+	<div class="stats">
+		<div class="stats-item">
+			<strong>{stats.totalGames}</strong>
+			Total games
+		</div>
+		<div class="stats-item">
+			<strong>{Math.round((100 * stats.wonGames) / stats.totalGames)}%</strong>
+			Win rate
+		</div>
+		<div class="stats-item">
+			<strong>{stats.currentStreak}</strong>
+			Current streak
+		</div>
+		<div class="stats-item">
+			<strong>{stats.bestStreak}</strong>
+			Best streak
+		</div>
+		<div class="distribution">
+			<h3>Guess Distribution</h3>
+			{#each stats.distribution as guessCount, c}
+				<div class="bar-row">
+					{c + 1}
+					<div
+						class="bar"
+						style={`width: calc(22px + ${Math.round((100 * guessCount) / highestDistribution)}%)`}
+					>
+						{guessCount}
+					</div>
+				</div>
+			{/each}
+		</div>
+	</div>
 	<div class="share">
 		<div class="column">
 			{#if nextWordReady}
@@ -73,7 +105,7 @@
 				<button on:click={playDaily} class="daily-button">Play Daily</button>
 			{:else}
 				<div class="countdown">
-					<h4>Next word</h4>
+					<h3>Next word</h3>
 					<strong
 						>{`${Math.floor(nextMS / HOUR)}`.padStart(2, '0')}:{`${Math.floor(
 							(nextMS % HOUR) / MINUTE
@@ -99,16 +131,66 @@
 
 	h2 {
 		font-size: 1.5em;
-		text-align: center;
+		margin: 0.6rem 0 1.2rem;
 	}
 
 	h3 {
-		font-size: 1.2em;
+		margin: 0.5rem 0;
 	}
 
-	h4 {
-		width: 6rem;
-		margin: 0.5rem 0;
+	h2,
+	h3,
+	p {
+		text-align: center;
+	}
+
+	.stats {
+		color: var(--text-color);
+		display: flex;
+		justify-content: center;
+		margin-bottom: 1.4rem;
+		flex-wrap: wrap;
+	}
+
+	.stats-item {
+		width: 25%;
+		display: flex;
+		flex-direction: column;
+		justify-content: flex-start;
+		align-items: center;
+		text-align: center;
+	}
+
+	.stats-item strong {
+		font-size: 1.8em;
+	}
+
+	.distribution {
+		margin-top: 1rem;
+		max-width: 20rem;
+		flex-basis: 100%;
+	}
+
+	.distribution h4 {
+		width: 100%;
+		text-align: center;
+	}
+
+	.bar-row {
+		display: flex;
+		align-items: baseline;
+	}
+
+	.bar {
+		height: 22px;
+		background-color: var(--accent-color);
+		border-radius: 8px;
+		margin-bottom: 6px;
+		font-weight: 700;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		margin-left: 8px;
 	}
 
 	.share {
@@ -120,28 +202,13 @@
 		color: var(--text-color);
 	}
 
-	pre {
-		white-space: pre-wrap;
-		font-size: 1.2em;
-		margin: 0;
-		padding: 1rem;
-		min-width: 12rem;
-		color: var(--text-color);
-		background: var(--secondary-color);
-		border-radius: 8px;
-	}
-
 	.column {
 		display: flex;
+		flex: 1 1 0;
 		justify-content: space-around;
 		flex-direction: column;
 		align-items: stretch;
 		gap: 1rem;
-	}
-
-	pre,
-	.column {
-		flex: 1 1 0;
 	}
 
 	button {
@@ -204,6 +271,9 @@
 	}
 
 	@media (max-width: 480px) {
+		.stats-item {
+			font-size: 0.8em;
+		}
 		.column {
 			flex-basis: max-content;
 		}

@@ -37,6 +37,7 @@
 		guessesDaily,
 		answerDaily,
 		updateGuesses,
+		stats,
 	} from '$lib/store'
 	import { trackEvent } from '$lib/plausible'
 	import { browser } from '$app/env'
@@ -54,11 +55,10 @@
 		}
 	})
 
-	const hash = get(page).url.hash
+	const wordFromHash = decodeWord(get(page).url.hash?.slice(1))
+	gameMode.set(wordFromHash ? 'random' : 'daily')
 
 	function startGame() {
-		let wordFromHash = decodeWord(hash?.slice(1))
-		gameMode.set(wordFromHash ? 'random' : 'daily')
 		if (!wordFromHash) {
 			if (get(lastPlayedDaily) < getDayNumber()) playDaily()
 		} else if (wordFromHash !== get(answerRandom)) {
@@ -150,9 +150,24 @@
 		trackEvent('submitGuess')
 		updateGuesses((words) => [...words, submittedWord])
 		if (get(gameFinished)) {
+			const won = get(gameWon)
 			trackEvent(get(gameWon) ? 'gameWon' : 'gameLost')
 			if (newUser) trackEvent('firstFinish')
 			newUser = false
+			if (get(gameMode) === 'daily')
+				stats.update((_stats) => {
+					const streak = won ? _stats.currentStreak + 1 : 0
+					console.log(_stats)
+					const distribution = [..._stats.distribution]
+					distribution[get(guesses).length - 1]++
+					return {
+						currentStreak: streak,
+						bestStreak: streak > _stats.bestStreak ? streak : _stats.bestStreak,
+						totalGames: _stats.totalGames + 1,
+						wonGames: _stats.wonGames + (won ? 1 : 0),
+						distribution,
+					}
+				})
 		}
 	}
 
@@ -169,8 +184,10 @@
 			gameMode: get(gameMode),
 			answer: get(answer),
 			guesses: get(guesses),
+			gameFinished: get(gameFinished),
 			gameWon: get(gameWon),
 			dayNumber: get(lastPlayedDaily),
+			stats: get(stats),
 		})
 
 	let consoleMode
@@ -184,6 +201,13 @@
 	<header>
 		<h1>Wordle Peaks</h1>
 		<button on:click={() => open(Tutorial)}>?</button>
+		<button on:click={() => showResults()}>
+			<svg viewBox="0 -1 8 10" xmlns="http://www.w3.org/2000/svg" width="20" height="20">
+				<rect x="0" y="6" height="3" width="2" />
+				<rect x="3" y="3" height="6" width="2" />
+				<rect x="6" y="0" height="9" width="2" />
+			</svg>
+		</button>
 		<button on:click={() => open(Options)}>
 			<svg viewBox="0 0 76 76" xmlns="http://www.w3.org/2000/svg" width="20" height="20">
 				<path

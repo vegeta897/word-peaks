@@ -27,6 +27,7 @@
 	h2 {
 		font-size: 1.5em;
 		text-align: center;
+		margin: 0.6rem 0 1rem;
 	}
 
 	.content {

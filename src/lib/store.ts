@@ -1,8 +1,15 @@
 import { writable, derived, get } from 'svelte/store'
 import type { Writable, Updater } from 'svelte/store'
 import { writable as storageWritable } from 'svelte-local-storage-store'
-import type { GameMode } from '$lib/data-model'
-import { createNewBoard, getValidLetters, ROWS, scoreTile, WORD_LENGTH } from '$lib/data-model'
+import type { GameMode, Stats } from '$lib/data-model'
+import {
+	createNewBoard,
+	getValidLetters,
+	newStats,
+	ROWS,
+	scoreTile,
+	WORD_LENGTH,
+} from '$lib/data-model'
 
 export const answerDaily = storageWritable('wp-answer', '')
 export const answerRandom = storageWritable('wp-answerRandom', '')
@@ -13,6 +20,8 @@ export const guessesRandom: Writable<string[]> = storageWritable('wp-guessesRand
 export const highContrast = storageWritable('wp-highContrast', false)
 
 export const lastPlayedDaily = storageWritable('wp-lastPlayedDaily', -1)
+
+export const stats: Writable<Stats> = storageWritable('wp-stats', newStats())
 
 export const gameMode: Writable<GameMode> = writable('daily')
 
