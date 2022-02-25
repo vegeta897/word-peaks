@@ -40,7 +40,7 @@
 				.join('')
 		)
 		.join('\n  ')
-	let day = gameMode === 'random' ? '∞ ' : `#${dayNumber} `
+	let day = gameMode === 'random' ? '∞ ' : `#${dayNumber + 1} `
 	let shareText = `Wordle Peaks ${day}${score}/6\n\n  ${emojis}`
 	if (gameMode === 'random')
 		shareText += `\nhttps://vegeta897.github.io/wordle-peaks/#${encodeWord(answer)}`

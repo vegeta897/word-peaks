@@ -11,6 +11,8 @@ import {
 	WORD_LENGTH,
 } from '$lib/data-model'
 
+export const storeVersion = storageWritable('wp-version', 0)
+
 export const answerDaily = storageWritable('wp-answer', '')
 export const answerRandom = storageWritable('wp-answerRandom', '')
 

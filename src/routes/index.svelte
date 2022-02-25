@@ -18,6 +18,7 @@
 		decodeWord,
 		encodeWord,
 		getRandomWord,
+		VERSION,
 	} from '$lib/data-model'
 	import type { GameMode } from '$lib/data-model'
 	import { toast } from '@zerodevx/svelte-toast'
@@ -38,12 +39,20 @@
 		answerDaily,
 		updateGuesses,
 		stats,
+		storeVersion,
 	} from '$lib/store'
 	import { trackEvent } from '$lib/plausible'
 	import { browser } from '$app/env'
 	import { page } from '$app/stores'
 
 	let newUser
+
+	if (!get(storeVersion) || get(storeVersion) < VERSION) {
+		storeVersion.set(VERSION)
+		lastPlayedDaily.set(-1)
+		answerDaily.set('')
+		guessesDaily.set([])
+	}
 
 	onMount(async () => {
 		if (!get(answerDaily) && !get(answerRandom)) {
@@ -157,7 +166,6 @@
 			if (get(gameMode) === 'daily')
 				stats.update((_stats) => {
 					const streak = won ? _stats.currentStreak + 1 : 0
-					console.log(_stats)
 					const distribution = [..._stats.distribution]
 					distribution[get(guesses).length - 1]++
 					return {

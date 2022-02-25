@@ -1,5 +1,6 @@
 import targets from '$lib/data/targets-filtered.json'
 
+export const VERSION = 1
 export const ROWS = 6
 export const WORD_LENGTH = 5
 
@@ -89,7 +90,7 @@ export function getValidLetterBounds(list: Set<string>): [string, string] {
 	]
 }
 
-const epoch = new Date(2022, 0).getTime() // 2022-01-01
+const epoch = new Date(2022, 1, 25).getTime() // 2022-02-25
 const msPerDay = 86400000
 
 export const getDayNumber = () => Math.floor((Date.now() - epoch) / msPerDay)
