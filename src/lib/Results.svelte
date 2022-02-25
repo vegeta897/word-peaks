@@ -72,7 +72,7 @@
 			Total games
 		</div>
 		<div class="stats-item">
-			<strong>{Math.round((100 * stats.wonGames) / stats.totalGames)}%</strong>
+			<strong>{Math.round((100 * stats.wonGames) / (stats.totalGames || 1))}%</strong>
 			Win rate
 		</div>
 		<div class="stats-item">
