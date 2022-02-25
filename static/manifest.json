@@ -1,0 +1,9 @@
+{
+	"name": "Wordle Peaks",
+	"short_name": "Wordle Peaks",
+	"description": "A Wordle spin-off",
+	"start_url": "./index.html",
+	"display": "standalone",
+	"theme_color": "#ffffff",
+	"background_color": "#312236"
+}
