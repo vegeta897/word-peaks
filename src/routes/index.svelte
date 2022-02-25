@@ -20,7 +20,6 @@
 		getRandomWord,
 		VERSION,
 	} from '$lib/data-model'
-	import type { GameMode } from '$lib/data-model'
 	import { toast } from '@zerodevx/svelte-toast'
 	import {
 		answer,
@@ -64,7 +63,8 @@
 		}
 	})
 
-	const wordFromHash = decodeWord(get(page).url.hash?.slice(1))
+	const hash = get(page).url.hash?.slice(1)
+	const wordFromHash = decodeWord(hash)
 	gameMode.set(wordFromHash ? 'random' : 'daily')
 
 	function startGame() {
@@ -192,10 +192,12 @@
 			gameMode: get(gameMode),
 			answer: get(answer),
 			guesses: get(guesses),
+			boardContent: get(boardContent),
 			gameFinished: get(gameFinished),
 			gameWon: get(gameWon),
 			dayNumber: get(lastPlayedDaily),
 			stats: get(stats),
+			hash,
 		})
 
 	let consoleMode

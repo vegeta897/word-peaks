@@ -2,10 +2,12 @@
 	import { toast } from '@zerodevx/svelte-toast'
 	import { trackEvent } from '$lib/plausible'
 	import { encodeWord, getDayEnd } from '$lib/data-model'
+	import { onMount } from 'svelte'
 
 	// Don't use store, we don't want/need dynamic content for the results
 	export let answer
 	export let guesses
+	export let boardContent
 	export let gameMode
 	export let gameFinished
 	export let gameWon
@@ -13,6 +15,7 @@
 	export let playDaily
 	export let playRandom
 	export let stats
+	export let hash
 
 	let nextMS
 	const updateNextMS = () => (nextMS = getDayEnd(dayNumber) - new Date())
@@ -59,6 +62,66 @@
 				})
 		)
 	}
+
+	let canvas: HTMLCanvasElement
+
+	async function shareImage() {
+		// https://benkaiser.dev/sharing-images-using-the-web-share-api/
+		const imageUrl = canvas.toDataURL()
+		const imageBlob = await (await fetch(imageUrl)).blob()
+		const filesArray = [
+			new File([imageBlob], `wordle-peaks-${gameMode === 'random' ? hash : day}.png`, {
+				type: imageBlob.type,
+				lastModified: new Date().getTime(),
+			}),
+		]
+		const shareData = {
+			files: filesArray,
+		}
+		await navigator.share(shareData)
+	}
+
+	onMount(() => {
+		if (!canvas) return
+		const ctx = canvas.getContext('2d')
+		ctx.fillStyle = '#312236'
+		ctx.fillRect(0, 0, 250, 300)
+		const roundedRectangle = (x, y, w, h, rTop, rBottom?) => {
+			rBottom = rBottom ?? rTop
+			ctx.beginPath()
+			ctx.moveTo(x + rTop, y)
+			ctx.arcTo(x + w, y, x + w, y + h, rTop)
+			ctx.arcTo(x + w, y + h, x, y + h, rBottom)
+			ctx.arcTo(x, y + h, x, y, rBottom)
+			ctx.arcTo(x, y, x + w, y, rTop)
+			ctx.closePath()
+			ctx.fill()
+		}
+		boardContent.forEach((row, r) => {
+			if (r >= guesses.length) return
+			row.forEach((tile, t) => {
+				let topRadius = 5
+				let bottomRadius = 5
+				if (tile.distance === 0) {
+					ctx.fillStyle = '#15a850'
+				} else if (tile.distance > 0) {
+					ctx.fillStyle = '#567de8'
+					bottomRadius = 14
+				} else {
+					ctx.fillStyle = '#e38f2f'
+					topRadius = 14
+				}
+				const x = 4 + t * 50
+				const y = 4 + r * 50
+				const l = 43
+				roundedRectangle(x, y, l, l, topRadius, bottomRadius)
+			})
+		})
+		ctx.font = '20px Arial'
+		ctx.textAlign = 'center'
+		ctx.fillStyle = '#cccccc'
+		ctx.fillText(`Wordle Peaks ${day}${score}/6`, 125, guesses.length * 50 + 22)
+	})
 </script>
 
 <section>
@@ -119,10 +182,18 @@
 			{/if}
 		</div>
 		<div class="column">
-			<button on:click={share} class="share-button">Share</button>
+			{#if gameFinished}
+				<button on:click={share} class="share-button">Share</button>
+			{/if}
 			<button on:click={playRandom}>Play Random</button>
 		</div>
 	</div>
+	{#if gameFinished}
+		<div class="image-share">
+			<canvas bind:this={canvas} width="250" height={guesses.length * 50 + 30} />
+			<button class="share-button" on:click={shareImage}>Share Image</button>
+		</div>
+	{/if}
 </section>
 
 <style>
@@ -183,7 +254,7 @@
 	}
 
 	.bar {
-		height: 22px;
+		height: 20px;
 		background-color: var(--accent-color);
 		border-radius: 8px;
 		margin-bottom: 6px;
@@ -269,6 +340,18 @@
 	.countdown strong {
 		font-size: 1.6em;
 		padding: 0 0.6rem;
+	}
+
+	.image-share {
+		margin-top: 1rem;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+	}
+
+	.image-share button {
+		margin-top: 0.8rem;
 	}
 
 	@media (max-width: 480px) {
