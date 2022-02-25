@@ -88,6 +88,7 @@
 		history.replaceState('', document.title, window.location.pathname + window.location.search) // Remove # from URL
 		resetBoard()
 		guessesDaily.set([])
+		dayNumber = getDayNumber()
 		answerDaily.set(getWordByDay(dayNumber))
 	}
 
