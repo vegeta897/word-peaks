@@ -97,6 +97,7 @@
 				</div>
 			{/each}
 		</div>
+		{#if gameMode === 'random'}<em>Stats only count daily games</em>{/if}
 	</div>
 	<div class="share">
 		<div class="column">
