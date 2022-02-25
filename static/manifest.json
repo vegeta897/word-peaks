@@ -4,6 +4,6 @@
 	"description": "A Wordle spin-off",
 	"start_url": "./index.html",
 	"display": "standalone",
-	"theme_color": "#ffffff",
+	"theme_color": "#d363b1",
 	"background_color": "#312236"
 }
