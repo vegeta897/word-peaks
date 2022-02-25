@@ -22,8 +22,10 @@
 	--toastMsgPadding: 0.75rem 2rem;
 }
 
-body, html {
-	margin: 0; padding: 0;
+body,
+html {
+	margin: 0;
+	padding: 0;
 }
 
 body {
@@ -72,7 +74,7 @@ button {
 
 button {
 	color: var(--text-color);
-	background: var(--primary-color)
+	background: var(--primary-color);
 }
 
 button:focus:not(:focus-visible) {
