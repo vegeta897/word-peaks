@@ -50,14 +50,14 @@
 	import { browser } from '$app/env'
 	import { page } from '$app/stores'
 
-	let newUser
-
 	if (!get(storeVersion) || get(storeVersion) < VERSION) {
 		storeVersion.set(VERSION)
 		lastPlayedDaily.set(-1)
 		answerDaily.set('')
 		guessesDaily.set([])
 	}
+
+	let newUser
 
 	onMount(async () => {
 		if (!get(answerDaily) && !get(answerRandom)) {
@@ -79,9 +79,7 @@
 		} else if (wordFromHash !== get(answerRandom)) {
 			playRandom(wordFromHash)
 		}
-		gameFinished.subscribe((finished) => {
-			if (finished) setTimeout(() => showResults(), 1700)
-		})
+		if (get(gameFinished)) setTimeout(() => showResults(), 1700)
 	}
 
 	function resetBoard() {
@@ -92,14 +90,23 @@
 
 	function playRandom(word?: string) {
 		const randomWord = word || getRandomWord()
-		window.location.hash = encodeWord(randomWord)
+		history.pushState(
+			'',
+			document.title,
+			window.location.pathname + `#${encodeWord(randomWord)}` + window.location.search
+		)
+		// window.location.hash = encodeWord(randomWord)
 		resetBoard()
 		guessesRandom.set([])
 		answerRandom.set(randomWord)
 	}
 
 	function playDaily() {
-		history.replaceState('', document.title, window.location.pathname + window.location.search) // Remove # from URL
+		history.pushState('', document.title, window.location.pathname + window.location.search) // Remove # from URL
+		if (get(lastPlayedDaily) === getDayNumber()) {
+			close()
+			return
+		}
 		resetBoard()
 		guessesDaily.set([])
 		const dayNumber = getDayNumber()
@@ -181,6 +188,7 @@
 		trackEvent('submitGuess')
 		updateGuesses((words) => [...words, submittedWord])
 		if (get(gameFinished)) {
+			setTimeout(() => showResults(), 1700)
 			const won = get(gameWon)
 			trackEvent(get(gameWon) ? 'gameWon' : 'gameLost')
 			if (newUser) trackEvent('firstFinish')

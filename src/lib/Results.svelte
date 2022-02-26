@@ -204,6 +204,9 @@
 				{/if}
 			{/if}
 			<button on:click={playRandom}>Play Random</button>
+			{#if gameMode === 'random' && !nextWordReady}
+				<button on:click={playDaily} class="daily-button">Play Daily</button>
+			{/if}
 		</div>
 	</div>
 	<div class="image-share" class:hidden={!imageShared}>
