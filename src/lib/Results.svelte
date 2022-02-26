@@ -85,7 +85,7 @@
 		if (!canvas) return
 		const ctx = canvas.getContext('2d')
 		ctx.fillStyle = '#312236'
-		ctx.fillRect(0, 0, 250, 300)
+		ctx.fillRect(0, 0, 252, 300)
 		const roundedRectangle = (x, y, w, h, rTop, rBottom?) => {
 			rBottom = rBottom ?? rTop
 			ctx.beginPath()
@@ -113,14 +113,14 @@
 				}
 				const x = 4 + t * 50
 				const y = 4 + r * 50
-				const l = 43
+				const l = 44
 				roundedRectangle(x, y, l, l, topRadius, bottomRadius)
 			})
 		})
 		ctx.font = '20px Arial'
 		ctx.textAlign = 'center'
 		ctx.fillStyle = '#cccccc'
-		ctx.fillText(`Wordle Peaks ${day}${score}/6`, 125, guesses.length * 50 + 22)
+		ctx.fillText(`Wordle Peaks ${day}${score}/6`, 126, guesses.length * 50 + 22)
 	})
 </script>
 
@@ -190,7 +190,7 @@
 	</div>
 	{#if gameFinished}
 		<div class="image-share">
-			<canvas bind:this={canvas} width="250" height={guesses.length * 50 + 30} />
+			<canvas bind:this={canvas} width="252" height={guesses.length * 50 + 30} />
 			<button class="share-button" on:click={shareImage}>Share Image</button>
 		</div>
 	{/if}
