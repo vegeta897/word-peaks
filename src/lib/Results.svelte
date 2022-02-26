@@ -44,14 +44,15 @@
 		)
 		.join('\n  ')
 	let day = gameMode === 'random' ? '∞ ' : `#${dayNumber + 1} `
-	let shareText = `Wordle Peaks ${day}${score}/6\n\n  ${emojis}`
+	let copyText = `Wordle Peaks ${day}${score}/6\n\n  ${emojis}`
 	if (gameMode === 'random')
-		shareText += `\nhttps://vegeta897.github.io/wordle-peaks/#${encodeWord(answer)}`
+		copyText += `\nhttps://vegeta897.github.io/wordle-peaks/#${encodeWord(answer)}`
 
-	function share() {
+	function shareText() {
+		shareMenu = false
 		trackEvent('resultShare')
 		toast.pop()
-		navigator.clipboard.writeText(shareText).then(
+		navigator.clipboard.writeText(copyText).then(
 			() =>
 				toast.push('Score copied!', {
 					theme: { '--toastBackground': 'var(--cta-color)' },
@@ -63,10 +64,14 @@
 		)
 	}
 
+	let shareMenu
+
 	let canvas: HTMLCanvasElement
 
 	async function shareImage() {
 		// https://benkaiser.dev/sharing-images-using-the-web-share-api/
+		shareMenu = false
+		trackEvent('resultShare')
 		const imageUrl = canvas.toDataURL()
 		const imageBlob = await (await fetch(imageUrl)).blob()
 		const filesArray = [
@@ -183,7 +188,14 @@
 		</div>
 		<div class="column">
 			{#if gameFinished}
-				<button on:click={share} class="share-button">Share</button>
+				{#if shareMenu}
+					<div class="share-buttons">
+						<button on:click={shareText} class="share-button">Text</button>
+						<button on:click={shareImage} class="share-button">Image</button>
+					</div>
+				{:else}
+					<button on:click={() => (shareMenu = true)} class="share-button">Share</button>
+				{/if}
 			{/if}
 			<button on:click={playRandom}>Play Random</button>
 		</div>
@@ -191,7 +203,6 @@
 	{#if gameFinished}
 		<div class="image-share">
 			<canvas bind:this={canvas} width="252" height={guesses.length * 50 + 30} />
-			<button class="share-button" on:click={shareImage}>Share Image</button>
 		</div>
 	{/if}
 </section>
@@ -319,6 +330,17 @@
 		background: var(--correct-color);
 	}
 
+	.share-buttons {
+		display: flex;
+		justify-content: space-between;
+		gap: 1rem;
+	}
+
+	.share-buttons button {
+		min-width: 3rem;
+		width: 50%;
+	}
+
 	.daily-text {
 		height: 3rem;
 		font-size: 1.2em;
@@ -343,15 +365,12 @@
 	}
 
 	.image-share {
+		display: none;
 		margin-top: 1rem;
-		display: flex;
+		/*display: flex;*/
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
-	}
-
-	.image-share button {
-		margin-top: 0.8rem;
 	}
 
 	@media (max-width: 480px) {
