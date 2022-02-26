@@ -22,12 +22,30 @@ export const guessesRandom: Writable<string[]> = storageWritable('wp-guessesRand
 
 export const highContrast = storageWritable('wp-highContrast', false)
 export const showAllHints = storageWritable('wp-showAllHints', false)
+const hardModeStored = storageWritable('wp-hardMode', false)
+export const hardMode = derived(hardModeStored, ($hardModeStored) => $hardModeStored)
+
+export const lastPlayedDailyWasHard = storageWritable('wp-lastPlayedWasHard', false)
+export const lastPlayedRandomWasHard = storageWritable('wp-lastPlayedRandomWasHard', false)
+
+export const changeHardMode = (changeTo: boolean) => {
+	if (!get(gameFinished) && get(guesses).length > 0) throw "Can't change that during a game!"
+	hardModeStored.set(changeTo)
+}
 
 export const lastPlayedDaily = storageWritable('wp-lastPlayedDaily', -1)
 
 export const stats: Writable<Stats> = storageWritable('wp-stats', newStats())
 
 export const gameMode: Writable<GameMode> = writable('daily')
+
+export const lastPlayedWasHard = derived(
+	[gameMode, lastPlayedDailyWasHard, lastPlayedRandomWasHard],
+	([$gameMode, $lastPlayedDailyWasHard, $lastPlayedRandomWasHard]) =>
+		$gameMode === 'daily' ? $lastPlayedDailyWasHard : $lastPlayedRandomWasHard
+)
+
+export const invalidHardModeGuess = writable(false)
 
 export const boardContent = writable(createNewBoard())
 

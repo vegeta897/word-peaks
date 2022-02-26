@@ -18,6 +18,7 @@
 	export let playRandom
 	export let stats
 	export let hash
+	export let hardMode
 
 	let nextMS
 	const updateNextMS = () => (nextMS = getDayEnd(dayNumber) - new Date())
@@ -45,8 +46,9 @@
 				.join('')
 		)
 		.join('\n  ')
-	let day = gameMode === 'random' ? '∞ ' : `#${dayNumber + 1} `
-	let copyText = `Wordle Peaks ${day}${score}/6\n\n  ${emojis}`
+	let dayText = gameMode === 'random' ? '∞ ' : `#${dayNumber + 1} `
+	let scoreText = `${score}/6${hardMode ? '*' : ''}`
+	let copyText = `Wordle Peaks ${dayText}${scoreText}\n\n  ${emojis}`
 	if (gameMode === 'random')
 		copyText += `\nhttps://vegeta897.github.io/wordle-peaks/#${encodeWord(answer)}`
 
@@ -79,7 +81,7 @@
 		const imageUrl = canvas.toDataURL()
 		const imageBlob = await (await fetch(imageUrl)).blob()
 		const filesArray = [
-			new File([imageBlob], `wordle-peaks-${gameMode === 'random' ? hash : day}.png`, {
+			new File([imageBlob], `wordle-peaks-${gameMode === 'random' ? hash : dayText}.png`, {
 				type: imageBlob.type,
 				lastModified: new Date().getTime(),
 			}),
@@ -129,7 +131,7 @@
 		ctx.font = '20px Arial'
 		ctx.textAlign = 'center'
 		ctx.fillStyle = '#cccccc'
-		ctx.fillText(`Wordle Peaks ${day}${score}/6`, 126, guesses.length * 50 + 22)
+		ctx.fillText(`Wordle Peaks ${dayText}${scoreText}`, 126, guesses.length * 50 + 22)
 	})
 </script>
 

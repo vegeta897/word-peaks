@@ -5,12 +5,10 @@
 		boardContent,
 		currentRow,
 		currentTile,
-		validLetters,
 		gameFinished,
 		guesses,
 		showAllHints,
 	} from '$lib/store'
-	import { getValidLetterBounds } from '$lib/data-model'
 	import Tile from '$lib/Tile.svelte'
 	import { get } from 'svelte/store'
 

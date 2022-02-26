@@ -1,11 +1,37 @@
 <script lang="ts">
 	import Toggle from 'svelte-toggle'
-	import { highContrast, showAllHints } from '$lib/store'
+	import { highContrast, showAllHints, hardMode, changeHardMode } from '$lib/store'
+	import { get } from 'svelte/store'
+	import { toast } from '@zerodevx/svelte-toast'
+	import { beforeUpdate } from 'svelte'
+
+	function toggleHardMode() {
+		try {
+			changeHardMode(!hardModeToggle)
+		} catch (err) {
+			toast.pop()
+			toast.push(err, { theme: { '--toastBackground': 'var(--error-color)' } })
+		}
+	}
+
+	let hardModeToggle
+
+	beforeUpdate(() => {
+		hardModeToggle = get(hardMode)
+	})
 </script>
 
 <section>
 	<h2>Options</h2>
 	<div class="content">
+		<Toggle
+			bind:toggled={hardModeToggle}
+			on:click={toggleHardMode}
+			hideLabel
+			label="Hard mode"
+			style="transform: scale(1.4); touch-action: manipulation;"
+			toggledColor="var(--accent-color)"><div class="label">Hard mode</div></Toggle
+		>
 		<Toggle
 			bind:toggled={$highContrast}
 			hideLabel

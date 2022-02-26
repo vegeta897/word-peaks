@@ -21,6 +21,7 @@
 		VERSION,
 	} from '$lib/data-model'
 	import { toast } from '@zerodevx/svelte-toast'
+	import type { SvelteToastOptions } from '@zerodevx/svelte-toast'
 	import {
 		answer,
 		guesses,
@@ -39,6 +40,11 @@
 		updateGuesses,
 		stats,
 		storeVersion,
+		hardMode,
+		lastPlayedWasHard,
+		lastPlayedDailyWasHard,
+		lastPlayedRandomWasHard,
+		invalidHardModeGuess,
 	} from '$lib/store'
 	import { trackEvent } from '$lib/plausible'
 	import { browser } from '$app/env'
@@ -101,9 +107,13 @@
 		answerDaily.set(getWordByDay(dayNumber))
 	}
 
-	const showError = (m) => {
+	const showError = (m, onPop?: (id?: number) => any) => {
 		toast.pop()
-		toast.push(m, { theme: { '--toastBackground': 'var(--error-color)' } })
+		const toastOptions: SvelteToastOptions = {
+			theme: { '--toastBackground': 'var(--error-color)' },
+		}
+		if (onPop) toastOptions.onpop = onPop
+		toast.push(m, toastOptions)
 	}
 
 	function typeLetter(letter: string) {
@@ -151,9 +161,21 @@
 			showError('Not enough letters')
 			return
 		}
-		const submittedWord = getBoardRowString(get(boardContent)[get(currentRow)])
+		const submittedRow = get(boardContent)[get(currentRow)]
+		const submittedWord = getBoardRowString(submittedRow)
 		if (!dictionary.includes(submittedWord)) {
 			showError('Not a valid word')
+			return
+		}
+		if (
+			get(hardMode) &&
+			get(currentRow) > 0 &&
+			submittedRow.some(
+				(tile) => tile.letter < tile.letterBounds![0] || tile.letter > tile.letterBounds![1]
+			)
+		) {
+			invalidHardModeGuess.set(true)
+			showError('Guesses must use valid letters', () => invalidHardModeGuess.set(false))
 			return
 		}
 		trackEvent('submitGuess')
@@ -163,6 +185,9 @@
 			trackEvent(get(gameWon) ? 'gameWon' : 'gameLost')
 			if (newUser) trackEvent('firstFinish')
 			newUser = false
+			;(get(gameMode) === 'daily' ? lastPlayedDailyWasHard : lastPlayedRandomWasHard).set(
+				get(hardMode)
+			)
 			if (get(gameMode) === 'daily')
 				stats.update((_stats) => {
 					const streak = won ? _stats.currentStreak + 1 : 0
@@ -198,6 +223,7 @@
 			dayNumber: get(lastPlayedDaily),
 			stats: get(stats),
 			hash,
+			hardMode: get(lastPlayedWasHard),
 		})
 
 	let consoleMode
