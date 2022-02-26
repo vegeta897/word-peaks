@@ -5,9 +5,11 @@
 	export let tile
 	export let current = false
 	export let gameFinished = false
-	export let validLetterBounds = []
 	export let showHint = false
 	export let animate = false
+
+	let tileFlipDuration
+	let tileFlipDelay
 
 	$: tileFlipDuration = animate ? 250 : 0
 	$: tileFlipDelay = animate ? 150 : 0
@@ -45,14 +47,14 @@
 			out:squish={{ easing: quadIn, delay: tile.id * tileFlipDelay, duration: tileFlipDuration }}
 		>
 			{#if tile.letter}<div in:fly={typeAnimation}>{tile.letter}</div>{/if}
-			{#if showHint && current}
-				{#if validLetterBounds[0] !== validLetterBounds[1]}
+			{#if tile.letterBounds && !tile.letter && showHint}
+				{#if tile.letterBounds[0] !== tile.letterBounds[1]}
 					<span class="hint"
-						>{validLetterBounds[0]} <span class="small">...</span>
-						{validLetterBounds[1]}</span
+						>{tile.letterBounds[0]} <span class="small">...</span>
+						{tile.letterBounds[1]}</span
 					>
 				{:else}
-					<span class="hint">{validLetterBounds[0]}</span>
+					<span class="hint">{tile.letterBounds[0]}</span>
 				{/if}
 			{/if}
 		</div>

@@ -4,6 +4,7 @@ import { writable as storageWritable } from 'svelte-local-storage-store'
 import type { GameMode, Stats } from '$lib/data-model'
 import {
 	createNewBoard,
+	getValidLetterBounds,
 	getValidLetters,
 	newStats,
 	ROWS,
@@ -20,6 +21,7 @@ export const guessesDaily: Writable<string[]> = storageWritable('wp-guesses', []
 export const guessesRandom: Writable<string[]> = storageWritable('wp-guessesRandom', [])
 
 export const highContrast = storageWritable('wp-highContrast', false)
+export const showAllHints = storageWritable('wp-showAllHints', false)
 
 export const lastPlayedDaily = storageWritable('wp-lastPlayedDaily', -1)
 
@@ -45,15 +47,21 @@ export function updateGuesses(fn: Updater<string[]>) {
 	;(get(gameMode) === 'daily' ? guessesDaily : guessesRandom).update(fn)
 }
 
-guesses.subscribe((words) => {
+guesses.subscribe((guessed) => {
 	boardContent.update((content) => {
 		const newBoardContent = createNewBoard()
-		words.forEach(
-			(word, r) =>
-				(newBoardContent[r] = [...word].map((letter, l) =>
+		content.forEach((row, r) => {
+			if (r < guessed.length) {
+				const guessedWord = guessed[r]
+				newBoardContent[r] = [...guessedWord].map((letter, l) =>
 					scoreTile(letter, get(answer), r, l, content)
-				))
-		)
+				)
+			} else if (r > 0 && r === guessed.length) {
+				newBoardContent[r].forEach((tile, t) => {
+					tile.letterBounds = getValidLetterBounds(getValidLetters(newBoardContent, r, t))
+				})
+			}
+		})
 		return newBoardContent
 	})
 })

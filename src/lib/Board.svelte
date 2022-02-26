@@ -8,6 +8,7 @@
 		validLetters,
 		gameFinished,
 		guesses,
+		showAllHints,
 	} from '$lib/store'
 	import { getValidLetterBounds } from '$lib/data-model'
 	import Tile from '$lib/Tile.svelte'
@@ -36,8 +37,7 @@
 							{tile}
 							current={r === $currentRow && tile.id === $currentTile}
 							gameFinished={$gameFinished}
-							validLetterBounds={getValidLetterBounds($validLetters)}
-							showHint={!$gameFinished && r > 0}
+							showHint={!$gameFinished && (tile.id === $currentTile || $showAllHints)}
 							animate={r >= preloadedRows && r >= $currentRow - 1}
 						/>
 					{/each}

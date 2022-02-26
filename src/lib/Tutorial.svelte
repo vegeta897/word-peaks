@@ -25,10 +25,9 @@
 	<div>
 		<div>
 			<Tile
-				tile={{ scored: false, letter: '', distance: 0, id: 0 }}
+				tile={{ scored: false, letter: '', distance: 0, id: 0, letterBounds: ['e', 'v'] }}
 				current={true}
 				showHint={true}
-				validLetterBounds={['e', 'v']}
 			/>
 		</div>
 		<p>The range of possible letters is shown on the tile and the keyboard as you type</p>

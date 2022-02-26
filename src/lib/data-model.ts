@@ -11,6 +11,7 @@ type Tile = {
 	distance: number
 	magnitude: number
 	polarity: -1 | 0 | 1
+	letterBounds?: [string, string]
 }
 export type Board = Tile[][]
 export type GameMode = 'daily' | 'random'

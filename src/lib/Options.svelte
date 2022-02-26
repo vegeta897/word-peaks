@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Toggle from 'svelte-toggle'
-	import { highContrast } from '$lib/store'
+	import { highContrast, showAllHints } from '$lib/store'
 </script>
 
 <section>
@@ -9,9 +9,16 @@
 		<Toggle
 			bind:toggled={$highContrast}
 			hideLabel
-			label="High Contrast Mode"
+			label="High contrast mode"
 			style="transform: scale(1.4); touch-action: manipulation;"
-			toggledColor="var(--accent-color)"><div class="label">High Contrast Mode</div></Toggle
+			toggledColor="var(--accent-color)"><div class="label">High contrast mode</div></Toggle
+		>
+		<Toggle
+			bind:toggled={$showAllHints}
+			hideLabel
+			label="Show all hints in row"
+			style="transform: scale(1.4); touch-action: manipulation;"
+			toggledColor="var(--accent-color)"><div class="label">Show all hints in row</div></Toggle
 		>
 	</div>
 </section>
@@ -38,5 +45,13 @@
 		order: -1;
 		flex-grow: 1;
 		font-size: 1.2em;
+		margin: 0.8rem 0;
+		padding-right: 0.8rem;
+	}
+
+	@media (max-width: 360px) {
+		.label {
+			font-size: 1em;
+		}
 	}
 </style>
