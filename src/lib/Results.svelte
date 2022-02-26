@@ -3,6 +3,8 @@
 	import { trackEvent } from '$lib/plausible'
 	import { encodeWord, getDayEnd } from '$lib/data-model'
 	import { onMount } from 'svelte'
+	import { highContrast } from '$lib/store'
+	import { get } from 'svelte/store'
 
 	// Don't use store, we don't want/need dynamic content for the results
 	export let answer
@@ -91,7 +93,7 @@
 	onMount(() => {
 		if (!canvas) return
 		const ctx = canvas.getContext('2d')
-		ctx.fillStyle = '#312236'
+		ctx.fillStyle = get(highContrast) ? '#161a25' : '#312236'
 		ctx.fillRect(0, 0, 252, 300)
 		const roundedRectangle = (x, y, w, h, rTop, rBottom?) => {
 			rBottom = rBottom ?? rTop
@@ -110,12 +112,12 @@
 				let topRadius = 5
 				let bottomRadius = 5
 				if (tile.distance === 0) {
-					ctx.fillStyle = '#15a850'
+					ctx.fillStyle = get(highContrast) ? '#64ba2e' : '#15a850'
 				} else if (tile.distance > 0) {
 					ctx.fillStyle = '#567de8'
 					bottomRadius = 14
 				} else {
-					ctx.fillStyle = '#e38f2f'
+					ctx.fillStyle = get(highContrast) ? '#da3f8b' : '#e38f2f'
 					topRadius = 14
 				}
 				const x = 4 + t * 50
