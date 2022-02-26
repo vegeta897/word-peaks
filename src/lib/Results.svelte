@@ -65,12 +65,14 @@
 	}
 
 	let shareMenu
+	let imageShared
 
 	let canvas: HTMLCanvasElement
 
 	async function shareImage() {
 		// https://benkaiser.dev/sharing-images-using-the-web-share-api/
 		shareMenu = false
+		imageShared = true
 		trackEvent('resultShare')
 		const imageUrl = canvas.toDataURL()
 		const imageBlob = await (await fetch(imageUrl)).blob()
@@ -200,11 +202,9 @@
 			<button on:click={playRandom}>Play Random</button>
 		</div>
 	</div>
-	{#if gameFinished}
-		<div class="image-share">
-			<canvas bind:this={canvas} width="252" height={guesses.length * 50 + 30} />
-		</div>
-	{/if}
+	<div class="image-share" class:hidden={!imageShared}>
+		<canvas bind:this={canvas} width="252" height={guesses.length * 50 + 30} />
+	</div>
 </section>
 
 <style>
@@ -365,12 +365,15 @@
 	}
 
 	.image-share {
-		display: none;
 		margin-top: 1rem;
-		/*display: flex;*/
+		display: flex;
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
+	}
+
+	.hidden {
+		display: none;
 	}
 
 	@media (max-width: 480px) {
