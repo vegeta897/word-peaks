@@ -68,6 +68,22 @@
 		)
 	}
 
+	function copyImage() {
+		canvas.toBlob(function (blob) {
+			let data = [new ClipboardItem({ [blob.type]: blob })]
+			navigator.clipboard.write(data).then(
+				() =>
+					toast.push('Image copied!', {
+						theme: { '--toastBackground': 'var(--cta-color)' },
+					}),
+				() =>
+					toast.push("Sorry, couldn't do that!", {
+						theme: { '--toastBackground': 'var(--error-color)' },
+					})
+			)
+		})
+	}
+
 	let shareMenu
 	let imageShared
 
@@ -211,6 +227,7 @@
 	</div>
 	<div class="image-share" class:hidden={!imageShared}>
 		<canvas bind:this={canvas} width="252" height={guesses.length * 50 + 30} />
+		<button on:click={copyImage} class="share-button">Copy Image</button>
 	</div>
 </section>
 
@@ -372,6 +389,13 @@
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
+		gap: 0.8rem;
+	}
+
+	.image-share canvas {
+		padding: 4px;
+		border: 1px solid var(--primary-color);
+		box-shadow: 0 0 8px var(--primary-color);
 	}
 
 	.hidden {
