@@ -254,11 +254,6 @@
 		flex-basis: 100%;
 	}
 
-	.distribution h4 {
-		width: 100%;
-		text-align: center;
-	}
-
 	.bar-row {
 		display: flex;
 		align-items: baseline;
