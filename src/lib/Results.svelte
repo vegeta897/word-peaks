@@ -5,6 +5,8 @@
 	import { onMount } from 'svelte'
 	import { answerDaily, guessesDaily, highContrast, lastPlayedDaily } from '$lib/store'
 	import { get } from 'svelte/store'
+	import { fade } from 'svelte/transition'
+	import { cubicIn, cubicOut } from 'svelte/easing'
 	import {
 		copyImage,
 		copyText,
@@ -66,6 +68,7 @@
 	}
 
 	let shareMenu
+	let showShareButtons
 	let imageShared
 
 	let canvas: HTMLCanvasElement
@@ -113,13 +116,24 @@
 		</div>
 		<div class="column">
 			{#if gameFinished}
-				{#if shareMenu}
-					<div class="share-buttons">
+				{#if shareMenu && showShareButtons}
+					<div
+						class="share-buttons"
+						in:fade={{ duration: 150, easing: cubicOut }}
+						out:fade={{ duration: 100, easing: cubicIn }}
+						on:outroend={() => (showShareButtons = false)}
+					>
 						<button on:click={shareText} class="share-button">Text</button>
 						<button on:click={onShareImage} class="share-button">Image</button>
 					</div>
-				{:else}
-					<button on:click={() => (shareMenu = true)} class="share-button">Share</button>
+				{:else if !shareMenu && !showShareButtons}
+					<button
+						in:fade={{ duration: 150, easing: cubicOut }}
+						out:fade={{ duration: 100, easing: cubicIn }}
+						on:outroend={() => (showShareButtons = true)}
+						on:click={() => (shareMenu = true)}
+						class="share-button">Share</button
+					>
 				{/if}
 			{/if}
 			{#if gameMode === 'random' || !dailyFinished}
