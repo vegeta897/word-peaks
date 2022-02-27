@@ -276,9 +276,6 @@
 	}
 
 	@media (max-width: 480px) {
-		.stats-item {
-			font-size: 0.8em;
-		}
 		.column {
 			flex-basis: max-content;
 		}

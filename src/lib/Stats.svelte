@@ -89,4 +89,9 @@
 		align-items: center;
 		margin-left: 8px;
 	}
+	@media (max-width: 480px) {
+		.stats-item {
+			font-size: 0.8em;
+		}
+	}
 </style>
