@@ -1,23 +1,31 @@
 <script lang="ts">
-	import { toast } from '@zerodevx/svelte-toast'
 	import { trackEvent } from '$lib/plausible'
-	import { encodeWord, getDayEnd, getDayNumber } from '$lib/data-model'
+	import type { Board, GameMode } from '$lib/data-model'
+	import { getDayEnd, getDayNumber } from '$lib/data-model'
 	import { onMount } from 'svelte'
 	import { answerDaily, guessesDaily, highContrast, lastPlayedDaily } from '$lib/store'
 	import { get } from 'svelte/store'
+	import {
+		copyImage,
+		copyText,
+		drawResults,
+		getEmojiGrid,
+		getShareTitle,
+		shareImage,
+	} from '$lib/share'
 
 	// Don't use store, we don't want/need dynamic content for the results
-	export let answer
-	export let guesses
-	export let boardContent
-	export let gameMode
-	export let gameFinished
-	export let gameWon
+	export let answer: string
+	export let guesses: string[]
+	export let boardContent: Board
+	export let gameMode: GameMode
+	export let gameFinished: boolean
+	export let gameWon: boolean
 	export let playDaily
 	export let playRandom
 	export let stats
-	export let hash
-	export let hardMode
+	export let hash: string
+	export let hardMode: boolean
 
 	const _guessesDaily = get(guessesDaily)
 	const dailyFinished =
@@ -39,53 +47,23 @@
 	const HOUR = 3600000
 	const MINUTE = 60000
 
-	const score = gameWon ? guesses.length : 'X'
-	const emojis = guesses
-		.map((word) =>
-			[...word]
-				.map((letter, l) => {
-					if (letter === answer[l]) return '🟩'
-					return letter > answer[l] ? '🔽' : '🔼'
-				})
-				.join('')
-		)
-		.join('\n  ')
-	let dayText = gameMode === 'random' ? '∞ ' : `#${get(lastPlayedDaily) + 1} `
-	let scoreText = `${score}/6${hardMode ? '*' : ''}`
-	let copyText = `Wordle Peaks ${dayText}${scoreText}\n\n  ${emojis}`
-	if (gameMode === 'random')
-		copyText += `\nhttps://vegeta897.github.io/wordle-peaks/#${encodeWord(answer)}`
+	const shareTitleText = getShareTitle({
+		gameWon,
+		guesses,
+		gameMode,
+		hardMode,
+		day: get(lastPlayedDaily) + 1,
+	})
 
 	function shareText() {
 		shareMenu = false
 		trackEvent('resultShare')
-		toast.pop()
-		navigator.clipboard.writeText(copyText).then(
-			() =>
-				toast.push('Score copied!', {
-					theme: { '--toastBackground': 'var(--cta-color)' },
-				}),
-			() =>
-				toast.push("Sorry, couldn't do that!", {
-					theme: { '--toastBackground': 'var(--error-color)' },
-				})
+		copyText(
+			shareTitleText +
+				'\n\n' +
+				getEmojiGrid(guesses, answer) +
+				(gameMode === 'random' ? `\nhttps://vegeta897.github.io/wordle-peaks/#${hash}` : '')
 		)
-	}
-
-	function copyImage() {
-		canvas.toBlob(function (blob) {
-			let data = [new ClipboardItem({ [blob.type]: blob })]
-			navigator.clipboard.write(data).then(
-				() =>
-					toast.push('Image copied!', {
-						theme: { '--toastBackground': 'var(--cta-color)' },
-					}),
-				() =>
-					toast.push("Sorry, couldn't do that!", {
-						theme: { '--toastBackground': 'var(--error-color)' },
-					})
-			)
-		})
 	}
 
 	let shareMenu
@@ -93,66 +71,21 @@
 
 	let canvas: HTMLCanvasElement
 
-	async function shareImage() {
-		// https://benkaiser.dev/sharing-images-using-the-web-share-api/
+	async function onShareImage() {
 		shareMenu = false
 		imageShared = true
 		trackEvent('resultShare')
-		const imageUrl = canvas.toDataURL()
-		const imageBlob = await (await fetch(imageUrl)).blob()
-		const filesArray = [
-			new File([imageBlob], `wordle-peaks-${gameMode === 'random' ? hash : dayText}.png`, {
-				type: imageBlob.type,
-				lastModified: new Date().getTime(),
-			}),
-		]
-		const shareData = {
-			files: filesArray,
-		}
-		await navigator.share(shareData)
+		await shareImage(canvas, gameMode === 'random' ? { hash } : { day: get(lastPlayedDaily) + 1 })
 	}
 
-	onMount(() => {
-		if (!canvas) return
-		const ctx = canvas.getContext('2d')
-		ctx.fillStyle = get(highContrast) ? '#161a25' : '#312236'
-		ctx.fillRect(0, 0, 252, 300)
-		const roundedRectangle = (x, y, w, h, rTop, rBottom?) => {
-			rBottom = rBottom ?? rTop
-			ctx.beginPath()
-			ctx.moveTo(x + rTop, y)
-			ctx.arcTo(x + w, y, x + w, y + h, rTop)
-			ctx.arcTo(x + w, y + h, x, y + h, rBottom)
-			ctx.arcTo(x, y + h, x, y, rBottom)
-			ctx.arcTo(x, y, x + w, y, rTop)
-			ctx.closePath()
-			ctx.fill()
-		}
-		boardContent.forEach((row, r) => {
-			if (r >= guesses.length) return
-			row.forEach((tile, t) => {
-				let topRadius = 5
-				let bottomRadius = 5
-				if (tile.distance === 0) {
-					ctx.fillStyle = get(highContrast) ? '#64ba2e' : '#15a850'
-				} else if (tile.distance > 0) {
-					ctx.fillStyle = '#567de8'
-					bottomRadius = 14
-				} else {
-					ctx.fillStyle = get(highContrast) ? '#da3f8b' : '#e38f2f'
-					topRadius = 14
-				}
-				const x = 4 + t * 50
-				const y = 4 + r * 50
-				const l = 44
-				roundedRectangle(x, y, l, l, topRadius, bottomRadius)
-			})
+	onMount(() =>
+		drawResults(canvas, {
+			highContrast: get(highContrast),
+			boardContent,
+			guesses,
+			caption: shareTitleText,
 		})
-		ctx.font = '20px Arial'
-		ctx.textAlign = 'center'
-		ctx.fillStyle = '#cccccc'
-		ctx.fillText(`Wordle Peaks ${dayText}${scoreText}`, 126, guesses.length * 50 + 22)
-	})
+	)
 </script>
 
 <section>
@@ -216,7 +149,7 @@
 				{#if shareMenu}
 					<div class="share-buttons">
 						<button on:click={shareText} class="share-button">Text</button>
-						<button on:click={shareImage} class="share-button">Image</button>
+						<button on:click={onShareImage} class="share-button">Image</button>
 					</div>
 				{:else}
 					<button on:click={() => (shareMenu = true)} class="share-button">Share</button>
@@ -229,8 +162,8 @@
 		</div>
 	</div>
 	<div class="image-share" class:hidden={!imageShared}>
-		<canvas bind:this={canvas} width="252" height={guesses.length * 50 + 30} />
-		<button on:click={copyImage} class="share-button">Copy Image</button>
+		<canvas bind:this={canvas} width="252" height="0" />
+		<button on:click={() => copyImage(canvas)} class="share-button">Copy Image</button>
 	</div>
 </section>
 
