@@ -228,7 +228,6 @@
 			boardContent: get(boardContent),
 			gameFinished: get(gameFinished),
 			gameWon: get(gameWon),
-			dayNumber: get(lastPlayedDaily),
 			stats: get(stats),
 			hash,
 			hardMode: get(lastPlayedWasHard),

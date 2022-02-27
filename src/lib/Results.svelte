@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { toast } from '@zerodevx/svelte-toast'
 	import { trackEvent } from '$lib/plausible'
-	import { encodeWord, getDayEnd } from '$lib/data-model'
+	import { encodeWord, getDayEnd, getDayNumber } from '$lib/data-model'
 	import { onMount } from 'svelte'
-	import { highContrast } from '$lib/store'
+	import { answerDaily, guessesDaily, highContrast, lastPlayedDaily } from '$lib/store'
 	import { get } from 'svelte/store'
 
 	// Don't use store, we don't want/need dynamic content for the results
@@ -13,15 +13,19 @@
 	export let gameMode
 	export let gameFinished
 	export let gameWon
-	export let dayNumber
 	export let playDaily
 	export let playRandom
 	export let stats
 	export let hash
 	export let hardMode
 
+	const _guessesDaily = get(guessesDaily)
+	const dailyFinished =
+		get(lastPlayedDaily) === getDayNumber() &&
+		(_guessesDaily.length === 6 || _guessesDaily[_guessesDaily.length - 1] === get(answerDaily))
+
 	let nextMS
-	const updateNextMS = () => (nextMS = getDayEnd(dayNumber) - new Date())
+	const updateNextMS = () => (nextMS = getDayEnd(get(lastPlayedDaily)) - new Date())
 	updateNextMS()
 
 	setInterval(() => {
@@ -46,7 +50,7 @@
 				.join('')
 		)
 		.join('\n  ')
-	let dayText = gameMode === 'random' ? '∞ ' : `#${dayNumber + 1} `
+	let dayText = gameMode === 'random' ? '∞ ' : `#${get(lastPlayedDaily) + 1} `
 	let scoreText = `${score}/6${hardMode ? '*' : ''}`
 	let copyText = `Wordle Peaks ${dayText}${scoreText}\n\n  ${emojis}`
 	if (gameMode === 'random')
@@ -191,9 +195,8 @@
 	</div>
 	<div class="share">
 		<div class="column">
-			{#if nextWordReady}
+			{#if nextWordReady || !dailyFinished}
 				<div class="daily-text">Try today's word!</div>
-				<button on:click={playDaily} class="daily-button">Play Daily</button>
 			{:else}
 				<div class="countdown">
 					<h3>Next word</h3>
@@ -219,10 +222,10 @@
 					<button on:click={() => (shareMenu = true)} class="share-button">Share</button>
 				{/if}
 			{/if}
-			<button on:click={playRandom}>Play Random</button>
-			{#if gameMode === 'random' && !nextWordReady}
+			{#if gameMode === 'random' || !dailyFinished}
 				<button on:click={playDaily} class="daily-button">Play Daily</button>
 			{/if}
+			<button on:click={playRandom}>Play Random</button>
 		</div>
 	</div>
 	<div class="image-share" class:hidden={!imageShared}>
