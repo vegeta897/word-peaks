@@ -1,0 +1,92 @@
+<script lang="ts">
+	import type { GameMode, Stats } from '$lib/data-model'
+
+	export let stats: Stats
+	export let gameMode: GameMode
+	const highestDistribution = stats.distribution.reduce((a, b) => Math.max(a, b), 1)
+</script>
+
+<div class="stats">
+	<div class="stats-item">
+		<strong>{stats.totalGames}</strong>
+		Total games
+	</div>
+	<div class="stats-item">
+		<strong>{Math.round((100 * stats.wonGames) / (stats.totalGames || 1))}%</strong>
+		Win rate
+	</div>
+	<div class="stats-item">
+		<strong>{stats.currentStreak}</strong>
+		Current streak
+	</div>
+	<div class="stats-item">
+		<strong>{stats.bestStreak}</strong>
+		Best streak
+	</div>
+	<div class="distribution">
+		<h3>Guess Distribution</h3>
+		{#each stats.distribution as guessCount, c}
+			<div class="bar-row">
+				{c + 1}
+				<div
+					class="bar"
+					style={`width: calc(22px + ${Math.round((100 * guessCount) / highestDistribution)}%)`}
+				>
+					{guessCount}
+				</div>
+			</div>
+		{/each}
+	</div>
+	{#if gameMode === 'random'}<em>Stats only count daily games</em>{/if}
+</div>
+
+<style>
+	.stats {
+		color: var(--text-color);
+		display: flex;
+		justify-content: center;
+		margin-bottom: 1.4rem;
+		flex-wrap: wrap;
+	}
+
+	.stats-item {
+		width: 25%;
+		display: flex;
+		flex-direction: column;
+		justify-content: flex-start;
+		align-items: center;
+		text-align: center;
+	}
+
+	.stats-item strong {
+		font-size: 1.8em;
+	}
+
+	h3 {
+		margin: 0.5rem 0;
+		text-align: center;
+	}
+
+	.distribution {
+		margin-top: 1rem;
+		max-width: 20rem;
+		flex-basis: 100%;
+	}
+
+	.bar-row {
+		display: flex;
+		align-items: baseline;
+	}
+
+	.bar {
+		height: 20px;
+		background-color: var(--accent-color);
+		border-radius: 8px;
+		margin-bottom: 6px;
+		font-weight: 700;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		margin-left: 8px;
+	}
+</style>
