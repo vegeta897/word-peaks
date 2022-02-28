@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { alphabet } from '$lib/data-model'
-	import { validLetters } from '$lib/store'
+	import { validLetters, swapEnterBackspace } from '$lib/store'
 
 	const keyboardLayout = [
 		['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
@@ -25,7 +25,19 @@
 <div class="keyboard">
 	{#each keyboardLayout as keyRow, r}
 		<div class="key-row">
-			{#if r === 2}<button on:click={submitRow} class="wide">Enter</button>{/if}
+			{#if r === 2}
+				{#if $swapEnterBackspace}
+					<button on:click={undoLetter} class="wide"
+						><svg viewBox="0 0 21 11" xmlns="http://www.w3.org/2000/svg" width="42" height="22">
+							<line x1="7" x2="21" y1="5" y2="5" />
+							<polygon points="3,5 7,2 7,8" />
+							<line x1="1" x2="1" y1="0.5" y2="9.5" />
+						</svg></button
+					>
+				{:else}
+					<button on:click={submitRow} class="wide">Enter</button>
+				{/if}
+			{/if}
 			{#each keyRow as key}
 				<button
 					on:click={() => typeLetter(key)}
@@ -33,13 +45,17 @@
 					class:invalid={!$validLetters.has(key)}>{key}</button
 				>
 			{/each}
-			{#if r === 2}<button on:click={undoLetter} class="wide"
-					><svg viewBox="0 0 21 11" xmlns="http://www.w3.org/2000/svg" width="42" height="22">
-						<line x1="7" x2="21" y1="5" y2="5" />
-						<polygon points="3,5 7,2 7,8" />
-						<line x1="1" x2="1" y1="0.5" y2="9.5" />
-					</svg></button
-				>{/if}
+			{#if r === 2}{#if $swapEnterBackspace}
+					<button on:click={submitRow} class="wide">Enter</button>
+				{:else}
+					<button on:click={undoLetter} class="wide">
+						<svg viewBox="0 0 21 11" xmlns="http://www.w3.org/2000/svg" width="42" height="22">
+							<line x1="7" x2="21" y1="5" y2="5" />
+							<polygon points="3,5 7,2 7,8" />
+							<line x1="1" x2="1" y1="0.5" y2="9.5" />
+						</svg>
+					</button>
+				{/if}{/if}
 		</div>
 	{/each}
 </div>

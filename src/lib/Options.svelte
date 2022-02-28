@@ -1,6 +1,12 @@
 <script lang="ts">
 	import Toggle from 'svelte-toggle'
-	import { highContrast, showAllHints, hardMode, changeHardMode } from '$lib/store'
+	import {
+		highContrast,
+		showAllHints,
+		hardMode,
+		changeHardMode,
+		swapEnterBackspace,
+	} from '$lib/store'
 	import { get } from 'svelte/store'
 	import { toast } from '@zerodevx/svelte-toast'
 	import { beforeUpdate } from 'svelte'
@@ -45,6 +51,13 @@
 			label="Show all hints in row"
 			style="transform: scale(1.4); touch-action: manipulation;"
 			toggledColor="var(--accent-color)"><div class="label">Show all hints in row</div></Toggle
+		>
+		<Toggle
+			bind:toggled={$swapEnterBackspace}
+			hideLabel
+			label="Swap Enter/Backspace keys"
+			style="transform: scale(1.4); touch-action: manipulation;"
+			toggledColor="var(--accent-color)"><div class="label">Swap Enter/Backspace keys</div></Toggle
 		>
 	</div>
 </section>
