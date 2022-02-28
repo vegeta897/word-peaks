@@ -25,6 +25,7 @@ export const showAllHints = storageWritable('wp-showAllHints', false)
 const hardModeStored = storageWritable('wp-hardMode', false)
 export const hardMode = derived(hardModeStored, ($hardModeStored) => $hardModeStored)
 export const swapEnterBackspace = storageWritable('wp-swapEnterBackspace', false)
+export const keyboardLayout = storageWritable('wp-keyboardLayout', 'qwerty')
 
 export const lastPlayedDailyWasHard = storageWritable('wp-lastPlayedWasHard', false)
 export const lastPlayedRandomWasHard = storageWritable('wp-lastPlayedRandomWasHard', false)

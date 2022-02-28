@@ -136,3 +136,66 @@ export function decodeWord(hash: string) {
 }
 
 export const alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('')
+
+export const keyboardLayoutOptions = [
+	{
+		value: 'qwerty',
+		label: 'QWERTY',
+		layout: [
+			['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
+			['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'],
+			['z', 'x', 'c', 'v', 'b', 'n', 'm'],
+		],
+		wideKeysRow: 2,
+	},
+	{
+		value: 'azerty',
+		label: 'AZERTY',
+		layout: [
+			['a', 'z', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
+			['q', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm'],
+			['z', 'x', 'c', 'v', 'b', 'n'],
+		],
+		wideKeysRow: 2,
+	},
+	{
+		value: 'qwertz',
+		label: 'QWERTZ',
+		layout: [
+			['q', 'w', 'e', 'r', 't', 'z', 'u', 'i', 'o', 'p'],
+			['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'],
+			['y', 'x', 'c', 'v', 'b', 'n', 'm'],
+		],
+		wideKeysRow: 2,
+	},
+	{
+		value: 'dvorak',
+		label: 'Dvorak',
+		layout: [
+			['p', 'y', 'f', 'g', 'c', 'r', 'l'],
+			['a', 'o', 'e', 'u', 'i', 'd', 'h', 't', 'n', 's'],
+			['q', 'j', 'k', 'x', 'b', 'm', 'w', 'v', 'z'],
+		],
+		wideKeysRow: 0,
+	},
+	{
+		value: 'colemak',
+		label: 'Colemak',
+		layout: [
+			['q', 'w', 'f', 'p', 'g', 'j', 'l', 'u', 'y'],
+			['a', 'r', 's', 't', 'd', 'h', 'n', 'e', 'i', 'o'],
+			['z', 'x', 'c', 'v', 'b', 'k', 'm'],
+		],
+		wideKeysRow: 2,
+	},
+	{
+		value: 'alphabetic',
+		label: 'Alphabetic',
+		layout: [
+			['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j'],
+			['k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's'],
+			['t', 'u', 'v', 'w', 'x', 'y', 'z'],
+		],
+		wideKeysRow: 2,
+	},
+]

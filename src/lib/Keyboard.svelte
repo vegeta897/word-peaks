@@ -1,12 +1,7 @@
 <script lang="ts">
-	import { alphabet } from '$lib/data-model'
-	import { validLetters, swapEnterBackspace } from '$lib/store'
+	import { alphabet, keyboardLayoutOptions } from '$lib/data-model'
+	import { validLetters, swapEnterBackspace, keyboardLayout } from '$lib/store'
 
-	const keyboardLayout = [
-		['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
-		['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'],
-		['z', 'x', 'c', 'v', 'b', 'n', 'm'],
-	]
 	export let typeLetter
 	export let submitRow
 	export let undoLetter
@@ -23,9 +18,9 @@
 <svelte:window on:keydown={handleKeydown} />
 
 <div class="keyboard">
-	{#each keyboardLayout as keyRow, r}
+	{#each keyboardLayoutOptions.find((o) => o.value === $keyboardLayout).layout as keyRow, r}
 		<div class="key-row">
-			{#if r === 2}
+			{#if r === keyboardLayoutOptions.find((o) => o.value === $keyboardLayout).wideKeysRow}
 				{#if $swapEnterBackspace}
 					<button on:click={undoLetter} class="wide"
 						><svg viewBox="0 0 21 11" xmlns="http://www.w3.org/2000/svg" width="42" height="22">
@@ -45,7 +40,7 @@
 					class:invalid={!$validLetters.has(key)}>{key}</button
 				>
 			{/each}
-			{#if r === 2}{#if $swapEnterBackspace}
+			{#if r === keyboardLayoutOptions.find((o) => o.value === $keyboardLayout).wideKeysRow}{#if $swapEnterBackspace}
 					<button on:click={submitRow} class="wide">Enter</button>
 				{:else}
 					<button on:click={undoLetter} class="wide">

@@ -1,15 +1,18 @@
 <script lang="ts">
 	import Toggle from 'svelte-toggle'
+	import Select from 'svelte-select'
 	import {
 		highContrast,
 		showAllHints,
 		hardMode,
 		changeHardMode,
 		swapEnterBackspace,
+		keyboardLayout,
 	} from '$lib/store'
 	import { get } from 'svelte/store'
 	import { toast } from '@zerodevx/svelte-toast'
 	import { beforeUpdate } from 'svelte'
+	import { keyboardLayoutOptions } from '$lib/data-model'
 
 	function toggleHardMode() {
 		try {
@@ -30,6 +33,23 @@
 <section>
 	<h2>Options</h2>
 	<div class="content">
+		<div class="select-container">
+			<div class="label">Keyboard layout</div>
+			<Select
+				items={keyboardLayoutOptions}
+				value={{
+					label: keyboardLayoutOptions.find((o) => o.value === $keyboardLayout).label,
+					value: $keyboardLayout,
+				}}
+				on:select={(d) => {
+					keyboardLayout.set(d.detail.value)
+					console.log(d)
+				}}
+				isClearable={false}
+				isSearchable={false}
+				containerStyles="color: var(--primary-color);"
+			/>
+		</div>
 		<Toggle
 			bind:toggled={hardModeToggle}
 			on:click={toggleHardMode}
@@ -68,6 +88,9 @@
 		margin: 0 auto 1.2rem;
 		padding: 0 1rem;
 		color: var(--text-color);
+		--height: 2.3rem;
+		--indicatorTop: 7px;
+		--indicatorColor: #888;
 	}
 
 	h2 {
@@ -78,6 +101,17 @@
 
 	.content {
 		margin: 2.5rem 0;
+	}
+
+	.select-container {
+		display: flex;
+		align-items: center;
+		margin-right: -7px;
+		margin-bottom: 0.5rem;
+	}
+
+	.select-container .label {
+		margin: 0;
 	}
 
 	.label {
