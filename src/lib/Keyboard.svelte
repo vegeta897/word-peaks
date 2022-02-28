@@ -89,6 +89,7 @@
 
 	.key-row button.invalid {
 		background: var(--secondary-color);
+		color: #cccc;
 	}
 
 	.key-row button.wide {
