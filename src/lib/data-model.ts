@@ -4,7 +4,7 @@ export const VERSION = 1
 export const ROWS = 6
 export const WORD_LENGTH = 5
 
-type Tile = {
+export type Tile = {
 	id: number
 	letter: string
 	scored: boolean
@@ -94,11 +94,11 @@ export function getValidLetterBounds(list: Set<string>): [string, string] {
 const epoch = new Date(2022, 1, 25).getTime() // 2022-02-25
 const msPerDay = 86400000
 
-export const getDayNumber = () => Math.floor((Date.now() - epoch) / msPerDay)
+export const getDayNumber = (): number => Math.floor((Date.now() - epoch) / msPerDay)
 
-export const getWordByDay = (day: number) => targets[day % targets.length]
+export const getWordByDay = (day: number): string => targets[day % targets.length]
 
-export const getDayEnd = (day: number) => new Date(epoch + (day + 1) * msPerDay)
+export const getDayEnd = (day: number): Date => new Date(epoch + (day + 1) * msPerDay)
 
 export type Stats = {
 	currentStreak: number
@@ -116,9 +116,9 @@ export const newStats = (): Stats => ({
 	distribution: new Array(ROWS).fill(0),
 })
 
-export const getRandomWord = () => targets[Math.floor(Math.random() * targets.length)]
+export const getRandomWord = (): string => targets[Math.floor(Math.random() * targets.length)]
 
-export function encodeWord(word: string) {
+export function encodeWord(word: string): string {
 	let sum = 0
 	for (const [l, letter] of [...word].entries()) {
 		sum += alphabet.indexOf(letter) << (l * 5)
@@ -126,7 +126,7 @@ export function encodeWord(word: string) {
 	return sum.toString(36)
 }
 
-export function decodeWord(hash: string) {
+export function decodeWord(hash: string): false | string {
 	if (!hash) return false
 	let word = ''
 	for (let i = 0; i < WORD_LENGTH; i++) {
@@ -137,7 +137,12 @@ export function decodeWord(hash: string) {
 
 export const alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('')
 
-export const keyboardLayoutOptions = [
+export const keyboardLayoutOptions: {
+	value: string
+	label: string
+	layout: [string[], string[], string[]]
+	wideKeysRow: 0 | 1 | 2
+}[] = [
 	{
 		value: 'qwerty',
 		label: 'QWERTY',

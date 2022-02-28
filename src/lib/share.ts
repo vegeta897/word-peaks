@@ -69,7 +69,7 @@ export function copyImage(canvas: HTMLCanvasElement): void {
 export async function shareImage(
 	canvas: HTMLCanvasElement,
 	{ hash, day }: { hash?: string; day?: number }
-) {
+): Promise<void> {
 	const imageUrl = canvas.toDataURL()
 	const imageBlob = await (await fetch(imageUrl)).blob()
 	const filesArray = [
@@ -93,7 +93,7 @@ export function drawResults(
 		guesses,
 		caption,
 	}: { highContrast: boolean; boardContent: Board; guesses: string[]; caption: string }
-) {
+): void {
 	if (!canvas) return
 	canvas.height = guesses.length * 100 + 60
 	const ctx = canvas.getContext('2d')!

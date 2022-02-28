@@ -2,16 +2,17 @@
 	import { fly, squish } from '$lib/transitions.ts'
 	import { quadIn, quadOut } from 'svelte/easing'
 	import { invalidWord, invalidHardModeGuess } from '$lib/store'
+	import type { Tile } from '$lib/data-model'
 
-	export let tile
+	export let tile: Tile
 	export let current = false
 	export let gameFinished = false
 	export let showHint = false
 	export let animate = false
 	export let inCurrentRow = false
 
-	let tileFlipDuration
-	let tileFlipDelay
+	let tileFlipDuration: number
+	let tileFlipDelay: number
 
 	$: tileFlipDuration = animate ? 250 : 0
 	$: tileFlipDelay = animate ? 150 : 0

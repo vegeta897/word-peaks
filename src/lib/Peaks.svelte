@@ -11,7 +11,7 @@
 
 	type Point = [number, number]
 
-	let rows
+	let rows: Point[]
 	currentRow.subscribe((_currentRow) => {
 		rows = get(boardContent)
 			.slice(0, _currentRow)
@@ -22,7 +22,7 @@
 					return [i * 100 + 50, 100 * r + 50 + tile.polarity * height * 50]
 				}),
 				[500, 50 + 100 * r],
-			])
+			]) as Point[]
 	})
 
 	function stringifyPoints(points: Point[]): string {
@@ -34,7 +34,7 @@
 		return line1.map((p, i) => [p[0], p[1] + (line2[i][1] - p[1]) * x])
 	}
 
-	function flatten(line: Point[], row: number) {
+	function flatten(line: Point[], row: number): Point[] {
 		return line.map((p) => [p[0], 50 + row * 100])
 	}
 </script>

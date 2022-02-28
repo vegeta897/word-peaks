@@ -2,11 +2,11 @@
 	import { alphabet, keyboardLayoutOptions } from '$lib/data-model'
 	import { validLetters, swapEnterBackspace, keyboardLayout } from '$lib/store'
 
-	export let typeLetter
-	export let submitRow
-	export let undoLetter
+	export let typeLetter: (key: string) => {}
+	export let submitRow: () => {}
+	export let undoLetter: () => {}
 
-	function handleKeydown({ key, ctrlKey }) {
+	function handleKeydown({ key, ctrlKey }: KeyboardEvent) {
 		if (ctrlKey) return
 		if (key === 'Backspace') undoLetter()
 		if (key === 'Enter') submitRow()

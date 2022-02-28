@@ -16,6 +16,7 @@
 		shareImage,
 	} from '$lib/share'
 	import Stats from '$lib/Stats.svelte'
+	import type { Stats as StatsType } from '$lib/data-model'
 
 	// Don't use store, we don't want/need dynamic content for the results
 	export let answer: string
@@ -24,9 +25,9 @@
 	export let gameMode: GameMode
 	export let gameFinished: boolean
 	export let gameWon: boolean
-	export let playDaily
-	export let playRandom
-	export let stats
+	export let playDaily: () => {}
+	export let playRandom: () => {}
+	export let stats: StatsType
 	export let hash: string
 	export let hardMode: boolean
 
@@ -35,7 +36,7 @@
 		get(lastPlayedDaily) === getDayNumber() &&
 		(_guessesDaily.length === 6 || _guessesDaily[_guessesDaily.length - 1] === get(answerDaily))
 
-	let nextMS
+	let nextMS: number
 	const updateNextMS = () => (nextMS = getDayEnd(get(lastPlayedDaily)) - new Date())
 	updateNextMS()
 
@@ -67,9 +68,9 @@
 		)
 	}
 
-	let shareMenu
-	let showShareButtons
-	let imageShared
+	let shareMenu: boolean
+	let showShareButtons: boolean
+	let imageShared: boolean
 
 	let canvas: HTMLCanvasElement
 

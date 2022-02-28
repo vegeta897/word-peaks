@@ -58,7 +58,7 @@
 		guessesDaily.set([])
 	}
 
-	let newUser
+	let newUser: boolean
 
 	onMount(async () => {
 		if (!get(answerDaily) && !get(answerRandom)) {
@@ -236,7 +236,7 @@
 			hardMode: get(lastPlayedWasHard),
 		})
 
-	let consoleMode
+	let consoleMode: boolean
 	if (browser)
 		window.wp_start = () => {
 			consoleMode = true

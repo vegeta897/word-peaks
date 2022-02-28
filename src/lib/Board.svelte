@@ -12,8 +12,8 @@
 	import Tile from '$lib/Tile.svelte'
 	import { get } from 'svelte/store'
 
-	export let showResults
-	export let startCentered
+	export let showResults: () => {}
+	export let startCentered: boolean
 
 	let preloadedRows = get(guesses).length
 	let ready = false

@@ -23,7 +23,7 @@
 		}
 	}
 
-	let hardModeToggle
+	let hardModeToggle: boolean
 
 	beforeUpdate(() => {
 		hardModeToggle = get(hardMode)
