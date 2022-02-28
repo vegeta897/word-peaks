@@ -34,6 +34,7 @@
 						<Tile
 							{tile}
 							current={r === $currentRow && tile.id === $currentTile}
+							inCurrentRow={r === $currentRow}
 							gameFinished={$gameFinished}
 							showHint={!$gameFinished && (tile.id === $currentTile || $showAllHints)}
 							animate={r >= preloadedRows && r >= $currentRow - 1}

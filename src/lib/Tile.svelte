@@ -1,13 +1,14 @@
 <script lang="ts">
 	import { fly, squish } from '$lib/transitions.ts'
 	import { quadIn, quadOut } from 'svelte/easing'
-	import { invalidHardModeGuess } from '$lib/store'
+	import { invalidWord, invalidHardModeGuess } from '$lib/store'
 
 	export let tile
 	export let current = false
 	export let gameFinished = false
 	export let showHint = false
 	export let animate = false
+	export let inCurrentRow = false
 
 	let tileFlipDuration
 	let tileFlipDelay
@@ -45,12 +46,13 @@
 			class:before-pre={!tile.scored && tile.polarity < 0}
 			class:after-pre={!tile.scored && tile.polarity > 0}
 			class:finished={gameFinished}
+			class:shimmy={$invalidWord && inCurrentRow}
 			class:shake={$invalidHardModeGuess &&
 				tile.letter &&
 				tile.letterBounds &&
 				(tile.letter < tile.letterBounds[0] || tile.letter > tile.letterBounds[1])}
 			out:squish={{ easing: quadIn, delay: tile.id * tileFlipDelay, duration: tileFlipDuration }}
-			style={`animation-delay: ${tile.id * 20}ms`}
+			style={`animation-delay: ${tile.id * ($invalidHardModeGuess ? 20 : 0)}ms`}
 		>
 			{#if tile.letter}<div in:fly={typeAnimation}>{tile.letter}</div>{/if}
 			{#if tile.letterBounds && !tile.letter && showHint}
@@ -148,9 +150,30 @@
 		font-size: 0.7em;
 	}
 
+	.shimmy {
+		animation: shimmy ease-out;
+		animation-duration: 300ms;
+	}
+
 	.shake {
 		animation: shake ease-out;
 		animation-duration: 300ms;
+	}
+
+	@keyframes shimmy {
+		0%,
+		100% {
+			transform: translate(0, 0);
+		}
+		25% {
+			transform: translate(0.4rem, 0);
+		}
+		50% {
+			transform: translate(-0.3rem, 0);
+		}
+		75% {
+			transform: translate(0.2rem, 0);
+		}
 	}
 
 	@keyframes shake {

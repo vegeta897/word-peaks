@@ -45,6 +45,7 @@
 		lastPlayedDailyWasHard,
 		lastPlayedRandomWasHard,
 		invalidHardModeGuess,
+		invalidWord,
 	} from '$lib/store'
 	import { trackEvent } from '$lib/plausible'
 	import { browser } from '$app/env'
@@ -165,13 +166,15 @@
 			return
 		}
 		if (get(currentTile) < WORD_LENGTH) {
-			showError('Not enough letters')
+			invalidWord.set(true)
+			showError('Not enough letters', () => invalidWord.set(false))
 			return
 		}
 		const submittedRow = get(boardContent)[get(currentRow)]
 		const submittedWord = getBoardRowString(submittedRow)
 		if (!dictionary.includes(submittedWord)) {
-			showError('Not a valid word')
+			invalidWord.set(true)
+			showError('Not a valid word', () => invalidWord.set(false))
 			return
 		}
 		if (

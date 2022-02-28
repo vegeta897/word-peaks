@@ -48,6 +48,7 @@ export const lastPlayedWasHard = derived(
 )
 
 export const invalidHardModeGuess = writable(false)
+export const invalidWord = writable(false)
 
 export const boardContent = writable(createNewBoard())
 
