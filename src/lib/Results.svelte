@@ -143,7 +143,7 @@
 		</div>
 	</div>
 	<div class="image-share" class:hidden={!imageShared}>
-		<canvas bind:this={canvas} width="252" height="0" />
+		<canvas bind:this={canvas} width="504" height="0" style={'width:252px'} />
 		<button on:click={() => copyImage(canvas)} class="share-button">Copy Image</button>
 	</div>
 </section>
@@ -269,6 +269,7 @@
 		padding: 4px;
 		border: 1px solid var(--primary-color);
 		box-shadow: 0 0 8px var(--primary-color);
+		/*transform: scale(0.5);*/
 	}
 
 	.hidden {

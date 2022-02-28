@@ -95,10 +95,10 @@ export function drawResults(
 	}: { highContrast: boolean; boardContent: Board; guesses: string[]; caption: string }
 ) {
 	if (!canvas) return
-	canvas.height = guesses.length * 50 + 30
+	canvas.height = guesses.length * 100 + 60
 	const ctx = canvas.getContext('2d')!
 	ctx.fillStyle = highContrast ? '#161a25' : '#312236'
-	ctx.fillRect(0, 0, 252, 330)
+	ctx.fillRect(0, 0, 504, 660)
 	const roundedRectangle = (
 		x: number,
 		y: number,
@@ -120,25 +120,25 @@ export function drawResults(
 	boardContent.forEach((row, r) => {
 		if (r >= guesses.length) return
 		row.forEach((tile, t) => {
-			let topRadius = 5
-			let bottomRadius = 5
+			let topRadius = 10
+			let bottomRadius = 10
 			if (tile.distance === 0) {
 				ctx.fillStyle = highContrast ? '#64ba2e' : '#15a850'
 			} else if (tile.distance > 0) {
 				ctx.fillStyle = '#567de8'
-				bottomRadius = 14
+				bottomRadius = 28
 			} else {
 				ctx.fillStyle = highContrast ? '#da3f8b' : '#e38f2f'
-				topRadius = 14
+				topRadius = 28
 			}
-			const x = 4 + t * 50
-			const y = 4 + r * 50
-			const l = 44
+			const x = 8 + t * 100
+			const y = 8 + r * 100
+			const l = 88
 			roundedRectangle(x, y, l, l, topRadius, bottomRadius)
 		})
 	})
-	ctx.font = '20px Arial'
+	ctx.font = '40px Arial'
 	ctx.textAlign = 'center'
 	ctx.fillStyle = '#cccccc'
-	ctx.fillText(caption, 126, guesses.length * 50 + 22)
+	ctx.fillText(caption, 252, guesses.length * 100 + 44)
 }
