@@ -47,7 +47,7 @@
 				}}
 				isClearable={false}
 				isSearchable={false}
-				containerStyles="color: var(--primary-color);"
+				containerStyles="color: var(--primary-color);width:8.2rem;"
 			/>
 		</div>
 		<Toggle
