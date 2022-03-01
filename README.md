@@ -1,6 +1,6 @@
 # Wordle Peaks
 
-A Wordle spin-off
+A Wordle spin-off where you narrow down the alphabet for each tile
 
 ## [🏔️ Play here](https://vegeta897.github.io/wordle-peaks/)
 
