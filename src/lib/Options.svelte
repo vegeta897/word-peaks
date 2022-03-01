@@ -53,28 +53,32 @@
 			hideLabel
 			label="Hard mode"
 			style="transform: scale(1.4); touch-action: manipulation;"
-			toggledColor="var(--accent-color)"><div class="label">Hard mode</div></Toggle
+			toggledColor="var(--accent-color)"
+			untoggledColor="#695d6e"><div class="label">Hard mode</div></Toggle
 		>
 		<Toggle
 			bind:toggled={$highContrast}
 			hideLabel
 			label="High contrast mode"
 			style="transform: scale(1.4); touch-action: manipulation;"
-			toggledColor="var(--accent-color)"><div class="label">High contrast mode</div></Toggle
+			toggledColor="var(--accent-color)"
+			untoggledColor="#695d6e"><div class="label">High contrast mode</div></Toggle
 		>
 		<Toggle
 			bind:toggled={$showAllHints}
 			hideLabel
 			label="Show all hints in row"
 			style="transform: scale(1.4); touch-action: manipulation;"
-			toggledColor="var(--accent-color)"><div class="label">Show all hints in row</div></Toggle
+			toggledColor="var(--accent-color)"
+			untoggledColor="#695d6e"><div class="label">Show all hints in row</div></Toggle
 		>
 		<Toggle
 			bind:toggled={$swapEnterBackspace}
 			hideLabel
 			label="Swap Enter/Backspace keys"
 			style="transform: scale(1.4); touch-action: manipulation;"
-			toggledColor="var(--accent-color)"><div class="label">Swap Enter/Backspace keys</div></Toggle
+			toggledColor="var(--accent-color)"
+			untoggledColor="#695d6e"><div class="label">Swap Enter/Backspace keys</div></Toggle
 		>
 	</div>
 </section>
@@ -85,6 +89,7 @@
 		margin: 0 auto 1.2rem;
 		padding: 0 1rem;
 		color: var(--text-color);
+		--inputColor: var(--primary-color);
 		--height: 2.3rem;
 		--indicatorTop: 7px;
 		--indicatorColor: #888;

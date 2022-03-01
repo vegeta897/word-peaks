@@ -20,6 +20,7 @@ export const answerRandom: Writable<string> = storageWritable('wp-answerRandom',
 export const guessesDaily: Writable<string[]> = storageWritable('wp-guesses', [])
 export const guessesRandom: Writable<string[]> = storageWritable('wp-guessesRandom', [])
 
+// TODO: Consolidate options to single object?
 export const highContrast: Writable<boolean> = storageWritable('wp-highContrast', false)
 export const showAllHints: Writable<boolean> = storageWritable('wp-showAllHints', false)
 const hardModeStored: Writable<boolean> = storageWritable('wp-hardMode', false)
