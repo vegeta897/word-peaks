@@ -41,10 +41,7 @@
 					label: keyboardLayoutOptions.find((o) => o.value === $keyboardLayout).label,
 					value: $keyboardLayout,
 				}}
-				on:select={(d) => {
-					keyboardLayout.set(d.detail.value)
-					console.log(d)
-				}}
+				on:select={({ detail: { value } }) => keyboardLayout.set(value)}
 				isClearable={false}
 				isSearchable={false}
 				containerStyles="color: var(--primary-color);width:8.2rem;"
