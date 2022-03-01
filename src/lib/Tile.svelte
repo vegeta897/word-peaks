@@ -144,6 +144,7 @@
 		font-weight: 400;
 		color: #999;
 		padding-top: 12px;
+		text-shadow: none;
 	}
 
 	.small {
