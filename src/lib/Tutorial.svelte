@@ -7,7 +7,7 @@
 	<p>Guess the word in 6 tries!</p>
 	<p>
 		After each guess, the tiles show whether your letters occur higher or lower in the alphabet
-		compared to the correct letters.
+		compared to the correct letters. Higher means closer to A, lower means closer to Z.
 	</p>
 	<div>
 		<div><Tile tile={{ scored: true, letter: 'p', distance: 0, id: 0 }} /></div>
