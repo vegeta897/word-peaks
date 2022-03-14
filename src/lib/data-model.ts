@@ -105,8 +105,6 @@ export const getDayNumber = (): number => {
 	return dayCount
 }
 
-console.log(getDayNumber())
-
 export const getWordByDay = (day: number): string => targets[day % targets.length]
 
 export const getDayEnd = (day: number): Date => {
