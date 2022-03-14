@@ -91,14 +91,30 @@ export function getValidLetterBounds(list: Set<string>): [string, string] {
 	]
 }
 
-const epoch = new Date(2022, 1, 25).getTime() // 2022-02-25
-const msPerDay = 86400000
+const firstDay = new Date(2022, 1, 25) // 2022-02-25
 
-export const getDayNumber = (): number => Math.floor((Date.now() - epoch) / msPerDay)
+export const getDayNumber = (): number => {
+	let dayCount = 0
+	const start = new Date(firstDay)
+	const today = new Date()
+	today.setHours(0, 0, 0, 0)
+	while (start < today) {
+		dayCount++
+		start.setDate(start.getDate() + 1)
+	}
+	return dayCount
+}
+
+console.log(getDayNumber())
 
 export const getWordByDay = (day: number): string => targets[day % targets.length]
 
-export const getDayEnd = (day: number): Date => new Date(epoch + (day + 1) * msPerDay)
+export const getDayEnd = (day: number): Date => {
+	const start = new Date(firstDay)
+	let dayEnd = new Date(start)
+	dayEnd.setDate(start.getDate() + day + 1)
+	return dayEnd
+}
 
 export type Stats = {
 	currentStreak: number
