@@ -6,6 +6,7 @@ type EventName = 'gameWon' | 'firstFinish' | 'submitGuess' | 'resultShare' | 'ga
 const plausible = browser
 	? Plausible({
 			domain: 'vegeta897.github.io/wordle-peaks',
+			apiHost: 'https://plausible.pixelatomy.com',
 	  })
 	: { trackPageview() {}, trackEvent() {} }
 
