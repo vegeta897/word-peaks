@@ -130,7 +130,11 @@ export const newStats = (): Stats => ({
 	distribution: new Array(ROWS).fill(0),
 })
 
-export const getRandomWord = (): string => targets[Math.floor(Math.random() * targets.length)]
+export function pickRandom<T>(arr: T[]): T {
+	return arr[Math.floor(Math.random() * arr.length)]
+}
+
+export const getRandomWord = (): string => pickRandom(targets)
 
 export function encodeWord(word: string): string {
 	let sum = 0

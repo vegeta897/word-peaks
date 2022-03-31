@@ -1,5 +1,6 @@
 import type { Board, GameMode } from '$lib/data-model'
 import { toast } from '@zerodevx/svelte-toast'
+import { pickRandom } from '$lib/data-model'
 
 export function getShareTitle({
 	gameWon,
@@ -20,15 +21,72 @@ export function getShareTitle({
 	return `Wordle Peaks ${dayText}${scoreText}`
 }
 
+const aprilFoolsUp = [
+	'🔼',
+	'⚠️',
+	'💩',
+	'👆',
+	'☝️',
+	'👍',
+	'🙏',
+	'👃',
+	'🩸',
+	'🌲',
+	'💧',
+	'🎄',
+	'🍙',
+	'🏔️',
+	'⛰️',
+	'🌋',
+	'🗻',
+	'🏠',
+	'🗼',
+	'⛵',
+	'🔔',
+	'⬆️',
+	'⏫',
+	'⏏️',
+	'🔺',
+]
+const aprilFoolsDown = [
+	'🔽',
+	'💎',
+	'👇',
+	'👎',
+	'🩲',
+	'🍑',
+	'🍕',
+	'💡',
+	'🛡️',
+	'💖',
+	'💗',
+	'💓',
+	'💔',
+	'❤️',
+	'💙',
+	'💜',
+	'⬇️',
+	'⏬',
+	'🔻',
+]
+const aprilFoolsCorrect = ['🟩', '🐸', '🍀', '🔋', '📗', '💹', '✅', '✳️', '❇️', '🟢']
 export function getEmojiGrid(guesses: string[], answer: string): string {
+	const today = new Date()
+	const aprilFools = today.getMonth() === 3 && today.getDate() === 1 // April 1st
 	return (
 		'  ' +
 		guesses
 			.map((word) =>
 				[...word]
 					.map((letter, l) => {
-						if (letter === answer[l]) return '🟩'
-						return letter > answer[l] ? '🔽' : '🔼'
+						if (letter === answer[l]) return aprilFools ? pickRandom(aprilFoolsCorrect) : '🟩'
+						return letter > answer[l]
+							? aprilFools
+								? pickRandom(aprilFoolsDown)
+								: '🔽'
+							: aprilFools
+							? pickRandom(aprilFoolsUp)
+							: '🔼'
 					})
 					.join('')
 			)
