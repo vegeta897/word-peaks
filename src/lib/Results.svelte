@@ -32,12 +32,13 @@
 	export let hardMode: boolean
 
 	const _guessesDaily = get(guessesDaily)
+	const _lastPlayedDaily = get(lastPlayedDaily)
 	const dailyFinished =
-		get(lastPlayedDaily) === getDayNumber() &&
+		_lastPlayedDaily === getDayNumber() &&
 		(_guessesDaily.length === 6 || _guessesDaily[_guessesDaily.length - 1] === get(answerDaily))
 
 	let nextMS: number
-	const updateNextMS = () => (nextMS = getDayEnd(get(lastPlayedDaily)) - new Date())
+	const updateNextMS = () => (nextMS = getDayEnd(_lastPlayedDaily) - new Date())
 	updateNextMS()
 
 	setInterval(() => {
@@ -54,7 +55,7 @@
 		guesses,
 		gameMode,
 		hardMode,
-		day: get(lastPlayedDaily) + 1,
+		day: _lastPlayedDaily + 1,
 	})
 
 	function shareText() {
@@ -78,7 +79,7 @@
 		shareMenu = false
 		imageShared = true
 		trackEvent('resultShare')
-		await shareImage(canvas, gameMode === 'random' ? { hash } : { day: get(lastPlayedDaily) + 1 })
+		await shareImage(canvas, gameMode === 'random' ? { hash } : { day: _lastPlayedDaily + 1 })
 	}
 
 	onMount(() =>
@@ -137,7 +138,7 @@
 					>
 				{/if}
 			{/if}
-			{#if gameMode === 'random' || !dailyFinished}
+			{#if gameMode === 'random' || nextWordReady || !dailyFinished}
 				<button on:click={playDaily} class="daily-button">Play Daily</button>
 			{/if}
 			<button on:click={playRandom}>Play Random</button>
