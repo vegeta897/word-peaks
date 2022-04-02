@@ -215,26 +215,40 @@
 		}
 	}
 
-	const showResults = () =>
-		open(Results, {
-			playDaily: () => {
-				gameMode.set('daily')
-				playDaily()
+	let resultsOpen = false
+
+	const showResults = () => {
+		if (resultsOpen) return
+		resultsOpen = true
+		open(
+			Results,
+			{
+				playDaily: () => {
+					gameMode.set('daily')
+					playDaily()
+				},
+				playRandom: () => {
+					gameMode.set('random')
+					playRandom()
+				},
+				gameMode: get(gameMode),
+				answer: get(answer),
+				guesses: get(guesses),
+				boardContent: get(boardContent),
+				gameFinished: get(gameFinished),
+				gameWon: get(gameWon),
+				stats: get(stats),
+				hash,
+				hardMode: get(lastPlayedWasHard),
 			},
-			playRandom: () => {
-				gameMode.set('random')
-				playRandom()
-			},
-			gameMode: get(gameMode),
-			answer: get(answer),
-			guesses: get(guesses),
-			boardContent: get(boardContent),
-			gameFinished: get(gameFinished),
-			gameWon: get(gameWon),
-			stats: get(stats),
-			hash,
-			hardMode: get(lastPlayedWasHard),
-		})
+			{},
+			{
+				onClosed: () => {
+					resultsOpen = false
+				},
+			}
+		)
+	}
 
 	let consoleMode: boolean
 	if (browser)
