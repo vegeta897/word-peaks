@@ -19,6 +19,7 @@
 		encodeWord,
 		getRandomWord,
 		VERSION,
+		hasEnoughLetters,
 	} from '$lib/data-model'
 	import { toast } from '@zerodevx/svelte-toast'
 	import type { SvelteToastOptions } from '@zerodevx/svelte-toast'
@@ -44,8 +45,9 @@
 		lastPlayedWasHard,
 		lastPlayedDailyWasHard,
 		lastPlayedRandomWasHard,
-		invalidHardModeGuess,
 		invalidWord,
+		notEnoughLetters,
+		invalidHardModeGuess,
 	} from '$lib/store'
 	import { trackEvent } from '$lib/plausible'
 	import { browser } from '$app/env'
@@ -87,6 +89,7 @@
 		close()
 		toast.pop()
 		boardContent.set(createNewBoard())
+		currentTile.set(0)
 	}
 
 	function playRandom(word?: string) {
@@ -129,35 +132,52 @@
 			showResults()
 			return
 		}
-		if (get(currentTile) === WORD_LENGTH) return
+		const _currentTile = get(currentTile)
+		if (_currentTile === WORD_LENGTH) return
 		boardContent.update((content) => {
-			const tile = content[get(currentRow)][get(currentTile)]
+			const tile = content[get(currentRow)][_currentTile]
 			const [lower, upper] = getValidLetterBounds(get(validLetters))
 			tile.polarity = 0
-			if (letter < lower) {
+			if (letter && letter < lower) {
 				tile.polarity = -1
-			} else if (letter > upper) {
+			} else if (letter && letter > upper) {
 				tile.polarity = 1
 			}
 			tile.letter = letter
 			return content
 		})
+		notEnoughLetters.set(false)
+		if (letter || _currentTile < WORD_LENGTH - 1) currentTile.update((ct) => ct + 1)
 	}
 
-	function undoLetter() {
+	function undoLetter(moveCaratBack = true) {
 		if (get(gameFinished)) {
 			showResults()
 			return
 		}
-		if (get(currentTile) === 0) return
 		boardContent.update((content) => {
-			const tile = content[get(currentRow)][get(currentTile) - 1]
+			let tile = content[get(currentRow)][get(currentTile)]
+			if (moveCaratBack && get(currentTile) > 0 && !tile?.letter) {
+				currentTile.update((ct) => ct - 1)
+				tile = content[get(currentRow)][get(currentTile)]
+			}
 			tile.letter = ''
-			tile.distance = 0
 			tile.polarity = 0
-			tile.magnitude = 0
 			return content
 		})
+		invalidHardModeGuess.set(false)
+		notEnoughLetters.set(false)
+		invalidWord.set(false)
+	}
+
+	function moveCarat(dir: number) {
+		if (get(gameFinished)) {
+			showResults()
+			return
+		}
+		const moveTo = get(currentTile) + dir
+		if (moveTo < 0 || moveTo >= WORD_LENGTH) return
+		currentTile.update((ct) => ct + dir)
 	}
 
 	function submitRow() {
@@ -165,9 +185,9 @@
 			showResults()
 			return
 		}
-		if (get(currentTile) < WORD_LENGTH) {
-			invalidWord.set(true)
-			showError('Not enough letters', () => invalidWord.set(false))
+		if (!hasEnoughLetters(get(boardContent), get(currentRow))) {
+			notEnoughLetters.set(true)
+			showError('Not enough letters', () => notEnoughLetters.set(false))
 			return
 		}
 		const submittedRow = get(boardContent)[get(currentRow)]
@@ -212,6 +232,8 @@
 						distribution,
 					}
 				})
+		} else {
+			currentTile.set(0)
 		}
 	}
 
@@ -276,8 +298,8 @@
 			</svg>
 		</button>
 	</header>
-	<Board {showResults} startCentered={newUser} />
-	<Keyboard {typeLetter} {submitRow} {undoLetter} />
+	<Board startCentered={newUser} />
+	<Keyboard {typeLetter} {submitRow} {undoLetter} {moveCarat} />
 	{#if consoleMode}
 		{#await import('$lib/Console.svelte') then c}
 			<svelte:component this={c.default} {typeLetter} {submitRow} {undoLetter} />

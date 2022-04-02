@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { fly, squish } from '$lib/transitions.ts'
 	import { quadIn, quadOut } from 'svelte/easing'
-	import { invalidWord, invalidHardModeGuess } from '$lib/store'
+	import { invalidWord, invalidHardModeGuess, notEnoughLetters, currentTile } from '$lib/store'
 	import type { Tile } from '$lib/data-model'
 
 	export let tile: Tile
@@ -24,7 +24,7 @@
 	}
 </script>
 
-<div class="tile-container">
+<div class="tile-container" on:click={() => inCurrentRow && currentTile.set(tile.id)}>
 	{#if tile.scored}
 		<div
 			class="tile scored filled"
@@ -48,12 +48,16 @@
 			class:after-pre={!tile.scored && tile.polarity > 0}
 			class:finished={gameFinished}
 			class:shimmy={$invalidWord && inCurrentRow}
-			class:shake={$invalidHardModeGuess &&
-				tile.letter &&
-				tile.letterBounds &&
-				(tile.letter < tile.letterBounds[0] || tile.letter > tile.letterBounds[1])}
+			class:shake={inCurrentRow &&
+				(($notEnoughLetters && !tile.letter) ||
+					($invalidHardModeGuess &&
+						tile.letter &&
+						tile.letterBounds &&
+						(tile.letter < tile.letterBounds[0] || tile.letter > tile.letterBounds[1])))}
 			out:squish={{ easing: quadIn, delay: tile.id * tileFlipDelay, duration: tileFlipDuration }}
-			style={`animation-delay: ${tile.id * ($invalidHardModeGuess ? 20 : 0)}ms`}
+			style={`animation-delay: ${
+				tile.id * ($notEnoughLetters || $invalidHardModeGuess ? 20 : 0)
+			}ms`}
 		>
 			{#if tile.letter}<div in:fly={typeAnimation}>{tile.letter}</div>{/if}
 			{#if tile.letterBounds && !tile.letter && showHint}
@@ -111,10 +115,6 @@
 		background: var(--correct-color);
 	}
 
-	.tile.current:not(.finished) {
-		border-color: #bbb;
-	}
-
 	.tile.before {
 		color: var(--before-text-color);
 		border-top-left-radius: 20px;
@@ -137,6 +137,11 @@
 	.tile.after-pre:not(.finished) {
 		color: var(--after-color);
 		border-color: var(--after-color);
+	}
+
+	.tile.current:not(.finished) {
+		border-color: #ddd;
+		border-width: 3px;
 	}
 
 	.hint {

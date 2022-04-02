@@ -91,6 +91,11 @@ export function getValidLetterBounds(list: Set<string>): [string, string] {
 	]
 }
 
+export function hasEnoughLetters(boardContent: Board, row: number): boolean {
+	const letters = getBoardRowString(boardContent[row])
+	return !(letters.length < WORD_LENGTH || letters.includes(' '))
+}
+
 const firstDay = new Date(2022, 1, 25) // 2022-02-25
 
 export const getDayNumber = (): number => {

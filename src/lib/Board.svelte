@@ -12,7 +12,6 @@
 	import Tile from '$lib/Tile.svelte'
 	import { get } from 'svelte/store'
 
-	export let showResults: () => {}
 	export let startCentered: boolean
 
 	let preloadedRows = get(guesses).length
@@ -25,7 +24,7 @@
 	onMount(() => (ready = true))
 </script>
 
-<div class="container" on:click={() => $gameFinished && showResults()}>
+<div class="container">
 	{#if ready}
 		<div class="board">
 			{#each $boardContent as boardRow, r}

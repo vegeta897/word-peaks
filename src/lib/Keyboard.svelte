@@ -4,14 +4,18 @@
 
 	export let typeLetter: (key: string) => {}
 	export let submitRow: () => {}
-	export let undoLetter: () => {}
+	export let undoLetter: (moveCaratBack?: boolean) => {}
+	export let moveCarat: (dir: number) => {}
 
 	function handleKeydown({ key, ctrlKey }: KeyboardEvent) {
 		if (ctrlKey) return
 		if (key === 'Backspace') undoLetter()
+		if (key === 'Delete') undoLetter(false)
 		if (key === 'Enter') submitRow()
+		if (key === 'ArrowLeft') moveCarat(-1)
+		if (key === 'ArrowRight') moveCarat(1)
 		key = key.toLowerCase()
-		if (alphabet.includes(key)) typeLetter(key)
+		if (alphabet.includes(key) || key === ' ') typeLetter(key.trim())
 	}
 </script>
 

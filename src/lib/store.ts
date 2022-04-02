@@ -58,6 +58,7 @@ export const lastPlayedWasHard: Readable<boolean> = derived(
 )
 
 export const invalidHardModeGuess: Writable<boolean> = writable(false)
+export const notEnoughLetters: Writable<boolean> = writable(false)
 export const invalidWord: Writable<boolean> = writable(false)
 
 export const boardContent: Writable<Board> = writable(createNewBoard())
@@ -99,14 +100,7 @@ guesses.subscribe((guessed) => {
 
 export const currentRow: Readable<number> = derived(guesses, ($guesses) => $guesses.length)
 
-export const currentTile: Readable<number> = derived(
-	[boardContent, currentRow],
-	([$boardContent, $currentRow]) => {
-		if ($currentRow === ROWS) return WORD_LENGTH
-		const tileIndex = $boardContent[$currentRow].findIndex((tile) => tile.letter === '')
-		return tileIndex < 0 ? WORD_LENGTH : tileIndex
-	}
-)
+export const currentTile: Writable<number> = writable(0)
 
 export const gameWon: Readable<boolean> = derived(
 	[answer, guesses],
