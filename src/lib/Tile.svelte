@@ -3,6 +3,7 @@
 	import { quadIn, quadOut } from 'svelte/easing'
 	import { invalidWord, invalidHardModeGuess, notEnoughLetters, currentTile } from '$lib/store'
 	import type { Tile } from '$lib/data-model'
+	import Idler from '$lib/Idler.svelte'
 
 	export let tile: Tile
 	export let current = false
@@ -71,6 +72,9 @@
 				{/if}
 			{/if}
 		</div>
+	{/if}
+	{#if gameFinished && tile.letter === ''}
+		<Idler />
 	{/if}
 </div>
 

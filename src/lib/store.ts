@@ -9,7 +9,6 @@ import {
 	newStats,
 	ROWS,
 	scoreTile,
-	WORD_LENGTH,
 } from '$lib/data-model'
 
 export const storeVersion: Writable<number> = storageWritable('wp-version', 0)
