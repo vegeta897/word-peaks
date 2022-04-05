@@ -1,66 +1,61 @@
 <script lang="ts">
 	import { alphabet, pickRandom } from '$lib/data-model'
 	import { onMount } from 'svelte'
+	import { dance, danceEnd, danceStart, hopOut, letterPeek, spinJump } from '$lib/idle-animations'
 
 	let letter = pickRandom(alphabet)
-	const letterPeek: Keyframe[] = [
-		{ transform: 'rotate(0)', easing: 'ease-in-out' },
-		{ transform: 'translateX(10px) rotate(20deg)' },
-	]
-	const hopOut: Keyframe[] = [
-		{ transform: 'translateX(10px) rotate(20deg)', easing: 'ease-out' },
-		{ transform: 'translateX(10px) rotate(20deg) scaleY(0.8)', offset: 0.4, easing: 'ease-in' },
-		{ transform: 'translateX(10px) rotate(20deg) scaleY(1.2)', offset: 0.5 },
-		{ transform: 'translate(20px,-7px) rotate(20deg) scaleY(1)' },
-		{ transform: 'translate(24px,-10px) rotate(10deg) scaleY(1)' },
-		{ transform: 'translate(28px,-7px) rotate(5deg) scaleY(1)' },
-		{ transform: 'translate(32px,0) rotate(0) scaleY(0.8)' },
-		{ transform: 'translate(32px,0) rotate(0) scaleY(1)' },
-	]
-	const danceStart: Keyframe[] = [
-		{ transform: 'translate(32px,0) rotate(0) scaleY(1)', easing: 'ease-in-out' },
-		{ transform: 'translate(32px,0) rotate(-3deg) scaleY(0.8)' },
-	]
-	const dance: Keyframe[] = [
-		{ transform: 'translate(32px,0) rotate(-3deg) scaleY(0.8)', easing: 'ease-out' },
-		{ transform: 'translate(32px,0) rotate(-6deg) scaleY(1.1)', easing: 'ease-in' },
-		{ transform: 'translate(32px,0) rotate(3deg) scaleY(0.8)', easing: 'ease-out' },
-		{ transform: 'translate(32px,0) rotate(6deg) scaleY(1.1)', easing: 'ease-in' },
-		{ transform: 'translate(32px,0) rotate(-3deg) scaleY(0.8)' },
-	]
-	const danceEnd: Keyframe[] = [
-		{ transform: 'translate(32px,0) rotate(-3deg) scaleY(0.8)', easing: 'ease-out' },
-		{ transform: 'translate(32px,0) rotate(-6deg) scaleY(1.1)', easing: 'ease-in-out' },
-		{ transform: 'translate(32px,0) rotate(0) scaleY(1)' },
-	]
 
-	let letterAnchor: HTMLDivElement
+	// Nested divs to animate components of transform separately
+	let letterTranslateX: HTMLDivElement
+	let letterTranslateY: HTMLDivElement
+	let letterRotate: HTMLDivElement
+	let letterScale: HTMLDivElement
+
+	const animationParts: Map<string, () => HTMLDivElement> = new Map([
+		['translateX', () => letterTranslateX],
+		['translateY', () => letterTranslateY],
+		['rotate', () => letterRotate],
+		['scale', () => letterScale],
+	])
 
 	const animate = async () => {
-		await letterAnchor.animate(letterPeek, {
-			duration: 1000,
-			endDelay: 1000,
-			fill: 'forwards',
-		}).finished
-		await letterAnchor.animate(hopOut, {
-			duration: 800,
-			endDelay: 400,
-			fill: 'forwards',
-		}).finished
-		await letterAnchor.animate(danceStart, {
-			duration: 400,
-			fill: 'forwards',
-		}).finished
-		await letterAnchor.animate(dance, {
-			duration: 1100,
-			fill: 'forwards',
-			iterations: 4,
-		}).finished
-		await letterAnchor.animate(danceEnd, {
-			duration: 700,
-			fill: 'forwards',
-		}).finished
-		await animate()
+		// await letterAnchor.animate(letterPeek, {
+		// 	duration: 1000,
+		// 	endDelay: 1000,
+		// 	fill: 'forwards',
+		// }).finished
+		// await letterAnchor.animate(hopOut, {
+		// 	duration: 800,
+		// 	endDelay: 400,
+		// 	fill: 'forwards',
+		// }).finished
+		await Promise.all(
+			[...animationParts.entries()].map(
+				([partName, element]) =>
+					spinJump[partName] &&
+					element().animate(spinJump[partName], {
+						duration: spinJump.duration,
+						endDelay: spinJump.endDelay,
+						fill: 'forwards',
+					}).finished
+			)
+		)
+		// await letterAnchor.animate(danceStart, {
+		// 	duration: 400,
+		// 	fill: 'forwards',
+		// }).finished
+		// await letterAnchor.animate(dance, {
+		// 	duration: 1100,
+		// 	fill: 'forwards',
+		// 	iterations: 3,
+		// }).finished
+		// await letterAnchor.animate(danceEnd, {
+		// 	duration: 700,
+		// 	fill: 'forwards',
+		// }).finished
+		try {
+			await animate()
+		} catch (e) {}
 	}
 
 	onMount(() => {
@@ -69,9 +64,17 @@
 </script>
 
 <div class="frame">
-	<div class="letter-anchor" bind:this={letterAnchor}>
-		<div class="letter">
-			{letter}
+	<div class="letter-anchor">
+		<div class="letter-animation" bind:this={letterTranslateX}>
+			<div class="letter-animation" bind:this={letterTranslateY}>
+				<div class="letter-animation" bind:this={letterRotate}>
+					<div class="letter-animation" bind:this={letterScale}>
+						<div class="letter">
+							{letter}
+						</div>
+					</div>
+				</div>
+			</div>
 		</div>
 	</div>
 </div>
@@ -92,7 +95,11 @@
 		top: 18px;
 		width: 100%;
 		height: 100%;
-		transform: translate(0px, 0) rotate(0deg) scaleY(1);
+	}
+	.letter-animation {
+		position: relative;
+		width: 100%;
+		height: 100%;
 	}
 	.letter {
 		position: relative;
@@ -103,25 +110,18 @@
 		font-size: 2rem;
 		text-align: center;
 	}
-
 	@media (max-width: 480px) {
 		.letter-anchor {
-			top: 17px;
-			left: -38px;
-		}
-		.letter {
-			top: -2px;
-			font-size: 1.8rem;
+			top: 13px;
+			left: -37px;
+			transform: scale(0.93);
 		}
 	}
 	@media (max-width: 360px) {
 		.letter-anchor {
-			top: 16px;
+			top: 10px;
 			left: -34px;
-		}
-		.letter {
-			top: -1.5px;
-			font-size: 1.6rem;
+			transform: scale(0.845);
 		}
 	}
 </style>
