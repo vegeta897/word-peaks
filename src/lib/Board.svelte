@@ -43,9 +43,9 @@
 				if (!document.hidden) break
 			}
 			if (thisTimeout !== idleTimeout) return
-			trackEvent('idleOnFinish')
 			if (canIdle === null) canIdle = animationSupported()
 			if (canIdle) {
+				trackEvent('idleOnFinish')
 				const scheduler = await import('./idle-scheduler')
 				scheduler.initScheduler((ROWS - get(currentRow)) * WORD_LENGTH)
 				idle = true

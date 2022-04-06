@@ -28,20 +28,24 @@ export type IdleSchedule = {
 	animations: { animation: MultipartAnimation; endDelay?: number; iterations?: number }[]
 }
 
+// Avoid letters that don't look as good for the first idler
+const firstLetterAlphabet = alphabet.filter((l) => !['l', 'i'].includes(l))
+
 export function getSchedule(id: string): Promise<IdleSchedule> {
-	const schedule: IdleSchedule = { letter: pickRandom(alphabet), animations: [] }
 	let scheduleDelay = 0
 	const firstIdler = schedules.size === 0
+	const letter = pickRandom(firstIdler ? firstLetterAlphabet : alphabet)
+	const schedule: IdleSchedule = { letter, animations: [] }
 	if (!firstIdler) {
 		scheduleDelay = randomFloat(20 * 1000, idlers * 8 * 1000)
 	}
-	const firstPeekEndDelay = firstIdler ? 1200 : randomFloat(200, 600)
-	schedule.animations.push({ animation: peek, endDelay: firstPeekEndDelay })
+	const peekEndDelay = firstIdler ? 1200 : randomFloat(0, 600)
+	schedule.animations.push({ animation: peek, endDelay: peekEndDelay })
 	if (firstIdler || Math.random() < 0.95) {
 		if (firstIdler) {
 			// Shy at first
 			schedule.animations.push({ animation: unPeek, endDelay: randomInt(2, 6) * 1000 })
-			schedule.animations.push({ animation: peek, endDelay: firstPeekEndDelay })
+			schedule.animations.push({ animation: peek, endDelay: peekEndDelay })
 			schedule.animations.push({ animation: hopIn, endDelay: randomFloat(1000, 2000) })
 			addDance(schedule.animations, randomInt(2, 3))
 			addSpinJump(schedule.animations, randomInt(2, 3))
@@ -51,7 +55,11 @@ export function getSchedule(id: string): Promise<IdleSchedule> {
 			let performances = randomInt(0, 2)
 			if (Math.random() > 0.8) performances++
 			while (performances > 0) {
-				addPerformance(schedule.animations)
+				pickRandom([
+					() => addDance(schedule.animations, randomInt(1, 4)),
+					() => addGroove(schedule.animations, randomInt(1, 4)),
+					() => addSpinJump(schedule.animations, randomInt(1, 4)),
+				])()
 				performances--
 			}
 		}
@@ -70,14 +78,6 @@ export function getSchedule(id: string): Promise<IdleSchedule> {
 			window.setTimeout(() => resolve(schedule), scheduleDelay)
 		)
 	})
-}
-
-const addPerformance = (animations: IdleSchedule['animations']) => {
-	pickRandom([
-		() => addDance(animations, randomInt(1, 5)),
-		() => addGroove(animations, randomInt(1, 4)),
-		() => addSpinJump(animations, randomInt(1, 4)),
-	])()
 }
 
 const addDance = (animations: IdleSchedule['animations'], iterations: number) => {
