@@ -25,13 +25,12 @@
 	let canIdle = null
 
 	let idleTimeout
+	let idleSessionID = 0
 
 	async function waitForIdle() {
 		if (canIdle === false) return
-		if (idleTimeout) {
-			clearTimeout(idleTimeout)
-			idleTimeout = undefined
-		}
+		const thisIdleSessionID = ++idleSessionID
+		clearTimeout(idleTimeout)
 		if (get(gameFinished) && !get(resultsOpen) && !document.hidden) {
 			let thisTimeout: number
 			await new Promise((resolve) => {
@@ -40,7 +39,7 @@
 				}, 20 * 1000)
 				thisTimeout = idleTimeout
 			})
-			if (thisTimeout !== idleTimeout) return
+			if (thisIdleSessionID !== idleSessionID) return
 			if (canIdle === null) canIdle = animationSupported()
 			if (!canIdle) return
 			trackEvent('idleOnFinish')

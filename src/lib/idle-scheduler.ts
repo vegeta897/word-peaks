@@ -4,6 +4,8 @@ import {
 	dance,
 	danceEnd,
 	danceStart,
+	dropIn,
+	dropOut,
 	groove,
 	grooveEnd,
 	grooveStart,
@@ -14,14 +16,20 @@ import {
 	unPeek,
 } from '$lib/idle-animations'
 
-const schedules: Map<string, number> = new Map()
+const idlerIDs: Set<string> = new Set()
+const animating: Set<string> = new Set()
 let idlers: number
+let scheduleBegin: number
 
 export function initScheduler(_idlers: number) {
-	schedules.forEach((timeout) => clearTimeout(timeout))
-	schedules.clear()
+	idlerIDs.clear()
+	animating.clear()
 	idlers = _idlers
+	scheduleBegin = Date.now()
 }
+
+export const startAnimation = (id: string) => animating.add(id)
+export const stopAnimation = (id: string) => animating.delete(id)
 
 export type IdleSchedule = {
 	letter: string
@@ -31,25 +39,39 @@ export type IdleSchedule = {
 // Avoid letters that don't look as good for the first idler
 const firstLetterAlphabet = alphabet.filter((l) => !['l', 'i'].includes(l))
 
-export function getSchedule(id: string): Promise<IdleSchedule> {
-	const firstIdler = schedules.size === 0
+export async function getSchedule(id: string): Promise<IdleSchedule | { wait: number }> {
+	const firstIdler = idlerIDs.size === 0
+	idlerIDs.add(id)
+	// Only one idle animation for the first 20 seconds
+	// One additional animation allowed every 30 seconds
+	// Maximum animations is idler count divided by 3-6
+	const maxAnimations = Math.min(
+		idlers / randomInt(3, 6),
+		((Date.now() - scheduleBegin) / 1000 - 20) / 30
+	)
+	if (!firstIdler && animating.size > maxAnimations)
+		return { wait: randomFloat(5000, idlers * 2 * 1000) }
 	const letter = pickRandom(firstIdler ? firstLetterAlphabet : alphabet)
 	const schedule: IdleSchedule = { letter, animations: [] }
-	const peekEndDelay = firstIdler ? 1200 : randomFloat(0, 600)
-	schedule.animations.push({ animation: peek, endDelay: peekEndDelay })
 	if (firstIdler || Math.random() < 0.95) {
 		if (firstIdler) {
 			// Shy at first
+			schedule.animations.push({ animation: peek, endDelay: randomFloat(1400, 2000) })
 			schedule.animations.push({ animation: unPeek, endDelay: randomInt(2, 6) * 1000 })
-			schedule.animations.push({ animation: peek, endDelay: peekEndDelay })
+			schedule.animations.push({ animation: peek, endDelay: randomFloat(1000, 1400) })
 			schedule.animations.push({ animation: hopIn, endDelay: randomFloat(1000, 2000) })
 			addDance(schedule.animations, randomInt(2, 3))
 			addSpinJump(schedule.animations, randomInt(2, 3))
 		} else {
-			// Hop in and perform
-			schedule.animations.push({ animation: hopIn, endDelay: randomFloat(400, 2000) })
+			// Enter and perform
+			if (Math.random() < 0.7) {
+				schedule.animations.push({ animation: peek, endDelay: randomFloat(0, 600) })
+				schedule.animations.push({ animation: hopIn, endDelay: randomFloat(400, 2000) })
+			} else {
+				schedule.animations.push({ animation: dropIn, endDelay: randomFloat(400, 2000) })
+			}
 			let performances = randomInt(0, 2)
-			if (Math.random() > 0.8) performances++
+			if (Math.random() > 0.9) performances++
 			while (performances > 0) {
 				pickRandom([
 					() => addDance(schedule.animations, randomInt(1, 4)),
@@ -59,22 +81,22 @@ export function getSchedule(id: string): Promise<IdleSchedule> {
 				performances--
 			}
 		}
-		schedule.animations.push({ animation: hopOut })
-	} else if (Math.random() < 0.5) {
+		if (firstIdler || Math.random() < 0.7) {
+			schedule.animations.push({ animation: hopOut })
+		} else {
+			schedule.animations.push({ animation: dropOut })
+		}
+	} else if (Math.random() < 0.4) {
 		// Hop on by
+		schedule.animations.push({ animation: peek, endDelay: randomFloat(50, 1500) })
 		schedule.animations.push({ animation: hopIn })
 		schedule.animations.push({ animation: hopOut })
 	} else {
 		// Changed your mind
+		schedule.animations.push({ animation: peek, endDelay: randomFloat(50, 2200) })
 		schedule.animations.push({ animation: unPeek })
 	}
-	const scheduleDelay = firstIdler ? 0 : randomFloat(20 * 1000, idlers * 6 * 1000)
-	return new Promise((resolve) => {
-		schedules.set(
-			id,
-			window.setTimeout(() => resolve(schedule), scheduleDelay)
-		)
-	})
+	return schedule
 }
 
 const addDance = (animations: IdleSchedule['animations'], iterations: number) => {

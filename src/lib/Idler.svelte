@@ -3,7 +3,7 @@
 	import type { AnimationPart, MultipartAnimation } from '$lib/idle-animations'
 	import { AnimationParts } from '$lib/idle-animations'
 	import type { IdleSchedule } from '$lib/idle-scheduler'
-	import { getSchedule } from '$lib/idle-scheduler'
+	import { getSchedule, startAnimation, stopAnimation } from '$lib/idle-scheduler'
 
 	let mounted = false
 	let letter: string
@@ -22,13 +22,13 @@
 		['scale', () => letterScale],
 	])
 
-	const performAnimation = (
+	const performAnimation = async (
 		animation: MultipartAnimation,
 		endDelay = 0,
 		iterations = 1,
 		fill: FillMode = 'forwards'
-	): Promise<Awaited<Animation | void>[]> => {
-		return Promise.all(
+	): Promise<void> => {
+		await Promise.all(
 			AnimationParts.map((part) => {
 				const element = animationParts.get(part)!()
 				if (element && animation[part]) {
@@ -52,13 +52,23 @@
 		}
 	}
 
+	const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+
 	onMount(async () => {
 		mounted = true
+		await sleep(Math.random()) // Ensures random first idler
 		while (mounted) {
 			const schedule = await getSchedule(id)
+			if ('wait' in schedule) {
+				await sleep(schedule.wait)
+				continue
+			}
 			letter = schedule.letter
-			if (document.hidden) continue
+			if (document.hidden || !mounted) continue
+			startAnimation(id)
 			await animate(schedule)
+			stopAnimation(id)
+			await sleep(10 * 1000) // Minimum 10 seconds before animating again
 		}
 	})
 	onDestroy(() => (mounted = false))

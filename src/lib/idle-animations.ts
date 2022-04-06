@@ -10,7 +10,9 @@ export const peek = defineAnimation({
 		{ transform: 'translateX(0)', easing: 'ease-in-out' },
 		{ transform: 'translateX(10px)' },
 	],
+	translateY: [{ transform: 'translateY(0)' }, { transform: 'translateY(0)' }],
 	rotate: [{ transform: 'rotate(-4deg)', easing: 'ease-in-out' }, { transform: 'rotate(20deg)' }],
+	scale: [{ transform: 'scaleY(1)' }, { transform: 'scaleY(1)' }],
 })
 export const unPeek = defineAnimation({
 	duration: 400,
@@ -49,7 +51,7 @@ export const hopOut = defineAnimation({
 	duration: 700,
 	translateX: [
 		{ transform: 'translateX(40px)', offset: 0.4 },
-		{ transform: 'translateX(81px)', offset: 0.8 },
+		{ transform: 'translateX(82px)', offset: 0.8 },
 	],
 	translateY: [
 		{ transform: 'translateY(0)', offset: 0.4, easing: 'ease-out' },
@@ -60,6 +62,7 @@ export const hopOut = defineAnimation({
 		{ transform: 'skew(0)', offset: 0, easing: 'ease-out' },
 		{ transform: 'skew(-20deg)', offset: 0.4 },
 		{ transform: 'skew(-4deg)', offset: 0.8 },
+		{ transform: 'skew(0)', offset: 1 },
 	],
 	scale: [
 		{ easing: 'ease-out' },
@@ -71,8 +74,54 @@ export const hopOut = defineAnimation({
 		{ transform: 'scaleY(1)', offset: 1 },
 	],
 })
+export const dropIn = defineAnimation({
+	duration: 700,
+	translateX: [
+		{ transform: 'translateX(42px)', offset: 0 },
+		{ transform: 'translateX(40px)', offset: 0.4 },
+	],
+	translateY: [
+		{ transform: 'translateY(-50px)', offset: 0, easing: 'ease-in' },
+		{ transform: 'translateY(0)', offset: 0.4 },
+	],
+	rotate: [
+		{ transform: 'rotate(-10deg)', offset: 0 },
+		{ transform: 'rotate(0)', offset: 0.4 },
+	],
+	scale: [
+		{ transform: 'scaleY(1.1)', easing: 'ease-in' },
+		{ transform: 'scaleY(1)', offset: 0.4, easing: 'ease-out' },
+		{ transform: 'scaleY(0.7)', offset: 0.5, easing: 'ease-in' },
+		{ transform: 'scaleY(1)', offset: 0.7 },
+	],
+})
+export const dropOut = defineAnimation({
+	duration: 750,
+	translateX: [
+		{ transform: 'translateX(40px)', offset: 0.4 },
+		{ transform: 'translateX(42px)', offset: 1 },
+	],
+	translateY: [
+		{ transform: 'translateY(0)', offset: 0.4, easing: 'ease-out' },
+		{ transform: 'translateY(-3px)', offset: 0.5, easing: 'ease-in' },
+		{ transform: 'translateY(36px)', offset: 0.9 },
+	],
+	rotate: [
+		{ transform: 'rotate(0)', offset: 0.4 },
+		{ transform: 'rotate(-10deg)', offset: 1 },
+		{ transform: 'rotate(0)', offset: 1 },
+	],
+	scale: [
+		{ easing: 'ease-in' },
+		{ transform: 'scaleY(0.8)', offset: 0.3, easing: 'ease-out' },
+		{ transform: 'scaleY(1.1)', offset: 0.4, easing: 'ease-in' },
+		{ transform: 'scaleY(1)', offset: 0.5, easing: 'ease-in' },
+		{ transform: 'scaleY(1.1)', offset: 0.9 },
+		{ transform: 'scaleY(1)', offset: 1 },
+	],
+})
 export const danceStart = defineAnimation({
-	duration: 350,
+	duration: 300,
 	translateX: [{ transform: 'translateX(40px)' }],
 	rotate: [{ transform: 'skew(0)', easing: 'ease-in-out' }, { transform: 'skew(6deg)' }],
 	scale: [{ transform: 'scaleY(1)', easing: 'ease-in-out' }, { transform: 'scaleY(1.1)' }],
@@ -96,7 +145,7 @@ export const dance = defineAnimation({
 	],
 })
 export const danceEnd = defineAnimation({
-	duration: 300,
+	duration: 250,
 	translateX: [{ transform: 'translateX(40px)' }],
 	rotate: [{ transform: 'skew(6deg)', easing: 'ease-in-out' }, { transform: 'skew(0)' }],
 	scale: [{ transform: 'scaleY(1.1)', easing: 'ease-in-out' }, { transform: 'scaleY(1)' }],
@@ -122,7 +171,7 @@ export const spinJump = defineAnimation({
 	],
 })
 export const grooveStart = defineAnimation({
-	duration: 600,
+	duration: 500,
 	translateX: [
 		{ transform: 'translateX(40px)' },
 		{ transform: 'translateX(40px)', offset: 0.08, easing: 'ease-out' },
@@ -163,7 +212,7 @@ export const groove = defineAnimation({
 	],
 })
 export const grooveEnd = defineAnimation({
-	duration: 600,
+	duration: 400,
 	translateX: [
 		{ transform: 'translateX(35px)', offset: 0.08, easing: 'ease-out' },
 		{ transform: 'translateX(40px)', offset: 0.5 },
