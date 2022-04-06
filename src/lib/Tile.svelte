@@ -74,6 +74,9 @@
 		</div>
 	{/if}
 	{#if gameFinished && tile.letter === ''}
+		<!-- TODO: Import after waiting for a bit -->
+		<!-- TODO: Detect web animation API support first -->
+		<!-- TODO: Trigger plausible event -->
 		<Idler />
 	{/if}
 </div>

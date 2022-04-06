@@ -1,7 +1,17 @@
 <script lang="ts">
 	import { alphabet, pickRandom } from '$lib/data-model'
 	import { onMount } from 'svelte'
-	import { dance, danceEnd, danceStart, hopOut, letterPeek, spinJump } from '$lib/idle-animations'
+	import type { AnimationPart, MultipartAnimation } from '$lib/idle-animations'
+	import {
+		AnimationParts,
+		dance,
+		danceEnd,
+		danceStart,
+		hopIn,
+		hopOut,
+		letterPeek,
+		spinJump,
+	} from '$lib/idle-animations'
 
 	let letter = pickRandom(alphabet)
 
@@ -11,48 +21,43 @@
 	let letterRotate: HTMLDivElement
 	let letterScale: HTMLDivElement
 
-	const animationParts: Map<string, () => HTMLDivElement> = new Map([
+	const animationParts: Map<AnimationPart, () => HTMLDivElement> = new Map([
 		['translateX', () => letterTranslateX],
 		['translateY', () => letterTranslateY],
 		['rotate', () => letterRotate],
 		['scale', () => letterScale],
 	])
 
-	const animate = async () => {
-		// await letterAnchor.animate(letterPeek, {
-		// 	duration: 1000,
-		// 	endDelay: 1000,
-		// 	fill: 'forwards',
-		// }).finished
-		// await letterAnchor.animate(hopOut, {
-		// 	duration: 800,
-		// 	endDelay: 400,
-		// 	fill: 'forwards',
-		// }).finished
-		await Promise.all(
-			[...animationParts.entries()].map(
-				([partName, element]) =>
-					spinJump[partName] &&
-					element().animate(spinJump[partName], {
-						duration: spinJump.duration,
-						endDelay: spinJump.endDelay,
-						fill: 'forwards',
+	const performAnimation = (
+		animation: MultipartAnimation,
+		endDelay = 0,
+		iterations = 1,
+		fill: FillMode = 'forwards'
+	): Promise<Awaited<Animation | void>[]> => {
+		return Promise.all(
+			AnimationParts.map((part) => {
+				if (animation[part]) {
+					return animationParts.get(part)!().animate(animation[part]!, {
+						duration: animation.duration,
+						iterations,
+						endDelay,
+						fill,
 					}).finished
-			)
+				} else {
+					return Promise.resolve()
+				}
+			})
 		)
-		// await letterAnchor.animate(danceStart, {
-		// 	duration: 400,
-		// 	fill: 'forwards',
-		// }).finished
-		// await letterAnchor.animate(dance, {
-		// 	duration: 1100,
-		// 	fill: 'forwards',
-		// 	iterations: 3,
-		// }).finished
-		// await letterAnchor.animate(danceEnd, {
-		// 	duration: 700,
-		// 	fill: 'forwards',
-		// }).finished
+	}
+
+	const animate = async () => {
+		await performAnimation(letterPeek, 400)
+		await performAnimation(hopIn, 400)
+		await performAnimation(danceStart)
+		await performAnimation(dance, 0, 3)
+		await performAnimation(danceEnd, 400)
+		await performAnimation(spinJump, 600, 2)
+		await performAnimation(hopOut, 200)
 		try {
 			await animate()
 		} catch (e) {}
@@ -112,16 +117,22 @@
 	}
 	@media (max-width: 480px) {
 		.letter-anchor {
-			top: 13px;
+			top: 16px;
 			left: -37px;
 			transform: scale(0.93);
+		}
+		.letter {
+			top: -6px;
 		}
 	}
 	@media (max-width: 360px) {
 		.letter-anchor {
-			top: 10px;
+			top: 14px;
 			left: -34px;
 			transform: scale(0.845);
+		}
+		.letter {
+			top: -7px;
 		}
 	}
 </style>
