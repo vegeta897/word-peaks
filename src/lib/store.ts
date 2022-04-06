@@ -49,6 +49,7 @@ export const lastPlayedDaily: Writable<number> = storageWritable('wp-lastPlayedD
 export const stats: Writable<Stats> = storageWritable('wp-stats', newStats())
 
 export const gameMode: Writable<GameMode> = writable('daily')
+export const resultsOpen: Writable<boolean> = writable(false)
 
 export const lastPlayedWasHard: Readable<boolean> = derived(
 	[gameMode, lastPlayedDailyWasHard, lastPlayedRandomWasHard],

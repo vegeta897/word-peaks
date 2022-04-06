@@ -48,6 +48,7 @@
 		invalidWord,
 		notEnoughLetters,
 		invalidHardModeGuess,
+		resultsOpen,
 	} from '$lib/store'
 	import { trackEvent } from '$lib/plausible'
 	import { browser } from '$app/env'
@@ -237,11 +238,9 @@
 		}
 	}
 
-	let resultsOpen = false
-
 	const showResults = () => {
-		if (resultsOpen) return
-		resultsOpen = true
+		if (get(resultsOpen)) return
+		resultsOpen.set(true)
 		open(
 			Results,
 			{
@@ -266,7 +265,7 @@
 			{},
 			{
 				onClosed: () => {
-					resultsOpen = false
+					resultsOpen.set(false)
 				},
 			}
 		)

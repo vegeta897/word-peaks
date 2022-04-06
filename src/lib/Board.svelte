@@ -8,6 +8,8 @@
 		gameFinished,
 		guesses,
 		showAllHints,
+		answer,
+		resultsOpen,
 	} from '$lib/store'
 	import Tile from '$lib/Tile.svelte'
 	import { get } from 'svelte/store'
@@ -24,16 +26,18 @@
 
 	let idleTimeout
 
-	gameFinished.subscribe(async (finished) => {
-		if (ready) preloadedRows = 0
-		if (idleTimeout) clearTimeout(idleTimeout)
-		if (finished) {
+	async function waitForIdle() {
+		if (idleTimeout) {
+			clearTimeout(idleTimeout)
+			idleTimeout = undefined
+		}
+		if (get(gameFinished) && !get(resultsOpen)) {
 			let thisTimeout: number
 			while (true) {
 				await new Promise((resolve) => {
 					idleTimeout = setTimeout(() => {
 						resolve()
-					}, 3000)
+					}, 20 * 1000)
 					thisTimeout = idleTimeout
 				})
 				if (!document.hidden) break
@@ -49,7 +53,14 @@
 		} else {
 			idle = false
 		}
+	}
+
+	gameFinished.subscribe(() => {
+		if (ready) preloadedRows = 0
+		waitForIdle()
 	})
+	answer.subscribe(() => waitForIdle())
+	resultsOpen.subscribe(() => waitForIdle())
 	// Prevents SSR for board
 	onMount(() => (ready = true))
 	onDestroy(() => {
