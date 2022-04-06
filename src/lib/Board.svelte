@@ -61,8 +61,11 @@
 	})
 	answer.subscribe(() => waitForIdle())
 	resultsOpen.subscribe(() => waitForIdle())
-	// Prevents SSR for board
-	onMount(() => (ready = true))
+
+	onMount(() => {
+		ready = true // Prevents SSR for board
+		document.addEventListener('visibilitychange', () => waitForIdle())
+	})
 	onDestroy(() => {
 		clearTimeout(idleTimeout)
 		idleTimeout = undefined

@@ -54,7 +54,7 @@
 
 	onMount(async () => {
 		mounted = true
-		while (mounted) {
+		while (mounted && !document.hidden) {
 			const schedule = await getSchedule(id)
 			letter = schedule.letter
 			await animate(schedule)
