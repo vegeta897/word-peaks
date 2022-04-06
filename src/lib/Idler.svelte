@@ -29,17 +29,15 @@
 		fill: FillMode = 'forwards'
 	): Promise<void> => {
 		await Promise.all(
-			AnimationParts.map((part) => {
+			AnimationParts.map(async (part) => {
 				const element = animationParts.get(part)!()
 				if (element && animation[part]) {
-					return element.animate(animation[part]!, {
+					await element.animate(animation[part]!, {
 						duration: animation.duration,
 						iterations,
 						endDelay,
 						fill,
 					}).finished
-				} else {
-					return Promise.resolve()
 				}
 			})
 		)

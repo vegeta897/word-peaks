@@ -22,13 +22,13 @@
 	let preloadedRows = get(guesses).length
 	let ready = false
 	let idle = false
-	let canIdle = null
+	let canAnimate = null
 
 	let idleTimeout
 	let idleSessionID = 0
 
 	async function waitForIdle() {
-		if (canIdle === false) return
+		if (canAnimate === false) return
 		const thisIdleSessionID = ++idleSessionID
 		clearTimeout(idleTimeout)
 		if (get(gameFinished) && !get(resultsOpen) && !document.hidden) {
@@ -40,8 +40,8 @@
 				thisTimeout = idleTimeout
 			})
 			if (thisIdleSessionID !== idleSessionID) return
-			if (canIdle === null) canIdle = animationSupported()
-			if (!canIdle) return
+			if (canAnimate === null) canAnimate = animationSupported()
+			if (!canAnimate) return
 			trackEvent('idleOnFinish')
 			const scheduler = await import('./idle-scheduler')
 			scheduler.initScheduler((ROWS - get(currentRow)) * WORD_LENGTH)
