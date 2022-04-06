@@ -1,7 +1,13 @@
 import Plausible from 'plausible-tracker'
 import { browser, dev } from '$app/env'
 
-type EventName = 'gameWon' | 'firstFinish' | 'submitGuess' | 'resultShare' | 'gameLost'
+type EventName =
+	| 'gameWon'
+	| 'firstFinish'
+	| 'submitGuess'
+	| 'resultShare'
+	| 'gameLost'
+	| 'idleOnFinish'
 
 const plausible = browser
 	? Plausible({

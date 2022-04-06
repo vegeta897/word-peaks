@@ -31,3 +31,24 @@ export const squish = (node: HTMLElement, opts: any): AnimationConfig => ({
 		node.style.setProperty('transform', `scaleX(${t})`)
 	},
 })
+
+// Based on https://codepen.io/danwilson/pen/xGBKVq
+export const animationSupported = (): boolean => {
+	// Unfortunately we can't risk having Chrome iOS's flickering animation bugs
+	if (navigator.userAgent.match('iPhone.*CriOS')) return false
+	const element = document.createElement('a')
+	document.body.appendChild(element)
+	if (!element.animate) return false
+	const player = element.animate(
+		{ opacity: [1, 0.5, 0.75] },
+		{ iterations: 1, duration: 100, fill: 'forwards' }
+	)
+	if (!player || !player.finished || !player.finished.then) return false
+	player.pause()
+	player.currentTime = 50
+	const midOpacity = parseFloat(window.getComputedStyle(element).opacity)
+	player.finish()
+	const endOpacity = parseFloat(window.getComputedStyle(element).opacity)
+	element.remove()
+	return midOpacity === 0.5 && endOpacity === 0.75
+}
