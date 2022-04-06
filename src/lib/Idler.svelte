@@ -1,21 +1,15 @@
 <script lang="ts">
-	import { alphabet, pickRandom } from '$lib/data-model'
-	import { onMount } from 'svelte'
+	import { onDestroy, onMount } from 'svelte'
 	import type { AnimationPart, MultipartAnimation } from '$lib/idle-animations'
-	import {
-		AnimationParts,
-		dance,
-		danceEnd,
-		danceStart,
-		hopIn,
-		hopOut,
-		letterPeek,
-		spinJump,
-	} from '$lib/idle-animations'
+	import { AnimationParts } from '$lib/idle-animations'
+	import type { IdleSchedule } from '$lib/idle-scheduler'
+	import { getSchedule } from '$lib/idle-scheduler'
 
-	let letter = pickRandom(alphabet)
+	let mounted = false
+	let letter: string
+	export let id: string
 
-	// Nested divs to animate components of transform separately
+	// Nested divs to animate transform functions separately
 	let letterTranslateX: HTMLDivElement
 	let letterTranslateY: HTMLDivElement
 	let letterRotate: HTMLDivElement
@@ -51,20 +45,22 @@
 		)
 	}
 
-	const animate = async () => {
-		await performAnimation(letterPeek, 400)
-		await performAnimation(hopIn, 400)
-		await performAnimation(danceStart)
-		await performAnimation(dance, 0, 3)
-		await performAnimation(danceEnd, 400)
-		await performAnimation(spinJump, 600, 2)
-		await performAnimation(hopOut, 200)
-		// animate().catch()
+	const animate = async ({ animations }: IdleSchedule) => {
+		for (const animation of animations) {
+			if (!mounted) break
+			await performAnimation(animation.animation, animation.endDelay || 0, animation.iterations)
+		}
 	}
 
-	onMount(() => {
-		animate()
+	onMount(async () => {
+		mounted = true
+		while (mounted) {
+			const schedule = await getSchedule(id)
+			letter = schedule.letter
+			await animate(schedule)
+		}
 	})
+	onDestroy(() => (mounted = false))
 </script>
 
 <div class="frame">
@@ -74,7 +70,7 @@
 				<div class="letter-animation" bind:this={letterRotate}>
 					<div class="letter-animation" bind:this={letterScale}>
 						<div class="letter">
-							{letter}
+							{letter || ''}
 						</div>
 					</div>
 				</div>
@@ -113,6 +109,7 @@
 		color: #5b505e;
 		font-size: 2rem;
 		text-align: center;
+		user-select: none;
 	}
 	@media (max-width: 480px) {
 		.letter-anchor {

@@ -10,7 +10,6 @@
 	export let showHint = false
 	export let animate = false
 	export let inCurrentRow = false
-	export let idle = false
 
 	let tileFlipDuration: number
 	let tileFlipDelay: number
@@ -48,6 +47,7 @@
 			class:before-pre={!tile.scored && tile.polarity < 0}
 			class:after-pre={!tile.scored && tile.polarity > 0}
 			class:finished={gameFinished}
+			class:clickable={inCurrentRow}
 			class:shimmy={$invalidWord && inCurrentRow}
 			class:shake={inCurrentRow &&
 				(($notEnoughLetters && !tile.letter) ||
@@ -73,10 +73,8 @@
 			{/if}
 		</div>
 	{/if}
-	{#if idle && tile.letter === ''}
-		{#await import('./Idler.svelte') then module}
-			<svelte:component this={module.default} />
-		{/await}
+	{#if tile.letter === ''}
+		<slot />
 	{/if}
 </div>
 
@@ -119,6 +117,9 @@
 	}
 	.tile.correct {
 		background: var(--correct-color);
+	}
+	.tile.clickable {
+		cursor: pointer;
 	}
 
 	.tile.before {

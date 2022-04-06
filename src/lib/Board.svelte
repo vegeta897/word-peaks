@@ -13,31 +13,49 @@
 	import { get } from 'svelte/store'
 	import { trackEvent } from '$lib/plausible'
 	import { animationSupported } from '$lib/transitions'
+	import { ROWS, WORD_LENGTH } from '$lib/data-model'
 
 	export let startCentered: boolean
 
 	let preloadedRows = get(guesses).length
 	let ready = false
 	let idle = false
-	let canIdle = false
+	let canIdle = null
 
 	let idleTimeout
 
-	gameFinished.subscribe((finished) => {
+	gameFinished.subscribe(async (finished) => {
 		if (ready) preloadedRows = 0
-		idleTimeout = setTimeout(() => {
+		if (idleTimeout) clearTimeout(idleTimeout)
+		if (finished) {
+			let thisTimeout: number
+			while (true) {
+				await new Promise((resolve) => {
+					idleTimeout = setTimeout(() => {
+						resolve()
+					}, 3000)
+					thisTimeout = idleTimeout
+				})
+				if (!document.hidden) break
+			}
+			if (thisTimeout !== idleTimeout) return
 			trackEvent('idleOnFinish')
-			idle = canIdle
-		}, 3000)
-		if (!finished) idle = false
-		if (!finished && idleTimeout) clearTimeout(idleTimeout)
+			if (canIdle === null) canIdle = animationSupported()
+			if (canIdle) {
+				const scheduler = await import('./idle-scheduler')
+				scheduler.initScheduler((ROWS - get(currentRow)) * WORD_LENGTH)
+				idle = true
+			}
+		} else {
+			idle = false
+		}
 	})
 	// Prevents SSR for board
-	onMount(() => {
-		ready = true
-		canIdle = animationSupported()
+	onMount(() => (ready = true))
+	onDestroy(() => {
+		clearTimeout(idleTimeout)
+		idleTimeout = undefined
 	})
-	onDestroy(() => clearTimeout(idleTimeout))
 </script>
 
 <div class="container">
@@ -49,12 +67,17 @@
 						<Tile
 							{tile}
 							current={r === $currentRow && tile.id === $currentTile}
-							inCurrentRow={r === $currentRow}
+							inCurrentRow={!$gameFinished && r === $currentRow}
 							gameFinished={$gameFinished}
 							showHint={!$gameFinished && (tile.id === $currentTile || $showAllHints)}
 							animate={r >= preloadedRows && r >= $currentRow - 1}
-							{idle}
-						/>
+						>
+							{#if $gameFinished && idle}
+								{#await import('./Idler.svelte') then module}
+									<svelte:component this={module.default} id={r + ':' + tile.id} />
+								{/await}
+							{/if}
+						</Tile>
 					{/each}
 				</div>
 			{/each}

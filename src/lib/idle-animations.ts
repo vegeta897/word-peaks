@@ -8,13 +8,13 @@ export type MultipartAnimation = { duration: number } & Partial<Record<Animation
 
 const centerX = 40
 
-export const letterPeek = defineAnimation({
+export const peek = defineAnimation({
 	duration: 600,
 	translateX: [
 		{ transform: 'translateX(0)', easing: 'ease-in-out' },
 		{ transform: 'translateX(10px)' },
 	],
-	rotate: [{ transform: 'rotate(0)', easing: 'ease-in-out' }, { transform: 'rotate(20deg)' }],
+	rotate: [{ transform: 'rotate(-4deg)', easing: 'ease-in-out' }, { transform: 'rotate(20deg)' }],
 })
 export const hopIn = defineAnimation({
 	duration: 700,
@@ -53,9 +53,9 @@ export const hopOut = defineAnimation({
 		{ transform: `translateY(0)`, offset: 0.8 },
 	],
 	rotate: [
-		{ transform: `rotate(0)`, offset: 0, easing: 'ease-out' },
-		{ transform: `rotate(20deg)`, offset: 0.4 },
-		{ transform: `rotate(0)`, offset: 0.8 },
+		{ transform: `skew(0)`, offset: 0, easing: 'ease-out' },
+		{ transform: `skew(-20deg)`, offset: 0.4 },
+		{ transform: `skew(-4deg)`, offset: 0.8 },
 	],
 	scale: [
 		{ easing: 'ease-out' },
@@ -70,18 +70,18 @@ export const hopOut = defineAnimation({
 export const danceStart = defineAnimation({
 	duration: 350,
 	translateX: [{ transform: `translateX(${centerX}px)` }],
-	rotate: [{ transform: `rotate(0)`, easing: 'ease-in-out' }, { transform: `rotate(-6deg)` }],
+	rotate: [{ transform: `skew(0)`, easing: 'ease-in-out' }, { transform: `skew(6deg)` }],
 	scale: [{ transform: `scaleY(1)`, easing: 'ease-in-out' }, { transform: `scaleY(1.1)` }],
 })
 export const dance = defineAnimation({
 	duration: 1000,
 	translateX: [{ transform: `translateX(${centerX}px)` }],
 	rotate: [
-		{ transform: `rotate(-6deg)`, easing: 'ease-in' },
-		{ transform: `rotate(0)`, easing: 'ease-out' },
-		{ transform: `rotate(6deg)`, easing: 'ease-in' },
-		{ transform: `rotate(0)`, easing: 'ease-out' },
-		{ transform: `rotate(-6deg)` },
+		{ transform: `skew(6deg)`, easing: 'ease-in' },
+		{ transform: `skew(0)`, easing: 'ease-out' },
+		{ transform: `skew(-6deg)`, easing: 'ease-in' },
+		{ transform: `skew(0)`, easing: 'ease-out' },
+		{ transform: `skew(6deg)` },
 	],
 	scale: [
 		{ transform: `scaleY(1.1)`, easing: 'ease-in' },
@@ -94,7 +94,7 @@ export const dance = defineAnimation({
 export const danceEnd = defineAnimation({
 	duration: 300,
 	translateX: [{ transform: `translateX(${centerX}px)` }],
-	rotate: [{ transform: `rotate(-6deg)`, easing: 'ease-in-out' }, { transform: `rotate(0)` }],
+	rotate: [{ transform: `skew(6deg)`, easing: 'ease-in-out' }, { transform: `skew(0)` }],
 	scale: [{ transform: `scaleY(1.1)`, easing: 'ease-in-out' }, { transform: `scaleY(1)` }],
 })
 export const spinJump = defineAnimation({
