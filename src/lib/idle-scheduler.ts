@@ -32,13 +32,9 @@ export type IdleSchedule = {
 const firstLetterAlphabet = alphabet.filter((l) => !['l', 'i'].includes(l))
 
 export function getSchedule(id: string): Promise<IdleSchedule> {
-	let scheduleDelay = 0
 	const firstIdler = schedules.size === 0
 	const letter = pickRandom(firstIdler ? firstLetterAlphabet : alphabet)
 	const schedule: IdleSchedule = { letter, animations: [] }
-	if (!firstIdler) {
-		scheduleDelay = randomFloat(20 * 1000, idlers * 8 * 1000)
-	}
 	const peekEndDelay = firstIdler ? 1200 : randomFloat(0, 600)
 	schedule.animations.push({ animation: peek, endDelay: peekEndDelay })
 	if (firstIdler || Math.random() < 0.95) {
@@ -72,6 +68,7 @@ export function getSchedule(id: string): Promise<IdleSchedule> {
 		// Changed your mind
 		schedule.animations.push({ animation: unPeek })
 	}
+	const scheduleDelay = firstIdler ? 0 : randomFloat(20 * 1000, idlers * 6 * 1000)
 	return new Promise((resolve) => {
 		schedules.set(
 			id,
