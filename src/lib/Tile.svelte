@@ -3,7 +3,6 @@
 	import { quadIn, quadOut } from 'svelte/easing'
 	import { invalidWord, invalidHardModeGuess, notEnoughLetters, currentTile } from '$lib/store'
 	import type { Tile } from '$lib/data-model'
-	import Idler from '$lib/Idler.svelte'
 
 	export let tile: Tile
 	export let current = false
@@ -11,6 +10,7 @@
 	export let showHint = false
 	export let animate = false
 	export let inCurrentRow = false
+	export let idle = false
 
 	let tileFlipDuration: number
 	let tileFlipDelay: number
@@ -73,11 +73,10 @@
 			{/if}
 		</div>
 	{/if}
-	{#if gameFinished && tile.letter === ''}
-		<!-- TODO: Import after waiting for a bit -->
-		<!-- TODO: Detect web animation API support first -->
-		<!-- TODO: Trigger plausible event -->
-		<Idler />
+	{#if idle && tile.letter === ''}
+		{#await import('./Idler.svelte') then module}
+			<svelte:component this={module.default} />
+		{/await}
 	{/if}
 </div>
 

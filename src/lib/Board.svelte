@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte'
+	import { onDestroy, onMount } from 'svelte'
 	import Peaks from '$lib/Peaks.svelte'
 	import {
 		boardContent,
@@ -11,17 +11,33 @@
 	} from '$lib/store'
 	import Tile from '$lib/Tile.svelte'
 	import { get } from 'svelte/store'
+	import { trackEvent } from '$lib/plausible'
+	import { animationSupported } from '$lib/transitions'
 
 	export let startCentered: boolean
 
 	let preloadedRows = get(guesses).length
 	let ready = false
+	let idle = false
+	let canIdle = false
 
-	gameFinished.subscribe(() => {
+	let idleTimeout
+
+	gameFinished.subscribe((finished) => {
 		if (ready) preloadedRows = 0
+		idleTimeout = setTimeout(() => {
+			trackEvent('idleOnFinish')
+			idle = canIdle
+		}, 3000)
+		if (!finished) idle = false
+		if (!finished && idleTimeout) clearTimeout(idleTimeout)
 	})
 	// Prevents SSR for board
-	onMount(() => (ready = true))
+	onMount(() => {
+		ready = true
+		canIdle = animationSupported()
+	})
+	onDestroy(() => clearTimeout(idleTimeout))
 </script>
 
 <div class="container">
@@ -37,6 +53,7 @@
 							gameFinished={$gameFinished}
 							showHint={!$gameFinished && (tile.id === $currentTile || $showAllHints)}
 							animate={r >= preloadedRows && r >= $currentRow - 1}
+							{idle}
 						/>
 					{/each}
 				</div>

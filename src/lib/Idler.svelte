@@ -36,8 +36,9 @@
 	): Promise<Awaited<Animation | void>[]> => {
 		return Promise.all(
 			AnimationParts.map((part) => {
-				if (animation[part]) {
-					return animationParts.get(part)!().animate(animation[part]!, {
+				const element = animationParts.get(part)!()
+				if (element && animation[part]) {
+					return element.animate(animation[part]!, {
 						duration: animation.duration,
 						iterations,
 						endDelay,
@@ -58,9 +59,7 @@
 		await performAnimation(danceEnd, 400)
 		await performAnimation(spinJump, 600, 2)
 		await performAnimation(hopOut, 200)
-		try {
-			await animate()
-		} catch (e) {}
+		// animate().catch()
 	}
 
 	onMount(() => {

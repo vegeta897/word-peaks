@@ -31,3 +31,17 @@ export const squish = (node: HTMLElement, opts: any): AnimationConfig => ({
 		node.style.setProperty('transform', `scaleX(${t})`)
 	},
 })
+
+// Based on https://codepen.io/danwilson/pen/xGBKVq
+export const animationSupported = (): boolean => {
+	const element = document.createElement('a')
+	document.body.appendChild(element)
+	if (!element.animate) return false
+	const player = element.animate({ opacity: [1, 0.5, 1] }, { iterations: 1, duration: 100 })
+	if (!player || !player.finished || !player.finished.then) return false
+	player.pause()
+	player.currentTime = 50
+	const opacity = parseFloat(window.getComputedStyle(element).opacity)
+	element.remove()
+	return opacity === 0.5
+}
