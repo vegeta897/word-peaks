@@ -27,29 +27,26 @@
 	let idleTimeout
 
 	async function waitForIdle() {
+		if (canIdle === false) return
 		if (idleTimeout) {
 			clearTimeout(idleTimeout)
 			idleTimeout = undefined
 		}
-		if (get(gameFinished) && !get(resultsOpen)) {
+		if (get(gameFinished) && !get(resultsOpen) && !document.hidden) {
 			let thisTimeout: number
-			while (true) {
-				await new Promise((resolve) => {
-					idleTimeout = setTimeout(() => {
-						resolve()
-					}, 20 * 1000)
-					thisTimeout = idleTimeout
-				})
-				if (!document.hidden) break
-			}
+			await new Promise((resolve) => {
+				idleTimeout = setTimeout(() => {
+					resolve()
+				}, 20 * 1000)
+				thisTimeout = idleTimeout
+			})
 			if (thisTimeout !== idleTimeout) return
 			if (canIdle === null) canIdle = animationSupported()
-			if (canIdle) {
-				trackEvent('idleOnFinish')
-				const scheduler = await import('./idle-scheduler')
-				scheduler.initScheduler((ROWS - get(currentRow)) * WORD_LENGTH)
-				idle = true
-			}
+			if (!canIdle) return
+			trackEvent('idleOnFinish')
+			const scheduler = await import('./idle-scheduler')
+			scheduler.initScheduler((ROWS - get(currentRow)) * WORD_LENGTH)
+			idle = true
 		} else {
 			idle = false
 		}
