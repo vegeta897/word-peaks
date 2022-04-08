@@ -16,6 +16,9 @@
 		"score_copied": "Score copied!",
 		"image_copied": "Image copied!"
 	},
+	"keyboard": {
+		"enter": "Enter"
+	},
 	"results": {
 		"win": "You got it!",
 		"lose": "Oh no!",

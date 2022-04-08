@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { alphabet, keyboardLayoutOptions } from '$lib/data-model'
 	import { validLetters, swapEnterBackspace, keyboardLayout } from '$lib/store'
+	import { t } from '$lib/translations'
 
 	export let typeLetter: (key: string) => {}
 	export let submitRow: () => {}
@@ -45,7 +46,7 @@
 				>
 			{/each}
 			{#if r === keyboardLayoutOptions.find((o) => o.value === $keyboardLayout).wideKeysRow}{#if $swapEnterBackspace}
-					<button on:click={submitRow} class="wide">Enter</button>
+					<button on:click={submitRow} class="wide">{$t('main.keyboard.enter')}</button>
 				{:else}
 					<button on:click={undoLetter} class="wide">
 						<svg viewBox="0 0 21 11" xmlns="http://www.w3.org/2000/svg" width="42" height="22">
