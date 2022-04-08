@@ -45,8 +45,13 @@
 </div>
 
 <footer>
+	<div class="footer-item important">
+		<p>📢 <strong>{$t('main.footer.translate_looking')}</strong></p>
+		<p>{@html $t('main.footer.translate_contribute')}</p>
+	</div>
+	<hr />
 	<div class="footer-item">
-		{@html $t('main.footer')}
+		{@html $t('main.footer.credits')}
 	</div>
 	<div class="footer-item icon-row">
 		<svg class="icon" viewBox="0 0 71 55" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -91,8 +96,11 @@
 		justify-content: center;
 		align-items: flex-start;
 		margin: 1rem auto 0.2rem;
-		opacity: 0.8;
-		max-width: 200px;
+		max-width: 230px;
+	}
+
+	footer p {
+		margin: 0 0 0.2rem;
 	}
 
 	footer .icon {
@@ -102,6 +110,18 @@
 
 	.footer-item {
 		margin: 0.4rem 0 0;
+		opacity: 0.8;
+	}
+
+	.footer-item.important {
+		opacity: 1;
+	}
+
+	hr {
+		width: 100%;
+		opacity: 0.5;
+		border-top: 0 solid var(--text-color);
+		margin-top: 0.6rem;
 	}
 
 	.icon-row {
