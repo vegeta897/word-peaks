@@ -40,20 +40,22 @@
 <section>
 	<h2>{$t('main.options.title')}</h2>
 	<div class="content">
-		<div class="select-container">
-			<div class="label">{$t('main.options.language')}</div>
-			<Select
-				items={languages}
-				value={{
-					label: languages.find((o) => o.value === $storedLocale).label,
-					value: $storedLocale,
-				}}
-				on:select={({ detail: { value } }) => storedLocale.set(value)}
-				isClearable={false}
-				isSearchable={false}
-				containerStyles="color: var(--primary-color);width:10rem;"
-			/>
-		</div>
+		{#if languages.length > 1}
+			<div class="select-container">
+				<div class="label">{$t('main.options.language')}</div>
+				<Select
+					items={languages}
+					value={{
+						label: languages.find((o) => o.value === $storedLocale).label,
+						value: $storedLocale,
+					}}
+					on:select={({ detail: { value } }) => storedLocale.set(value)}
+					isClearable={false}
+					isSearchable={false}
+					containerStyles="color: var(--primary-color);width:10rem;"
+				/>
+			</div>
+		{/if}
 		<div class="select-container">
 			<div class="label">{$t('main.options.keyboard_layout')}</div>
 			<Select
