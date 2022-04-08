@@ -11,7 +11,7 @@
 
 	type Point = [number, number]
 
-	let rows: Point[]
+	let rows: Point[][]
 	currentRow.subscribe((_currentRow) => {
 		rows = get(boardContent)
 			.slice(0, _currentRow)
@@ -22,9 +22,8 @@
 					return [i * 100 + 50, 100 * r + 50 + tile.polarity * height * 50]
 				}),
 				[500, 50 + 100 * r],
-			]) as Point[]
+			]) as Point[][]
 	})
-
 	function stringifyPoints(points: Point[]): string {
 		// Add .001 to prevent invisible horizontal line bug
 		return points.map((p) => p.map((n) => Math.round(n)).join(',')).join(' ') + '.001'
@@ -39,7 +38,7 @@
 	}
 </script>
 
-{#key stringifyPoints(rows)}
+{#key rows.map((r) => stringifyPoints(r)).join(':')}
 	<svg viewBox="0 -1 500 602" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
 		<defs>
 			<linearGradient id="graphMaskGradient">

@@ -47,6 +47,7 @@
 			class:before-pre={!tile.scored && tile.polarity < 0}
 			class:after-pre={!tile.scored && tile.polarity > 0}
 			class:finished={gameFinished}
+			class:clickable={inCurrentRow}
 			class:shimmy={$invalidWord && inCurrentRow}
 			class:shake={inCurrentRow &&
 				(($notEnoughLetters && !tile.letter) ||
@@ -71,6 +72,9 @@
 				{/if}
 			{/if}
 		</div>
+	{/if}
+	{#if tile.letter === ''}
+		<slot />
 	{/if}
 </div>
 
@@ -113,6 +117,9 @@
 	}
 	.tile.correct {
 		background: var(--correct-color);
+	}
+	.tile.clickable {
+		cursor: pointer;
 	}
 
 	.tile.before {
