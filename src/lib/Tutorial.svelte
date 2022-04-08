@@ -1,25 +1,23 @@
 <script lang="ts">
 	import Tile from '$lib/Tile.svelte'
+	import { t } from '$lib/translations'
 </script>
 
 <section>
-	<h2>How to play</h2>
-	<p>Guess the word in 6 tries!</p>
-	<p>
-		After each guess, the tiles show whether your letters occur higher or lower in the alphabet
-		compared to the correct letters. Higher means closer to A, lower means closer to Z.
-	</p>
+	<h2>{$t('main.tutorial.title')}</h2>
+	<p>{$t('main.tutorial.objective')}</p>
+	<p>{$t('main.tutorial.explanation')}</p>
 	<div>
 		<div><Tile tile={{ scored: true, letter: 'p', distance: 0, id: 0 }} /></div>
-		<p>Letter is correct</p>
+		<p>{$t('main.tutorial.correct_tile')}</p>
 	</div>
 	<div>
 		<div><Tile tile={{ scored: true, letter: 'd', distance: -1, id: 0 }} /></div>
-		<p>Letter is too high in the alphabet</p>
+		<p>{$t('main.tutorial.high_tile')}</p>
 	</div>
 	<div>
 		<div><Tile tile={{ scored: true, letter: 'w', distance: 1, id: 0 }} /></div>
-		<p>Letter is too low in the alphabet</p>
+		<p>{$t('main.tutorial.low_tile')}</p>
 	</div>
 	<hr />
 	<div>
@@ -30,7 +28,7 @@
 				showHint={true}
 			/>
 		</div>
-		<p>The range of possible letters is shown on the tile and the keyboard as you type</p>
+		<p>{$t('main.tutorial.letter_range')}</p>
 	</div>
 </section>
 

@@ -39,8 +39,7 @@
 
 <footer>
 	<div class="footer-item">
-		an <a href="https://github.com/vegeta897/wordle-peaks">open source</a> project inspired by
-		<a href="https://www.nytimes.com/games/wordle/index.html">Wordle</a>
+		{@html $t('main.footer')}
 	</div>
 	<div class="footer-item icon-row">
 		<svg class="icon" viewBox="0 0 71 55" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -87,10 +86,6 @@
 		margin: 1rem auto 0.2rem;
 		opacity: 0.8;
 		max-width: 200px;
-	}
-
-	footer a {
-		font-weight: bold;
 	}
 
 	footer .icon {

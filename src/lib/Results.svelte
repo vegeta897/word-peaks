@@ -17,6 +17,8 @@
 	} from '$lib/share'
 	import Stats from '$lib/Stats.svelte'
 	import type { Stats as StatsType } from '$lib/data-model'
+	import { t } from '$lib/translations'
+	import { toast } from '@zerodevx/svelte-toast'
 
 	// Don't use store, we don't want/need dynamic content for the results
 	export let answer: string
@@ -45,6 +47,7 @@
 		updateNextMS()
 	}, 1000)
 
+	let nextWordReady: boolean
 	$: nextWordReady = nextMS < 0
 
 	const HOUR = 3600000
@@ -58,6 +61,15 @@
 		day: _lastPlayedDaily + 1,
 	})
 
+	const successToast = (message: string) =>
+		toast.push(message, {
+			theme: { '--toastBackground': 'var(--cta-color)' },
+		})
+	const errorToast = () =>
+		toast.push(get(t)('main.messages.could_not_do'), {
+			theme: { '--toastBackground': 'var(--cta-color)' },
+		})
+
 	function shareText() {
 		shareMenu = false
 		trackEvent('resultShare')
@@ -66,6 +78,9 @@
 				'\n\n' +
 				getEmojiGrid(guesses, answer) +
 				(gameMode === 'random' ? `\nhttps://vegeta897.github.io/wordle-peaks/#${hash}` : '')
+		).then(
+			() => successToast(get(t)('main.messages.score_copied')),
+			() => errorToast()
 		)
 	}
 
@@ -82,6 +97,15 @@
 		await shareImage(canvas, gameMode === 'random' ? { hash } : { day: _lastPlayedDaily + 1 })
 	}
 
+	function onCopyImage() {
+		try {
+			copyImage(canvas)
+			successToast(get(t)('main.messages.image_copied'))
+		} catch (e) {
+			errorToast()
+		}
+	}
+
 	onMount(() =>
 		drawResults(canvas, {
 			highContrast: get(highContrast),
@@ -93,18 +117,24 @@
 </script>
 
 <section>
-	<h2>{gameFinished ? (gameWon ? 'You got it! 🎉' : 'Oh no! ☹️') : 'Stats'}</h2>
+	<h2>
+		{gameFinished
+			? gameWon
+				? `${$t('main.results.win')} 🎉`
+				: `${$t('main.results.lose')} ☹️`
+			: $t('main.stats.title')}
+	</h2>
 	{#if gameFinished && !gameWon}
-		<p>The answer was <strong>{answer.toUpperCase()}</strong></p>
+		<p>{@html $t('main.results.answer', { answer: answer.toUpperCase() })}</p>
 	{/if}
 	<Stats {stats} {gameMode} />
 	<div class="share">
 		<div class="column">
 			{#if nextWordReady || !dailyFinished}
-				<div class="daily-text">Try today's word!</div>
+				<div class="daily-text">{$t('main.results.try_today')}</div>
 			{:else}
 				<div class="countdown">
-					<h3>Next word</h3>
+					<h3>{$t('main.results.next_word')}</h3>
 					<strong
 						>{`${Math.floor(nextMS / HOUR)}`.padStart(2, '0')}:{`${Math.floor(
 							(nextMS % HOUR) / MINUTE
@@ -125,8 +155,8 @@
 						out:fade={{ duration: 100, easing: cubicIn }}
 						on:outroend={() => (showShareButtons = false)}
 					>
-						<button on:click={shareText} class="share-button">Text</button>
-						<button on:click={onShareImage} class="share-button">Image</button>
+						<button on:click={shareText} class="share-button">{$t('main.results.text')}</button>
+						<button on:click={onShareImage} class="share-button">{$t('main.results.image')}</button>
 					</div>
 				{:else if !shareMenu && !showShareButtons}
 					<button
@@ -134,19 +164,19 @@
 						out:fade={{ duration: 100, easing: cubicIn }}
 						on:outroend={() => (showShareButtons = true)}
 						on:click={() => (shareMenu = true)}
-						class="share-button">Share</button
+						class="share-button">{$t('main.results.share')}</button
 					>
 				{/if}
 			{/if}
 			{#if gameMode === 'random' || nextWordReady || !dailyFinished}
-				<button on:click={playDaily} class="daily-button">Play Daily</button>
+				<button on:click={playDaily} class="daily-button">{$t('main.results.play_daily')}</button>
 			{/if}
-			<button on:click={playRandom}>Play Random</button>
+			<button on:click={playRandom}>{$t('main.results.play_random')}</button>
 		</div>
 	</div>
 	<div class="image-share" class:hidden={!imageShared}>
 		<canvas bind:this={canvas} width="504" height="0" style={'width:252px'} />
-		<button on:click={() => copyImage(canvas)} class="share-button">Copy Image</button>
+		<button on:click={onCopyImage} class="share-button">{$t('main.results.copy_image')}</button>
 	</div>
 </section>
 

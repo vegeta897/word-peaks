@@ -13,6 +13,7 @@
 	import { toast } from '@zerodevx/svelte-toast'
 	import { beforeUpdate } from 'svelte'
 	import { keyboardLayoutOptions } from '$lib/data-model'
+	import { t } from '$lib/translations'
 
 	function toggleHardMode() {
 		try {
@@ -25,16 +26,19 @@
 
 	let hardModeToggle: boolean
 
+	keyboardLayoutOptions.find((o) => o.value === 'alphabetic').label =
+		get(t)('main.options.alphabetic')
+
 	beforeUpdate(() => {
 		hardModeToggle = get(hardMode)
 	})
 </script>
 
 <section>
-	<h2>Options</h2>
+	<h2>{$t('main.options.title')}</h2>
 	<div class="content">
 		<div class="select-container">
-			<div class="label">Keyboard layout</div>
+			<div class="label">{$t('main.options.keyboard_layout')}</div>
 			<Select
 				items={keyboardLayoutOptions}
 				value={{
@@ -51,7 +55,7 @@
 			bind:toggled={hardModeToggle}
 			on:click={toggleHardMode}
 			hideLabel
-			label="Hard mode"
+			label={$t('main.options.hard_mode')}
 			style="transform: scale(1.4); touch-action: manipulation;"
 			toggledColor="var(--accent-color)"
 			untoggledColor="#695d6e"><div class="label">Hard mode</div></Toggle
@@ -59,7 +63,7 @@
 		<Toggle
 			bind:toggled={$highContrast}
 			hideLabel
-			label="High contrast mode"
+			label={$t('main.options.high_contrast_mode')}
 			style="transform: scale(1.4); touch-action: manipulation;"
 			toggledColor="var(--accent-color)"
 			untoggledColor="#695d6e"><div class="label">High contrast mode</div></Toggle
@@ -67,7 +71,7 @@
 		<Toggle
 			bind:toggled={$showAllHints}
 			hideLabel
-			label="Show all hints in row"
+			label={$t('main.options.show_all_hints')}
 			style="transform: scale(1.4); touch-action: manipulation;"
 			toggledColor="var(--accent-color)"
 			untoggledColor="#695d6e"><div class="label">Show all hints in row</div></Toggle
@@ -75,7 +79,7 @@
 		<Toggle
 			bind:toggled={$swapEnterBackspace}
 			hideLabel
-			label="Swap Enter/Backspace keys"
+			label={$t('main.options.swap_enter_backspace')}
 			style="transform: scale(1.4); touch-action: manipulation;"
 			toggledColor="var(--accent-color)"
 			untoggledColor="#695d6e"><div class="label">Swap Enter/Backspace keys</div></Toggle

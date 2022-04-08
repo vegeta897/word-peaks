@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { t } from '$lib/translations'
 	import type { GameMode, Stats } from '$lib/data-model'
 
 	export let stats: Stats
@@ -9,22 +10,22 @@
 <div class="stats">
 	<div class="stats-item">
 		<strong>{stats.totalGames}</strong>
-		Total games
+		{$t('main.stats.total_games')}
 	</div>
 	<div class="stats-item">
 		<strong>{Math.round((100 * stats.wonGames) / (stats.totalGames || 1))}%</strong>
-		Win rate
+		{$t('main.stats.win_rate')}
 	</div>
 	<div class="stats-item">
 		<strong>{stats.currentStreak}</strong>
-		Current streak
+		{$t('main.stats.current_streak')}
 	</div>
 	<div class="stats-item">
 		<strong>{stats.bestStreak}</strong>
-		Best streak
+		{$t('main.stats.best_streak')}
 	</div>
 	<div class="distribution">
-		<h3>Guess Distribution</h3>
+		<h3>{$t('main.stats.guess_distribution')}</h3>
 		{#each stats.distribution as guessCount, c}
 			<div class="bar-row">
 				{c + 1}
@@ -37,7 +38,7 @@
 			</div>
 		{/each}
 	</div>
-	{#if gameMode === 'random'}<em>Stats only count daily games</em>{/if}
+	{#if gameMode === 'random'}<em>{$t('main.stats.stats_daily')}</em>{/if}
 </div>
 
 <style>
