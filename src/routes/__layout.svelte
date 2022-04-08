@@ -1,13 +1,13 @@
 <script lang="ts" context="module">
 	import { trackPageview } from '$lib/plausible'
-	import { t, locales, locale, loadTranslations } from '$lib/translations'
+	import { t, locales, loadTranslations } from '$lib/translations'
 	import { storedLocale } from '$lib/store'
 	import type { Load } from '@sveltejs/kit'
 	import { get } from 'svelte/store'
-
 	export const load: Load = async () => {
-		const initialLocale = get(storedLocale) // get from cookie / url / fetch from server...
-		await loadTranslations(initialLocale) // keep this just before the `return`
+		let initialLocale = get(storedLocale)
+		if (!locales.get().includes(initialLocale)) initialLocale = 'en'
+		await loadTranslations(initialLocale)
 		return {}
 	}
 	trackPageview()
@@ -18,6 +18,10 @@
 	import Modal from 'svelte-simple-modal'
 	import { SvelteToast } from '@zerodevx/svelte-toast'
 	import { highContrast } from '$lib/store'
+
+	storedLocale.subscribe((l) => {
+		if (locales.get().includes(l)) loadTranslations(l)
+	})
 </script>
 
 <svelte:head>
