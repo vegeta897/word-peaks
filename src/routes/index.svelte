@@ -50,6 +50,7 @@
 		invalidHardModeGuess,
 		resultsOpen,
 	} from '$lib/store'
+	import { t } from '$lib/translations'
 	import { trackEvent } from '$lib/plausible'
 	import { browser } from '$app/env'
 	import { page } from '$app/stores'
