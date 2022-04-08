@@ -1,9 +1,12 @@
 <script lang="ts" context="module">
 	import { trackPageview } from '$lib/plausible'
 	import { t, locales, locale, loadTranslations } from '$lib/translations'
+	import { storedLocale } from '$lib/store'
 	import type { Load } from '@sveltejs/kit'
+	import { get } from 'svelte/store'
+
 	export const load: Load = async () => {
-		const initialLocale = 'en' // get from cookie / url / fetch from server...
+		const initialLocale = get(storedLocale) // get from cookie / url / fetch from server...
 		await loadTranslations(initialLocale) // keep this just before the `return`
 		return {}
 	}

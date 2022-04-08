@@ -40,6 +40,7 @@
 	},
 	"options": {
 		"title": "Options",
+		"language": "Language",
 		"keyboard_layout": "Keyboard layout",
 		"hard_mode": "Hard mode",
 		"high_contrast_mode": "High contrast mode",
