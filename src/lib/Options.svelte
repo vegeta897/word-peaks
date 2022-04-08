@@ -8,11 +8,19 @@
 		changeHardMode,
 		swapEnterBackspace,
 		keyboardLayout,
+		storedLocale,
 	} from '$lib/store'
 	import { get } from 'svelte/store'
 	import { toast } from '@zerodevx/svelte-toast'
 	import { beforeUpdate } from 'svelte'
 	import { keyboardLayoutOptions } from '$lib/data-model'
+	import { t } from '$lib/translations'
+	import lang from '$lib/translations/lang.json'
+
+	const languages = Object.entries(lang).map(([value, label]) => ({ value, label }))
+
+	keyboardLayoutOptions.find((o) => o.value === 'alphabetic').label =
+		get(t)('main.options.alphabetic')
 
 	function toggleHardMode() {
 		try {
@@ -22,7 +30,6 @@
 			toast.push(err, { theme: { '--toastBackground': 'var(--error-color)' } })
 		}
 	}
-
 	let hardModeToggle: boolean
 
 	beforeUpdate(() => {
@@ -31,10 +38,26 @@
 </script>
 
 <section>
-	<h2>Options</h2>
+	<h2>{$t('main.options.title')}</h2>
 	<div class="content">
+		{#if languages.length > 1}
+			<div class="select-container">
+				<div class="label">{$t('main.options.language')}</div>
+				<Select
+					items={languages}
+					value={{
+						label: languages.find((o) => o.value === $storedLocale).label,
+						value: $storedLocale,
+					}}
+					on:select={({ detail: { value } }) => storedLocale.set(value)}
+					isClearable={false}
+					isSearchable={false}
+					containerStyles="color: var(--primary-color);width:10rem;"
+				/>
+			</div>
+		{/if}
 		<div class="select-container">
-			<div class="label">Keyboard layout</div>
+			<div class="label">{$t('main.options.keyboard_layout')}</div>
 			<Select
 				items={keyboardLayoutOptions}
 				value={{
@@ -51,34 +74,36 @@
 			bind:toggled={hardModeToggle}
 			on:click={toggleHardMode}
 			hideLabel
-			label="Hard mode"
+			label={$t('main.options.hard_mode')}
 			style="transform: scale(1.4); touch-action: manipulation;"
 			toggledColor="var(--accent-color)"
-			untoggledColor="#695d6e"><div class="label">Hard mode</div></Toggle
+			untoggledColor="#695d6e"><div class="label">{$t('main.options.hard_mode')}</div></Toggle
 		>
 		<Toggle
 			bind:toggled={$highContrast}
 			hideLabel
-			label="High contrast mode"
+			label={$t('main.options.high_contrast_mode')}
 			style="transform: scale(1.4); touch-action: manipulation;"
 			toggledColor="var(--accent-color)"
-			untoggledColor="#695d6e"><div class="label">High contrast mode</div></Toggle
+			untoggledColor="#695d6e"
+			><div class="label">{$t('main.options.high_contrast_mode')}</div></Toggle
 		>
 		<Toggle
 			bind:toggled={$showAllHints}
 			hideLabel
-			label="Show all hints in row"
+			label={$t('main.options.show_all_hints')}
 			style="transform: scale(1.4); touch-action: manipulation;"
 			toggledColor="var(--accent-color)"
-			untoggledColor="#695d6e"><div class="label">Show all hints in row</div></Toggle
+			untoggledColor="#695d6e"><div class="label">{$t('main.options.show_all_hints')}</div></Toggle
 		>
 		<Toggle
 			bind:toggled={$swapEnterBackspace}
 			hideLabel
-			label="Swap Enter/Backspace keys"
+			label={$t('main.options.swap_enter_backspace')}
 			style="transform: scale(1.4); touch-action: manipulation;"
 			toggledColor="var(--accent-color)"
-			untoggledColor="#695d6e"><div class="label">Swap Enter/Backspace keys</div></Toggle
+			untoggledColor="#695d6e"
+			><div class="label">{$t('main.options.swap_enter_backspace')}</div></Toggle
 		>
 	</div>
 </section>

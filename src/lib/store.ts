@@ -12,6 +12,7 @@ import {
 } from '$lib/data-model'
 
 export const storeVersion: Writable<number> = storageWritable('wp-version', 0)
+export const storedLocale: Writable<string> = storageWritable('wp-locale', 'en')
 
 export const answerDaily: Writable<string> = storageWritable('wp-answer', '')
 export const answerRandom: Writable<string> = storageWritable('wp-answerRandom', '')

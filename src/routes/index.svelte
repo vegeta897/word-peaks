@@ -50,6 +50,7 @@
 		invalidHardModeGuess,
 		resultsOpen,
 	} from '$lib/store'
+	import { t } from '$lib/translations'
 	import { trackEvent } from '$lib/plausible'
 	import { browser } from '$app/env'
 	import { page } from '$app/stores'
@@ -188,14 +189,14 @@
 		}
 		if (!hasEnoughLetters(get(boardContent), get(currentRow))) {
 			notEnoughLetters.set(true)
-			showError('Not enough letters', () => notEnoughLetters.set(false))
+			showError(get(t)('main.messages.not_enough_letters'), () => notEnoughLetters.set(false))
 			return
 		}
 		const submittedRow = get(boardContent)[get(currentRow)]
 		const submittedWord = getBoardRowString(submittedRow)
 		if (!dictionary.includes(submittedWord)) {
 			invalidWord.set(true)
-			showError('Not a valid word', () => invalidWord.set(false))
+			showError(get(t)('main.messages.invalid_word'), () => invalidWord.set(false))
 			return
 		}
 		if (
@@ -206,7 +207,7 @@
 			)
 		) {
 			invalidHardModeGuess.set(true)
-			showError('Guesses must use valid letters', () => invalidHardModeGuess.set(false))
+			showError(get(t)('main.messages.use_valid_letters'), () => invalidHardModeGuess.set(false))
 			return
 		}
 		trackEvent('submitGuess')

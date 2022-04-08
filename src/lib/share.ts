@@ -94,32 +94,15 @@ export function getEmojiGrid(guesses: string[], answer: string): string {
 	)
 }
 
-const successToast = (message: string) =>
-	toast.push(message, {
-		theme: { '--toastBackground': 'var(--cta-color)' },
-	})
-const errorToast = () =>
-	toast.push("Sorry, couldn't do that!", {
-		theme: { '--toastBackground': 'var(--cta-color)' },
-	})
-
-export function copyText(text: string): void {
+export function copyText(text: string): Promise<void> {
 	toast.pop()
-	navigator.clipboard.writeText(text).then(
-		() => successToast('Score copied!'),
-		() => errorToast()
-	)
+	return navigator.clipboard.writeText(text)
 }
 
 export function copyImage(canvas: HTMLCanvasElement): void {
 	canvas.toBlob(async (blob) => {
-		try {
-			let data = [new ClipboardItem({ [blob!.type]: blob! })]
-			await navigator.clipboard.write(data)
-			successToast('Image copied!')
-		} catch (e) {
-			errorToast()
-		}
+		let data = [new ClipboardItem({ [blob!.type]: blob! })]
+		await navigator.clipboard.write(data)
 	})
 }
 

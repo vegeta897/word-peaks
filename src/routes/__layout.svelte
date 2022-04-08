@@ -1,5 +1,15 @@
 <script lang="ts" context="module">
 	import { trackPageview } from '$lib/plausible'
+	import { t, locales, loadTranslations } from '$lib/translations'
+	import { storedLocale } from '$lib/store'
+	import type { Load } from '@sveltejs/kit'
+	import { get } from 'svelte/store'
+	export const load: Load = async () => {
+		let initialLocale = get(storedLocale)
+		if (!locales.get().includes(initialLocale)) initialLocale = 'en'
+		await loadTranslations(initialLocale)
+		return {}
+	}
 	trackPageview()
 </script>
 
@@ -8,6 +18,10 @@
 	import Modal from 'svelte-simple-modal'
 	import { SvelteToast } from '@zerodevx/svelte-toast'
 	import { highContrast } from '$lib/store'
+
+	storedLocale.subscribe((l) => {
+		if (locales.get().includes(l)) loadTranslations(l)
+	})
 </script>
 
 <svelte:head>
@@ -31,9 +45,13 @@
 </div>
 
 <footer>
+	<div class="footer-item important">
+		<p>📢 <strong>{$t('main.footer.translate_looking')}</strong></p>
+		<p>{@html $t('main.footer.translate_contribute')}</p>
+	</div>
+	<hr />
 	<div class="footer-item">
-		an <a href="https://github.com/vegeta897/wordle-peaks">open source</a> project inspired by
-		<a href="https://www.nytimes.com/games/wordle/index.html">Wordle</a>
+		{@html $t('main.footer.credits')}
 	</div>
 	<div class="footer-item icon-row">
 		<svg class="icon" viewBox="0 0 71 55" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -78,12 +96,11 @@
 		justify-content: center;
 		align-items: flex-start;
 		margin: 1rem auto 0.2rem;
-		opacity: 0.8;
-		max-width: 200px;
+		max-width: 230px;
 	}
 
-	footer a {
-		font-weight: bold;
+	footer p {
+		margin: 0 0 0.2rem;
 	}
 
 	footer .icon {
@@ -93,6 +110,18 @@
 
 	.footer-item {
 		margin: 0.4rem 0 0;
+		opacity: 0.8;
+	}
+
+	.footer-item.important {
+		opacity: 1;
+	}
+
+	hr {
+		width: 100%;
+		opacity: 0.5;
+		border-top: 0 solid var(--text-color);
+		margin-top: 0.6rem;
 	}
 
 	.icon-row {
