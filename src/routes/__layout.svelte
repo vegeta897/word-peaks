@@ -1,12 +1,14 @@
 <script lang="ts" context="module">
 	import { trackPageview } from '$lib/plausible'
-	import { t, locales, loadTranslations } from '$lib/translations'
+	import { t, locales, loadTranslations, getNavigatorLanguage } from '$lib/translations'
 	import { storedLocale } from '$lib/store'
 	import type { Load } from '@sveltejs/kit'
 	import { get } from 'svelte/store'
 	export const load: Load = async () => {
 		let initialLocale = get(storedLocale)
+		if (!initialLocale) initialLocale = getNavigatorLanguage()
 		if (!locales.get().includes(initialLocale)) initialLocale = 'en'
+		storedLocale.set(initialLocale)
 		await loadTranslations(initialLocale)
 		return {}
 	}
@@ -96,7 +98,7 @@
 		justify-content: center;
 		align-items: flex-start;
 		margin: 1rem auto 0.2rem;
-		max-width: 230px;
+		max-width: 248px;
 	}
 
 	footer p {

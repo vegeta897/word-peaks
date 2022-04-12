@@ -15,4 +15,10 @@ export const config: Config = {
 	],
 }
 
+export function getNavigatorLanguage(): string {
+	if (!navigator || !navigator.language) return 'en'
+	if (navigator.language.startsWith('fr')) return 'fr'
+	return 'en'
+}
+
 export const { t, loading, locales, locale, loadTranslations, translations } = new i18n(config)
