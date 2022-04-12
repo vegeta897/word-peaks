@@ -54,6 +54,6 @@
 	"footer": {
 		"translate_looking": "I'm looking for translators!",
 		"translate_contribute": "Contribute <a href=\"https://crowdin.com/project/wordle-peaks\">here</a> or on <a href=\"https://github.com/vegeta897/wordle-peaks#translate\">GitHub</a>",
-		"credits": "an <a href=\"https://github.com/vegeta897/wordle-peaks\">open source</a> project inspired by <a href=\"https://www.nytimes.com/games/wordle/index.html\">Wordle</a>"
+		"credits": "an <a href=\"https://github.com/vegeta897/wordle-peaks\">open source</a> project<br />inspired by <a href=\"https://www.nytimes.com/games/wordle/index.html\">Wordle</a>"
 	}
 }

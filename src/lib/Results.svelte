@@ -131,7 +131,7 @@
 	<div class="share">
 		<div class="column">
 			{#if nextWordReady || !dailyFinished}
-				<div class="daily-text">{$t('main.results.try_today')}</div>
+				<div class="daily-text">{@html $t('main.results.try_today')}</div>
 			{:else}
 				<div class="countdown">
 					<h3>{$t('main.results.next_word')}</h3>
