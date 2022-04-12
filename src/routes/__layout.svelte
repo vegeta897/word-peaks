@@ -4,7 +4,9 @@
 	import { storedLocale } from '$lib/store'
 	import type { Load } from '@sveltejs/kit'
 	import { get } from 'svelte/store'
+	import { browser } from '$app/env'
 	export const load: Load = async () => {
+		if (!browser) return {}
 		let initialLocale = get(storedLocale)
 		if (!initialLocale) initialLocale = getNavigatorLanguage()
 		if (!locales.get().includes(initialLocale)) initialLocale = 'en'
