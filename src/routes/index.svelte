@@ -120,6 +120,7 @@
 		answerDaily.set(getWordByDay(dayNumber))
 	}
 
+	// TODO: Move these functions to another file
 	const showError = (m, onPop?: (id?: number) => any) => {
 		toast.pop()
 		const toastOptions: SvelteToastOptions = {
@@ -194,7 +195,7 @@
 		}
 		const submittedRow = get(boardContent)[get(currentRow)]
 		const submittedWord = getBoardRowString(submittedRow)
-		if (!dictionary.includes(submittedWord)) {
+		if (submittedWord !== get(answer) && !dictionary.includes(submittedWord)) {
 			invalidWord.set(true)
 			showError(get(t)('main.messages.invalid_word'), () => invalidWord.set(false))
 			return
