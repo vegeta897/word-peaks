@@ -161,8 +161,8 @@ export function drawResults(
 	boardContent.forEach((row, r) => {
 		if (r >= guesses.length) return
 		row.forEach((tile, t) => {
-			let topRadius = 10
-			let bottomRadius = 10
+			let topRadius = 12
+			let bottomRadius = 12
 			if (tile.distance === 0) {
 				ctx.fillStyle = highContrast ? '#64ba2e' : '#15a850'
 			} else if (tile.distance > 0) {
