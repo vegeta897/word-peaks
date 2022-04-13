@@ -12,15 +12,19 @@
 	} from '$lib/store'
 	import { get } from 'svelte/store'
 	import { toast } from '@zerodevx/svelte-toast'
-	import { beforeUpdate } from 'svelte'
+	import { beforeUpdate, onMount } from 'svelte'
 	import { keyboardLayoutOptions } from '$lib/data-model'
-	import { t } from '$lib/translations'
+	import { loadTranslations, t } from '$lib/translations'
 	import lang from '$lib/translations/lang.json'
 
 	const languages = Object.entries(lang).map(([value, label]) => ({ value, label }))
 
-	keyboardLayoutOptions.find((o) => o.value === 'alphabetic').label =
-		get(t)('main.options.alphabetic')
+	async function onLanguageChange(language: string) {
+		storedLocale.set(language)
+		await loadTranslations(language)
+		keyboardLayoutOptions.find((o) => o.value === 'alphabetic').label =
+			get(t)('main.options.alphabetic')
+	}
 
 	function toggleHardMode() {
 		try {
@@ -35,6 +39,7 @@
 	beforeUpdate(() => {
 		hardModeToggle = get(hardMode)
 	})
+	onMount(() => onLanguageChange(get(storedLocale)))
 </script>
 
 <section>
@@ -49,7 +54,7 @@
 						label: languages.find((o) => o.value === $storedLocale).label,
 						value: $storedLocale,
 					}}
-					on:select={({ detail: { value } }) => storedLocale.set(value)}
+					on:select={({ detail: { value } }) => onLanguageChange(value)}
 					isClearable={false}
 					isSearchable={false}
 					containerStyles="color: var(--primary-color);width:10rem;"
@@ -67,7 +72,7 @@
 				on:select={({ detail: { value } }) => keyboardLayout.set(value)}
 				isClearable={false}
 				isSearchable={false}
-				containerStyles="color: var(--primary-color);width:8.2rem;"
+				containerStyles="color: var(--primary-color);width:9.2rem;"
 			/>
 		</div>
 		<Toggle

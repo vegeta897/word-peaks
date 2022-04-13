@@ -22,10 +22,6 @@
 	import Modal from 'svelte-simple-modal'
 	import { SvelteToast } from '@zerodevx/svelte-toast'
 	import { highContrast } from '$lib/store'
-
-	storedLocale.subscribe((l) => {
-		if (locales.get().includes(l)) loadTranslations(l)
-	})
 </script>
 
 <svelte:head>
