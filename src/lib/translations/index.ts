@@ -6,6 +6,7 @@ export const config: Config = {
 	translations: {
 		en: { lang },
 		fr: { lang },
+		nl: { lang },
 	},
 	loaders: [
 		{
@@ -18,12 +19,18 @@ export const config: Config = {
 			key: 'main',
 			loader: async () => (await import('./fr/main.json')).default,
 		},
+		{
+			locale: 'nl',
+			key: 'main',
+			loader: async () => (await import('./nl/main.json')).default,
+		},
 	],
 }
 
 export function getNavigatorLanguage(): string {
 	if (!navigator || !navigator.language) return 'en'
 	if (navigator.language.startsWith('fr')) return 'fr'
+	if (navigator.language.startsWith('nl')) return 'nl'
 	return 'en'
 }
 

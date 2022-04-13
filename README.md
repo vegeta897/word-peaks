@@ -17,6 +17,7 @@ The word list for the game itself will remain in English. If you want to play wi
 ### Translators
 
 - **French**: [DPS2004](https://github.com/DPS2004), Alyssa Moisan, Mikaylabop
+- **Dutch**: Rosa Verhoek
 
 Word lists sourced and modified from [hello wordl](https://github.com/lynn/hello-wordl) ([license](https://github.com/lynn/hello-wordl/blob/main/LICENSE))
 

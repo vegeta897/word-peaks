@@ -1,0 +1,59 @@
+{
+	"tutorial": {
+		"title": "Hoe te spelen",
+		"objective": "Raad het woord in 6 pogingen!",
+		"explanation": "Na elke poging laten de vakjes zien of je letters eerder of later in alfabet zitten ten opzichte van de goede letters. Eerder betekent dichter bij A, later betekent dichter bij Z.",
+		"correct_tile": "Letter is goed",
+		"high_tile": "Letter is te ver in het alfabet",
+		"low_tile": "Letter is te vroeg in het alfabet",
+		"letter_range": "Het bereik van mogelijke letters wordt laten zien op het vakje en op het toetsenbord als je aan het typen bent"
+	},
+	"messages": {
+		"not_enough_letters": "Niet genoeg letters",
+		"invalid_word": "Geen geldig woord",
+		"use_valid_letters": "Gokken moeten geldige letters gebruiken",
+		"could_not_do": "Sorry, kon dat niet doen!",
+		"score_copied": "Score gekopieerd!",
+		"image_copied": "Afbeelding gekopieerd!"
+	},
+	"keyboard": {
+		"enter": "Invoeren"
+	},
+	"results": {
+		"win": "Je hebt het goed!",
+		"lose": "Oh nee!",
+		"answer": "Het antwoord was <strong>{{answer}}</strong>",
+		"try_today": "Probeer het woord van vandaag!",
+		"next_word": "Volgend woord",
+		"play_daily": "Speel dagelijks",
+		"play_random": "Speel Willekeurig",
+		"share": "Delen",
+		"text": "Bericht sturen",
+		"image": "Afbeelding",
+		"copy_image": "Afbeelding kopiëren"
+	},
+	"stats": {
+		"title": "Statistieken",
+		"total_games": "Totaal aantal spellen",
+		"win_rate": "Winratio",
+		"current_streak": "Huidige reeks",
+		"best_streak": "Beste Reeks",
+		"guess_distribution": "Gok verdeling",
+		"stats_daily": "Statistieken gaan alleen over dagelijkse spellen"
+	},
+	"options": {
+		"title": "Instellingen",
+		"language": "Taal",
+		"keyboard_layout": "Toetsenbordindeling",
+		"hard_mode": "Moeilijke Modus",
+		"high_contrast_mode": "Hoog contrast modus",
+		"show_all_hints": "Toon alle hints in rij",
+		"swap_enter_backspace": "Wissel Enter/Backspace toetsen",
+		"alphabetic": "Alfabetisch"
+	},
+	"footer": {
+		"translate_looking": "Ik zoek vertalers!",
+		"translate_contribute": "Draag bij <a href=\"https://crowdin.com/project/wordle-peaks\">hier</a> of op <a href=\"https://github.com/vegeta897/wordle-peaks#translate\">GitHub</a>",
+		"credits": "een <a href=\"https://github.com/vegeta897/wordle-peaks\">open source</a> project geïnspireerd door <a href=\"https://www.nytimes.com/games/wordle/index.html\">Wordle</a>"
+	}
+}
