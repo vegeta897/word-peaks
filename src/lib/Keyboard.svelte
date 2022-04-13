@@ -35,7 +35,7 @@
 						</svg></button
 					>
 				{:else}
-					<button on:click={submitRow} class="wide">Enter</button>
+					<button on:click={submitRow} class="wide">{$t('main.keyboard.enter')}</button>
 				{/if}
 			{/if}
 			{#each keyRow as key}
