@@ -1,0 +1,59 @@
+{
+	"tutorial": {
+		"title": "Cómo jugar",
+		"objective": "¡Adivina la palabra en 6 intentos!",
+		"explanation": "Después de cada intento, las letras se mostrarán en distintos colores, representando si la letra correcta está más atrás o más adelante en el abecedario, comparado con la letra correcta. Más atrás significa más cercano a la A, más adelante significa más cercano a la Z.",
+		"correct_tile": "La letra es correcta",
+		"high_tile": "La letra está muy adelante en el abecedario",
+		"low_tile": "La letra está muy atrás en el abecedario",
+		"letter_range": "El rango de letras posibles se muestra en el espacio y en el teclado mientras escribes"
+	},
+	"messages": {
+		"not_enough_letters": "No hay suficientes letras",
+		"invalid_word": "La palabra no es válida",
+		"use_valid_letters": "Los intentos tienen que usar letras válidas",
+		"could_not_do": "¡Lo sentimos, no se pudo hacer eso!",
+		"score_copied": "¡Puntuación copiada!",
+		"image_copied": "¡Imagen copiada!"
+	},
+	"keyboard": {
+		"enter": "Aceptar"
+	},
+	"results": {
+		"win": "¡Lo lograste!",
+		"lose": "¡Oh no!",
+		"answer": "La respuesta era <strong>{{answer}}</strong>",
+		"try_today": "¡Prueba la palabra de hoy!",
+		"next_word": "Siguiente palabra",
+		"play_daily": "Jugar al modo Diario",
+		"play_random": "Jugar modo Al Azar",
+		"share": "Compartir",
+		"text": "Texto",
+		"image": "Imagen",
+		"copy_image": "Copiar imagen"
+	},
+	"stats": {
+		"title": "Estadísticas",
+		"total_games": "Partidas totales",
+		"win_rate": "Porcentaje de victorias",
+		"current_streak": "Racha actual",
+		"best_streak": "Mejor racha",
+		"guess_distribution": "Distribución de intentos",
+		"stats_daily": "Sólo cuentan las estadísticas diarias"
+	},
+	"options": {
+		"title": "Opciones",
+		"language": "Idioma",
+		"keyboard_layout": "Diseño del teclado",
+		"hard_mode": "Modo difícil",
+		"high_contrast_mode": "Modo de alto contraste",
+		"show_all_hints": "Mostrar todas las pistas seguidas",
+		"swap_enter_backspace": "Intercambiar teclas Aceptar/Retroceso",
+		"alphabetic": "Alfabético"
+	},
+	"footer": {
+		"translate_looking": "¡Estoy buscando traductores!",
+		"translate_contribute": "Contribuye <a href=\"https://crowdin.com/project/wordle-peaks\">aquí</a> o en <a href=\"https://github.com/vegeta897/wordle-peaks#translate\">GitHub</a>",
+		"credits": "un proyecto de <a href=\"https://github.com/vegeta897/wordle-peaks\">código abierto</a> inspirado en <a href=\"https://www.nytimes.com/games/wordle/index.html\">Wordle</a>"
+	}
+}
