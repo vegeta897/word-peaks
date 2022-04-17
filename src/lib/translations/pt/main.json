@@ -1,0 +1,59 @@
+{
+	"tutorial": {
+		"title": "Como jogar",
+		"objective": "Adivinhe a palavra em 6 tentativas!",
+		"explanation": "Depois de cada palpite, as peças mostram se as letras estão acima ou abaixo no alfabeto comparadas às letras corretas. Acima significa mais próxima do A, abaixo significa mais próxima do Z.",
+		"correct_tile": "A letra está correta",
+		"high_tile": "Letra está muito acima no alfabeto",
+		"low_tile": "Letra está muito abaixo no alfabeto",
+		"letter_range": "O intervalo de letras possíveis é mostrado na peça e no teclado conforme você digita"
+	},
+	"messages": {
+		"not_enough_letters": "Sem letras suficientes",
+		"invalid_word": "Não é uma palavra válida",
+		"use_valid_letters": "As tentativas devem usar letras válidas",
+		"could_not_do": "Desculpe, não é possível fazer isso!",
+		"score_copied": "Pontuação copiada!",
+		"image_copied": "Imagem copiada!"
+	},
+	"keyboard": {
+		"enter": "Enter"
+	},
+	"results": {
+		"win": "Você acertou!",
+		"lose": "Ah, não!",
+		"answer": "A resposta era <strong>{{answer}}</strong>",
+		"try_today": "Tente a palavra do dia!",
+		"next_word": "Próxima palavra",
+		"play_daily": "Jogue diariamente",
+		"play_random": "Jogo aleatório",
+		"share": "Compartilhar",
+		"text": "Texto",
+		"image": "Imagem",
+		"copy_image": "Copiar imagem"
+	},
+	"stats": {
+		"title": "Estatísticas",
+		"total_games": "Jogos totais",
+		"win_rate": "Taxa de vitória",
+		"current_streak": "Sequência atual",
+		"best_streak": "Melhor sequência",
+		"guess_distribution": "Distribuição das tentativas",
+		"stats_daily": "Estatísticas só consideram os jogos diários"
+	},
+	"options": {
+		"title": "Opções",
+		"language": "Idioma",
+		"keyboard_layout": "Layout do teclado",
+		"hard_mode": "Modo difícil",
+		"high_contrast_mode": "Modo de alto contraste",
+		"show_all_hints": "Mostrar todas as dicas em sequência",
+		"swap_enter_backspace": "Trocar a posição das teclas Enter/Apagar",
+		"alphabetic": "Alfabético"
+	},
+	"footer": {
+		"translate_looking": "Estou procurando por tradutores!",
+		"translate_contribute": "Contribua <a href=\"https://crowdin.com/project/wordle-peaks\">aqui</a> ou no <a href=\"https://github.com/vegeta897/wordle-peaks#translate\">GitHub</a>",
+		"credits": "um projeto <a href=\"https://github.com/vegeta897/wordle-peaks\">open source</a><br />inspirado por <a href=\"https://www.nytimes.com/games/wordle/index.html\">Wordle</a>"
+	}
+}

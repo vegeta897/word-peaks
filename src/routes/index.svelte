@@ -55,6 +55,8 @@
 	import { browser } from '$app/env'
 	import { page } from '$app/stores'
 
+	// TODO: Make modals full-screen
+
 	if (!get(storeVersion) || get(storeVersion) < VERSION) {
 		storeVersion.set(VERSION)
 		lastPlayedDaily.set(-1)

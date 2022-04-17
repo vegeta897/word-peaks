@@ -57,7 +57,7 @@
 					on:select={({ detail: { value } }) => onLanguageChange(value)}
 					isClearable={false}
 					isSearchable={false}
-					containerStyles="color: var(--primary-color);width:10rem;"
+					containerStyles="color: var(--primary-color);width:12.2rem;"
 				/>
 			</div>
 		{/if}
