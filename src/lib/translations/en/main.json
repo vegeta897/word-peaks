@@ -2,10 +2,10 @@
 	"tutorial": {
 		"title": "How to play",
 		"objective": "Guess the word in 6 tries!",
-		"explanation": "After each guess, the tiles show whether your letters occur higher or lower in the alphabet compared to the correct letters. Higher means closer to A, lower means closer to Z.",
+		"explanation": "After each guess, the tiles show whether your letters occur earlier or later in the alphabet compared to the correct letters. Earlier means closer to A, later means closer to Z.",
 		"correct_tile": "Letter is correct",
-		"high_tile": "Letter is too high in the alphabet",
-		"low_tile": "Letter is too low in the alphabet",
+		"high_tile": "Letter is too early in the alphabet",
+		"low_tile": "Letter is too late in the alphabet",
 		"letter_range": "The range of possible letters is shown on the tile and the keyboard as you type"
 	},
 	"messages": {
