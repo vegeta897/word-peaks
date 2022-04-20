@@ -3,7 +3,6 @@
 
 	const onClose = () => screen.set('main')
 	const handleKeyDown = ({ key }) => {
-		console.log(key)
 		if (key === 'Escape') onClose()
 	}
 </script>
@@ -21,23 +20,27 @@
 	button {
 		margin: 0;
 		border: 0;
-		padding: 10px;
+		width: 2.8rem;
+		height: 2.8rem;
+		border-radius: 8px;
 		position: absolute;
-		right: 0;
+		background-color: #ffffff0a;
+		transition: background-color 150ms ease-out;
+		right: 6px;
 		top: -4px;
-		background: none;
 	}
 
 	svg {
+		margin-top: 3px;
 		stroke-width: 2;
-		stroke: var(--text-color);
+		stroke: #888;
+	}
+
+	button:hover {
+		background-color: var(--secondary-color);
 	}
 
 	button:hover svg {
-		stroke: #fff;
-	}
-
-	button:active svg {
-		stroke: #aaa;
+		stroke: var(--text-color);
 	}
 </style>

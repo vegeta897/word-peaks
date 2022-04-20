@@ -110,7 +110,7 @@
 <style>
 	section {
 		position: relative;
-		padding: 0 1rem;
+		padding: 0 1.5rem;
 		color: var(--text-color);
 		--inputColor: var(--primary-color);
 		--indicatorColor: #888;
@@ -146,7 +146,7 @@
 		padding-right: 0.8rem;
 	}
 
-	@media (max-width: 375px) {
+	@media (max-width: 350px) {
 		.label {
 			font-size: 1em;
 		}
