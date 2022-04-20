@@ -14,7 +14,7 @@ import {
 export const storeVersion: Writable<number> = storageWritable('wp-version', 0)
 export const storedLocale: Writable<string> = storageWritable('wp-locale', '')
 
-export const screen: Writable<'main' | 'options'> = writable('main')
+export const screen: Writable<'main' | 'options' | 'tutorial'> = writable('main')
 
 export const answerDaily: Writable<string> = storageWritable('wp-answer', '')
 export const answerRandom: Writable<string> = storageWritable('wp-answerRandom', '')

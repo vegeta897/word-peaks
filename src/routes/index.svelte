@@ -57,10 +57,6 @@
 	import { page } from '$app/stores'
 	import { OptionsIconPathData } from '$lib/icons'
 	import Footer from '$lib/Footer.svelte'
-	import { blur, crossfade } from 'svelte/transition'
-	import { quintOut } from 'svelte/easing'
-
-	// TODO: Make modals full-screen
 
 	if (!get(storeVersion) || get(storeVersion) < VERSION) {
 		storeVersion.set(VERSION)
@@ -74,11 +70,9 @@
 	onMount(async () => {
 		if (!get(answerDaily) && !get(answerRandom)) {
 			newUser = true
-			await setTimeout(() => {}) // Tutorial closes itself if we open too quickly
-			open(Tutorial, {}, {}, { onClose: () => startGame() })
-		} else {
-			startGame()
+			screen.set('tutorial')
 		}
+		startGame()
 	})
 
 	const hash = get(page).url.hash?.slice(1)
@@ -292,7 +286,7 @@
 		<section>
 			<header>
 				<h1>Wordle Peaks</h1>
-				<button on:click={() => open(Tutorial)}>?</button>
+				<button on:click={() => screen.set('tutorial')}>?</button>
 				<button on:click={() => showResults()}>
 					<svg viewBox="0 0 9 9" xmlns="http://www.w3.org/2000/svg" width="20" height="20">
 						<rect x="0" y="6.5" height="2" width="2" />
@@ -316,8 +310,10 @@
 		</section>
 		<Footer />
 	</div>
-{:else}
+{:else if $screen === 'options'}
 	<Options />
+{:else if $screen === 'tutorial'}
+	<Tutorial {newUser} />
 {/if}
 
 <style>
