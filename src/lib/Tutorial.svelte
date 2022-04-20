@@ -2,30 +2,28 @@
 	import Tile from '$lib/Tile.svelte'
 	import { t } from '$lib/translations'
 	import { screen } from '$lib/store.ts'
-	import CloseButton from '$lib/CloseButton.svelte'
+	import Screen from '$lib/Screen.svelte'
 
 	export let newUser: boolean
 </script>
 
-<section>
-	<CloseButton />
-	<h2>{$t('main.tutorial.title')}</h2>
+<Screen title={$t('main.tutorial.title')}>
 	<p>{$t('main.tutorial.objective')}</p>
 	<p>{$t('main.tutorial.explanation')}</p>
-	<div>
+	<div class="row">
 		<div><Tile tile={{ scored: true, letter: 'p', distance: 0, id: 0 }} /></div>
 		<p>{$t('main.tutorial.correct_tile')}</p>
 	</div>
-	<div>
+	<div class="row">
 		<div><Tile tile={{ scored: true, letter: 'd', distance: -1, id: 0 }} /></div>
 		<p>{$t('main.tutorial.high_tile')}</p>
 	</div>
-	<div>
+	<div class="row">
 		<div><Tile tile={{ scored: true, letter: 'w', distance: 1, id: 0 }} /></div>
 		<p>{$t('main.tutorial.low_tile')}</p>
 	</div>
 	<hr />
-	<div>
+	<div class="row">
 		<div>
 			<Tile
 				tile={{ scored: false, letter: '', distance: 0, id: 0, letterBounds: ['e', 'v'] }}
@@ -41,29 +39,18 @@
 			<button on:click={() => screen.set('main')}>{$t('main.results.play_daily')}</button>
 		</div>
 	{/if}
-</section>
+</Screen>
 
 <style>
-	section {
-		position: relative;
-		padding: 0 1.5rem;
-	}
-
-	h2 {
-		font-size: 1.8em;
-		text-align: center;
-		margin: 1.5rem 0;
-	}
-
-	section > div p {
-		margin: 0;
-	}
-
-	section > div {
+	.row {
 		display: flex;
 		align-items: center;
 		gap: 1rem;
 		margin: 0.9rem auto;
+	}
+
+	.row p {
+		margin: 0;
 	}
 
 	hr {
@@ -80,6 +67,7 @@
 		background: #04883b;
 		border-radius: 4px;
 		border: 0;
+		margin-top: 0.8rem;
 		padding: 0 1.2rem;
 		height: 3rem;
 		font-size: 1.2em;

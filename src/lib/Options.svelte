@@ -17,7 +17,7 @@
 	import { keyboardLayoutOptions } from '$lib/data-model'
 	import { loadTranslations, t } from '$lib/translations'
 	import lang from '$lib/translations/lang.json'
-	import CloseButton from '$lib/CloseButton.svelte'
+	import Screen from '$lib/Screen.svelte'
 
 	const languages = Object.entries(lang).map(([value, label]) => ({ value, label }))
 
@@ -59,9 +59,7 @@
 	onMount(() => onLanguageChange(get(storedLocale)))
 </script>
 
-<section>
-	<CloseButton />
-	<h2>{$t('main.options.title')}</h2>
+<Screen title={$t('main.options.title')}>
 	<div class="content">
 		{#if languages.length > 1}
 			<div class="select-container">
@@ -105,25 +103,14 @@
 			>
 		{/each}
 	</div>
-</section>
+</Screen>
 
 <style>
-	section {
-		position: relative;
-		padding: 0 1.5rem;
+	.content {
+		margin-top: 2.5rem;
 		color: var(--text-color);
 		--inputColor: var(--primary-color);
 		--indicatorColor: #888;
-	}
-
-	h2 {
-		font-size: 1.8em;
-		text-align: center;
-		margin: 1.5rem 0 1rem;
-	}
-
-	.content {
-		margin-top: 2.5rem;
 	}
 
 	.select-container {

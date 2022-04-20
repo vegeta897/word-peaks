@@ -50,6 +50,7 @@
 		invalidHardModeGuess,
 		resultsOpen,
 		screen,
+		highContrast,
 	} from '$lib/store'
 	import { t } from '$lib/translations'
 	import { trackEvent } from '$lib/plausible'
@@ -281,42 +282,46 @@
 		}
 </script>
 
-{#if $screen === 'main'}
-	<div class="screen">
-		<section>
-			<header>
-				<h1>Wordle Peaks</h1>
-				<button on:click={() => screen.set('tutorial')}>?</button>
-				<button on:click={() => showResults()}>
-					<svg viewBox="0 0 9 9" xmlns="http://www.w3.org/2000/svg" width="20" height="20">
-						<rect x="0" y="6.5" height="2" width="2" />
-						<rect x="3" y="3.5" height="5" width="2" />
-						<rect x="6" y="0.5" height="8" width="2" />
-					</svg>
-				</button>
-				<button on:click={() => screen.set('options')}>
-					<svg viewBox="0 0 76 76" xmlns="http://www.w3.org/2000/svg" width="20" height="20">
-						<path d={OptionsIconPathData} />
-					</svg>
-				</button>
-			</header>
-			<Board startCentered={newUser} />
-			<Keyboard {typeLetter} {submitRow} {undoLetter} {moveCarat} />
-			{#if consoleMode}
-				{#await import('$lib/Console.svelte') then c}
-					<svelte:component this={c.default} {typeLetter} {submitRow} {undoLetter} />
-				{/await}
-			{/if}
-		</section>
-		<Footer />
-	</div>
-{:else if $screen === 'options'}
+<div class:minimized={$screen !== 'main'}>
+	<section>
+		<header class:high-contrast={$highContrast}>
+			<h1>Wordle Peaks</h1>
+			<button on:click={() => screen.set('tutorial')}>?</button>
+			<button on:click={() => showResults()}>
+				<svg viewBox="0 0 9 9" xmlns="http://www.w3.org/2000/svg" width="20" height="20">
+					<rect x="0" y="6.5" height="2" width="2" />
+					<rect x="3" y="3.5" height="5" width="2" />
+					<rect x="6" y="0.5" height="8" width="2" />
+				</svg>
+			</button>
+			<button on:click={() => screen.set('options')}>
+				<svg viewBox="0 0 76 76" xmlns="http://www.w3.org/2000/svg" width="20" height="20">
+					<path d={OptionsIconPathData} />
+				</svg>
+			</button>
+		</header>
+		<Board startCentered={newUser} />
+		<Keyboard {typeLetter} {submitRow} {undoLetter} {moveCarat} />
+		{#if consoleMode}
+			{#await import('$lib/Console.svelte') then c}
+				<svelte:component this={c.default} {typeLetter} {submitRow} {undoLetter} />
+			{/await}
+		{/if}
+	</section>
+	<Footer />
+</div>
+{#if $screen === 'options'}
 	<Options />
 {:else if $screen === 'tutorial'}
 	<Tutorial {newUser} />
 {/if}
 
 <style>
+	.minimized {
+		height: 0;
+		overflow: hidden;
+	}
+
 	header {
 		transition: width 400ms ease-in-out;
 		margin: 0.6rem auto;
@@ -360,6 +365,9 @@
 	}
 	header button:hover svg {
 		fill: var(--text-color);
+	}
+	.high-contrast button {
+		background-color: var(--secondary-color);
 	}
 
 	@media (max-width: 360px) {
