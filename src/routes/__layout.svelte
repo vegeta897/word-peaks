@@ -6,7 +6,10 @@
 	import { get } from 'svelte/store'
 	import { browser } from '$app/env'
 	export const load: Load = async () => {
-		if (!browser) return {}
+		if (!browser) {
+			await loadTranslations('en')
+			return {}
+		}
 		let initialLocale = get(storedLocale)
 		if (!initialLocale) initialLocale = getNavigatorLanguage()
 		if (!locales.get().includes(initialLocale)) initialLocale = 'en'
