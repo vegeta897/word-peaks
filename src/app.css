@@ -31,7 +31,7 @@ html {
 body {
 	color: var(--text-color);
 	background: var(--tertiary-color);
-	transition: background 200ms ease-out
+	transition: background 150ms ease-out
 }
 
 #svelte {

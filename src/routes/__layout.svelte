@@ -24,7 +24,7 @@
 	import '../app.css'
 	import Modal from 'svelte-simple-modal'
 	import { SvelteToast } from '@zerodevx/svelte-toast'
-	import { highContrast } from '$lib/store'
+	import { highContrast, screen } from '$lib/store'
 </script>
 
 <svelte:head>
@@ -37,6 +37,13 @@
 				--primary-color: #000;
 				--secondary-color: #0e1118;
 				--tertiary-color: #161a25;
+			}
+		</style>
+	{/if}
+	{#if $screen !== 'main'}
+		<style>
+			body {
+				background: var(--secondary-color);
 			}
 		</style>
 	{/if}

@@ -321,9 +321,6 @@
 {/if}
 
 <style>
-	.screen {
-	}
-
 	header {
 		transition: width 400ms ease-in-out;
 		margin: 0.6rem auto;
