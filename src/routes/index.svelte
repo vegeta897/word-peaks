@@ -49,11 +49,16 @@
 		notEnoughLetters,
 		invalidHardModeGuess,
 		resultsOpen,
+		screen,
 	} from '$lib/store'
 	import { t } from '$lib/translations'
 	import { trackEvent } from '$lib/plausible'
 	import { browser } from '$app/env'
 	import { page } from '$app/stores'
+	import { OptionsIconPathData } from '$lib/icons'
+	import Footer from '$lib/Footer.svelte'
+	import { blur, crossfade } from 'svelte/transition'
+	import { quintOut } from 'svelte/easing'
 
 	// TODO: Make modals full-screen
 
@@ -282,35 +287,43 @@
 		}
 </script>
 
-<section>
-	<header>
-		<h1>Wordle Peaks</h1>
-		<button on:click={() => open(Tutorial)}>?</button>
-		<button on:click={() => showResults()}>
-			<svg viewBox="0 0 9 9" xmlns="http://www.w3.org/2000/svg" width="20" height="20">
-				<rect x="0" y="6.5" height="2" width="2" />
-				<rect x="3" y="3.5" height="5" width="2" />
-				<rect x="6" y="0.5" height="8" width="2" />
-			</svg>
-		</button>
-		<button on:click={() => open(Options)}>
-			<svg viewBox="0 0 76 76" xmlns="http://www.w3.org/2000/svg" width="20" height="20">
-				<path
-					d="M32.34 0c-3 0-4.83 2.59-5.41 5.67l-.82 4.26a30.24 30.24 0 0 0-6.64 3.84l-4.09-1.42c-2.68-.93-6.12-.75-7.62 1.85l-5.41 9.38c-1.5 2.59-.16 5.46 2.2 7.52l3.27 2.84a30.24 30.24 0 0 0-.26 3.85 30.24 30.24 0 0 0 .26 3.82l-3.28 2.84c-2.15 1.85-3.7 4.92-2.2 7.52l5.41 9.37c1.5 2.6 4.65 2.88 7.61 1.86l4.07-1.41a30.24 30.24 0 0 0 6.68 3.87l.82 4.26c.53 2.79 2.41 5.67 5.41 5.67h10.82c3 0 4.82-2.59 5.42-5.67l.81-4.22a30.24 30.24 0 0 0 6.74-3.88l4.07 1.4c2.85.99 6.11.75 7.61-1.85L73.23 52c1.5-2.6.17-5.48-2.21-7.53l-3.25-2.81a30.24 30.24 0 0 0 .26-3.87 30.24 30.24 0 0 0-.25-3.91l3.23-2.81c2.28-1.98 3.7-4.93 2.2-7.52l-5.41-9.38c-1.5-2.6-4.66-2.88-7.62-1.85l-4.07 1.42a30.24 30.24 0 0 0-6.72-3.87l-.81-4.2C48 2.71 46.16 0 43.16 0H32.34zm5.45 20.98a16.82 16.82 0 1 1 0 33.64 16.82 16.82 0 1 1 0-33.64z"
-				/>
-			</svg>
-		</button>
-	</header>
-	<Board startCentered={newUser} />
-	<Keyboard {typeLetter} {submitRow} {undoLetter} {moveCarat} />
-	{#if consoleMode}
-		{#await import('$lib/Console.svelte') then c}
-			<svelte:component this={c.default} {typeLetter} {submitRow} {undoLetter} />
-		{/await}
-	{/if}
-</section>
+{#if $screen === 'main'}
+	<div class="screen">
+		<section>
+			<header>
+				<h1>Wordle Peaks</h1>
+				<button on:click={() => open(Tutorial)}>?</button>
+				<button on:click={() => showResults()}>
+					<svg viewBox="0 0 9 9" xmlns="http://www.w3.org/2000/svg" width="20" height="20">
+						<rect x="0" y="6.5" height="2" width="2" />
+						<rect x="3" y="3.5" height="5" width="2" />
+						<rect x="6" y="0.5" height="8" width="2" />
+					</svg>
+				</button>
+				<button on:click={() => screen.set('options')}>
+					<svg viewBox="0 0 76 76" xmlns="http://www.w3.org/2000/svg" width="20" height="20">
+						<path d={OptionsIconPathData} />
+					</svg>
+				</button>
+			</header>
+			<Board startCentered={newUser} />
+			<Keyboard {typeLetter} {submitRow} {undoLetter} {moveCarat} />
+			{#if consoleMode}
+				{#await import('$lib/Console.svelte') then c}
+					<svelte:component this={c.default} {typeLetter} {submitRow} {undoLetter} />
+				{/await}
+			{/if}
+		</section>
+		<Footer />
+	</div>
+{:else}
+	<Options />
+{/if}
 
 <style>
+	.screen {
+	}
+
 	header {
 		transition: width 400ms ease-in-out;
 		margin: 0.6rem auto;

@@ -31,7 +31,7 @@
 			class:correct={tile.distance === 0}
 			class:before={tile.distance < 0}
 			class:after={tile.distance > 0}
-			in:squish={{
+			in:squish|local={{
 				easing: quadOut,
 				delay: (tile.id + 1) * tileFlipDelay,
 				duration: tileFlipDuration,
@@ -55,7 +55,11 @@
 						tile.letter &&
 						tile.letterBounds &&
 						(tile.letter < tile.letterBounds[0] || tile.letter > tile.letterBounds[1])))}
-			out:squish={{ easing: quadIn, delay: tile.id * tileFlipDelay, duration: tileFlipDuration }}
+			out:squish|local={{
+				easing: quadIn,
+				delay: tile.id * tileFlipDelay,
+				duration: tileFlipDuration,
+			}}
 			style={`animation-delay: ${
 				tile.id * ($notEnoughLetters || $invalidHardModeGuess ? 20 : 0)
 			}ms`}
