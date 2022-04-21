@@ -27,7 +27,7 @@
 		background-color: #ffffff0a;
 		transition: background-color 150ms ease-out;
 		right: 14px;
-		top: 40px;
+		top: 34px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
