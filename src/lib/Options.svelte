@@ -74,6 +74,7 @@
 					isClearable={false}
 					isSearchable={false}
 					containerStyles="color: var(--primary-color);width:12.2rem;"
+					inputStyles="box-sizing: border-box;"
 				/>
 			</div>
 		{/if}
@@ -89,6 +90,7 @@
 				isClearable={false}
 				isSearchable={false}
 				containerStyles="color: var(--primary-color);width:12.2rem;"
+				inputStyles="box-sizing: border-box;"
 			/>
 		</div>
 		{#each toggleOptions as toggleOption}

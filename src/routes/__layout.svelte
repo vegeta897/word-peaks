@@ -44,7 +44,9 @@
 
 <div id="main">
 	<SvelteToast options={{ intro: { y: 0 }, duration: 2000 }} />
-	<Modal styleWindow={{ background: 'var(--tertiary-color)', width: '500px' }}><slot /></Modal>
+	<Modal styleWindow={{ background: 'var(--tertiary-color)', width: '500px' }}>
+		<slot />
+	</Modal>
 </div>
 
 <style>

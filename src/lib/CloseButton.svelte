@@ -26,8 +26,8 @@
 		position: absolute;
 		background-color: #ffffff0a;
 		transition: background-color 150ms ease-out;
-		right: 6px;
-		top: -4px;
+		right: 14px;
+		top: 40px;
 		display: flex;
 		align-items: center;
 		justify-content: center;

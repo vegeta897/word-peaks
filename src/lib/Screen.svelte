@@ -1,11 +1,10 @@
 <script lang="ts">
 	import CloseButton from '$lib/CloseButton.svelte'
-	import { fade } from 'svelte/transition'
+	import { slide } from 'svelte/transition'
 	export let title: string
 </script>
 
-<div class="background" in:fade={{ duration: 200 }} />
-<div class="wrapper">
+<div class="background" transition:slide>
 	<section>
 		<CloseButton />
 		<h2>{title}</h2>
@@ -20,21 +19,19 @@
 		left: 0;
 		width: 100%;
 		height: 100%;
+		overflow: scroll;
 		background: var(--secondary-color);
-	}
-
-	.wrapper {
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 100%;
+		display: flex;
+		align-items: flex-start;
+		justify-content: center;
 	}
 
 	section {
-		max-width: 528px;
-		margin: 0 auto;
+		max-width: 520px;
+		flex-grow: 100;
 		position: relative;
-		padding: 0 1.5rem 1.8rem;
+		padding: 1.5rem;
+		box-sizing: border-box;
 	}
 
 	h2 {
