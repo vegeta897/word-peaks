@@ -87,7 +87,6 @@
 	}
 
 	function resetBoard() {
-		openScreen.set(null)
 		toast.pop()
 		boardContent.set(createNewBoard())
 		currentTile.set(0)
@@ -283,10 +282,12 @@
 		<Results
 			{hash}
 			playDaily={() => {
+				openScreen.set(null)
 				gameMode.set('daily')
 				playDaily()
 			}}
 			playRandom={() => {
+				openScreen.set(null)
 				gameMode.set('random')
 				playRandom()
 			}}
