@@ -250,8 +250,12 @@
 		<section>
 			<header class:high-contrast={$highContrast}>
 				<h1>Wordle Peaks</h1>
-				<button class="test" on:click={() => openScreen.set('tutorial')}><span>?</span></button>
-				<button on:click={() => openScreen.set('results')}>
+				<button
+					title={$t('main.tutorial.title')}
+					class="test"
+					on:click={() => openScreen.set('tutorial')}><span>?</span></button
+				>
+				<button title={$t('main.stats.title')} on:click={() => openScreen.set('results')}>
 					<svg viewBox="0 0 9 9" xmlns="http://www.w3.org/2000/svg" width="20" height="20">
 						<g transform="rotate(180 4.5 4.5)">
 							<rect id="gr1" x="0" y="0" height="8" width="2" />
@@ -260,7 +264,11 @@
 						</g>
 					</svg>
 				</button>
-				<button class="hover-spin" on:click={() => openScreen.set('options')}>
+				<button
+					title={$t('main.options.title')}
+					class="hover-spin"
+					on:click={() => openScreen.set('options')}
+				>
 					<svg viewBox="0 0 76 76" xmlns="http://www.w3.org/2000/svg" width="20" height="20">
 						<path d={OptionsIconPathData} />
 					</svg>

@@ -29,6 +29,7 @@
 	on:mousedown={onBackgroundMousedown}
 	on:mouseup={onBackgroundMouseup}
 >
+	<!-- TODO: Add "Close" to translations -->
 	<button title="Close" on:click={() => openScreen.set(null)}>
 		<svg viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg" width="24" height="24">
 			<title>Close</title>
