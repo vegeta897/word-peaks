@@ -1,9 +1,22 @@
 <script lang="ts">
 	import { trackEvent } from '$lib/plausible'
-	import type { Board, GameMode } from '$lib/data-model'
+	import type { GameMode } from '$lib/data-model'
 	import { getDayEnd, getDayNumber } from '$lib/data-model'
 	import { onMount } from 'svelte'
-	import { answerDaily, guessesDaily, highContrast, lastPlayedDaily } from '$lib/store'
+	import {
+		answer,
+		guesses,
+		boardContent,
+		gameMode,
+		gameFinished,
+		gameWon,
+		lastPlayedWasHard,
+		stats,
+		answerDaily,
+		guessesDaily,
+		highContrast,
+		lastPlayedDaily,
+	} from '$lib/store'
 	import { get } from 'svelte/store'
 	import { fade } from 'svelte/transition'
 	import { cubicIn, cubicOut } from 'svelte/easing'
@@ -16,22 +29,18 @@
 		shareImage,
 	} from '$lib/share'
 	import Stats from '$lib/Stats.svelte'
-	import type { Stats as StatsType } from '$lib/data-model'
 	import { t } from '$lib/translations'
 	import { toast } from '@zerodevx/svelte-toast'
+	import Screen from '$lib/Screen.svelte'
 
 	// Don't use store, we don't want/need dynamic content for the results
-	export let answer: string
-	export let guesses: string[]
-	export let boardContent: Board
-	export let gameMode: GameMode
-	export let gameFinished: boolean
-	export let gameWon: boolean
+	let lastAnswer: string
+	let lastGameMode: GameMode
+	let lastGameFinished: boolean
+	let lastGameWon: boolean
 	export let playDaily: () => {}
 	export let playRandom: () => {}
-	export let stats: StatsType
 	export let hash: string
-	export let hardMode: boolean
 
 	const _guessesDaily = get(guessesDaily)
 	const _lastPlayedDaily = get(lastPlayedDaily)
@@ -53,13 +62,7 @@
 	const HOUR = 3600000
 	const MINUTE = 60000
 
-	const shareTitleText = getShareTitle({
-		gameWon,
-		guesses,
-		gameMode,
-		hardMode,
-		day: _lastPlayedDaily + 1,
-	})
+	let shareTitleText: string
 
 	const successToast = (message: string) =>
 		toast.push(message, {
@@ -76,8 +79,8 @@
 		copyText(
 			shareTitleText +
 				'\n\n' +
-				getEmojiGrid(guesses, answer) +
-				(gameMode === 'random' ? `\nhttps://vegeta897.github.io/wordle-peaks/#${hash}` : '')
+				getEmojiGrid(get(guesses), get(answer)) +
+				(lastGameMode === 'random' ? `\nhttps://vegeta897.github.io/wordle-peaks/#${hash}` : '')
 		).then(
 			() => successToast(get(t)('main.messages.score_copied')),
 			() => errorToast()
@@ -94,7 +97,7 @@
 		shareMenu = false
 		imageShared = true
 		trackEvent('resultShare')
-		await shareImage(canvas, gameMode === 'random' ? { hash } : { day: _lastPlayedDaily + 1 })
+		await shareImage(canvas, lastGameMode === 'random' ? { hash } : { day: _lastPlayedDaily + 1 })
 	}
 
 	function onCopyImage() {
@@ -106,28 +109,38 @@
 		}
 	}
 
-	onMount(() =>
+	onMount(() => {
+		lastGameMode = get(gameMode)
+		lastGameFinished = get(gameFinished)
+		lastGameWon = get(gameWon)
+		lastAnswer = get(answer)
+		shareTitleText = getShareTitle({
+			gameWon: get(gameWon),
+			guesses: get(guesses),
+			gameMode: lastGameMode,
+			hardMode: get(lastPlayedWasHard),
+			day: _lastPlayedDaily + 1,
+		})
 		drawResults(canvas, {
 			highContrast: get(highContrast),
-			boardContent,
-			guesses,
+			boardContent: get(boardContent),
+			guesses: get(guesses),
 			caption: shareTitleText,
 		})
-	)
+	})
 </script>
 
-<section>
-	<h2>
-		{gameFinished
-			? gameWon
-				? `${$t('main.results.win')} 🎉`
-				: `${$t('main.results.lose')} ☹️`
-			: $t('main.stats.title')}
-	</h2>
-	{#if gameFinished && !gameWon}
-		<p>{@html $t('main.results.answer', { answer: answer.toUpperCase() })}</p>
+<Screen
+	title={lastGameFinished
+		? lastGameWon
+			? `${$t('main.results.win')} 🎉`
+			: `${$t('main.results.lose')} ☹️`
+		: $t('main.stats.title')}
+>
+	{#if lastGameFinished && !lastGameWon}
+		<p>{@html $t('main.results.answer', { answer: lastAnswer.toUpperCase() })}</p>
 	{/if}
-	<Stats {stats} {gameMode} />
+	<Stats stats={$stats} gameMode={lastGameMode} />
 	<div class="share">
 		<div class="column">
 			{#if nextWordReady || !dailyFinished}
@@ -147,7 +160,7 @@
 			{/if}
 		</div>
 		<div class="column">
-			{#if gameFinished}
+			{#if lastGameFinished}
 				{#if shareMenu && showShareButtons}
 					<div
 						class="share-buttons"
@@ -168,34 +181,24 @@
 					>
 				{/if}
 			{/if}
-			{#if gameMode === 'random' || nextWordReady || !dailyFinished}
-				<button on:click={playDaily} class="daily-button">{$t('main.results.play_daily')}</button>
+			{#if lastGameMode === 'random' || nextWordReady || !dailyFinished}
+				<button on:click={playDaily} class="play-button">{$t('main.results.play_daily')}</button>
 			{/if}
-			<button on:click={playRandom}>{$t('main.results.play_random')}</button>
+			<button on:click={playRandom} class="play-button">{$t('main.results.play_random')}</button>
 		</div>
 	</div>
 	<div class="image-share" class:hidden={!imageShared}>
 		<canvas bind:this={canvas} width="504" height="0" style={'width:252px'} />
 		<button on:click={onCopyImage} class="share-button">{$t('main.results.copy_image')}</button>
 	</div>
-</section>
+</Screen>
 
 <style>
-	section {
-		padding: 0 1rem 1rem;
-	}
-
-	h2 {
-		font-size: 1.5em;
-		margin: 0.6rem 0 1.2rem;
-	}
-
 	h3 {
 		margin: 0.5rem 0;
+		text-align: center;
 	}
 
-	h2,
-	h3,
 	p {
 		text-align: center;
 	}
@@ -219,7 +222,6 @@
 	}
 
 	button {
-		background: var(--primary-color);
 		border-radius: 4px;
 		border: 0;
 		padding: 0 1.2rem;
@@ -227,10 +229,6 @@
 		font-size: 1.2em;
 		font-weight: 700;
 		min-width: 10rem;
-	}
-
-	button:hover {
-		background: var(--secondary-color);
 	}
 
 	button:focus {
@@ -246,11 +244,11 @@
 		background: #3388de;
 	}
 
-	button.daily-button {
+	button.play-button {
 		background: #04883b;
 	}
 
-	button.daily-button:hover {
+	button.play-button:hover {
 		background: var(--correct-color);
 	}
 

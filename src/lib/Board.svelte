@@ -9,7 +9,7 @@
 		guesses,
 		showAllHints,
 		answer,
-		resultsOpen,
+		openScreen,
 	} from '$lib/store'
 	import Tile from '$lib/Tile.svelte'
 	import { get } from 'svelte/store'
@@ -31,7 +31,7 @@
 		if (canAnimate === false) return
 		const thisIdleSessionID = ++idleSessionID
 		clearTimeout(idleTimeout)
-		if (get(gameFinished) && !get(resultsOpen) && !document.hidden) {
+		if (get(gameFinished) && get(openScreen) === null && !document.hidden) {
 			let thisTimeout: number
 			await new Promise((resolve) => {
 				idleTimeout = setTimeout(() => {
@@ -56,7 +56,7 @@
 		waitForIdle()
 	})
 	answer.subscribe(() => waitForIdle())
-	resultsOpen.subscribe(() => waitForIdle())
+	openScreen.subscribe(() => waitForIdle())
 
 	onMount(() => {
 		ready = true // Prevents SSR for board

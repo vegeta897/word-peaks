@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Tile from '$lib/Tile.svelte'
 	import { t } from '$lib/translations'
-	import { screen } from '$lib/store.ts'
+	import { openScreen } from '$lib/store.ts'
 	import Screen from '$lib/Screen.svelte'
 
 	export let newUser: boolean
@@ -36,7 +36,7 @@
 	{#if newUser}
 		<hr />
 		<div class="center">
-			<button on:click={() => screen.set('main')}>{$t('main.results.play_daily')}</button>
+			<button on:click={() => openScreen.set(null)}>{$t('main.results.play_daily')}</button>
 		</div>
 	{/if}
 </Screen>
@@ -82,11 +82,5 @@
 	button:focus {
 		outline: 1px solid #fff;
 		outline-offset: 2px;
-	}
-
-	@media (max-width: 480px) {
-		section {
-			font-size: 0.9em;
-		}
 	}
 </style>

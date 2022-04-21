@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { screen, highContrast } from '$lib/store'
+	import { openScreen, highContrast } from '$lib/store'
 
-	const onClose = () => screen.set('main')
+	const onClose = () => openScreen.set(null)
 	const handleKeyDown = ({ key }) => {
 		if (key === 'Escape') onClose()
 	}

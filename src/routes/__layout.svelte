@@ -22,7 +22,6 @@
 
 <script lang="ts">
 	import '../app.css'
-	import Modal from 'svelte-simple-modal'
 	import { SvelteToast } from '@zerodevx/svelte-toast'
 	import { highContrast } from '$lib/store'
 </script>
@@ -44,9 +43,7 @@
 
 <div id="main">
 	<SvelteToast options={{ intro: { y: 0 }, duration: 2000 }} />
-	<Modal styleWindow={{ background: 'var(--tertiary-color)', width: '500px' }}>
-		<slot />
-	</Modal>
+	<slot />
 </div>
 
 <style>

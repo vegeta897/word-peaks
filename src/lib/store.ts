@@ -14,7 +14,7 @@ import {
 export const storeVersion: Writable<number> = storageWritable('wp-version', 0)
 export const storedLocale: Writable<string> = storageWritable('wp-locale', '')
 
-export const screen: Writable<'main' | 'options' | 'tutorial'> = writable('main')
+export const openScreen: Writable<null | 'options' | 'tutorial' | 'results'> = writable(null)
 
 export const answerDaily: Writable<string> = storageWritable('wp-answer', '')
 export const answerRandom: Writable<string> = storageWritable('wp-answerRandom', '')
@@ -52,7 +52,6 @@ export const lastPlayedDaily: Writable<number> = storageWritable('wp-lastPlayedD
 export const stats: Writable<Stats> = storageWritable('wp-stats', newStats())
 
 export const gameMode: Writable<GameMode> = writable('daily')
-export const resultsOpen: Writable<boolean> = writable(false)
 
 export const lastPlayedWasHard: Readable<boolean> = derived(
 	[gameMode, lastPlayedDailyWasHard, lastPlayedRandomWasHard],

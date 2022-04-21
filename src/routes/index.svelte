@@ -1,7 +1,6 @@
 <script lang="ts">
-	import { getContext, onMount } from 'svelte'
+	import { onMount } from 'svelte'
 	import { get } from 'svelte/store'
-	const { open, close } = getContext('simple-modal')
 	import dictionary from '$lib/data/dictionary-filtered.json'
 	import Board from '$lib/Board.svelte'
 	import Keyboard from '$lib/Keyboard.svelte'
@@ -42,14 +41,12 @@
 		stats,
 		storeVersion,
 		hardMode,
-		lastPlayedWasHard,
 		lastPlayedDailyWasHard,
 		lastPlayedRandomWasHard,
 		invalidWord,
 		notEnoughLetters,
 		invalidHardModeGuess,
-		resultsOpen,
-		screen,
+		openScreen,
 		highContrast,
 	} from '$lib/store'
 	import { t } from '$lib/translations'
@@ -71,7 +68,7 @@
 	onMount(async () => {
 		if (!get(answerDaily) && !get(answerRandom)) {
 			newUser = true
-			screen.set('tutorial')
+			openScreen.set('tutorial')
 		}
 		startGame()
 	})
@@ -86,11 +83,11 @@
 		} else if (wordFromHash !== get(answerRandom)) {
 			playRandom(wordFromHash)
 		}
-		if (get(gameFinished)) setTimeout(() => showResults(), 1700)
+		if (get(gameFinished)) setTimeout(() => openScreen.set('results'), 1700)
 	}
 
 	function resetBoard() {
-		close()
+		openScreen.set(null)
 		toast.pop()
 		boardContent.set(createNewBoard())
 		currentTile.set(0)
@@ -112,7 +109,7 @@
 	function playDaily() {
 		history.pushState('', document.title, window.location.pathname + window.location.search) // Remove # from URL
 		if (get(lastPlayedDaily) === getDayNumber()) {
-			close()
+			openScreen.set(null)
 			return
 		}
 		resetBoard()
@@ -134,7 +131,7 @@
 
 	function typeLetter(letter: string) {
 		if (get(gameFinished)) {
-			showResults()
+			openScreen.set('results')
 			return
 		}
 		const _currentTile = get(currentTile)
@@ -157,7 +154,7 @@
 
 	function undoLetter(moveCaratBack = true) {
 		if (get(gameFinished)) {
-			showResults()
+			openScreen.set('results')
 			return
 		}
 		boardContent.update((content) => {
@@ -177,7 +174,7 @@
 
 	function moveCarat(dir: number) {
 		if (get(gameFinished)) {
-			showResults()
+			openScreen.set('results')
 			return
 		}
 		const moveTo = get(currentTile) + dir
@@ -187,7 +184,7 @@
 
 	function submitRow() {
 		if (get(gameFinished)) {
-			showResults()
+			openScreen.set('results')
 			return
 		}
 		if (!hasEnoughLetters(get(boardContent), get(currentRow))) {
@@ -216,7 +213,7 @@
 		trackEvent('submitGuess')
 		updateGuesses((words) => [...words, submittedWord])
 		if (get(gameFinished)) {
-			setTimeout(() => showResults(), 1700)
+			setTimeout(() => openScreen.set('results'), 1700)
 			const won = get(gameWon)
 			trackEvent(get(gameWon) ? 'gameWon' : 'gameLost')
 			if (newUser) trackEvent('firstFinish')
@@ -242,39 +239,6 @@
 		}
 	}
 
-	const showResults = () => {
-		if (get(resultsOpen)) return
-		resultsOpen.set(true)
-		open(
-			Results,
-			{
-				playDaily: () => {
-					gameMode.set('daily')
-					playDaily()
-				},
-				playRandom: () => {
-					gameMode.set('random')
-					playRandom()
-				},
-				gameMode: get(gameMode),
-				answer: get(answer),
-				guesses: get(guesses),
-				boardContent: get(boardContent),
-				gameFinished: get(gameFinished),
-				gameWon: get(gameWon),
-				stats: get(stats),
-				hash,
-				hardMode: get(lastPlayedWasHard),
-			},
-			{},
-			{
-				onClosed: () => {
-					resultsOpen.set(false)
-				},
-			}
-		)
-	}
-
 	let consoleMode: boolean
 	if (browser)
 		window.wp_start = () => {
@@ -282,44 +246,58 @@
 		}
 </script>
 
-<div class:minimized={$screen !== 'main'}>
-	<section>
-		<header class:high-contrast={$highContrast}>
-			<h1>Wordle Peaks</h1>
-			<button on:click={() => screen.set('tutorial')}>?</button>
-			<button on:click={() => showResults()}>
-				<svg viewBox="0 0 9 9" xmlns="http://www.w3.org/2000/svg" width="20" height="20">
-					<rect x="0" y="6.5" height="2" width="2" />
-					<rect x="3" y="3.5" height="5" width="2" />
-					<rect x="6" y="0.5" height="8" width="2" />
-				</svg>
-			</button>
-			<button on:click={() => screen.set('options')}>
-				<svg viewBox="0 0 76 76" xmlns="http://www.w3.org/2000/svg" width="20" height="20">
-					<path d={OptionsIconPathData} />
-				</svg>
-			</button>
-		</header>
-		<Board startCentered={newUser} />
-		<Keyboard {typeLetter} {submitRow} {undoLetter} {moveCarat} />
-		{#if consoleMode}
-			{#await import('$lib/Console.svelte') then c}
-				<svelte:component this={c.default} {typeLetter} {submitRow} {undoLetter} />
-			{/await}
-		{/if}
-	</section>
-	<Footer />
+<div>
+	<div class:minimized={$openScreen !== null}>
+		<section>
+			<header class:high-contrast={$highContrast}>
+				<h1>Wordle Peaks</h1>
+				<button on:click={() => openScreen.set('tutorial')}>?</button>
+				<button on:click={() => openScreen.set('results')}>
+					<svg viewBox="0 0 9 9" xmlns="http://www.w3.org/2000/svg" width="20" height="20">
+						<rect x="0" y="6.5" height="2" width="2" />
+						<rect x="3" y="3.5" height="5" width="2" />
+						<rect x="6" y="0.5" height="8" width="2" />
+					</svg>
+				</button>
+				<button on:click={() => openScreen.set('options')}>
+					<svg viewBox="0 0 76 76" xmlns="http://www.w3.org/2000/svg" width="20" height="20">
+						<path d={OptionsIconPathData} />
+					</svg>
+				</button>
+			</header>
+			<Board startCentered={newUser} />
+			<Keyboard {typeLetter} {submitRow} {undoLetter} {moveCarat} />
+			{#if consoleMode}
+				{#await import('$lib/Console.svelte') then c}
+					<svelte:component this={c.default} {typeLetter} {submitRow} {undoLetter} />
+				{/await}
+			{/if}
+		</section>
+		<Footer />
+	</div>
+	{#if $openScreen === 'options'}
+		<Options />
+	{:else if $openScreen === 'tutorial'}
+		<Tutorial {newUser} />
+	{:else if $openScreen === 'results'}
+		<Results
+			{hash}
+			playDaily={() => {
+				gameMode.set('daily')
+				playDaily()
+			}}
+			playRandom={() => {
+				gameMode.set('random')
+				playRandom()
+			}}
+		/>
+	{/if}
 </div>
-{#if $screen === 'options'}
-	<Options />
-{:else if $screen === 'tutorial'}
-	<Tutorial {newUser} />
-{/if}
 
 <style>
 	.minimized {
 		height: 0;
-		overflow: hidden;
+		overflow: clip;
 	}
 
 	header {

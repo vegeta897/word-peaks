@@ -1,7 +1,8 @@
 <script lang="ts">
 	import CloseButton from '$lib/CloseButton.svelte'
 	import { slide } from 'svelte/transition'
-	import { screen } from '$lib/store'
+	import { quadOut } from 'svelte/easing'
+	import { openScreen } from '$lib/store'
 
 	export let title: string
 
@@ -13,7 +14,7 @@
 	const onBackgroundMouseup = (event) => {
 		if (event.target === backgroundClickTarget) {
 			event.preventDefault()
-			screen.set('main')
+			openScreen.set(null)
 		}
 	}
 </script>
@@ -21,7 +22,7 @@
 <div
 	class="background"
 	bind:this={backgroundElement}
-	transition:slide
+	transition:slide={{ easing: quadOut, duration: 250 }}
 	on:mousedown={onBackgroundMousedown}
 	on:mouseup={onBackgroundMouseup}
 >
