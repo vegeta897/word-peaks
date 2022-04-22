@@ -17,3 +17,5 @@ export const keyboardLayout: Writable<string> = storageWritable('wp-keyboardLayo
 export const lastPlayedDaily: Writable<number> = storageWritable('wp-lastPlayedDaily', -1)
 
 export const stats: Writable<Stats> = storageWritable('wp-stats', newStats())
+
+export const newUser: Writable<boolean> = writable(false)

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { boardContent, currentRow, guesses, gameFinished, gameWon, answer } from '$src/store'
 	import { get } from 'svelte/store'
+	import { submitRow, typeLetter, undoLetter } from '$lib/board'
 
 	declare global {
 		interface Window {
@@ -8,10 +9,6 @@
 			wp_guess: (guess: string) => void
 		}
 	}
-
-	export let typeLetter
-	export let submitRow
-	export let undoLetter
 
 	function printBoard() {
 		const board = get(boardContent)

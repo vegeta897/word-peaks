@@ -8,9 +8,7 @@
 	import { animationSupported } from '$lib/transitions'
 	import { ROWS, WORD_LENGTH } from '$lib/data-model'
 
-	const { boardContent, currentRow, currentTile, gameFinished, showAllHints } = store
-
-	export let startCentered: boolean
+	const { boardContent, currentRow, currentTile, gameFinished, showAllHints, newUser } = store
 
 	let preloadedRows = get(store.guesses).length
 	let ready = false
@@ -87,8 +85,8 @@
 		</div>
 		<div
 			class="graph"
-			class:minimized={startCentered && $currentRow === 0}
-			class:invisible={!startCentered && $currentRow === 0}
+			class:minimized={$newUser && $currentRow === 0}
+			class:invisible={!$newUser && $currentRow === 0}
 		>
 			<Peaks />
 		</div>

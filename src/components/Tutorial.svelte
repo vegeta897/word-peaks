@@ -1,10 +1,8 @@
 <script lang="ts">
 	import Tile from '$com/Tile.svelte'
 	import { t } from '$lib/translations'
-	import { openScreen } from '$src/store'
+	import { openScreen, newUser } from '$src/store'
 	import Screen from '$com/Screen.svelte'
-
-	export let newUser: boolean
 </script>
 
 <Screen title={$t('main.tutorial.title')}>
@@ -33,7 +31,7 @@
 		</div>
 		<p>{$t('main.tutorial.letter_range')}</p>
 	</div>
-	{#if newUser}
+	{#if $newUser}
 		<hr />
 		<div class="center">
 			<button on:click={() => openScreen.set(null)}>{$t('main.results.play_daily')}</button>

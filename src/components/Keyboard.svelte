@@ -2,11 +2,7 @@
 	import { alphabet, keyboardLayoutOptions } from '$lib/data-model'
 	import { validLetters, swapEnterBackspace, keyboardLayout } from '$src/store'
 	import { t } from '$lib/translations'
-
-	export let typeLetter: (key: string) => {}
-	export let submitRow: () => {}
-	export let undoLetter: (moveCaratBack?: boolean) => {}
-	export let moveCarat: (dir: number) => {}
+	import { moveCarat, submitRow, typeLetter, undoLetter } from '$lib/board'
 
 	function handleKeydown({ key, ctrlKey }: KeyboardEvent) {
 		if (ctrlKey) return
