@@ -1,25 +1,16 @@
 <script lang="ts">
 	import { onDestroy, onMount } from 'svelte'
-	import Peaks from '$lib/Peaks.svelte'
-	import {
-		boardContent,
-		currentRow,
-		currentTile,
-		gameFinished,
-		guesses,
-		showAllHints,
-		answer,
-		openScreen,
-	} from '$lib/store'
-	import Tile from '$lib/Tile.svelte'
+	import Peaks from '$com/Peaks.svelte'
+	import * as store from '$src/store'
+	import Tile from '$com/Tile.svelte'
 	import { get } from 'svelte/store'
 	import { trackEvent } from '$lib/plausible'
 	import { animationSupported } from '$lib/transitions'
 	import { ROWS, WORD_LENGTH } from '$lib/data-model'
 
-	export let startCentered: boolean
+	const { boardContent, currentRow, currentTile, gameFinished, showAllHints, newUser } = store
 
-	let preloadedRows = get(guesses).length
+	let preloadedRows = get(store.guesses).length
 	let ready = false
 	let idle = false
 	let canAnimate = null
@@ -31,7 +22,7 @@
 		if (canAnimate === false) return
 		const thisIdleSessionID = ++idleSessionID
 		clearTimeout(idleTimeout)
-		if (get(gameFinished) && get(openScreen) === null && !document.hidden) {
+		if (get(gameFinished) && get(store.openScreen) === null && !document.hidden) {
 			let thisTimeout: number
 			await new Promise((resolve) => {
 				idleTimeout = setTimeout(() => {
@@ -43,7 +34,7 @@
 			if (canAnimate === null) canAnimate = animationSupported()
 			if (!canAnimate) return
 			trackEvent('idleOnFinish')
-			const scheduler = await import('./idle-scheduler')
+			const scheduler = await import('$lib/idle-scheduler')
 			scheduler.initScheduler((ROWS - get(currentRow)) * WORD_LENGTH)
 			idle = true
 		} else {
@@ -55,8 +46,8 @@
 		if (ready) preloadedRows = 0
 		waitForIdle()
 	})
-	answer.subscribe(() => waitForIdle())
-	openScreen.subscribe(() => waitForIdle())
+	store.answer.subscribe(() => waitForIdle())
+	store.openScreen.subscribe(() => waitForIdle())
 
 	onMount(() => {
 		ready = true // Prevents SSR for board
@@ -83,7 +74,7 @@
 							animate={r >= preloadedRows && r >= $currentRow - 1}
 						>
 							{#if $gameFinished && idle}
-								{#await import('./Idler.svelte') then module}
+								{#await import('$com/Idler.svelte') then module}
 									<svelte:component this={module.default} id={r + ':' + tile.id} />
 								{/await}
 							{/if}
@@ -94,8 +85,8 @@
 		</div>
 		<div
 			class="graph"
-			class:minimized={startCentered && $currentRow === 0}
-			class:invisible={!startCentered && $currentRow === 0}
+			class:minimized={$newUser && $currentRow === 0}
+			class:invisible={!$newUser && $currentRow === 0}
 		>
 			<Peaks />
 		</div>

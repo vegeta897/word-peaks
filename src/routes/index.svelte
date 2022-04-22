@@ -1,98 +1,50 @@
 <script lang="ts">
 	import { onMount } from 'svelte'
 	import { get } from 'svelte/store'
-	import dictionary from '$lib/data/dictionary-filtered.json'
-	import Board from '$lib/Board.svelte'
-	import Keyboard from '$lib/Keyboard.svelte'
-	import Results from '$lib/Results.svelte'
-	import Tutorial from '$lib/Tutorial.svelte'
-	import Options from '$lib/Options.svelte'
+	import Board from '$com/Board.svelte'
+	import Keyboard from '$com/Keyboard.svelte'
+	import Results from '$com/Results.svelte'
+	import Tutorial from '$com/Tutorial.svelte'
+	import Options from '$com/Options.svelte'
 	import {
-		createNewBoard,
-		getBoardRowString,
 		getDayNumber,
 		getWordByDay,
-		getValidLetterBounds,
-		WORD_LENGTH,
 		decodeWord,
 		encodeWord,
 		getRandomWord,
-		VERSION,
-		hasEnoughLetters,
 	} from '$lib/data-model'
-	import { toast } from '@zerodevx/svelte-toast'
-	import type { SvelteToastOptions } from '@zerodevx/svelte-toast'
-	import {
-		answer,
-		guesses,
-		boardContent,
-		currentRow,
-		currentTile,
-		gameFinished,
-		validLetters,
-		gameWon,
-		gameMode,
-		lastPlayedDaily,
-		guessesRandom,
-		answerRandom,
-		guessesDaily,
-		answerDaily,
-		updateGuesses,
-		stats,
-		storeVersion,
-		hardMode,
-		lastPlayedDailyWasHard,
-		lastPlayedRandomWasHard,
-		invalidWord,
-		notEnoughLetters,
-		invalidHardModeGuess,
-		openScreen,
-	} from '$lib/store'
-	import { t } from '$lib/translations'
-	import { trackEvent } from '$lib/plausible'
+	import * as store from '$src/store'
 	import { browser } from '$app/env'
 	import { page } from '$app/stores'
-	import Footer from '$lib/Footer.svelte'
-	import Header from '$lib/Header.svelte'
+	import Footer from '$com/Footer.svelte'
+	import Header from '$com/Header.svelte'
+	import { resetBoard } from '$lib/board'
 
-	if (!get(storeVersion) || get(storeVersion) < VERSION) {
-		storeVersion.set(VERSION)
-		lastPlayedDaily.set(-1)
-		answerDaily.set('')
-		guessesDaily.set([])
-	}
-
-	let newUser: boolean
+	const { openScreen, gameMode } = store
 
 	onMount(async () => {
-		if (!get(answerDaily) && !get(answerRandom)) {
-			newUser = true
+		if (!get(store.answerDaily) && !get(store.answerRandom)) {
+			store.newUser.set(true)
 			openScreen.set('tutorial')
 		}
-		startGame()
+		await startGame()
 	})
 
 	const hash = get(page).url.hash?.slice(1)
 	const wordFromHash = decodeWord(hash)
 	gameMode.set(wordFromHash ? 'random' : 'daily')
 
-	function startGame() {
+	async function startGame() {
 		if (!wordFromHash) {
-			if (get(lastPlayedDaily) < getDayNumber()) playDaily()
-		} else if (wordFromHash !== get(answerRandom)) {
-			playRandom(wordFromHash)
+			if (get(store.lastPlayedDaily) < getDayNumber()) await playDaily()
+		} else if (wordFromHash !== get(store.answerRandom)) {
+			await playRandom(wordFromHash)
 		}
-		if (get(gameFinished)) setTimeout(() => openScreen.set('results'), 1700)
+		if (get(store.gameFinished)) setTimeout(() => openScreen.set('results'), 1700)
 	}
 
-	function resetBoard() {
-		toast.pop()
-		boardContent.set(createNewBoard())
-		currentTile.set(0)
-	}
-
-	function playRandom(word?: string) {
-		const randomWord = word || getRandomWord()
+	async function playRandom(word?: string) {
+		const randomWord = word || (await getRandomWord())
 		history.pushState(
 			'',
 			document.title,
@@ -100,141 +52,21 @@
 		)
 		// window.location.hash = encodeWord(randomWord)
 		resetBoard()
-		guessesRandom.set([])
-		answerRandom.set(randomWord)
+		store.guessesRandom.set([])
+		store.answerRandom.set(randomWord)
 	}
 
-	function playDaily() {
+	async function playDaily() {
 		history.pushState('', document.title, window.location.pathname + window.location.search) // Remove # from URL
-		if (get(lastPlayedDaily) === getDayNumber()) {
+		if (get(store.lastPlayedDaily) === getDayNumber()) {
 			openScreen.set(null)
 			return
 		}
 		resetBoard()
-		guessesDaily.set([])
+		store.guessesDaily.set([])
 		const dayNumber = getDayNumber()
-		lastPlayedDaily.set(dayNumber)
-		answerDaily.set(getWordByDay(dayNumber))
-	}
-
-	// TODO: Move these functions to another file
-	const showError = (m, onPop?: (id?: number) => any) => {
-		toast.pop()
-		const toastOptions: SvelteToastOptions = {
-			theme: { '--toastBackground': 'var(--error-color)' },
-		}
-		if (onPop) toastOptions.onpop = onPop
-		toast.push(m, toastOptions)
-	}
-
-	function typeLetter(letter: string) {
-		if (get(gameFinished)) {
-			openScreen.set('results')
-			return
-		}
-		const _currentTile = get(currentTile)
-		if (_currentTile === WORD_LENGTH) return
-		boardContent.update((content) => {
-			const tile = content[get(currentRow)][_currentTile]
-			const [lower, upper] = getValidLetterBounds(get(validLetters))
-			tile.polarity = 0
-			if (letter && letter < lower) {
-				tile.polarity = -1
-			} else if (letter && letter > upper) {
-				tile.polarity = 1
-			}
-			tile.letter = letter
-			return content
-		})
-		notEnoughLetters.set(false)
-		if (letter || _currentTile < WORD_LENGTH - 1) currentTile.update((ct) => ct + 1)
-	}
-
-	function undoLetter(moveCaratBack = true) {
-		if (get(gameFinished)) {
-			openScreen.set('results')
-			return
-		}
-		boardContent.update((content) => {
-			let tile = content[get(currentRow)][get(currentTile)]
-			if (moveCaratBack && get(currentTile) > 0 && !tile?.letter) {
-				currentTile.update((ct) => ct - 1)
-				tile = content[get(currentRow)][get(currentTile)]
-			}
-			tile.letter = ''
-			tile.polarity = 0
-			return content
-		})
-		invalidHardModeGuess.set(false)
-		notEnoughLetters.set(false)
-		invalidWord.set(false)
-	}
-
-	function moveCarat(dir: number) {
-		if (get(gameFinished)) {
-			openScreen.set('results')
-			return
-		}
-		const moveTo = get(currentTile) + dir
-		if (moveTo < 0 || moveTo >= WORD_LENGTH) return
-		currentTile.update((ct) => ct + dir)
-	}
-
-	function submitRow() {
-		if (get(gameFinished)) {
-			openScreen.set('results')
-			return
-		}
-		if (!hasEnoughLetters(get(boardContent), get(currentRow))) {
-			notEnoughLetters.set(true)
-			showError(get(t)('main.messages.not_enough_letters'), () => notEnoughLetters.set(false))
-			return
-		}
-		const submittedRow = get(boardContent)[get(currentRow)]
-		const submittedWord = getBoardRowString(submittedRow)
-		if (submittedWord !== get(answer) && !dictionary.includes(submittedWord)) {
-			invalidWord.set(true)
-			showError(get(t)('main.messages.invalid_word'), () => invalidWord.set(false))
-			return
-		}
-		if (
-			get(hardMode) &&
-			get(currentRow) > 0 &&
-			submittedRow.some(
-				(tile) => tile.letter < tile.letterBounds![0] || tile.letter > tile.letterBounds![1]
-			)
-		) {
-			invalidHardModeGuess.set(true)
-			showError(get(t)('main.messages.use_valid_letters'), () => invalidHardModeGuess.set(false))
-			return
-		}
-		trackEvent('submitGuess')
-		updateGuesses((words) => [...words, submittedWord])
-		if (get(gameFinished)) {
-			setTimeout(() => openScreen.set('results'), 1700)
-			const won = get(gameWon)
-			trackEvent(get(gameWon) ? 'gameWon' : 'gameLost')
-			if (newUser) trackEvent('firstFinish')
-			newUser = false
-			;(get(gameMode) === 'daily' ? lastPlayedDailyWasHard : lastPlayedRandomWasHard).set(
-				get(hardMode)
-			)
-			if (get(gameMode) === 'daily')
-				stats.update((_stats) => {
-					const streak = won ? _stats.currentStreak + 1 : 0
-					const distribution = [..._stats.distribution]
-					distribution[get(guesses).length - 1]++
-					return {
-						currentStreak: streak,
-						bestStreak: streak > _stats.bestStreak ? streak : _stats.bestStreak,
-						totalGames: _stats.totalGames + 1,
-						wonGames: _stats.wonGames + (won ? 1 : 0),
-						distribution,
-					}
-				})
-		} else {
-			currentTile.set(0)
-		}
+		store.lastPlayedDaily.set(dayNumber)
+		store.answerDaily.set(await getWordByDay(dayNumber))
 	}
 
 	let consoleMode: boolean
@@ -248,11 +80,11 @@
 	<div class:minimized={$openScreen !== null}>
 		<section>
 			<Header />
-			<Board startCentered={newUser} />
-			<Keyboard {typeLetter} {submitRow} {undoLetter} {moveCarat} />
+			<Board />
+			<Keyboard />
 			{#if consoleMode}
-				{#await import('$lib/Console.svelte') then c}
-					<svelte:component this={c.default} {typeLetter} {submitRow} {undoLetter} />
+				{#await import('$com/Console.svelte') then c}
+					<svelte:component this={c.default} />
 				{/await}
 			{/if}
 		</section>
@@ -261,7 +93,7 @@
 	{#if $openScreen === 'options'}
 		<Options />
 	{:else if $openScreen === 'tutorial'}
-		<Tutorial {newUser} />
+		<Tutorial />
 	{:else if $openScreen === 'results'}
 		<Results
 			{hash}

@@ -1,15 +1,7 @@
 <script lang="ts">
 	import Toggle from 'svelte-toggle'
 	import Select from 'svelte-select'
-	import {
-		highContrast,
-		showAllHints,
-		hardMode,
-		changeHardMode,
-		swapEnterBackspace,
-		keyboardLayout,
-		storedLocale,
-	} from '$lib/store'
+	import * as store from '$src/store'
 	import type { Writable } from 'svelte/store'
 	import { get, writable } from 'svelte/store'
 	import { toast } from '@zerodevx/svelte-toast'
@@ -17,9 +9,11 @@
 	import { keyboardLayoutOptions } from '$lib/data-model'
 	import { loadTranslations, t } from '$lib/translations'
 	import lang from '$lib/translations/lang.json'
-	import Screen from '$lib/Screen.svelte'
+	import Screen from '$com/Screen.svelte'
 
 	const languages = Object.entries(lang).map(([value, label]) => ({ value, label }))
+
+	const { storedLocale, keyboardLayout, highContrast, showAllHints } = store
 
 	async function onLanguageChange(language: string) {
 		storedLocale.set(language)
@@ -31,14 +25,14 @@
 	const hardModeToggle: Writable<boolean> = new writable(false)
 	function toggleHardMode() {
 		try {
-			changeHardMode(!get(hardModeToggle))
+			store.changeHardMode(!get(hardModeToggle))
 		} catch (err) {
 			toast.pop()
 			toast.push(err, { theme: { '--toastBackground': 'var(--error-color)' } })
 		}
 	}
 
-	const toggle = (prop) => () => {
+	const toggle = (prop: Writable<boolean>) => () => {
 		prop.set(!get(prop))
 	}
 
@@ -47,14 +41,14 @@
 		{ bind: highContrast, label: 'main.options.high_contrast_mode', click: toggle(highContrast) },
 		{ bind: showAllHints, label: 'main.options.show_all_hints', click: toggle(showAllHints) },
 		{
-			bind: swapEnterBackspace,
+			bind: store.swapEnterBackspace,
 			label: 'main.options.swap_enter_backspace',
-			click: toggle(swapEnterBackspace),
+			click: toggle(store.swapEnterBackspace),
 		},
 	]
 
 	beforeUpdate(() => {
-		hardModeToggle.set(get(hardMode))
+		hardModeToggle.set(get(store.hardMode))
 	})
 	onMount(() => onLanguageChange(get(storedLocale)))
 </script>

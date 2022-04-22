@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { slide } from 'svelte/transition'
 	import { quadOut } from 'svelte/easing'
-	import { openScreen } from '$lib/store'
+	import { openScreen } from '$src/store'
 
 	export let title: string
 
