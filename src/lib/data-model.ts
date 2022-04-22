@@ -1,6 +1,5 @@
 import targets from '$lib/data/targets-filtered.json'
 
-export const VERSION = 1
 export const ROWS = 6
 export const WORD_LENGTH = 5
 

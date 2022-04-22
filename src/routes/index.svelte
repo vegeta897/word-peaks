@@ -17,7 +17,6 @@
 		decodeWord,
 		encodeWord,
 		getRandomWord,
-		VERSION,
 		hasEnoughLetters,
 	} from '$lib/data-model'
 	import { toast } from '@zerodevx/svelte-toast'
@@ -31,13 +30,6 @@
 	import Header from '$lib/Header.svelte'
 
 	const { openScreen, gameMode } = store
-
-	if (!get(store.storeVersion) || get(store.storeVersion) < VERSION) {
-		store.storeVersion.set(VERSION)
-		store.lastPlayedDaily.set(-1)
-		store.answerDaily.set('')
-		store.guessesDaily.set([])
-	}
 
 	let newUser: boolean
 
