@@ -1,7 +1,11 @@
-import targets from '$lib/words/targets-filtered.json'
-
 export const ROWS = 6
 export const WORD_LENGTH = 5
+
+let targetWords: string[] | undefined
+async function loadTargets() {
+	if (targetWords) return
+	targetWords = (await import('$lib/words/targets-filtered.json')).default
+}
 
 let dictionary: string[] | undefined
 export async function loadDictionary() {
@@ -119,7 +123,10 @@ export const getDayNumber = (): number => {
 	return dayCount
 }
 
-export const getWordByDay = (day: number): string => targets[day % targets.length]
+export async function getWordByDay(day: number): Promise<string> {
+	if (!targetWords) await loadTargets()
+	return targetWords![day % targetWords!.length]
+}
 
 export const getDayEnd = (day: number): Date => {
 	const start = new Date(firstDay)
@@ -148,7 +155,10 @@ export function pickRandom<T>(arr: T[]): T {
 	return arr[Math.floor(Math.random() * arr.length)]
 }
 
-export const getRandomWord = (): string => pickRandom(targets)
+export async function getRandomWord(): Promise<string> {
+	if (!targetWords) await loadTargets()
+	return pickRandom(targetWords!)
+}
 
 export function encodeWord(word: string): string {
 	let sum = 0
@@ -164,7 +174,7 @@ export function decodeWord(hash: string): false | string {
 	for (let i = 0; i < WORD_LENGTH; i++) {
 		word += alphabet[(parseInt(hash, 36) & (0b11111 << (i * 5))) >> (i * 5)]
 	}
-	return targets.includes(word) && word
+	return word.length === 5 && word
 }
 
 export const alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('')

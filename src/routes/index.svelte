@@ -39,18 +39,18 @@
 			newUser = true
 			openScreen.set('tutorial')
 		}
-		startGame()
+		await startGame()
 	})
 
 	const hash = get(page).url.hash?.slice(1)
 	const wordFromHash = decodeWord(hash)
 	gameMode.set(wordFromHash ? 'random' : 'daily')
 
-	function startGame() {
+	async function startGame() {
 		if (!wordFromHash) {
-			if (get(store.lastPlayedDaily) < getDayNumber()) playDaily()
+			if (get(store.lastPlayedDaily) < getDayNumber()) await playDaily()
 		} else if (wordFromHash !== get(store.answerRandom)) {
-			playRandom(wordFromHash)
+			await playRandom(wordFromHash)
 		}
 		if (get(store.gameFinished)) setTimeout(() => openScreen.set('results'), 1700)
 	}
@@ -61,8 +61,8 @@
 		store.currentTile.set(0)
 	}
 
-	function playRandom(word?: string) {
-		const randomWord = word || getRandomWord()
+	async function playRandom(word?: string) {
+		const randomWord = word || (await getRandomWord())
 		history.pushState(
 			'',
 			document.title,
@@ -74,7 +74,7 @@
 		store.answerRandom.set(randomWord)
 	}
 
-	function playDaily() {
+	async function playDaily() {
 		history.pushState('', document.title, window.location.pathname + window.location.search) // Remove # from URL
 		if (get(store.lastPlayedDaily) === getDayNumber()) {
 			openScreen.set(null)
@@ -84,7 +84,7 @@
 		store.guessesDaily.set([])
 		const dayNumber = getDayNumber()
 		store.lastPlayedDaily.set(dayNumber)
-		store.answerDaily.set(getWordByDay(dayNumber))
+		store.answerDaily.set(await getWordByDay(dayNumber))
 	}
 
 	// TODO: Move these functions to another file
