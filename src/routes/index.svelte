@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte'
 	import { get } from 'svelte/store'
-	import dictionary from '$lib/words/dictionary-filtered.json' // TODO: Import dynamically?
 	import Board from '$com/Board.svelte'
 	import Keyboard from '$com/Keyboard.svelte'
 	import Results from '$com/Results.svelte'
@@ -18,6 +17,8 @@
 		encodeWord,
 		getRandomWord,
 		hasEnoughLetters,
+		isValidWord,
+		loadDictionary,
 	} from '$lib/data-model'
 	import { toast } from '@zerodevx/svelte-toast'
 	import type { SvelteToastOptions } from '@zerodevx/svelte-toast'
@@ -101,6 +102,7 @@
 			openScreen.set('results')
 			return
 		}
+		loadDictionary()
 		const _currentTile = get(store.currentTile)
 		if (_currentTile === WORD_LENGTH) return
 		store.boardContent.update((content) => {
@@ -149,7 +151,7 @@
 		store.currentTile.update((ct) => ct + dir)
 	}
 
-	function submitRow() {
+	async function submitRow() {
 		if (get(store.gameFinished)) {
 			openScreen.set('results')
 			return
@@ -161,7 +163,7 @@
 		}
 		const submittedRow = get(store.boardContent)[get(store.currentRow)]
 		const submittedWord = getBoardRowString(submittedRow)
-		if (submittedWord !== get(store.answer) && !dictionary.includes(submittedWord)) {
+		if (submittedWord !== get(store.answer) && !(await isValidWord(submittedWord))) {
 			store.invalidWord.set(true)
 			showError(get(t)('main.messages.invalid_word'), () => store.invalidWord.set(false))
 			return

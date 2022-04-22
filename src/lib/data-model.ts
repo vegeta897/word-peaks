@@ -3,6 +3,16 @@ import targets from '$lib/words/targets-filtered.json'
 export const ROWS = 6
 export const WORD_LENGTH = 5
 
+let dictionary: string[] | undefined
+export async function loadDictionary() {
+	if (dictionary) return
+	dictionary = (await import('$lib/words/dictionary-filtered.json')).default
+}
+export async function isValidWord(word: string): Promise<boolean> {
+	if (!dictionary) await loadDictionary()
+	return dictionary!.includes(word)
+}
+
 export type Tile = {
 	id: number
 	letter: string
