@@ -15,10 +15,10 @@
 		getShareTitle,
 		shareImage,
 	} from '$lib/share'
-	import Stats from '$lib/Stats.svelte'
+	import Stats from '$com/Stats.svelte'
 	import { t } from '$lib/translations'
 	import { toast } from '@zerodevx/svelte-toast'
-	import Screen from '$lib/Screen.svelte'
+	import Screen from '$com/Screen.svelte'
 
 	const { stats } = store
 

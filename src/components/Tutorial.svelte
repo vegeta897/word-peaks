@@ -1,8 +1,8 @@
 <script lang="ts">
-	import Tile from '$lib/Tile.svelte'
+	import Tile from '$com/Tile.svelte'
 	import { t } from '$lib/translations'
 	import { openScreen } from '$src/store'
-	import Screen from '$lib/Screen.svelte'
+	import Screen from '$com/Screen.svelte'
 
 	export let newUser: boolean
 </script>

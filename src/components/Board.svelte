@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { onDestroy, onMount } from 'svelte'
-	import Peaks from '$lib/Peaks.svelte'
+	import Peaks from '$com/Peaks.svelte'
 	import * as store from '$src/store'
-	import Tile from '$lib/Tile.svelte'
+	import Tile from '$com/Tile.svelte'
 	import { get } from 'svelte/store'
 	import { trackEvent } from '$lib/plausible'
 	import { animationSupported } from '$lib/transitions'
@@ -36,7 +36,7 @@
 			if (canAnimate === null) canAnimate = animationSupported()
 			if (!canAnimate) return
 			trackEvent('idleOnFinish')
-			const scheduler = await import('./idle-scheduler')
+			const scheduler = await import('$lib/idle-scheduler')
 			scheduler.initScheduler((ROWS - get(currentRow)) * WORD_LENGTH)
 			idle = true
 		} else {
@@ -76,7 +76,7 @@
 							animate={r >= preloadedRows && r >= $currentRow - 1}
 						>
 							{#if $gameFinished && idle}
-								{#await import('./Idler.svelte') then module}
+								{#await import('$com/Idler.svelte') then module}
 									<svelte:component this={module.default} id={r + ':' + tile.id} />
 								{/await}
 							{/if}

@@ -32,7 +32,9 @@
 			"$lib": ["src/lib"],
 			"$lib/*": ["src/lib/*"],
 			"$src": ["src"],
-			"$src/*": ["src/*"]
+			"$src/*": ["src/*"],
+			"$com": ["src/components"],
+			"$com/*": ["src/components/*"]
 		}
 	},
 	"include": ["src/**/*.d.ts", "src/**/*.js", "src/**/*.ts", "src/**/*.svelte"],

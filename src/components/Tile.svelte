@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { fly, squish } from '$lib/transitions.ts'
+	import { fly, squish } from '$lib/../lib/transitions'
 	import { quadIn, quadOut } from 'svelte/easing'
 	import { invalidWord, invalidHardModeGuess, notEnoughLetters, currentTile } from '$src/store'
 	import type { Tile } from '$lib/data-model'

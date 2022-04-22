@@ -2,11 +2,11 @@
 	import { onMount } from 'svelte'
 	import { get } from 'svelte/store'
 	import dictionary from '$lib/data/dictionary-filtered.json'
-	import Board from '$lib/Board.svelte'
-	import Keyboard from '$lib/Keyboard.svelte'
-	import Results from '$lib/Results.svelte'
-	import Tutorial from '$lib/Tutorial.svelte'
-	import Options from '$lib/Options.svelte'
+	import Board from '$com/Board.svelte'
+	import Keyboard from '$com/Keyboard.svelte'
+	import Results from '$com/Results.svelte'
+	import Tutorial from '$com/Tutorial.svelte'
+	import Options from '$com/Options.svelte'
 	import {
 		createNewBoard,
 		getBoardRowString,
@@ -26,8 +26,8 @@
 	import { trackEvent } from '$lib/plausible'
 	import { browser } from '$app/env'
 	import { page } from '$app/stores'
-	import Footer from '$lib/Footer.svelte'
-	import Header from '$lib/Header.svelte'
+	import Footer from '$com/Footer.svelte'
+	import Header from '$com/Header.svelte'
 
 	const { openScreen, gameMode } = store
 
@@ -223,7 +223,7 @@
 			<Board startCentered={newUser} />
 			<Keyboard {typeLetter} {submitRow} {undoLetter} {moveCarat} />
 			{#if consoleMode}
-				{#await import('$lib/Console.svelte') then c}
+				{#await import('$com/Console.svelte') then c}
 					<svelte:component this={c.default} {typeLetter} {submitRow} {undoLetter} />
 				{/await}
 			{/if}

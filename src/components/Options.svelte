@@ -9,7 +9,7 @@
 	import { keyboardLayoutOptions } from '$lib/data-model'
 	import { loadTranslations, t } from '$lib/translations'
 	import lang from '$lib/translations/lang.json'
-	import Screen from '$lib/Screen.svelte'
+	import Screen from '$com/Screen.svelte'
 
 	const languages = Object.entries(lang).map(([value, label]) => ({ value, label }))
 
