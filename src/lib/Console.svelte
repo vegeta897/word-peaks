@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { boardContent, currentRow, guesses, gameFinished, gameWon, answer } from '$lib/store'
+	import { boardContent, currentRow, guesses, gameFinished, gameWon, answer } from '$src/store'
 	import { get } from 'svelte/store'
 
 	declare global {

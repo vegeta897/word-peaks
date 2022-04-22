@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { t } from '$lib/translations'
-	import { openScreen, highContrast } from '$lib/store'
+	import { openScreen, highContrast } from '$src/store'
 	import { OptionsIconPathData } from '$lib/icons'
 </script>
 

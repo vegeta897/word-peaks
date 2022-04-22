@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { sineInOut } from 'svelte/easing'
 	import { ROWS } from '$lib/data-model'
-	import { boardContent, currentRow } from '$lib/store'
+	import { boardContent, currentRow } from '$src/store'
 	import { get } from 'svelte/store'
 
 	const LERPS = 8

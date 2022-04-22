@@ -22,32 +22,7 @@
 	} from '$lib/data-model'
 	import { toast } from '@zerodevx/svelte-toast'
 	import type { SvelteToastOptions } from '@zerodevx/svelte-toast'
-	import {
-		answer,
-		guesses,
-		boardContent,
-		currentRow,
-		currentTile,
-		gameFinished,
-		validLetters,
-		gameWon,
-		gameMode,
-		lastPlayedDaily,
-		guessesRandom,
-		answerRandom,
-		guessesDaily,
-		answerDaily,
-		updateGuesses,
-		stats,
-		storeVersion,
-		hardMode,
-		lastPlayedDailyWasHard,
-		lastPlayedRandomWasHard,
-		invalidWord,
-		notEnoughLetters,
-		invalidHardModeGuess,
-		openScreen,
-	} from '$lib/store'
+	import * as store from '$src/store'
 	import { t } from '$lib/translations'
 	import { trackEvent } from '$lib/plausible'
 	import { browser } from '$app/env'
@@ -55,17 +30,19 @@
 	import Footer from '$lib/Footer.svelte'
 	import Header from '$lib/Header.svelte'
 
-	if (!get(storeVersion) || get(storeVersion) < VERSION) {
-		storeVersion.set(VERSION)
-		lastPlayedDaily.set(-1)
-		answerDaily.set('')
-		guessesDaily.set([])
+	const { openScreen, gameMode } = store
+
+	if (!get(store.storeVersion) || get(store.storeVersion) < VERSION) {
+		store.storeVersion.set(VERSION)
+		store.lastPlayedDaily.set(-1)
+		store.answerDaily.set('')
+		store.guessesDaily.set([])
 	}
 
 	let newUser: boolean
 
 	onMount(async () => {
-		if (!get(answerDaily) && !get(answerRandom)) {
+		if (!get(store.answerDaily) && !get(store.answerRandom)) {
 			newUser = true
 			openScreen.set('tutorial')
 		}
@@ -78,17 +55,17 @@
 
 	function startGame() {
 		if (!wordFromHash) {
-			if (get(lastPlayedDaily) < getDayNumber()) playDaily()
-		} else if (wordFromHash !== get(answerRandom)) {
+			if (get(store.lastPlayedDaily) < getDayNumber()) playDaily()
+		} else if (wordFromHash !== get(store.answerRandom)) {
 			playRandom(wordFromHash)
 		}
-		if (get(gameFinished)) setTimeout(() => openScreen.set('results'), 1700)
+		if (get(store.gameFinished)) setTimeout(() => openScreen.set('results'), 1700)
 	}
 
 	function resetBoard() {
 		toast.pop()
-		boardContent.set(createNewBoard())
-		currentTile.set(0)
+		store.boardContent.set(createNewBoard())
+		store.currentTile.set(0)
 	}
 
 	function playRandom(word?: string) {
@@ -100,21 +77,21 @@
 		)
 		// window.location.hash = encodeWord(randomWord)
 		resetBoard()
-		guessesRandom.set([])
-		answerRandom.set(randomWord)
+		store.guessesRandom.set([])
+		store.answerRandom.set(randomWord)
 	}
 
 	function playDaily() {
 		history.pushState('', document.title, window.location.pathname + window.location.search) // Remove # from URL
-		if (get(lastPlayedDaily) === getDayNumber()) {
+		if (get(store.lastPlayedDaily) === getDayNumber()) {
 			openScreen.set(null)
 			return
 		}
 		resetBoard()
-		guessesDaily.set([])
+		store.guessesDaily.set([])
 		const dayNumber = getDayNumber()
-		lastPlayedDaily.set(dayNumber)
-		answerDaily.set(getWordByDay(dayNumber))
+		store.lastPlayedDaily.set(dayNumber)
+		store.answerDaily.set(getWordByDay(dayNumber))
 	}
 
 	// TODO: Move these functions to another file
@@ -128,15 +105,15 @@
 	}
 
 	function typeLetter(letter: string) {
-		if (get(gameFinished)) {
+		if (get(store.gameFinished)) {
 			openScreen.set('results')
 			return
 		}
-		const _currentTile = get(currentTile)
+		const _currentTile = get(store.currentTile)
 		if (_currentTile === WORD_LENGTH) return
-		boardContent.update((content) => {
-			const tile = content[get(currentRow)][_currentTile]
-			const [lower, upper] = getValidLetterBounds(get(validLetters))
+		store.boardContent.update((content) => {
+			const tile = content[get(store.currentRow)][_currentTile]
+			const [lower, upper] = getValidLetterBounds(get(store.validLetters))
 			tile.polarity = 0
 			if (letter && letter < lower) {
 				tile.polarity = -1
@@ -146,84 +123,87 @@
 			tile.letter = letter
 			return content
 		})
-		notEnoughLetters.set(false)
-		if (letter || _currentTile < WORD_LENGTH - 1) currentTile.update((ct) => ct + 1)
+		store.notEnoughLetters.set(false)
+		if (letter || _currentTile < WORD_LENGTH - 1) store.currentTile.update((ct) => ct + 1)
 	}
 
 	function undoLetter(moveCaratBack = true) {
-		if (get(gameFinished)) {
+		if (get(store.gameFinished)) {
 			openScreen.set('results')
 			return
 		}
-		boardContent.update((content) => {
-			let tile = content[get(currentRow)][get(currentTile)]
-			if (moveCaratBack && get(currentTile) > 0 && !tile?.letter) {
-				currentTile.update((ct) => ct - 1)
-				tile = content[get(currentRow)][get(currentTile)]
+		store.boardContent.update((content) => {
+			let tile = content[get(store.currentRow)][get(store.currentTile)]
+			if (moveCaratBack && get(store.currentTile) > 0 && !tile?.letter) {
+				store.currentTile.update((ct) => ct - 1)
+				tile = content[get(store.currentRow)][get(store.currentTile)]
 			}
 			tile.letter = ''
 			tile.polarity = 0
 			return content
 		})
-		invalidHardModeGuess.set(false)
-		notEnoughLetters.set(false)
-		invalidWord.set(false)
+		store.invalidHardModeGuess.set(false)
+		store.notEnoughLetters.set(false)
+		store.invalidWord.set(false)
 	}
 
 	function moveCarat(dir: number) {
-		if (get(gameFinished)) {
+		if (get(store.gameFinished)) {
 			openScreen.set('results')
 			return
 		}
-		const moveTo = get(currentTile) + dir
+		const moveTo = get(store.currentTile) + dir
 		if (moveTo < 0 || moveTo >= WORD_LENGTH) return
-		currentTile.update((ct) => ct + dir)
+		store.currentTile.update((ct) => ct + dir)
 	}
 
 	function submitRow() {
-		if (get(gameFinished)) {
+		if (get(store.gameFinished)) {
 			openScreen.set('results')
 			return
 		}
-		if (!hasEnoughLetters(get(boardContent), get(currentRow))) {
-			notEnoughLetters.set(true)
-			showError(get(t)('main.messages.not_enough_letters'), () => notEnoughLetters.set(false))
+		if (!hasEnoughLetters(get(store.boardContent), get(store.currentRow))) {
+			store.notEnoughLetters.set(true)
+			showError(get(t)('main.messages.not_enough_letters'), () => store.notEnoughLetters.set(false))
 			return
 		}
-		const submittedRow = get(boardContent)[get(currentRow)]
+		const submittedRow = get(store.boardContent)[get(store.currentRow)]
 		const submittedWord = getBoardRowString(submittedRow)
-		if (submittedWord !== get(answer) && !dictionary.includes(submittedWord)) {
-			invalidWord.set(true)
-			showError(get(t)('main.messages.invalid_word'), () => invalidWord.set(false))
+		if (submittedWord !== get(store.answer) && !dictionary.includes(submittedWord)) {
+			store.invalidWord.set(true)
+			showError(get(t)('main.messages.invalid_word'), () => store.invalidWord.set(false))
 			return
 		}
 		if (
-			get(hardMode) &&
-			get(currentRow) > 0 &&
+			get(store.hardMode) &&
+			get(store.currentRow) > 0 &&
 			submittedRow.some(
 				(tile) => tile.letter < tile.letterBounds![0] || tile.letter > tile.letterBounds![1]
 			)
 		) {
-			invalidHardModeGuess.set(true)
-			showError(get(t)('main.messages.use_valid_letters'), () => invalidHardModeGuess.set(false))
+			store.invalidHardModeGuess.set(true)
+			showError(get(t)('main.messages.use_valid_letters'), () =>
+				store.invalidHardModeGuess.set(false)
+			)
 			return
 		}
 		trackEvent('submitGuess')
-		updateGuesses((words) => [...words, submittedWord])
-		if (get(gameFinished)) {
+		store.updateGuesses((words) => [...words, submittedWord])
+		if (get(store.gameFinished)) {
 			setTimeout(() => openScreen.set('results'), 1700)
-			const won = get(gameWon)
-			trackEvent(get(gameWon) ? 'gameWon' : 'gameLost')
+			const won = get(store.gameWon)
+			trackEvent(won ? 'gameWon' : 'gameLost')
 			if (newUser) trackEvent('firstFinish')
 			newUser = false
-			;(get(gameMode) === 'daily' ? lastPlayedDailyWasHard : lastPlayedRandomWasHard).set(
-				get(hardMode)
-			)
+			;(get(gameMode) === 'daily'
+				? store.lastPlayedDailyWasHard
+				: store.lastPlayedRandomWasHard
+			).set(get(store.hardMode))
 			if (get(gameMode) === 'daily')
-				stats.update((_stats) => {
+				store.stats.update((_stats) => {
 					const streak = won ? _stats.currentStreak + 1 : 0
 					const distribution = [..._stats.distribution]
-					distribution[get(guesses).length - 1]++
+					distribution[get(store.guesses).length - 1]++
 					return {
 						currentStreak: streak,
 						bestStreak: streak > _stats.bestStreak ? streak : _stats.bestStreak,
@@ -233,7 +213,7 @@
 					}
 				})
 		} else {
-			currentTile.set(0)
+			store.currentTile.set(0)
 		}
 	}
 

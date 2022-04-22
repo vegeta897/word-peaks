@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { alphabet, keyboardLayoutOptions } from '$lib/data-model'
-	import { validLetters, swapEnterBackspace, keyboardLayout } from '$lib/store'
+	import { validLetters, swapEnterBackspace, keyboardLayout } from '$src/store'
 	import { t } from '$lib/translations'
 
 	export let typeLetter: (key: string) => {}

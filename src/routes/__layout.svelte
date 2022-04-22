@@ -1,7 +1,7 @@
 <script lang="ts" context="module">
 	import { trackPageview } from '$lib/plausible'
 	import { locales, loadTranslations, getNavigatorLanguage } from '$lib/translations'
-	import { storedLocale } from '$lib/store'
+	import { storedLocale } from '$src/store'
 	import type { Load } from '@sveltejs/kit'
 	import { get } from 'svelte/store'
 	import { browser } from '$app/env'
@@ -23,7 +23,7 @@
 <script lang="ts">
 	import '../app.css'
 	import { SvelteToast } from '@zerodevx/svelte-toast'
-	import { highContrast } from '$lib/store'
+	import { highContrast } from '$src/store'
 </script>
 
 <svelte:head>

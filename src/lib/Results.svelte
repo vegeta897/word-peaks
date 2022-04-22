@@ -3,20 +3,7 @@
 	import type { GameMode } from '$lib/data-model'
 	import { getDayEnd, getDayNumber } from '$lib/data-model'
 	import { onMount } from 'svelte'
-	import {
-		answer,
-		guesses,
-		boardContent,
-		gameMode,
-		gameFinished,
-		gameWon,
-		lastPlayedWasHard,
-		stats,
-		answerDaily,
-		guessesDaily,
-		highContrast,
-		lastPlayedDaily,
-	} from '$lib/store'
+	import * as store from '$src/store'
 	import { get } from 'svelte/store'
 	import { fade } from 'svelte/transition'
 	import { cubicIn, cubicOut } from 'svelte/easing'
@@ -33,6 +20,8 @@
 	import { toast } from '@zerodevx/svelte-toast'
 	import Screen from '$lib/Screen.svelte'
 
+	const { stats } = store
+
 	// Don't use store, we don't want/need dynamic content for the results
 	let lastAnswer: string
 	let lastGameMode: GameMode
@@ -42,11 +31,12 @@
 	export let playRandom: () => {}
 	export let hash: string
 
-	const _guessesDaily = get(guessesDaily)
-	const _lastPlayedDaily = get(lastPlayedDaily)
+	const _guessesDaily = get(store.guessesDaily)
+	const _lastPlayedDaily = get(store.lastPlayedDaily)
 	const dailyFinished =
 		_lastPlayedDaily === getDayNumber() &&
-		(_guessesDaily.length === 6 || _guessesDaily[_guessesDaily.length - 1] === get(answerDaily))
+		(_guessesDaily.length === 6 ||
+			_guessesDaily[_guessesDaily.length - 1] === get(store.answerDaily))
 
 	let nextMS: number
 	const updateNextMS = () => (nextMS = getDayEnd(_lastPlayedDaily) - new Date())
@@ -79,7 +69,7 @@
 		copyText(
 			shareTitleText +
 				'\n\n' +
-				getEmojiGrid(get(guesses), get(answer)) +
+				getEmojiGrid(get(store.guesses), get(store.answer)) +
 				(lastGameMode === 'random' ? `\nhttps://vegeta897.github.io/wordle-peaks/#${hash}` : '')
 		).then(
 			() => successToast(get(t)('main.messages.score_copied')),
@@ -110,21 +100,21 @@
 	}
 
 	onMount(() => {
-		lastGameMode = get(gameMode)
-		lastGameFinished = get(gameFinished)
-		lastGameWon = get(gameWon)
-		lastAnswer = get(answer)
+		lastGameMode = get(store.gameMode)
+		lastGameFinished = get(store.gameFinished)
+		lastGameWon = get(store.gameWon)
+		lastAnswer = get(store.answer)
 		shareTitleText = getShareTitle({
-			gameWon: get(gameWon),
-			guesses: get(guesses),
+			gameWon: get(store.gameWon),
+			guesses: get(store.guesses),
 			gameMode: lastGameMode,
-			hardMode: get(lastPlayedWasHard),
+			hardMode: get(store.lastPlayedWasHard),
 			day: _lastPlayedDaily + 1,
 		})
 		drawResults(canvas, {
-			highContrast: get(highContrast),
-			boardContent: get(boardContent),
-			guesses: get(guesses),
+			highContrast: get(store.highContrast),
+			boardContent: get(store.boardContent),
+			guesses: get(store.guesses),
 			caption: shareTitleText,
 		})
 	})

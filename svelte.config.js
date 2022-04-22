@@ -1,5 +1,6 @@
 import adapter from '@sveltejs/adapter-static'
 import preprocess from 'svelte-preprocess'
+import path from 'path'
 
 const dev = process.env.NODE_ENV === 'development'
 const netlify = process.env.NETLIFY_BUILD
@@ -12,7 +13,13 @@ const config = {
 
 	kit: {
 		adapter: adapter(),
-
+		vite: {
+			resolve: {
+				alias: {
+					$src: path.resolve('./src'),
+				},
+			},
+		},
 		paths: {
 			base: dev || netlify ? '' : '/wordle-peaks',
 		},

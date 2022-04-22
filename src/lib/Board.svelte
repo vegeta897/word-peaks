@@ -1,25 +1,18 @@
 <script lang="ts">
 	import { onDestroy, onMount } from 'svelte'
 	import Peaks from '$lib/Peaks.svelte'
-	import {
-		boardContent,
-		currentRow,
-		currentTile,
-		gameFinished,
-		guesses,
-		showAllHints,
-		answer,
-		openScreen,
-	} from '$lib/store'
+	import * as store from '$src/store'
 	import Tile from '$lib/Tile.svelte'
 	import { get } from 'svelte/store'
 	import { trackEvent } from '$lib/plausible'
 	import { animationSupported } from '$lib/transitions'
 	import { ROWS, WORD_LENGTH } from '$lib/data-model'
 
+	const { boardContent, currentRow, currentTile, gameFinished, showAllHints } = store
+
 	export let startCentered: boolean
 
-	let preloadedRows = get(guesses).length
+	let preloadedRows = get(store.guesses).length
 	let ready = false
 	let idle = false
 	let canAnimate = null
@@ -31,7 +24,7 @@
 		if (canAnimate === false) return
 		const thisIdleSessionID = ++idleSessionID
 		clearTimeout(idleTimeout)
-		if (get(gameFinished) && get(openScreen) === null && !document.hidden) {
+		if (get(gameFinished) && get(store.openScreen) === null && !document.hidden) {
 			let thisTimeout: number
 			await new Promise((resolve) => {
 				idleTimeout = setTimeout(() => {
@@ -55,8 +48,8 @@
 		if (ready) preloadedRows = 0
 		waitForIdle()
 	})
-	answer.subscribe(() => waitForIdle())
-	openScreen.subscribe(() => waitForIdle())
+	store.answer.subscribe(() => waitForIdle())
+	store.openScreen.subscribe(() => waitForIdle())
 
 	onMount(() => {
 		ready = true // Prevents SSR for board
