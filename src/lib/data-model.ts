@@ -1,4 +1,4 @@
-import targets from '$lib/data/targets-filtered.json'
+import targets from '$lib/words/targets-filtered.json'
 
 export const ROWS = 6
 export const WORD_LENGTH = 5

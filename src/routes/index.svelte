@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte'
 	import { get } from 'svelte/store'
-	import dictionary from '$lib/data/dictionary-filtered.json'
+	import dictionary from '$lib/words/dictionary-filtered.json' // TODO: Import dynamically?
 	import Board from '$com/Board.svelte'
 	import Keyboard from '$com/Keyboard.svelte'
 	import Results from '$com/Results.svelte'
