@@ -14,6 +14,8 @@ import { trackEvent } from '$lib/plausible'
 import { toast } from '@zerodevx/svelte-toast'
 import type { SvelteToastOptions } from '@zerodevx/svelte-toast'
 
+let openingResults = false
+
 export function resetBoard() {
 	toast.pop()
 	store.boardContent.set(createNewBoard())
@@ -21,7 +23,7 @@ export function resetBoard() {
 }
 
 export function typeLetter(letter: string) {
-	if (get(store.gameFinished)) {
+	if (get(store.gameFinished) && !openingResults) {
 		store.openScreen.set('results')
 		return
 	}
@@ -45,7 +47,7 @@ export function typeLetter(letter: string) {
 }
 
 export function undoLetter(moveCaratBack = true) {
-	if (get(store.gameFinished)) {
+	if (get(store.gameFinished) && !openingResults) {
 		store.openScreen.set('results')
 		return
 	}
@@ -65,7 +67,7 @@ export function undoLetter(moveCaratBack = true) {
 }
 
 export function moveCarat(dir: number) {
-	if (get(store.gameFinished)) {
+	if (get(store.gameFinished) && !openingResults) {
 		store.openScreen.set('results')
 		return
 	}
@@ -75,7 +77,7 @@ export function moveCarat(dir: number) {
 }
 
 export async function submitRow() {
-	if (get(store.gameFinished)) {
+	if (get(store.gameFinished) && !openingResults) {
 		store.openScreen.set('results')
 		return
 	}
@@ -107,7 +109,11 @@ export async function submitRow() {
 	trackEvent('submitGuess')
 	store.updateGuesses((words) => [...words, submittedWord])
 	if (get(store.gameFinished)) {
-		setTimeout(() => store.openScreen.set('results'), 1700)
+		openingResults = true
+		setTimeout(() => {
+			store.openScreen.set('results')
+			openingResults = false
+		}, 1700)
 		const won = get(store.gameWon)
 		trackEvent(won ? 'gameWon' : 'gameLost')
 		if (get(store.newUser)) trackEvent('firstFinish')
