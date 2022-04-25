@@ -97,9 +97,9 @@
 
 <style>
 	.container {
-		margin: 0 auto 20px;
+		margin: 0 auto 12px;
 		padding: 0 4px;
-		height: 23.25rem;
+		height: 372px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -111,7 +111,7 @@
 	}
 
 	.tile-row {
-		margin-bottom: 0.4rem;
+		margin-bottom: 6px;
 		display: flex;
 	}
 
@@ -120,10 +120,10 @@
 	}
 
 	.graph {
-		margin-left: 0.3rem;
+		margin-left: 4px;
 		width: 204px;
+		height: 100%;
 		transition: width 400ms ease-in-out, margin-left 400ms ease-in-out, opacity 200ms ease-out;
-		height: 23.25rem;
 	}
 
 	.graph.minimized {
@@ -142,20 +142,18 @@
 
 	@media (max-width: 480px) {
 		.container {
-			height: 21.8rem;
+			height: 348px;
 		}
 		.graph {
 			width: 118px;
-			height: 21.8rem;
 		}
 	}
 	@media (max-width: 360px) {
 		.container {
-			height: 20rem;
-			margin-bottom: 16px;
+			height: 308px;
 		}
-		.graph {
-			height: 20rem;
+		.tile-row {
+			margin-bottom: 4px;
 		}
 	}
 </style>

@@ -32,7 +32,7 @@
 <style>
 	header {
 		transition: width 400ms ease-in-out;
-		margin: 0.6rem auto;
+		margin: 10px auto;
 		padding: 0 8px;
 		box-sizing: border-box;
 		display: flex;
@@ -109,6 +109,9 @@
 	}
 
 	@media (max-width: 360px) {
+		header {
+			margin: 6px auto;
+		}
 		h1 {
 			font-size: 1.4em;
 		}

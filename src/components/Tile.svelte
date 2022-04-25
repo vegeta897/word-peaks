@@ -85,8 +85,8 @@
 <style>
 	.tile-container {
 		position: relative;
-		width: 3.55rem;
-		height: 3.55rem;
+		width: 57px;
+		height: 57px;
 		margin: 0 3px;
 	}
 
@@ -156,7 +156,7 @@
 	}
 
 	.hint {
-		font-size: 0.45em;
+		font-size: 0.5em;
 		font-weight: 400;
 		color: #999;
 		padding-top: 12px;
@@ -212,14 +212,21 @@
 
 	@media (max-width: 480px) {
 		.tile-container {
-			width: 3.3rem;
-			height: 3.3rem;
+			width: 53px;
+			height: 53px;
+		}
+		.hint {
+			font-size: 0.48em;
 		}
 	}
 	@media (max-width: 360px) {
 		.tile-container {
-			width: 3rem;
-			height: 3rem;
+			width: 48px;
+			height: 48px;
+			margin: 0 2px;
+		}
+		.hint {
+			font-size: 0.45em;
 		}
 	}
 </style>
