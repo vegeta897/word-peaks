@@ -51,9 +51,9 @@
 		align-items: center;
 		text-transform: uppercase;
 		padding: 0;
-		width: 2.8rem;
-		height: 2.8rem;
-		margin-left: 0.6rem;
+		width: 45px;
+		height: 45px;
+		margin-left: 10px;
 		border-radius: 8px;
 		border: 0;
 		font-weight: 700;

@@ -66,7 +66,7 @@
 	.key-row {
 		display: flex;
 		justify-content: center;
-		margin-bottom: 0.25rem;
+		margin-bottom: 4px;
 	}
 	.key-row button {
 		display: flex;
