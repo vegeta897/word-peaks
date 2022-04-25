@@ -121,4 +121,10 @@
 			max-width: 2em;
 		}
 	}
+
+	@media (max-height: 631px) {
+		.key-row button {
+			height: 52px;
+		}
+	}
 </style>
