@@ -43,7 +43,7 @@
 		<style>
 			@font-face {
 				font-family: 'OpenDyslexic-Regular';
-				src: url('/font/OpenDyslexic-Regular.woff') format('woff');
+				src: url('font/OpenDyslexic-Regular.woff') format('woff');
 			}
 			body {
 				font-family: OpenDyslexic-Regular, var(--font-list);
