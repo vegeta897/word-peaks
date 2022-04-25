@@ -61,6 +61,7 @@
 		color: #888;
 		background-color: #ffffff0a;
 		transition: background-color 100ms ease-out;
+		font-family: var(--font-list);
 	}
 
 	header button:hover {

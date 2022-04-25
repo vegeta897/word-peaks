@@ -49,7 +49,8 @@
 		"high_contrast_mode": "High contrast mode",
 		"show_all_hints": "Show all hints in row",
 		"swap_enter_backspace": "Swap Enter/Backspace keys",
-		"alphabetic": "Alphabetic"
+		"alphabetic": "Alphabetic",
+		"use_dyslexic_font": "OpenDyslexic font"
 	},
 	"footer": {
 		"translate_looking": "I'm looking for translators!",

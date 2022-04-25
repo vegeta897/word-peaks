@@ -23,7 +23,7 @@
 <script lang="ts">
 	import '../app.css'
 	import { SvelteToast } from '@zerodevx/svelte-toast'
-	import { highContrast } from '$src/store'
+	import { highContrast, dyslexicFont } from '$src/store'
 </script>
 
 <svelte:head>
@@ -36,6 +36,18 @@
 				--primary-color: #000;
 				--secondary-color: #0e1118;
 				--tertiary-color: #161a25;
+			}
+		</style>
+	{/if}
+	{#if $dyslexicFont}
+		<style>
+			@font-face {
+				font-family: 'OpenDyslexic-Regular';
+				src: url('/font/OpenDyslexic-Regular.woff') format('woff');
+			}
+			body {
+				font-family: OpenDyslexic-Regular, var(--font-list);
+				font-size: 0.9em;
 			}
 		</style>
 	{/if}

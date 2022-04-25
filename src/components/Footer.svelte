@@ -38,7 +38,7 @@
 		justify-content: center;
 		align-items: flex-start;
 		margin: 1rem auto 0.2rem;
-		max-width: 254px;
+		max-width: 267px;
 	}
 
 	footer p {

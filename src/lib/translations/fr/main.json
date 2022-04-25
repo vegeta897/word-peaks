@@ -49,7 +49,8 @@
 		"high_contrast_mode": "Mode contraste élevé",
 		"show_all_hints": "Afficher tous les indices dans la ligne",
 		"swap_enter_backspace": "Échanger les touches Entrer/Retour",
-		"alphabetic": "Alphabétique"
+		"alphabetic": "Alphabétique",
+		"use_dyslexic_font": "Police OpenDyslexic"
 	},
 	"footer": {
 		"translate_looking": "Je cherche des traducteurs !",

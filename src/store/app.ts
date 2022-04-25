@@ -13,6 +13,7 @@ export const highContrast: Writable<boolean> = storageWritable('wp-highContrast'
 export const showAllHints: Writable<boolean> = storageWritable('wp-showAllHints', false)
 export const swapEnterBackspace: Writable<boolean> = storageWritable('wp-swapEnterBackspace', false)
 export const keyboardLayout: Writable<string> = storageWritable('wp-keyboardLayout', 'qwerty')
+export const dyslexicFont: Writable<boolean> = storageWritable('wp-dyslexicFont', false)
 
 export const lastPlayedDaily: Writable<number> = storageWritable('wp-lastPlayedDaily', -1)
 

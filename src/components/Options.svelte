@@ -45,6 +45,11 @@
 			label: 'main.options.swap_enter_backspace',
 			click: toggle(store.swapEnterBackspace),
 		},
+		{
+			bind: store.dyslexicFont,
+			label: 'main.options.use_dyslexic_font',
+			click: toggle(store.dyslexicFont),
+		},
 	]
 
 	beforeUpdate(() => {
@@ -67,7 +72,7 @@
 					on:select={({ detail: { value } }) => onLanguageChange(value)}
 					isClearable={false}
 					isSearchable={false}
-					containerStyles="color: var(--primary-color);width:12.2rem;"
+					containerStyles="color: var(--primary-color);flex: 1 1 auto;width:13rem;"
 					inputStyles="box-sizing: border-box;"
 				/>
 			</div>
@@ -83,7 +88,7 @@
 				on:select={({ detail: { value } }) => keyboardLayout.set(value)}
 				isClearable={false}
 				isSearchable={false}
-				containerStyles="color: var(--primary-color);width:12.2rem;"
+				containerStyles="color: var(--primary-color);flex: 1 1 auto;width:13rem;"
 				inputStyles="box-sizing: border-box;"
 			/>
 		</div>
@@ -111,6 +116,7 @@
 
 	.select-container {
 		display: flex;
+		flex-wrap: wrap;
 		align-items: center;
 		margin-right: -7px;
 		margin-top: 1rem;
@@ -123,15 +129,22 @@
 
 	.label {
 		order: -1;
-		flex-grow: 1;
+		flex-grow: 1.5;
 		font-size: 1.2em;
-		margin: 1rem 0;
-		padding-right: 0.8rem;
+		margin: 0.8rem 0;
+		padding: 0.4rem 0.8rem 0.4rem 0;
 	}
 
-	@media (max-width: 350px) {
+	@media (max-width: 480px) {
 		.label {
-			font-size: 1em;
+			flex-grow: 1;
+		}
+	}
+
+	@media (max-width: 400px) {
+		.select-container {
+			flex-direction: column;
+			align-items: flex-start;
 		}
 	}
 </style>

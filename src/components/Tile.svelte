@@ -68,8 +68,7 @@
 			{#if tile.letterBounds && !tile.letter && showHint}
 				{#if tile.letterBounds[0] !== tile.letterBounds[1]}
 					<span class="hint"
-						>{tile.letterBounds[0]} <span class="small">...</span>
-						{tile.letterBounds[1]}</span
+						>{tile.letterBounds[0]}<span class="small">...</span>{tile.letterBounds[1]}</span
 					>
 				{:else}
 					<span class="hint">{tile.letterBounds[0]}</span>
@@ -161,6 +160,9 @@
 		color: #999;
 		padding-top: 12px;
 		text-shadow: none;
+		display: flex;
+		align-items: baseline;
+		gap: 5px;
 	}
 
 	.small {
@@ -217,6 +219,7 @@
 		}
 		.hint {
 			font-size: 0.48em;
+			gap: 4px;
 		}
 	}
 	@media (max-width: 360px) {
@@ -227,6 +230,7 @@
 		}
 		.hint {
 			font-size: 0.45em;
+			gap: 3px;
 		}
 	}
 </style>
