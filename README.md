@@ -4,6 +4,14 @@ A Wordle spin-off where you narrow down the alphabet for each tile
 
 ## [🏔️ Play here](https://vegeta897.github.io/wordle-peaks/)
 
+## Develop
+
+Pull requests and issues are welcome, but please create an issue or contact me before putting a lot of work into something I may not want to merge!
+
+1. `npm install && npm run dev`
+2. Write code
+3. `npm run format`
+
 ## Translate
 
 If you can contribute a translation, please check out [this link](https://crowdin.com/project/wordle-peaks), or create a pull request with a translated copy of [this file](https://github.com/vegeta897/wordle-peaks/blob/main/src/lib/translations/en/main.json) in a new locale folder (e.g. `de/main.json`).
