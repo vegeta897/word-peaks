@@ -12,7 +12,8 @@
 
 	let rows: Feature[][]
 
-	const featurePad = 4
+	let featurePad: number
+	let featureRadius: number
 	let platformRadius: number
 	let rowMargin: number
 	let rowHeight: number
@@ -31,8 +32,10 @@
 		rowHeight = graphHeight / ROWS
 		tileHeight = rowHeight - rowMargin
 		platformRadius = tileHeight / 3
+		featurePad = graphWidth / 50
 		paddedRowWidth = graphWidth - featurePad * 2
 		featureWidth = (paddedRowWidth - featurePad * (WORD_LENGTH - 1)) / WORD_LENGTH
+		featureRadius = featureWidth / 4
 		updateGraph()
 	})
 
@@ -102,31 +105,38 @@
 		/>
 		{#each rows as row, r}
 			{#each row as feature, f}
-				<rect
-					x={feature.x}
-					y={feature.y}
-					width={feature.width}
-					height={feature.height}
-					rx="8"
-					fill={feature.type === 'lake' ? 'var(--ground-edge-color)' : feature.fill}
-				/>
-				{#if feature.type === 'lake'}
-					<rect
-						x={feature.x}
-						y={feature.y + featurePad}
-						width={feature.width}
-						height={feature.height - featurePad}
-						rx="8"
+				{#if feature.type === 'hill'}
+					<defs>
+						<clipPath id={`hill-clip-${r}-${f}`}>
+							<rect x={feature.x} y={feature.y} width={feature.width} height={feature.height} />
+						</clipPath>
+					</defs>
+					<circle
+						cx={feature.x + feature.width / 2}
+						cy={feature.y + feature.height}
+						r={Math.min(feature.width / 2, feature.height)}
+						clip-path={`url(#hill-clip-${r}-${f})`}
 						fill={feature.fill}
 					/>
-				{:else if feature.type === 'hill'}
+				{:else}
 					<rect
 						x={feature.x}
-						y={feature.y + feature.height / 2}
+						y={feature.y}
 						width={feature.width}
-						height={feature.height / 2}
-						fill={feature.fill}
+						height={feature.height}
+						rx={feature.type === 'hill' ? feature.width / 2 : featureRadius}
+						fill={feature.type === 'lake' ? 'var(--ground-edge-color)' : feature.fill}
 					/>
+					{#if feature.type === 'lake'}
+						<rect
+							x={feature.x}
+							y={feature.y + featurePad}
+							width={feature.width}
+							height={feature.height - featurePad}
+							rx={featureRadius}
+							fill={feature.fill}
+						/>
+					{/if}
 				{/if}
 			{/each}
 		{/each}
