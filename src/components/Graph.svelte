@@ -108,14 +108,51 @@
 				{#if feature.type === 'hill'}
 					<defs>
 						<clipPath id={`hill-clip-${r}-${f}`}>
-							<rect x={feature.x} y={feature.y} width={feature.width} height={feature.height} />
+							<rect
+								x={feature.x}
+								y={feature.y}
+								width={feature.width}
+								height={Math.min(feature.width / 2, feature.height)}
+							/>
 						</clipPath>
+						<mask id={`hill-mask-${r}-${f}`}>
+							<rect
+								x={feature.x}
+								y={feature.y}
+								width={feature.width}
+								height={feature.height + featurePad}
+								rx={featurePad}
+								fill="white"
+							/>
+							<rect
+								x={feature.x}
+								y={feature.y}
+								width={feature.width}
+								height={Math.min(feature.width / 2, feature.height)}
+								fill="black"
+							/>
+							<g fill="white">
+								<circle
+									clip-path={`url(#hill-clip-${r}-${f})`}
+									cx={feature.x + feature.width / 2}
+									cy={feature.y + Math.min(feature.width / 2, feature.height)}
+									r={Math.min(feature.width / 2, feature.height)}
+								/>
+								<rect
+									x={feature.x}
+									y={feature.y + Math.min(feature.width / 2, feature.height)}
+									width={feature.width}
+									height={feature.height - Math.min(feature.width / 2, feature.height)}
+								/>
+							</g>
+						</mask>
 					</defs>
-					<circle
-						cx={feature.x + feature.width / 2}
-						cy={feature.y + feature.height}
-						r={Math.min(feature.width / 2, feature.height)}
-						clip-path={`url(#hill-clip-${r}-${f})`}
+					<rect
+						mask={`url(#hill-mask-${r}-${f})`}
+						x={feature.x}
+						y={feature.y}
+						width={feature.width}
+						height={feature.height + featureRadius}
 						fill={feature.fill}
 					/>
 				{:else}
@@ -124,7 +161,7 @@
 						y={feature.y}
 						width={feature.width}
 						height={feature.height}
-						rx={feature.type === 'hill' ? feature.width / 2 : featureRadius}
+						rx={featureRadius}
 						fill={feature.type === 'lake' ? 'var(--ground-edge-color)' : feature.fill}
 					/>
 					{#if feature.type === 'lake'}
