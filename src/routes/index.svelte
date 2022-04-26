@@ -19,6 +19,7 @@
 	import Footer from '$com/Footer.svelte'
 	import Header from '$com/Header.svelte'
 	import { resetBoard } from '$lib/board'
+	import { initGameState } from '$src/store'
 
 	const { openScreen, gameMode } = store
 
@@ -40,6 +41,7 @@
 		} else if (wordFromHash !== get(store.answerRandom)) {
 			await playRandom(wordFromHash)
 		}
+		initGameState()
 		if (get(store.gameFinished)) setTimeout(() => openScreen.set('results'), 1700)
 	}
 
