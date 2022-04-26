@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onDestroy, onMount } from 'svelte'
-	import Peaks from '$com/Peaks.svelte'
+	import Graph from '$com/Graph.svelte'
 	import * as store from '$src/store'
 	import Tile from '$com/Tile.svelte'
 	import { get } from 'svelte/store'
@@ -49,6 +49,9 @@
 	store.answer.subscribe(() => waitForIdle())
 	store.openScreen.subscribe(() => waitForIdle())
 
+	let graphWidth: number
+	let graphHeight: number
+
 	onMount(() => {
 		ready = true // Prevents SSR for board
 		document.addEventListener('visibilitychange', () => waitForIdle())
@@ -87,8 +90,10 @@
 			class="graph"
 			class:minimized={$newUser && $currentRow === 0}
 			class:invisible={!$newUser && $currentRow === 0}
+			bind:clientWidth={graphWidth}
+			bind:clientHeight={graphHeight}
 		>
-			<Peaks />
+			<Graph {graphWidth} {graphHeight} />
 		</div>
 	{:else}
 		<div class="loading">loading...</div>
@@ -97,11 +102,11 @@
 
 <style>
 	.container {
-		margin: 0 auto 12px;
+		margin: 0 auto 6px;
 		padding: 0 4px;
-		height: 372px;
+		height: 378px;
 		display: flex;
-		align-items: center;
+		align-items: flex-start;
 		justify-content: center;
 	}
 
@@ -110,8 +115,12 @@
 		flex-direction: column;
 	}
 
+	:root {
+		--tile-row-margin-bottom: 6px;
+	}
+
 	.tile-row {
-		margin-bottom: 6px;
+		margin-bottom: var(--tile-row-margin-bottom);
 		display: flex;
 	}
 
@@ -142,7 +151,7 @@
 
 	@media (max-width: 480px) {
 		.container {
-			height: 348px;
+			height: 354px;
 		}
 		.graph {
 			width: 118px;
@@ -150,10 +159,16 @@
 	}
 	@media (max-width: 360px) {
 		.container {
-			height: 308px;
-		}
-		.tile-row {
+			height: 312px;
 			margin-bottom: 4px;
+		}
+		:root {
+			--tile-row-margin-bottom: 4px;
+		}
+	}
+	@media (max-width: 330px) {
+		.graph {
+			display: none;
 		}
 	}
 </style>
