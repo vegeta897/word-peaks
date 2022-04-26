@@ -31,7 +31,6 @@
 		<style>
 			body {
 				--before-color: #da3f8b;
-				--before-text-color: #f6dae8;
 				--correct-color: #64ba2e;
 				--primary-color: #000;
 				--secondary-color: #0e1118;

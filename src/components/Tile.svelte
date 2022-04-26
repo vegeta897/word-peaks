@@ -103,9 +103,9 @@
 		border-radius: 4px;
 		width: 100%;
 		height: 100%;
-		color: #eee;
-		transition: border-color 100ms ease-out;
-		text-shadow: 1px 1px 1px #0006;
+		color: #fff;
+		transition: border-color 70ms ease-out;
+		text-shadow: 1px 1px 1px #0003;
 		user-select: none;
 	}
 	.tile.finished {
@@ -126,14 +126,12 @@
 	}
 
 	.tile.before {
-		color: var(--before-text-color);
 		border-top-left-radius: 20px;
 		border-top-right-radius: 20px;
 		background: var(--before-color);
 	}
 
 	.tile.after {
-		color: var(--after-text-color);
 		border-bottom-left-radius: 20px;
 		border-bottom-right-radius: 20px;
 		background: var(--after-color);
