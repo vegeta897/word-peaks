@@ -95,7 +95,7 @@
 	}
 
 	.key-row button.wide {
-		width: 74px;
+		flex-grow: 1;
 		text-transform: none;
 		font-size: 1em;
 	}
@@ -114,7 +114,6 @@
 		}
 
 		.key-row button.wide {
-			width: 59px;
 			font-size: 0.9em;
 		}
 
