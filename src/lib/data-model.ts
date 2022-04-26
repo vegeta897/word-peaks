@@ -22,7 +22,6 @@ export type Tile = {
 	letter: string
 	scored: boolean
 	distance: number
-	magnitude: number
 	polarity: -1 | 0 | 1
 	letterBounds?: [string, string]
 }
@@ -35,44 +34,19 @@ export function createNewBoard(): Board {
 		const row: Tile[] = []
 		board[i] = row
 		for (let j = 0; j < WORD_LENGTH; j++) {
-			row.push({ id: j, letter: '', scored: false, distance: 0, magnitude: 0, polarity: 0 })
+			row.push({ id: j, letter: '', scored: false, distance: 0, polarity: 0 })
 		}
 	}
 	return board
 }
 
-export function scoreTile(
-	letter: string,
-	answer: string,
-	row: number,
-	tile: number,
-	boardContent: Tile[][]
-): Tile {
+export function scoreTile(letter: string, answer: string, row: number, tile: number): Tile {
 	const distance = alphabet.indexOf(letter) - alphabet.indexOf(answer[tile])
 	const polarity = distance === 0 ? 0 : distance > 0 ? 1 : -1
-	let magnitude = 0
-	if (row === 0) {
-		magnitude = ROWS
-	} else {
-		const prevTile = boardContent[row - 1][tile]
-		if (prevTile.polarity !== polarity) {
-			magnitude = ROWS
-		} else if (Math.abs(distance) > Math.abs(prevTile.distance)) {
-			magnitude = prevTile.magnitude + 1
-		} else if (Math.abs(distance) < Math.abs(prevTile.distance)) {
-			magnitude = prevTile.magnitude - 1
-		}
-		const alreadyGuessed = boardContent.find((guess, g) => g < row && guess[tile].letter === letter)
-		if (alreadyGuessed) {
-			magnitude = alreadyGuessed[tile].magnitude
-		}
-	}
-	if (distance === 0) magnitude = 0
 	return {
 		id: tile,
 		scored: true,
 		distance,
-		magnitude,
 		polarity,
 		letter,
 	}

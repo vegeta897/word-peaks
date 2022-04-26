@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { quadOut } from 'svelte/easing'
 	import { ROWS, WORD_LENGTH } from '$lib/data-model'
 	import { boardContent, currentRow } from '$src/store'
 	import { get } from 'svelte/store'
@@ -63,10 +62,8 @@
 			.map((row, r) =>
 				row.map((tile, i) => {
 					const featureType = tile.polarity > 0 ? 'lake' : tile.polarity < 0 ? 'hill' : 'grass'
-					const heightFactor = quadOut(tile.magnitude / (ROWS * 2 - 1))
-					const featureHeight =
-						featureType === 'grass' ? tileHeight / 3 : (tileHeight / 2) * heightFactor
-					let yAdjust = tileHeight / 3
+					const featureHeight = featureType === 'grass' ? tileHeight / 2 : tileHeight * (2 / 5)
+					let yAdjust = tileHeight / 4
 					if (featureType === 'lake') yAdjust = tileHeight / 2
 					if (featureType === 'hill') yAdjust = tileHeight / 2 - featureHeight
 					return {
@@ -187,6 +184,6 @@
 	}
 	:root {
 		--ground-color: #c76dab;
-		--ground-edge-color: #a84f8c;
+		--ground-edge-color: #b05492;
 	}
 </style>
