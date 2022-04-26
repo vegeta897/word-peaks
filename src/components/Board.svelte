@@ -166,7 +166,7 @@
 			--tile-row-margin-bottom: 4px;
 		}
 	}
-	@media (max-width: 330px) {
+	@media (max-width: 320px) {
 		.graph {
 			display: none;
 		}
