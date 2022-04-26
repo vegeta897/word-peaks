@@ -155,7 +155,7 @@
 	.hint {
 		font-size: 0.5em;
 		font-weight: 400;
-		color: #999;
+		color: #bbb;
 		padding-top: 12px;
 		text-shadow: none;
 		display: flex;
