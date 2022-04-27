@@ -29,6 +29,8 @@ The word list for the game itself will remain in English. If you want to play wi
 - **Spanish**: DayFlounder1832
 - **Brazilian Portuguese**: Gabrielle Nunes, riccimurilo
 
+### Assets
+
 - Word lists sourced and modified from [hello wordl](https://github.com/lynn/hello-wordl) ([license](https://github.com/lynn/hello-wordl/blob/main/LICENSE))
 - [OpenDyslexic](https://opendyslexic.org/) font ([license](https://github.com/vegeta897/wordle-peaks/blob/main/static/font/LICENSE))
 
