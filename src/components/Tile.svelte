@@ -86,7 +86,7 @@
 		position: relative;
 		width: 57px;
 		height: 57px;
-		margin: 0 3px;
+		margin: 0 2px;
 	}
 
 	.tile {
@@ -224,11 +224,16 @@
 		.tile-container {
 			width: 48px;
 			height: 48px;
-			margin: 0 2px;
+			margin: 0 1px;
 		}
 		.hint {
 			font-size: 0.45em;
 			gap: 3px;
+		}
+	}
+	@media (max-width: 320px) {
+		.tile-container {
+			margin: 0 2px;
 		}
 	}
 </style>

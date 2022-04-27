@@ -17,6 +17,7 @@
 	let tileHeight: number
 	let paddedRowWidth: number
 	let featureWidth: number
+	let featureHeight: number
 
 	$: canDraw = graphWidth > 0 && graphHeight > 0 && _currentRow >= 0 && rowMargin >= 0
 
@@ -26,13 +27,14 @@
 				.getPropertyValue('--tile-row-margin-bottom')
 				.split('px')[0]
 		)
-		rowHeight = graphHeight / ROWS
-		tileHeight = rowHeight - rowMargin
-		platformRadius = tileHeight / 3
 		featurePad = graphWidth / 50
 		paddedRowWidth = graphWidth - featurePad * 2
 		featureWidth = (paddedRowWidth - featurePad * (WORD_LENGTH - 1)) / WORD_LENGTH
 		featureRadius = featureWidth / 4
+		rowHeight = graphHeight / ROWS
+		tileHeight = rowHeight - rowMargin
+		featureHeight = Math.min(featureWidth, tileHeight / 2)
+		platformRadius = tileHeight / 3
 		updateGraph()
 	})
 
@@ -76,7 +78,7 @@
 					x: featurePad + t * (featureWidth + featurePad),
 					y: r * rowHeight + tileHeight / 4,
 					width: featureWidth,
-					height: tileHeight / 2,
+					height: featureHeight,
 					fill: featureColors[featureType],
 					type: featureType,
 				}
@@ -116,11 +118,13 @@
 		{#each features as feature, f}
 			{#if feature.type === 'hill'}
 				<path
-					d={`M${feature.x} ${feature.y + feature.height / 2}
+					d={`M${feature.x} ${feature.y + feature.height - featureRadius}
+					V${feature.y + featureRadius}
 					a${feature.width / 2} ${feature.width / 2} 0 0 1 ${feature.width} 0
-					a${featurePad} ${featurePad} 0 0 1 ${-featurePad} ${featurePad}
-					H${feature.x + featurePad}
-					a${featurePad} ${featurePad} 0 0 1 ${-featurePad} ${-featurePad}`}
+					V${feature.y + feature.height - featureRadius}
+					a${featureRadius} ${featureRadius} 0 0 1 ${-featureRadius} ${featureRadius}
+					H${feature.x + featureRadius}
+					a${featureRadius} ${featureRadius} 0 0 1 ${-featureRadius} ${-featureRadius} Z`}
 					fill={feature.fill}
 				/>
 			{:else}

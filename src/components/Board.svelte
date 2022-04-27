@@ -130,7 +130,7 @@
 
 	.graph {
 		margin-left: 4px;
-		width: 204px;
+		flex-grow: 1;
 		height: 100%;
 		transition: width 400ms ease-in-out, margin-left 400ms ease-in-out, opacity 200ms ease-out;
 	}
@@ -152,9 +152,6 @@
 	@media (max-width: 480px) {
 		.container {
 			height: 354px;
-		}
-		.graph {
-			width: 118px;
 		}
 	}
 	@media (max-width: 360px) {
