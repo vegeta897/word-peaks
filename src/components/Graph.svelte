@@ -9,8 +9,6 @@
 	export let graphWidth: number
 	export let graphHeight: number
 
-	let rows: Feature[][]
-
 	let featurePad: number
 	let featureRadius: number
 	let platformRadius: number
@@ -45,7 +43,10 @@
 		height: number
 		fill: string
 		type: 'grass' | 'lake' | 'hill'
+		river?: boolean
 	}
+	const features: Feature[] = []
+	const featureMap: Feature[] = []
 
 	let _currentRow: number
 
@@ -57,25 +58,39 @@
 
 	function updateGraph() {
 		if (!canDraw) return
-		rows = get(boardContent)
-			.slice(0, _currentRow)
-			.map((row, r) =>
-				row.map((tile, i) => {
-					const featureType = tile.polarity > 0 ? 'lake' : tile.polarity < 0 ? 'hill' : 'grass'
-					const featureHeight = featureType === 'grass' ? tileHeight / 2 : tileHeight * (2 / 5)
-					let yAdjust = tileHeight / 4
-					if (featureType === 'lake') yAdjust = tileHeight / 2
-					if (featureType === 'hill') yAdjust = tileHeight / 2 - featureHeight
-					return {
-						x: featurePad + i * (featureWidth + featurePad),
-						y: r * rowHeight + yAdjust,
-						width: featureWidth,
-						height: featureHeight,
-						fill: featureColors[featureType],
-						type: featureType,
-					}
-				})
-			)
+		features.length = 0
+		featureMap.length = 0
+		const graphedRows = get(boardContent).slice(0, _currentRow)
+		for (let r = 0; r < graphedRows.length; r++) {
+			const row = graphedRows[r]
+			let leftNeighbor: Feature | null = null
+			for (let t = 0; t < row.length; t++) {
+				const tile = row[t]
+				const upNeighbor = featureMap[(r - 1) * WORD_LENGTH + t]
+				const featureType = tile.polarity > 0 ? 'lake' : tile.polarity < 0 ? 'hill' : 'grass'
+				if (featureType !== 'hill' && leftNeighbor?.type === featureType) {
+					leftNeighbor!.width += featurePad + featureWidth
+					continue
+				}
+				const featureHeight = featureType === 'hill' ? tileHeight * (2 / 5) : tileHeight / 2
+				let yAdjust = tileHeight / 4
+				if (featureType === 'hill') yAdjust = tileHeight / 2 - featureHeight
+				const feature: Feature = {
+					x: featurePad + t * (featureWidth + featurePad),
+					y: r * rowHeight + yAdjust,
+					width: featureWidth,
+					height: featureHeight,
+					fill: featureColors[featureType],
+					type: featureType,
+				}
+				if (featureType === 'lake' && upNeighbor?.type === 'lake') {
+					feature.river = true
+				}
+				leftNeighbor = feature
+				featureMap[r * WORD_LENGTH + t] = feature
+				features.push(feature)
+			}
+		}
 	}
 
 	onMount(() => {
@@ -86,93 +101,101 @@
 	})
 </script>
 
-{#if rows && canDraw}
+{#if features.length > 0 && canDraw}
 	<svg viewBox={`0 0 ${graphWidth} ${graphHeight}`} xmlns="http://www.w3.org/2000/svg">
 		<rect
+			y={(graphHeight / 6) * $currentRow - platformRadius * 2}
 			width={graphWidth}
-			height={(graphHeight / 6) * rows.length}
+			height={platformRadius * 2}
 			fill="var(--ground-edge-color)"
 			rx={platformRadius}
 		/>
 		<rect
 			width={graphWidth}
-			height={(graphHeight / 6) * rows.length - rowMargin}
+			height={(graphHeight / 6) * $currentRow - rowMargin}
 			fill="var(--ground-color)"
 			rx={platformRadius}
 		/>
-		{#each rows as row, r}
-			{#each row as feature, f}
-				{#if feature.type === 'hill'}
-					<defs>
-						<clipPath id={`hill-clip-${r}-${f}`}>
-							<rect
-								x={feature.x}
-								y={feature.y}
-								width={feature.width}
-								height={Math.min(feature.width / 2, feature.height)}
-							/>
-						</clipPath>
-						<mask id={`hill-mask-${r}-${f}`}>
-							<rect
-								x={feature.x}
-								y={feature.y}
-								width={feature.width}
-								height={feature.height + featurePad}
-								rx={featurePad}
-								fill="white"
-							/>
-							<rect
-								x={feature.x}
-								y={feature.y}
-								width={feature.width}
-								height={Math.min(feature.width / 2, feature.height)}
-								fill="black"
-							/>
-							<g fill="white">
-								<circle
-									clip-path={`url(#hill-clip-${r}-${f})`}
-									cx={feature.x + feature.width / 2}
-									cy={feature.y + Math.min(feature.width / 2, feature.height)}
-									r={Math.min(feature.width / 2, feature.height)}
-								/>
-								<rect
-									x={feature.x}
-									y={feature.y + Math.min(feature.width / 2, feature.height)}
-									width={feature.width}
-									height={feature.height - Math.min(feature.width / 2, feature.height)}
-								/>
-							</g>
-						</mask>
-					</defs>
-					<rect
-						mask={`url(#hill-mask-${r}-${f})`}
-						x={feature.x}
-						y={feature.y}
-						width={feature.width}
-						height={feature.height + featureRadius}
-						fill={feature.fill}
-					/>
-				{:else}
-					<rect
-						x={feature.x}
-						y={feature.y}
-						width={feature.width}
-						height={feature.height}
-						rx={featureRadius}
-						fill={feature.type === 'lake' ? 'var(--ground-edge-color)' : feature.fill}
-					/>
-					{#if feature.type === 'lake'}
+		{#each features as feature, f}
+			{#if feature.type === 'hill'}
+				<defs>
+					<clipPath id={`hill-clip-${f}`}>
 						<rect
 							x={feature.x}
-							y={feature.y + featurePad}
+							y={feature.y}
 							width={feature.width}
-							height={feature.height - featurePad}
-							rx={featureRadius}
-							fill={feature.fill}
+							height={Math.min(feature.width / 2, feature.height) + 0.5}
 						/>
-					{/if}
+					</clipPath>
+					<mask id={`hill-mask-${f}`}>
+						<rect
+							x={feature.x}
+							y={feature.y}
+							width={feature.width}
+							height={feature.height + featurePad}
+							rx={featurePad}
+							fill="white"
+						/>
+						<rect
+							x={feature.x - 0.5}
+							y={feature.y - 0.5}
+							width={feature.width + 1}
+							height={Math.min(feature.width / 2, feature.height) + 1}
+							fill="black"
+						/>
+						<g fill="white">
+							<circle
+								clip-path={`url(#hill-clip-${f})`}
+								cx={feature.x + feature.width / 2}
+								cy={feature.y + Math.min(feature.width / 2, feature.height)}
+								r={Math.min(feature.width / 2, feature.height)}
+							/>
+							<rect
+								x={feature.x}
+								y={feature.y + Math.min(feature.width / 2, feature.height)}
+								width={feature.width}
+								height={feature.height - Math.min(feature.width / 2, feature.height)}
+							/>
+						</g>
+					</mask>
+				</defs>
+				<rect
+					mask={`url(#hill-mask-${f})`}
+					x={feature.x}
+					y={feature.y}
+					width={feature.width}
+					height={feature.height + featureRadius}
+					fill={feature.fill}
+				/>
+			{:else}
+				<rect
+					x={feature.x}
+					y={feature.y}
+					width={feature.width}
+					height={feature.height}
+					rx={featureRadius}
+					fill={feature.type === 'lake' ? 'var(--ground-edge-color)' : feature.fill}
+				/>
+				{#if feature.type === 'lake'}
+					<rect
+						x={feature.x}
+						y={feature.y + featurePad}
+						width={feature.width}
+						height={feature.height - featurePad}
+						rx={featureRadius}
+						fill={feature.fill}
+					/>
 				{/if}
-			{/each}
+				{#if feature.river}
+					<rect
+						x={feature.x + featureWidth / 2 - 4}
+						y={feature.y - rowHeight + feature.height - 0.5}
+						width={8}
+						height={rowHeight - feature.height + featurePad + 1}
+						fill={feature.fill}
+					/>
+				{/if}
+			{/if}
 		{/each}
 	</svg>
 {/if}
