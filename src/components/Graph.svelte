@@ -72,14 +72,11 @@
 					leftNeighbor!.width += featurePad + featureWidth
 					continue
 				}
-				const featureHeight = featureType === 'hill' ? tileHeight * (2 / 5) : tileHeight / 2
-				let yAdjust = tileHeight / 4
-				if (featureType === 'hill') yAdjust = tileHeight / 2 - featureHeight
 				const feature: Feature = {
 					x: featurePad + t * (featureWidth + featurePad),
-					y: r * rowHeight + yAdjust,
+					y: r * rowHeight + tileHeight / 4,
 					width: featureWidth,
-					height: featureHeight,
+					height: tileHeight / 2,
 					fill: featureColors[featureType],
 					type: featureType,
 				}
@@ -118,53 +115,12 @@
 		/>
 		{#each features as feature, f}
 			{#if feature.type === 'hill'}
-				<defs>
-					<clipPath id={`hill-clip-${f}`}>
-						<rect
-							x={feature.x}
-							y={feature.y}
-							width={feature.width}
-							height={Math.min(feature.width / 2, feature.height) + 0.5}
-						/>
-					</clipPath>
-					<mask id={`hill-mask-${f}`}>
-						<rect
-							x={feature.x}
-							y={feature.y}
-							width={feature.width}
-							height={feature.height + featurePad}
-							rx={featurePad}
-							fill="white"
-						/>
-						<rect
-							x={feature.x - 0.5}
-							y={feature.y - 0.5}
-							width={feature.width + 1}
-							height={Math.min(feature.width / 2, feature.height) + 1}
-							fill="black"
-						/>
-						<g fill="white">
-							<circle
-								clip-path={`url(#hill-clip-${f})`}
-								cx={feature.x + feature.width / 2}
-								cy={feature.y + Math.min(feature.width / 2, feature.height)}
-								r={Math.min(feature.width / 2, feature.height)}
-							/>
-							<rect
-								x={feature.x}
-								y={feature.y + Math.min(feature.width / 2, feature.height)}
-								width={feature.width}
-								height={feature.height - Math.min(feature.width / 2, feature.height)}
-							/>
-						</g>
-					</mask>
-				</defs>
-				<rect
-					mask={`url(#hill-mask-${f})`}
-					x={feature.x}
-					y={feature.y}
-					width={feature.width}
-					height={feature.height + featureRadius}
+				<path
+					d={`M${feature.x} ${feature.y + feature.height / 2}
+					a${feature.width / 2} ${feature.width / 2} 0 0 1 ${feature.width} 0
+					a${featurePad} ${featurePad} 0 0 1 ${-featurePad} ${featurePad}
+					H${feature.x + featurePad}
+					a${featurePad} ${featurePad} 0 0 1 ${-featurePad} ${-featurePad}`}
 					fill={feature.fill}
 				/>
 			{:else}
@@ -188,9 +144,9 @@
 				{/if}
 				{#if feature.river}
 					<rect
-						x={feature.x + featureWidth / 2 - 4}
+						x={feature.x + featureWidth / 2 - featureWidth / 6}
 						y={feature.y - rowHeight + feature.height - 0.5}
-						width={8}
+						width={featureWidth / 3}
 						height={rowHeight - feature.height + featurePad + 1}
 						fill={feature.fill}
 					/>
