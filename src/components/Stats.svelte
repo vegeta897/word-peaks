@@ -30,8 +30,13 @@
 		{#each stats.distribution as guessCount, c}
 			<div class="bar-row">
 				{c + 1}
-				<div class="bar" style={`width: ${Math.round((100 * guessCount) / highestDistribution)}%`}>
-					{guessCount}
+				<div class="bar-container">
+					<div
+						class="bar"
+						style={`width: ${Math.round((100 * guessCount) / highestDistribution)}%`}
+					>
+						{guessCount}
+					</div>
 				</div>
 			</div>
 		{/each}
@@ -44,7 +49,7 @@
 		color: var(--text-color);
 		display: flex;
 		justify-content: center;
-		margin-bottom: 1.4rem;
+		margin-top: 1.4rem;
 		flex-wrap: wrap;
 	}
 
@@ -67,27 +72,31 @@
 	}
 
 	.distribution {
-		margin-top: 1rem;
-		max-width: 20rem;
+		margin-top: 0.9rem;
+		max-width: 22rem;
 		flex-basis: 100%;
 	}
 
 	.bar-row {
 		display: flex;
 		align-items: baseline;
+		margin-bottom: 6px;
+	}
+
+	.bar-container {
+		margin-left: 10px;
+		flex-grow: 1;
 	}
 
 	.bar {
 		height: 20px;
 		background-color: var(--accent-color);
 		border-radius: 8px;
-		margin-bottom: 6px;
 		font-weight: 700;
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		margin-left: 8px;
-		min-width: 22px;
+		min-width: 20px;
 	}
 	@media (max-width: 480px) {
 		.stats-item {
