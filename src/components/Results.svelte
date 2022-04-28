@@ -130,7 +130,6 @@
 	{#if lastGameFinished && !lastGameWon}
 		<p>{@html $t('main.results.answer', { answer: lastAnswer.toUpperCase() })}</p>
 	{/if}
-	<Stats stats={$stats} gameMode={lastGameMode} />
 	<div class="share">
 		<div class="column">
 			{#if nextWordReady || !dailyFinished}
@@ -181,6 +180,7 @@
 		<canvas bind:this={canvas} width="504" height="0" style={'width:252px'} />
 		<button on:click={onCopyImage} class="share-button">{$t('main.results.copy_image')}</button>
 	</div>
+	<Stats stats={$stats} gameMode={lastGameMode} />
 </Screen>
 
 <style>
