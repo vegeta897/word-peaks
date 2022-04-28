@@ -43,6 +43,7 @@
 		y: number
 		width: number
 		height: number
+		radius: number
 		fill: string
 		type: 'grass' | 'lake' | 'hill'
 		river?: boolean
@@ -79,6 +80,7 @@
 					y: r * rowHeight + tileHeight / 4,
 					width: featureWidth,
 					height: featureHeight,
+					radius: featureType === 'grass' ? featureRadius / 2 : featureRadius,
 					fill: featureColors[featureType],
 					type: featureType,
 				}
@@ -118,13 +120,18 @@
 		{#each features as feature, f}
 			{#if feature.type === 'hill'}
 				<path
-					d={`M${feature.x} ${feature.y + feature.height - featureRadius}
-					V${feature.y + featureRadius}
-					a${feature.width / 2} ${feature.width / 2} 0 0 1 ${feature.width} 0
-					V${feature.y + feature.height - featureRadius}
-					a${featureRadius} ${featureRadius} 0 0 1 ${-featureRadius} ${featureRadius}
-					H${feature.x + featureRadius}
-					a${featureRadius} ${featureRadius} 0 0 1 ${-featureRadius} ${-featureRadius} Z`}
+					d={`M${feature.x} ${feature.y + feature.height / 2}
+					a${feature.width / 2} ${feature.width / 2} 0 0 1 ${
+						(feature.width / 4) * (1 - Math.sin(Math.PI / 6))
+					} ${-((feature.width / 2) * Math.sin(Math.PI / 6))}
+					L${feature.x + feature.width / 2} ${feature.y - featureRadius}
+					L${feature.x + feature.width - (feature.width / 4) * (1 - Math.sin(Math.PI / 6))} ${
+						feature.y + feature.height / 2 - (feature.width / 2) * Math.sin(Math.PI / 6)
+					}
+					a${feature.width / 2} ${feature.width / 2} 0 0 1 ${
+						(feature.width / 4) * (1 - Math.sin(Math.PI / 6))
+					} ${(feature.width / 2) * Math.sin(Math.PI / 6)}
+					a${feature.width / 2} ${feature.height / 2} 0 0 1 ${-feature.width} 0 Z`}
 					fill={feature.fill}
 				/>
 			{:else}
@@ -133,7 +140,7 @@
 					y={feature.y}
 					width={feature.width}
 					height={feature.height}
-					rx={featureRadius}
+					rx={feature.radius}
 					fill={feature.type === 'lake' ? 'var(--ground-edge-color)' : feature.fill}
 				/>
 				{#if feature.type === 'lake'}
@@ -142,7 +149,7 @@
 						y={feature.y + featurePad}
 						width={feature.width}
 						height={feature.height - featurePad}
-						rx={featureRadius}
+						rx={feature.radius}
 						fill={feature.fill}
 					/>
 				{/if}
