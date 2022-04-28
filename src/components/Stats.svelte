@@ -5,6 +5,7 @@
 	export let stats: Stats
 	export let gameMode: GameMode
 	const highestDistribution = stats.distribution.reduce((a, b) => Math.max(a, b), 1)
+	console.log(highestDistribution)
 </script>
 
 <div class="stats">
@@ -29,10 +30,7 @@
 		{#each stats.distribution as guessCount, c}
 			<div class="bar-row">
 				{c + 1}
-				<div
-					class="bar"
-					style={`width: calc(22px + ${Math.round((100 * guessCount) / highestDistribution)}%)`}
-				>
+				<div class="bar" style={`width: ${Math.round((100 * guessCount) / highestDistribution)}%`}>
 					{guessCount}
 				</div>
 			</div>
@@ -89,6 +87,7 @@
 		justify-content: center;
 		align-items: center;
 		margin-left: 8px;
+		min-width: 22px;
 	}
 	@media (max-width: 480px) {
 		.stats-item {
