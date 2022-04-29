@@ -82,6 +82,7 @@
 		border: 0;
 		font-weight: 700;
 		font-size: 1.4em;
+		color: #fff;
 	}
 
 	.key-row button.correct {
@@ -102,8 +103,8 @@
 	.key-row button.wide svg {
 		max-width: 2.4em;
 		stroke-width: 2;
-		stroke: var(--text-color);
-		fill: var(--text-color);
+		stroke: #fff;
+		fill: #fff;
 	}
 
 	@media (max-width: 480px) {

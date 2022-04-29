@@ -4,12 +4,16 @@ import { answerDaily, guessesDaily } from './game-state'
 
 const VERSION = 1
 
-if (!get(storeVersion) || get(storeVersion) < VERSION) {
-	storeVersion.set(VERSION)
+// Store version migration
+const loadedStoreVersion = get(storeVersion)
+if (!loadedStoreVersion || loadedStoreVersion < 1) {
+	// New player
 	lastPlayedDaily.set(-1)
 	answerDaily.set('')
 	guessesDaily.set([])
 }
+// else if (loadedStoreVersion < 2) ...
+storeVersion.set(VERSION)
 
 export * from './app'
 export * from './game-state'

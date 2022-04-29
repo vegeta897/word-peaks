@@ -93,7 +93,7 @@
 	}
 
 	section {
-		flex-grow: 100;
+		flex-grow: 1;
 		position: relative;
 		padding: 1rem 1.5rem;
 		box-sizing: border-box;

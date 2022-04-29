@@ -19,8 +19,10 @@
 	import { t } from '$lib/translations'
 	import { toast } from '@zerodevx/svelte-toast'
 	import Screen from '$com/Screen.svelte'
+	import LastGameDetail from '$com/LastGameDetail.svelte'
+	import Time from '$com/Time.svelte'
 
-	const { stats } = store
+	const { lastGameDetail } = store
 
 	// Don't use store, we don't want/need dynamic content for the results
 	let lastAnswer: string
@@ -38,19 +40,9 @@
 		(_guessesDaily.length === 6 ||
 			_guessesDaily[_guessesDaily.length - 1] === get(store.answerDaily))
 
-	let nextMS: number
-	const updateNextMS = () => (nextMS = getDayEnd(_lastPlayedDaily) - new Date())
-	updateNextMS()
-
-	setInterval(() => {
-		updateNextMS()
-	}, 1000)
-
-	let nextWordReady: boolean
-	$: nextWordReady = nextMS < 0
-
-	const HOUR = 3600000
-	const MINUTE = 60000
+	const nextDailyTime = getDayEnd(_lastPlayedDaily)
+	let nextWordReady = nextDailyTime < new Date()
+	setInterval(() => (nextWordReady = nextDailyTime < new Date()), 1000)
 
 	let shareTitleText: string
 
@@ -130,23 +122,14 @@
 	{#if lastGameFinished && !lastGameWon}
 		<p>{@html $t('main.results.answer', { answer: lastAnswer.toUpperCase() })}</p>
 	{/if}
-	<div class="share">
+	<div class="next-up">
 		<div class="column">
-			{#if nextWordReady || !dailyFinished}
-				<div class="daily-text">{@html $t('main.results.try_today')}</div>
-			{:else}
-				<div class="countdown">
-					<h3>{$t('main.results.next_word')}</h3>
-					<strong
-						>{`${Math.floor(nextMS / HOUR)}`.padStart(2, '0')}:{`${Math.floor(
-							(nextMS % HOUR) / MINUTE
-						)}`.padStart(2, '0')}:{`${Math.floor((nextMS % MINUTE) / 1000)}`.padStart(
-							2,
-							'0'
-						)}</strong
-					>
-				</div>
-			{/if}
+			<div class="countdown">
+				<Time alwaysShowHours countdown={nextDailyTime} class="time">
+					<div slot="after-countdown" class="daily-text">{$t('main.results.try_today')}</div>
+					<h3 slot="title">{$t('main.results.next_word')}</h3>
+				</Time>
+			</div>
 		</div>
 		<div class="column">
 			{#if lastGameFinished}
@@ -180,29 +163,32 @@
 		<canvas bind:this={canvas} width="504" height="0" style={'width:252px'} />
 		<button on:click={onCopyImage} class="share-button">{$t('main.results.copy_image')}</button>
 	</div>
-	<Stats stats={$stats} gameMode={lastGameMode} />
+	<p>2 tabs for Summary and Stats</p>
+	<Stats gameMode={lastGameMode} />
+	{#if $lastGameDetail}<LastGameDetail />{/if}
 </Screen>
 
 <style>
 	h3 {
-		margin: 0.5rem 0;
-		text-align: center;
+		font-size: 1.2em;
+		margin: 0 0 0.3rem;
+		width: 100%;
 	}
 
 	p {
 		text-align: center;
 	}
 
-	.share {
+	.next-up {
 		display: flex;
 		justify-content: space-around;
 		align-items: center;
 		gap: 1rem;
-		flex-wrap: wrap;
 		color: var(--text-color);
 	}
 
 	.column {
+		width: 50%;
 		display: flex;
 		flex: 1 1 0;
 		justify-content: space-around;
@@ -271,7 +257,8 @@
 		font-size: 1.2em;
 	}
 
-	.countdown strong {
+	.countdown :global(.time) {
+		font-weight: 700;
 		font-size: 1.6em;
 		padding: 0 0.6rem;
 	}
@@ -296,12 +283,18 @@
 		display: none;
 	}
 
-	@media (max-width: 480px) {
-		.column {
-			flex-basis: max-content;
+	@media (max-width: 400px) {
+		.next-up {
+			flex-direction: column;
 		}
-		.countdown strong {
-			font-size: 1.2em;
+		.column {
+			width: 100%;
+		}
+		h3 {
+			width: auto;
+		}
+		.countdown :global(.time) {
+			font-size: 1.6em;
 		}
 	}
 </style>

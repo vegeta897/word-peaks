@@ -1,33 +1,34 @@
 <script lang="ts">
 	import { t } from '$lib/translations'
-	import type { GameMode, Stats } from '$lib/data-model'
+	import { getHighestDistribution } from '$lib/stats'
+	import { stats } from '$src/store'
+	import type { GameMode } from '$lib/data-model'
+	import { get } from 'svelte/store'
 
-	export let stats: Stats
 	export let gameMode: GameMode
-	const highestDistribution = stats.distribution.reduce((a, b) => Math.max(a, b), 1)
-	console.log(highestDistribution)
+	const highestDistribution = getHighestDistribution(get(stats))
 </script>
 
 <div class="stats">
 	<div class="stats-item">
-		<strong>{stats.totalGames}</strong>
+		<strong>{$stats.totalGames}</strong>
 		{$t('main.stats.total_games')}
 	</div>
 	<div class="stats-item">
-		<strong>{Math.round((100 * stats.wonGames) / (stats.totalGames || 1))}%</strong>
+		<strong>{Math.round((100 * $stats.wonGames) / ($stats.totalGames || 1))}%</strong>
 		{$t('main.stats.win_rate')}
 	</div>
 	<div class="stats-item">
-		<strong>{stats.currentStreak}</strong>
+		<strong>{$stats.currentStreak}</strong>
 		{$t('main.stats.current_streak')}
 	</div>
 	<div class="stats-item">
-		<strong>{stats.bestStreak}</strong>
+		<strong>{$stats.bestStreak}</strong>
 		{$t('main.stats.best_streak')}
 	</div>
 	<div class="distribution">
 		<h3>{$t('main.stats.guess_distribution')}</h3>
-		{#each stats.distribution as guessCount, c}
+		{#each $stats.distribution as guessCount, c}
 			<div class="bar-row">
 				{c + 1}
 				<div class="bar-container">
@@ -46,7 +47,6 @@
 
 <style>
 	.stats {
-		color: var(--text-color);
 		display: flex;
 		justify-content: center;
 		margin-top: 1.4rem;
@@ -98,6 +98,7 @@
 		align-items: center;
 		min-width: 20px;
 	}
+
 	@media (max-width: 480px) {
 		.stats-item {
 			font-size: 0.8em;

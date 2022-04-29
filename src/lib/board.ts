@@ -7,12 +7,14 @@ import {
 	hasEnoughLetters,
 	isValidWord,
 	loadDictionary,
+	ROWS,
 	WORD_LENGTH,
 } from '$lib/data-model'
 import { t } from '$lib/translations'
 import { trackEvent } from '$lib/plausible'
 import { toast } from '@zerodevx/svelte-toast'
 import type { SvelteToastOptions } from '@zerodevx/svelte-toast'
+import { saveGameDetail, startGuessTimer, stopGuessTimer } from '$lib/stats'
 
 let openingResults = false
 
@@ -20,6 +22,7 @@ export function resetBoard() {
 	toast.pop()
 	store.boardContent.set(createNewBoard())
 	store.currentTile.set(0)
+	store.guessTimes.set(new Array(ROWS).fill(0))
 }
 
 export function typeLetter(letter: string) {
@@ -30,8 +33,10 @@ export function typeLetter(letter: string) {
 	loadDictionary()
 	const _currentTile = get(store.currentTile)
 	if (_currentTile === WORD_LENGTH) return
+	const _currentRow = get(store.currentRow)
+	if (_currentRow === 0 && _currentTile === 0) startGuessTimer(_currentRow)
 	store.boardContent.update((content) => {
-		const tile = content[get(store.currentRow)][_currentTile]
+		const tile = content[_currentRow][_currentTile]
 		const [lower, upper] = getValidLetterBounds(get(store.validLetters))
 		tile.polarity = 0
 		if (letter && letter < lower) {
@@ -81,12 +86,13 @@ export async function submitRow() {
 		store.openScreen.set('results')
 		return
 	}
-	if (!hasEnoughLetters(get(store.boardContent), get(store.currentRow))) {
+	const rowNumber = get(store.currentRow)
+	if (!hasEnoughLetters(get(store.boardContent), rowNumber)) {
 		store.notEnoughLetters.set(true)
 		showError(get(t)('main.messages.not_enough_letters'), () => store.notEnoughLetters.set(false))
 		return
 	}
-	const submittedRow = get(store.boardContent)[get(store.currentRow)]
+	const submittedRow = get(store.boardContent)[rowNumber]
 	const submittedWord = getBoardRowString(submittedRow)
 	if (submittedWord !== get(store.answer) && !(await isValidWord(submittedWord))) {
 		store.invalidWord.set(true)
@@ -95,7 +101,7 @@ export async function submitRow() {
 	}
 	if (
 		get(store.hardMode) &&
-		get(store.currentRow) > 0 &&
+		rowNumber > 0 &&
 		submittedRow.some(
 			(tile) => tile.letter < tile.letterBounds![0] || tile.letter > tile.letterBounds![1]
 		)
@@ -107,6 +113,7 @@ export async function submitRow() {
 		return
 	}
 	trackEvent('submitGuess')
+	stopGuessTimer(rowNumber)
 	store.updateGuesses((words) => [...words, submittedWord])
 	if (get(store.gameFinished)) {
 		openingResults = true
@@ -118,11 +125,11 @@ export async function submitRow() {
 		trackEvent(won ? 'gameWon' : 'gameLost')
 		if (get(store.newUser)) trackEvent('firstFinish')
 		store.newUser.set(false)
-		;(get(store.gameMode) === 'daily'
-			? store.lastPlayedDailyWasHard
-			: store.lastPlayedRandomWasHard
-		).set(get(store.hardMode))
-		if (get(store.gameMode) === 'daily')
+		const gameMode = get(store.gameMode)
+		;(gameMode === 'daily' ? store.lastPlayedDailyWasHard : store.lastPlayedRandomWasHard).set(
+			get(store.hardMode)
+		)
+		if (gameMode === 'daily')
 			store.stats.update((_stats) => {
 				const streak = won ? _stats.currentStreak + 1 : 0
 				const distribution = [..._stats.distribution]
@@ -135,7 +142,9 @@ export async function submitRow() {
 					distribution,
 				}
 			})
+		saveGameDetail()
 	} else {
+		startGuessTimer(rowNumber + 1)
 		store.currentTile.set(0)
 	}
 }

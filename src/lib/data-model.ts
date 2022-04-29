@@ -135,22 +135,6 @@ export const getDayEnd = (day: number): Date => {
 	return dayEnd
 }
 
-export type Stats = {
-	currentStreak: number
-	bestStreak: number
-	totalGames: number
-	wonGames: number
-	distribution: number[]
-}
-
-export const newStats = (): Stats => ({
-	currentStreak: 0,
-	bestStreak: 0,
-	totalGames: 0,
-	wonGames: 0,
-	distribution: new Array(ROWS).fill(0),
-})
-
 export function pickRandom<T>(arr: T[]): T {
 	return arr[Math.floor(Math.random() * arr.length)]
 }
