@@ -7,14 +7,13 @@ import {
 	hasEnoughLetters,
 	isValidWord,
 	loadDictionary,
-	ROWS,
 	WORD_LENGTH,
 } from '$lib/data-model'
 import { t } from '$lib/translations'
 import { trackEvent } from '$lib/plausible'
 import { toast } from '@zerodevx/svelte-toast'
 import type { SvelteToastOptions } from '@zerodevx/svelte-toast'
-import { saveGameDetail, startGuessTimer, stopGuessTimer } from '$lib/stats'
+import { saveGameDetail, recordGuessTime } from '$lib/stats'
 
 let openingResults = false
 
@@ -22,7 +21,7 @@ export function resetBoard() {
 	toast.pop()
 	store.boardContent.set(createNewBoard())
 	store.currentTile.set(0)
-	store.guessTimes.set(new Array(ROWS).fill(0))
+	store.guessTimes.set([])
 }
 
 export function typeLetter(letter: string) {
@@ -34,7 +33,7 @@ export function typeLetter(letter: string) {
 	const _currentTile = get(store.currentTile)
 	if (_currentTile === WORD_LENGTH) return
 	const _currentRow = get(store.currentRow)
-	if (_currentRow === 0 && _currentTile === 0) startGuessTimer(_currentRow)
+	if (_currentRow === 0 && _currentTile === 0) recordGuessTime(_currentRow)
 	store.boardContent.update((content) => {
 		const tile = content[_currentRow][_currentTile]
 		const [lower, upper] = getValidLetterBounds(get(store.validLetters))
@@ -113,7 +112,7 @@ export async function submitRow() {
 		return
 	}
 	trackEvent('submitGuess')
-	stopGuessTimer(rowNumber)
+	recordGuessTime(rowNumber + 1)
 	store.updateGuesses((words) => [...words, submittedWord])
 	if (get(store.gameFinished)) {
 		openingResults = true
@@ -144,7 +143,6 @@ export async function submitRow() {
 			})
 		saveGameDetail()
 	} else {
-		startGuessTimer(rowNumber + 1)
 		store.currentTile.set(0)
 	}
 }

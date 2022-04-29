@@ -120,7 +120,7 @@
 		: $t('main.stats.title')}
 >
 	{#if lastGameFinished && !lastGameWon}
-		<p>{@html $t('main.results.answer', { answer: lastAnswer.toUpperCase() })}</p>
+		<h3 class="answer">{@html $t('main.results.answer', { answer: lastAnswer.toUpperCase() })}</h3>
 	{/if}
 	<div class="next-up">
 		<div class="column">
@@ -173,6 +173,11 @@
 		font-size: 1.2em;
 		margin: 0 0 0.3rem;
 		width: 100%;
+	}
+
+	h3.answer {
+		text-align: center;
+		margin: 1.2rem 0;
 	}
 
 	p {

@@ -84,10 +84,7 @@ guesses.subscribe((guessed) => {
 	})
 })
 
-export const guessTimes: Writable<number[]> = storageWritable(
-	'wp-guessTimes',
-	new Array(ROWS).fill(0)
-)
+export const guessTimes: Writable<number[]> = storageWritable('wp-guessTimes', [])
 
 export const currentRow: Readable<number> = derived(guesses, ($guesses) => $guesses.length)
 

@@ -12,7 +12,7 @@
 					#{$lastGameDetail.dayNumber}
 				{:else}
 					∞
-				{/if}</strong
+				{/if}{#if $lastGameDetail.hardMode}*{/if}</strong
 			>
 			{#if $lastGameDetail.mode === 'daily'}
 				Daily
@@ -22,13 +22,16 @@
 		</div>
 		<div class="info-item">
 			<strong>
-				{#if $lastGameDetail.hardMode}Hard{:else}Normal{/if}
+				{$lastGameDetail.answer.toUpperCase()}
 			</strong>
-			Mode
+			Answer
 		</div>
 		<div class="info-item">
 			<strong>
-				<Time ms={$lastGameDetail.guessTimes.reduce((s, t) => s + t, 0) * 1000} />
+				<Time
+					ms={$lastGameDetail.guessTimes[$lastGameDetail.guessTimes.length - 1] -
+						$lastGameDetail.guessTimes[0]}
+				/>
 			</strong>
 			Total time
 		</div>
@@ -48,7 +51,7 @@
 					{/each}
 				</div>
 				<div class="time-value">
-					<Time ms={$lastGameDetail.guessTimes[g] * 1000} />
+					<Time ms={$lastGameDetail.guessTimes[g + 1] - $lastGameDetail.guessTimes[g]} />
 				</div>
 			</div>
 		{/each}

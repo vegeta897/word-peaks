@@ -40,20 +40,11 @@ export function saveGameDetail() {
 	})
 }
 
-let guessTimer: NodeJS.Timeout
-export function startGuessTimer(row: number) {
-	// TODO: Don't use interval, store a timestamp
-	clearInterval(guessTimer)
-	guessTimer = setInterval(() => {
-		store.guessTimes.update((guessTimes) => {
-			guessTimes[row] += 1
-			return guessTimes
-		})
-	}, 1000)
-}
-
-export function stopGuessTimer(row: number) {
-	clearInterval(guessTimer)
+export function recordGuessTime(row: number) {
+	store.guessTimes.update((guessTimes) => {
+		guessTimes[row] = new Date().getTime()
+		return guessTimes
+	})
 }
 
 export const getHighestDistribution = (stats: Stats) =>
