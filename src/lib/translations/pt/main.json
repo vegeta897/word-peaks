@@ -41,6 +41,13 @@
 		"guess_distribution": "Distribuição das tentativas",
 		"stats_daily": "Estatísticas só consideram os jogos diários"
 	},
+	"summary": {
+		"title": "Resumo",
+		"daily": "Diariamente",
+		"random": "Aleatório",
+		"answer": "Resposta",
+		"total_time": "Tempo total"
+	},
 	"options": {
 		"title": "Opções",
 		"language": "Idioma",

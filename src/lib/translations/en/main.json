@@ -41,6 +41,13 @@
 		"guess_distribution": "Guess distribution",
 		"stats_daily": "Stats only count daily games"
 	},
+	"summary": {
+		"title": "Summary",
+		"daily": "Daily",
+		"random": "Random",
+		"answer": "Answer",
+		"total_time": "Total time"
+	},
 	"options": {
 		"title": "Options",
 		"language": "Language",

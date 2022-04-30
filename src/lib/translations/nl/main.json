@@ -41,6 +41,13 @@
 		"guess_distribution": "Gok verdeling",
 		"stats_daily": "Statistieken gaan alleen over dagelijkse spellen"
 	},
+	"summary": {
+		"title": "Samenvatting",
+		"daily": "Dagelijks",
+		"random": "Willekeurig",
+		"answer": "Antwoord",
+		"total_time": "Totale tijd"
+	},
 	"options": {
 		"title": "Instellingen",
 		"language": "Taal",

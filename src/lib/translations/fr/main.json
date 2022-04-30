@@ -41,6 +41,13 @@
 		"guess_distribution": "Répartition des essais",
 		"stats_daily": "Les statistiques ne comptent que les jeux quotidiens"
 	},
+	"summary": {
+		"title": "Résumé",
+		"daily": "Quotidienne",
+		"random": "Aléatoire",
+		"answer": "Réponse",
+		"total_time": "Temps total"
+	},
 	"options": {
 		"title": "Options",
 		"language": "Langue",

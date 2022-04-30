@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { t } from '$lib/translations'
 	import Time from '$com/Time.svelte'
 	import type { GameDetail } from '$lib/stats'
 
@@ -14,16 +15,16 @@
 				}`}</strong
 			>
 			{#if lastGameDetail.mode === 'daily'}
-				Daily
+				{$t('main.summary.daily')}
 			{:else}
-				Random
+				{$t('main.summary.random')}
 			{/if}
 		</div>
 		<div class="info-item">
 			<strong style="letter-spacing: 0.2rem">
 				{lastGameDetail.answer.toUpperCase()}
 			</strong>
-			Answer
+			{$t('main.summary.answer')}
 		</div>
 		<div class="info-item">
 			<strong>
@@ -32,7 +33,7 @@
 						lastGameDetail.guessTimes[0]}
 				/>
 			</strong>
-			Total time
+			{$t('main.summary.total_time')}
 		</div>
 	</div>
 	<div class="time-stats">

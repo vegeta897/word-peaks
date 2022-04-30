@@ -41,6 +41,13 @@
 		"guess_distribution": "Distribución de intentos",
 		"stats_daily": "Sólo cuentan las estadísticas diarias"
 	},
+	"summary": {
+		"title": "Resumen",
+		"daily": "Diario",
+		"random": "El Azar",
+		"answer": "Respuesta",
+		"total_time": "Tiempo total"
+	},
 	"options": {
 		"title": "Opciones",
 		"language": "Idioma",

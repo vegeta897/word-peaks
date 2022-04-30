@@ -168,7 +168,7 @@
 	</div>
 	<div class="tabs-container">
 		{#if lastGameDetail && lastGameMode === lastGameDetail.mode && lastAnswer === lastGameDetail.answer}
-			<Tabs tab1Title="Summary" tab2Title="Stats">
+			<Tabs tab1Title={$t('main.summary.title')} tab2Title={$t('main.stats.title')}>
 				<LastGameDetail {lastGameDetail} slot="tab-1" />
 				<Stats slot="tab-2" gameMode={lastGameMode} />
 			</Tabs>
