@@ -9,6 +9,7 @@ import {
 	scoreTile,
 } from '$lib/data-model'
 import { writable as storageWritable } from 'svelte-local-storage-store'
+import type { GameDetail } from '$lib/stats'
 
 export const answerDaily: Writable<string> = storageWritable('wp-answer', '')
 export const answerRandom: Writable<string> = storageWritable('wp-answerRandom', '')
@@ -84,7 +85,13 @@ guesses.subscribe((guessed) => {
 	})
 })
 
-export const guessTimes: Writable<number[]> = storageWritable('wp-guessTimes', [])
+export const guessTimesDaily: Writable<number[]> = storageWritable('wp-guessTimesDaily', [])
+export const guessTimesRandom: Writable<number[]> = storageWritable('wp-guessTimesRandom', [])
+export const guessTimes: Readable<number[]> = derived(
+	[gameMode, guessTimesDaily, guessTimesRandom],
+	([$gameMode, $guessTimesDaily, $guessTimesRandom]) =>
+		$gameMode === 'daily' ? $guessTimesDaily : $guessTimesRandom
+)
 
 export const currentRow: Readable<number> = derived(guesses, ($guesses) => $guesses.length)
 

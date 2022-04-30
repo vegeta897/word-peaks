@@ -41,10 +41,12 @@ export function saveGameDetail() {
 }
 
 export function recordGuessTime(row: number) {
-	store.guessTimes.update((guessTimes) => {
-		guessTimes[row] = new Date().getTime()
-		return guessTimes
-	})
+	store[get(store.gameMode) === 'daily' ? 'guessTimesDaily' : 'guessTimesRandom'].update(
+		(guessTimes) => {
+			guessTimes[row] = new Date().getTime()
+			return guessTimes
+		}
+	)
 }
 
 export const getHighestDistribution = (stats: Stats) =>

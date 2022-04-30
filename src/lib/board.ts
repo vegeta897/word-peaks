@@ -21,7 +21,7 @@ export function resetBoard() {
 	toast.pop()
 	store.boardContent.set(createNewBoard())
 	store.currentTile.set(0)
-	store.guessTimes.set([])
+	store[get(store.gameMode) === 'daily' ? 'guessTimesDaily' : 'guessTimesRandom'].set([])
 }
 
 export function typeLetter(letter: string) {
