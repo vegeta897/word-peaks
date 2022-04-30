@@ -190,10 +190,6 @@
 		margin: 1.2rem 0;
 	}
 
-	p {
-		text-align: center;
-	}
-
 	.next-up {
 		display: flex;
 		justify-content: space-around;

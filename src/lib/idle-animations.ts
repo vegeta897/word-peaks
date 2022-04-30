@@ -237,7 +237,7 @@ function defineAnimation(definition: AnimationDefinition): MultipartAnimation {
 			const firstFrame = partKeyframes[0]
 			if (firstFrame.offset && firstFrame.offset > 0)
 				partKeyframes.unshift({ ...firstFrame, offset: 0 })
-			const lastFrame = partKeyframes[partKeyframes.length - 1]
+			const lastFrame = partKeyframes.at(-1)!
 			if (lastFrame.offset && lastFrame.offset < 1) partKeyframes.push({ ...lastFrame, offset: 1 })
 		}
 	}

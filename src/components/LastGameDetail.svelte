@@ -28,10 +28,7 @@
 		</div>
 		<div class="info-item">
 			<strong>
-				<Time
-					ms={lastGameDetail.guessTimes[lastGameDetail.guessTimes.length - 1] -
-						lastGameDetail.guessTimes[0]}
-				/>
+				<Time ms={lastGameDetail.guessTimes.at(-1) - lastGameDetail.guessTimes[0]} />
 			</strong>
 			{$t('main.summary.total_time')}
 		</div>
