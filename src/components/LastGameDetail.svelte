@@ -4,7 +4,6 @@
 </script>
 
 <section>
-	<h3>Summary</h3>
 	<div class="info">
 		<div class="info-item">
 			<strong
@@ -59,10 +58,6 @@
 </section>
 
 <style>
-	h3 {
-		text-align: center;
-	}
-
 	section {
 		display: flex;
 		flex-direction: column;
@@ -91,7 +86,7 @@
 	}
 
 	.time-stats {
-		margin-top: 1rem;
+		margin: 1.4rem 0.4rem 0;
 		text-align: right;
 		display: flex;
 		flex-direction: column;
@@ -141,5 +136,22 @@
 		display: flex;
 		justify-content: flex-end;
 		align-items: center;
+	}
+
+	@media (max-width: 360px) {
+		.info-item {
+			font-size: 0.9em;
+		}
+		.guess-word {
+			width: 170px;
+		}
+		.guess-letter {
+			width: 28px;
+			height: 28px;
+		}
+		.time-value {
+			width: 64px;
+			font-size: 0.8em;
+		}
 	}
 </style>

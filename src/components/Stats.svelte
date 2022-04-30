@@ -49,7 +49,6 @@
 	.stats {
 		display: flex;
 		justify-content: center;
-		margin-top: 1.4rem;
 		flex-wrap: wrap;
 	}
 

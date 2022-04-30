@@ -38,8 +38,8 @@
 		</svg>
 	</button>
 	<div class="column">
-		<section>
-			<h2>{title}</h2>
+		<section class:no-title={!title}>
+			{#if title}<h2>{title}</h2>{/if}
 			<slot />
 		</section>
 	</div>
@@ -97,6 +97,9 @@
 		position: relative;
 		padding: 1rem 1.5rem;
 		box-sizing: border-box;
+	}
+	section.no-title {
+		padding-top: 1.4rem;
 	}
 
 	h2 {

@@ -21,6 +21,7 @@
 	import Screen from '$com/Screen.svelte'
 	import LastGameDetail from '$com/LastGameDetail.svelte'
 	import Time from '$com/Time.svelte'
+	import Tabs from '$com/Tabs.svelte'
 
 	const { lastGameDetail } = store
 
@@ -117,7 +118,7 @@
 		? lastGameWon
 			? `${$t('main.results.win')} 🎉`
 			: `${$t('main.results.lose')} ☹️`
-		: $t('main.stats.title')}
+		: ''}
 >
 	{#if lastGameFinished && !lastGameWon}
 		<h3 class="answer">{@html $t('main.results.answer', { answer: lastAnswer.toUpperCase() })}</h3>
@@ -163,9 +164,17 @@
 		<canvas bind:this={canvas} width="504" height="0" style={'width:252px'} />
 		<button on:click={onCopyImage} class="share-button">{$t('main.results.copy_image')}</button>
 	</div>
-	<p>2 tabs for Summary and Stats</p>
-	<Stats gameMode={lastGameMode} />
-	{#if $lastGameDetail}<LastGameDetail />{/if}
+
+	{#if $lastGameDetail}
+		<div class="tabs-container">
+			<Tabs tab1Title="Summary" tab2Title="Stats">
+				<LastGameDetail slot="tab-1" />
+				<Stats slot="tab-2" gameMode={lastGameMode} />
+			</Tabs>
+		</div>
+	{:else}
+		<Stats gameMode={lastGameMode} />
+	{/if}
 </Screen>
 
 <style>
@@ -286,6 +295,12 @@
 
 	.hidden {
 		display: none;
+	}
+
+	.tabs-container {
+		background: var(--tertiary-color);
+		border-radius: 1rem;
+		margin-top: 1.4rem;
 	}
 
 	@media (max-width: 400px) {

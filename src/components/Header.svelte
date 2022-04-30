@@ -60,7 +60,7 @@
 		font-size: 1.4em;
 		color: #888;
 		background-color: #ffffff0a;
-		transition: background-color 100ms ease-out;
+		transition: background-color 120ms ease-out;
 		font-family: var(--font-list);
 	}
 
