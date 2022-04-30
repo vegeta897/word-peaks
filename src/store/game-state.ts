@@ -47,6 +47,7 @@ export const lastPlayedWasHard: Readable<boolean> = derived(
 export const invalidHardModeGuess: Writable<boolean> = writable(false)
 export const notEnoughLetters: Writable<boolean> = writable(false)
 export const invalidWord: Writable<boolean> = writable(false)
+export const invalidWordPreview: Writable<boolean> = writable(false)
 
 export const boardContent: Writable<Board> = writable(createNewBoard())
 

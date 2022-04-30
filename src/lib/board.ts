@@ -21,6 +21,10 @@ export function resetBoard() {
 	toast.pop()
 	store.boardContent.set(createNewBoard())
 	store.currentTile.set(0)
+	store.invalidWord.set(false)
+	store.invalidWordPreview.set(false)
+	store.invalidHardModeGuess.set(false)
+	store.notEnoughLetters.set(false)
 	store[get(store.gameMode) === 'daily' ? 'guessTimesDaily' : 'guessTimesRandom'].set([])
 }
 
@@ -47,7 +51,17 @@ export function typeLetter(letter: string) {
 		return content
 	})
 	store.notEnoughLetters.set(false)
-	if (letter || _currentTile < WORD_LENGTH - 1) store.currentTile.update((ct) => ct + 1)
+	if (letter || _currentTile < WORD_LENGTH - 1) {
+		store.currentTile.update((ct) => ct + 1)
+		if (_currentTile + 1 === WORD_LENGTH) {
+			loadDictionary().then(async () => {
+				const typedWord = getBoardRowString(get(store.boardContent)[_currentRow])
+				if (typedWord !== get(store.answer) && !(await isValidWord(typedWord))) {
+					store.invalidWordPreview.set(true)
+				}
+			})
+		}
+	}
 }
 
 export function undoLetter(moveCaratBack = true) {
@@ -68,6 +82,7 @@ export function undoLetter(moveCaratBack = true) {
 	store.invalidHardModeGuess.set(false)
 	store.notEnoughLetters.set(false)
 	store.invalidWord.set(false)
+	store.invalidWordPreview.set(false)
 }
 
 export function moveCarat(dir: number) {

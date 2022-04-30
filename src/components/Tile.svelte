@@ -1,7 +1,13 @@
 <script lang="ts">
 	import { fly, squish } from '$lib/../lib/transitions'
 	import { quadIn, quadOut } from 'svelte/easing'
-	import { invalidWord, invalidHardModeGuess, notEnoughLetters, currentTile } from '$src/store'
+	import {
+		invalidWord,
+		invalidWordPreview,
+		invalidHardModeGuess,
+		notEnoughLetters,
+		currentTile,
+	} from '$src/store'
 	import type { Tile } from '$lib/data-model'
 
 	export let tile: Tile
@@ -48,6 +54,7 @@
 			class:after-pre={!tile.scored && tile.polarity > 0}
 			class:finished={gameFinished}
 			class:clickable={inCurrentRow}
+			class:invalid={$invalidWordPreview && inCurrentRow}
 			class:shimmy={$invalidWord && inCurrentRow}
 			class:shake={inCurrentRow &&
 				(($notEnoughLetters && !tile.letter) ||
@@ -150,6 +157,10 @@
 	.tile.current:not(.finished) {
 		border-color: #ddd;
 		border-width: 3px;
+	}
+
+	.tile-container .tile.invalid {
+		color: #d81946;
 	}
 
 	.hint {
