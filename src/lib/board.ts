@@ -125,7 +125,7 @@ export async function submitRow() {
 		if (get(store.newUser)) trackEvent('firstFinish')
 		store.newUser.set(false)
 		const gameMode = get(store.gameMode)
-		;(gameMode === 'daily' ? store.lastPlayedDailyWasHard : store.lastPlayedRandomWasHard).set(
+		store[gameMode === 'daily' ? 'lastPlayedDailyWasHard' : 'lastPlayedRandomWasHard'].set(
 			get(store.hardMode)
 		)
 		if (gameMode === 'daily')

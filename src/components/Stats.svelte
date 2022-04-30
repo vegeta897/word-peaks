@@ -9,7 +9,7 @@
 	const highestDistribution = getHighestDistribution(get(stats))
 </script>
 
-<div class="stats">
+<section>
 	<div class="stats-item">
 		<strong>{$stats.totalGames}</strong>
 		{$t('main.stats.total_games')}
@@ -43,13 +43,14 @@
 		{/each}
 	</div>
 	{#if gameMode === 'random'}<em>{$t('main.stats.stats_daily')}</em>{/if}
-</div>
+</section>
 
 <style>
-	.stats {
+	section {
 		display: flex;
 		justify-content: center;
 		flex-wrap: wrap;
+		padding: 2em 0;
 	}
 
 	.stats-item {

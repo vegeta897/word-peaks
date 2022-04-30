@@ -1,56 +1,56 @@
 <script lang="ts">
-	import { lastGameDetail } from '$src/store'
 	import Time from '$com/Time.svelte'
+	import type { GameDetail } from '$lib/stats'
+
+	export let lastGameDetail: GameDetail | null
 </script>
 
 <section>
 	<div class="info">
 		<div class="info-item">
 			<strong
-				>{#if $lastGameDetail.mode === 'daily'}
-					#{$lastGameDetail.dayNumber}
-				{:else}
-					∞
-				{/if}{#if $lastGameDetail.hardMode}*{/if}</strong
+				>{`${lastGameDetail.mode === 'daily' ? '#' + lastGameDetail.dayNumber : '∞'}${
+					lastGameDetail.hardMode ? '*' : ''
+				}`}</strong
 			>
-			{#if $lastGameDetail.mode === 'daily'}
+			{#if lastGameDetail.mode === 'daily'}
 				Daily
 			{:else}
 				Random
 			{/if}
 		</div>
 		<div class="info-item">
-			<strong>
-				{$lastGameDetail.answer.toUpperCase()}
+			<strong style="letter-spacing: 0.2rem">
+				{lastGameDetail.answer.toUpperCase()}
 			</strong>
 			Answer
 		</div>
 		<div class="info-item">
 			<strong>
 				<Time
-					ms={$lastGameDetail.guessTimes[$lastGameDetail.guessTimes.length - 1] -
-						$lastGameDetail.guessTimes[0]}
+					ms={lastGameDetail.guessTimes[lastGameDetail.guessTimes.length - 1] -
+						lastGameDetail.guessTimes[0]}
 				/>
 			</strong>
 			Total time
 		</div>
 	</div>
 	<div class="time-stats">
-		{#each $lastGameDetail.guesses as guess, g}
+		{#each lastGameDetail.guesses as guess, g}
 			<div class="guess-row">
 				<div class="guess-word">
 					{#each guess as letter, l}
 						<div
 							class="guess-letter"
-							class:before={letter < $lastGameDetail.answer[l]}
-							class:after={letter > $lastGameDetail.answer[l]}
+							class:before={letter < lastGameDetail.answer[l]}
+							class:after={letter > lastGameDetail.answer[l]}
 						>
 							{letter.toUpperCase()}
 						</div>
 					{/each}
 				</div>
 				<div class="time-value">
-					<Time ms={$lastGameDetail.guessTimes[g + 1] - $lastGameDetail.guessTimes[g]} />
+					<Time ms={lastGameDetail.guessTimes[g + 1] - lastGameDetail.guessTimes[g]} />
 				</div>
 			</div>
 		{/each}
@@ -62,6 +62,7 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
+		padding: 2em 0;
 	}
 
 	.info {

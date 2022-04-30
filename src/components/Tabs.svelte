@@ -57,6 +57,5 @@
 
 	.tab-content {
 		width: 100%;
-		padding: 1.6em 0;
 	}
 </style>

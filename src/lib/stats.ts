@@ -30,7 +30,7 @@ export type GameDetail = {
 
 export function saveGameDetail() {
 	const mode = get(store.gameMode)
-	store.lastGameDetail.set({
+	store[mode === 'daily' ? 'lastDailyDetail' : 'lastRandomDetail'].set({
 		mode,
 		dayNumber: mode === 'daily' ? get(store.lastPlayedDaily) + 1 : 0,
 		hardMode: get(store.lastPlayedWasHard),

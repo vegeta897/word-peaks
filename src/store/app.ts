@@ -1,8 +1,9 @@
-import { writable } from 'svelte/store'
-import type { Writable } from 'svelte/store'
+import { derived, writable } from 'svelte/store'
+import type { Writable, Readable } from 'svelte/store'
 import { writable as storageWritable } from 'svelte-local-storage-store'
 import type { Stats, GameDetail } from '$lib/stats'
 import { newStats } from '$lib/stats'
+import { gameMode } from '$src/store/game-state'
 
 export const storeVersion: Writable<number> = storageWritable('wp-version', 0)
 export const storedLocale: Writable<string> = storageWritable('wp-locale', '')
@@ -18,9 +19,18 @@ export const dyslexicFont: Writable<boolean> = storageWritable('wp-dyslexicFont'
 export const lastPlayedDaily: Writable<number> = storageWritable('wp-lastPlayedDaily', -1)
 
 export const stats: Writable<Stats> = storageWritable('wp-stats', newStats())
-export const lastGameDetail: Writable<GameDetail | null> = storageWritable(
-	'wp-lastGameDetail',
+export const lastDailyDetail: Writable<GameDetail | null> = storageWritable(
+	'wp-lastDailyDetail',
 	null
+)
+export const lastRandomDetail: Writable<GameDetail | null> = storageWritable(
+	'wp-lastRandomDetail',
+	null
+)
+export const lastGameDetail: Readable<GameDetail | null> = derived(
+	[gameMode, lastDailyDetail, lastRandomDetail],
+	([$gameMode, $lastDailyDetail, $lastRandomDetail]) =>
+		$gameMode === 'daily' ? $lastDailyDetail : $lastRandomDetail
 )
 
 export const newUser: Writable<boolean> = writable(false)

@@ -22,14 +22,14 @@
 	import LastGameDetail from '$com/LastGameDetail.svelte'
 	import Time from '$com/Time.svelte'
 	import Tabs from '$com/Tabs.svelte'
-
-	const { lastGameDetail } = store
+	import type { GameDetail } from '$lib/stats'
 
 	// Don't use store, we don't want/need dynamic content for the results
 	let lastAnswer: string
 	let lastGameMode: GameMode
 	let lastGameFinished: boolean
 	let lastGameWon: boolean
+	let lastGameDetail: GameDetail | null
 	export let playDaily: () => {}
 	export let playRandom: () => {}
 	export let hash: string
@@ -97,6 +97,8 @@
 		lastGameFinished = get(store.gameFinished)
 		lastGameWon = get(store.gameWon)
 		lastAnswer = get(store.answer)
+		lastGameDetail = get(store.lastGameDetail)
+
 		shareTitleText = getShareTitle({
 			gameWon: get(store.gameWon),
 			guesses: get(store.guesses),
@@ -164,17 +166,16 @@
 		<canvas bind:this={canvas} width="504" height="0" style={'width:252px'} />
 		<button on:click={onCopyImage} class="share-button">{$t('main.results.copy_image')}</button>
 	</div>
-
-	{#if $lastGameDetail}
-		<div class="tabs-container">
+	<div class="tabs-container">
+		{#if lastGameDetail && lastGameMode === lastGameDetail.mode && lastAnswer === lastGameDetail.answer}
 			<Tabs tab1Title="Summary" tab2Title="Stats">
-				<LastGameDetail slot="tab-1" />
+				<LastGameDetail {lastGameDetail} slot="tab-1" />
 				<Stats slot="tab-2" gameMode={lastGameMode} />
 			</Tabs>
-		</div>
-	{:else}
-		<Stats gameMode={lastGameMode} />
-	{/if}
+		{:else}
+			<Stats gameMode={lastGameMode} />
+		{/if}
+	</div>
 </Screen>
 
 <style>
