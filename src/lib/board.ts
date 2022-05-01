@@ -51,11 +51,12 @@ export function typeLetter(letter: string) {
 		return content
 	})
 	store.notEnoughLetters.set(false)
+	store.invalidWordPreview.set(false)
 	if (letter || _currentTile < WORD_LENGTH - 1) {
 		store.currentTile.update((ct) => ct + 1)
-		if (_currentTile + 1 === WORD_LENGTH) {
+		const typedWord = getBoardRowString(get(store.boardContent)[_currentRow])
+		if (typedWord.length === WORD_LENGTH) {
 			loadDictionary().then(async () => {
-				const typedWord = getBoardRowString(get(store.boardContent)[_currentRow])
 				if (typedWord !== get(store.answer) && !(await isValidWord(typedWord))) {
 					store.invalidWordPreview.set(true)
 				}
