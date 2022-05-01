@@ -59,10 +59,13 @@
 	function shareText() {
 		shareMenu = false
 		trackEvent('resultShare')
-		let url = 'https://wordlepeaks.com'
-		if (lastGameMode === 'random') url += `/#${hash}`
+		let url = ''
+		if (get(store.shareURL)) {
+			url = '\nhttps://wordlepeaks.com'
+			if (lastGameMode === 'random') url += `/#${hash}`
+		}
 		copyText(
-			shareTitleText + '\n\n' + getEmojiGrid(get(store.guesses), get(store.answer)) + '\n' + url
+			shareTitleText + '\n\n' + getEmojiGrid(get(store.guesses), get(store.answer)) + url
 		).then(
 			() => successToast(get(t)('main.messages.score_copied')),
 			() => errorToast()
