@@ -57,7 +57,8 @@
 		"show_all_hints": "Mostrar todas as dicas em sequência",
 		"swap_enter_backspace": "Trocar a posição das teclas Enter/Apagar",
 		"alphabetic": "Alfabético",
-		"use_dyslexic_font": "Fonte OpenDyslexic"
+		"use_dyslexic_font": "Fonte OpenDyslexic",
+		"include_link": "Incluir link no texto de compartilhamento"
 	},
 	"footer": {
 		"translate_looking": "Estou procurando por tradutores!",

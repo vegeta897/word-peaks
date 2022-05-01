@@ -57,7 +57,8 @@
 		"show_all_hints": "Toon alle hints in rij",
 		"swap_enter_backspace": "Wissel Enter/Backspace toetsen",
 		"alphabetic": "Alfabetisch",
-		"use_dyslexic_font": "OpenDyslexic lettertype"
+		"use_dyslexic_font": "OpenDyslexic lettertype",
+		"include_link": "Link opnemen in deeltekst"
 	},
 	"footer": {
 		"translate_looking": "Ik zoek vertalers!",

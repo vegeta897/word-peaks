@@ -57,7 +57,8 @@
 		"show_all_hints": "Mostrar todas las pistas seguidas",
 		"swap_enter_backspace": "Intercambiar teclas Aceptar/Retroceso",
 		"alphabetic": "Alfabético",
-		"use_dyslexic_font": "Fuente OpenDyslexic"
+		"use_dyslexic_font": "Fuente OpenDyslexic",
+		"include_link": "Incluir enlace en el texto compartido"
 	},
 	"footer": {
 		"translate_looking": "¡Estoy buscando traductores!",

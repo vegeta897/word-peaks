@@ -50,6 +50,11 @@
 			label: 'main.options.use_dyslexic_font',
 			click: toggle(store.dyslexicFont),
 		},
+		{
+			bind: store.shareURL,
+			label: 'main.options.include_link',
+			click: toggle(store.shareURL),
+		},
 	]
 
 	beforeUpdate(() => {
