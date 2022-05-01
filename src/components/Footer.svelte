@@ -4,25 +4,27 @@
 </script>
 
 <footer>
-	<div class="footer-item">
-		{@html $t('main.footer.credits')}
+	<div class="footer-row">
+		<p>{@html $t('main.footer.credits')}</p>
 	</div>
-	<div class="footer-item icon-row">
-		<svg class="icon" viewBox="0 0 71 55" fill="none" xmlns="http://www.w3.org/2000/svg">
-			<path clip-path="url(#clip0)" d={DiscordIconPathData} fill="#cccccc" />
-			<defs>
-				<clipPath id="clip0">
-					<rect width="71" height="55" fill="#ffffff" />
-				</clipPath>
-			</defs>
-		</svg>
-		<pre>vegeta897#7777</pre>
-	</div>
-	<div class="footer-item icon-row">
-		<svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 248 204">
-			<path fill="#cccccc" d={TwitterIconPathData} />
-		</svg>
-		<a href="https://twitter.com/vegeta897">@vegeta897</a>
+	<div class="footer-row">
+		<div class="footer-item icon-item">
+			<svg class="icon" viewBox="0 0 71 55" fill="none" xmlns="http://www.w3.org/2000/svg">
+				<path clip-path="url(#clip0)" d={DiscordIconPathData} fill="#cccccc" />
+				<defs>
+					<clipPath id="clip0">
+						<rect width="71" height="55" fill="#ffffff" />
+					</clipPath>
+				</defs>
+			</svg>
+			<pre>vegeta897#7777</pre>
+		</div>
+		<div class="footer-item icon-item">
+			<svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 248 204">
+				<path fill="#cccccc" d={TwitterIconPathData} />
+			</svg>
+			<a href="https://twitter.com/vegeta897">@vegeta897</a>
+		</div>
 	</div>
 </footer>
 
@@ -31,25 +33,32 @@
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
-		align-items: flex-start;
+		align-items: center;
 		margin: 1rem auto 0.2rem;
-		max-width: 267px;
-	}
-
-	footer .icon {
-		width: 24px;
-		height: 24px;
-	}
-
-	.footer-item {
-		margin: 0.4rem 0 0;
 		opacity: 0.8;
 	}
 
-	.icon-row {
+	.footer-row {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		margin: 0 4px;
+	}
+
+	.footer-row p {
+		margin: 0 0 0.2rem;
+	}
+
+	.icon-item {
 		display: flex;
 		align-items: center;
-		gap: 0.5rem;
+		margin: 0.2rem 0.7rem 0;
+	}
+
+	.icon-item .icon {
+		width: 24px;
+		height: 24px;
+		margin-right: 0.5rem;
 	}
 
 	pre {

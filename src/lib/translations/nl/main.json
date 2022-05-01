@@ -62,6 +62,6 @@
 		"include_link": "Link opnemen in deeltekst"
 	},
 	"footer": {
-		"credits": "een <a href=\"https://github.com/vegeta897/wordle-peaks\">open source</a> project<br />geïnspireerd door <a href=\"https://www.nytimes.com/games/wordle/index.html\">Wordle</a>"
+		"credits": "een <a href=\"https://github.com/vegeta897/wordle-peaks\">open source</a> project geïnspireerd door <a href=\"https://www.nytimes.com/games/wordle/index.html\">Wordle</a>"
 	}
 }

@@ -62,6 +62,6 @@
 		"include_link": "Incluir link no texto de compartilhamento"
 	},
 	"footer": {
-		"credits": "um projeto <a href=\"https://github.com/vegeta897/wordle-peaks\">open source</a><br />inspirado por <a href=\"https://www.nytimes.com/games/wordle/index.html\">Wordle</a>"
+		"credits": "um projeto <a href=\"https://github.com/vegeta897/wordle-peaks\">open source</a> inspirado por <a href=\"https://www.nytimes.com/games/wordle/index.html\">Wordle</a>"
 	}
 }
