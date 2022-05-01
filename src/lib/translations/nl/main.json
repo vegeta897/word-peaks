@@ -51,6 +51,7 @@
 	"options": {
 		"title": "Instellingen",
 		"language": "Taal",
+		"help_translate": "Vertalingen toevoegen of repareren op <a href=\"https://crowdin.com/project/wordle-peaks\">Crowdin</a> of <a href=\"https://github.com/vegeta897/wordle-peaks#translate\">GitHub</a>",
 		"keyboard_layout": "Toetsenbordindeling",
 		"hard_mode": "Moeilijke Modus",
 		"high_contrast_mode": "Hoog contrast modus",
@@ -61,8 +62,6 @@
 		"include_link": "Link opnemen in deeltekst"
 	},
 	"footer": {
-		"translate_looking": "Ik zoek vertalers!",
-		"translate_contribute": "Draag bij <a href=\"https://crowdin.com/project/wordle-peaks\">hier</a> of op <a href=\"https://github.com/vegeta897/wordle-peaks#translate\">GitHub</a>",
 		"credits": "een <a href=\"https://github.com/vegeta897/wordle-peaks\">open source</a> project<br />geïnspireerd door <a href=\"https://www.nytimes.com/games/wordle/index.html\">Wordle</a>"
 	}
 }

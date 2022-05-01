@@ -81,6 +81,7 @@
 					inputStyles="box-sizing: border-box;"
 				/>
 			</div>
+			{#if $storedLocale !== 'en'}<p>{@html $t('main.options.help_translate')}</p>{/if}
 		{/if}
 		<div class="select-container">
 			<div class="label">{$t('main.options.keyboard_layout')}</div>

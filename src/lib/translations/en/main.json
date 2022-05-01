@@ -51,6 +51,7 @@
 	"options": {
 		"title": "Options",
 		"language": "Language",
+		"help_translate": "Add or fix translations on <a href=\"https://crowdin.com/project/wordle-peaks\">Crowdin</a> or <a href=\"https://github.com/vegeta897/wordle-peaks#translate\">GitHub</a>",
 		"keyboard_layout": "Keyboard layout",
 		"hard_mode": "Hard mode",
 		"high_contrast_mode": "High contrast mode",
@@ -61,8 +62,6 @@
 		"include_link": "Include link in share text"
 	},
 	"footer": {
-		"translate_looking": "I'm looking for translators!",
-		"translate_contribute": "Contribute <a href=\"https://crowdin.com/project/wordle-peaks\">here</a> or on <a href=\"https://github.com/vegeta897/wordle-peaks#translate\">GitHub</a>",
 		"credits": "an <a href=\"https://github.com/vegeta897/wordle-peaks\">open source</a> project<br />inspired by <a href=\"https://www.nytimes.com/games/wordle/index.html\">Wordle</a>"
 	}
 }

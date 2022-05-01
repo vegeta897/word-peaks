@@ -4,11 +4,6 @@
 </script>
 
 <footer>
-	<div class="footer-item important">
-		<p>📢 <strong>{$t('main.footer.translate_looking')}</strong></p>
-		<p>{@html $t('main.footer.translate_contribute')}</p>
-	</div>
-	<hr />
 	<div class="footer-item">
 		{@html $t('main.footer.credits')}
 	</div>
@@ -41,10 +36,6 @@
 		max-width: 267px;
 	}
 
-	footer p {
-		margin: 0 0 0.2rem;
-	}
-
 	footer .icon {
 		width: 24px;
 		height: 24px;
@@ -53,17 +44,6 @@
 	.footer-item {
 		margin: 0.4rem 0 0;
 		opacity: 0.8;
-	}
-
-	.footer-item.important {
-		opacity: 1;
-	}
-
-	hr {
-		width: 100%;
-		opacity: 0.5;
-		border-top: 0 solid var(--text-color);
-		margin-top: 0.6rem;
 	}
 
 	.icon-row {
