@@ -29,7 +29,7 @@ export function resetBoard() {
 }
 
 export function typeLetter(letter: string) {
-	if (get(store.gameFinished) && !openingResults) {
+	if (get(store.gameFinished)) {
 		store.openScreen.set('results')
 		return
 	}
@@ -66,7 +66,7 @@ export function typeLetter(letter: string) {
 }
 
 export function undoLetter(moveCaratBack = true) {
-	if (get(store.gameFinished) && !openingResults) {
+	if (get(store.gameFinished)) {
 		store.openScreen.set('results')
 		return
 	}
@@ -87,7 +87,7 @@ export function undoLetter(moveCaratBack = true) {
 }
 
 export function moveCarat(dir: number) {
-	if (get(store.gameFinished) && !openingResults) {
+	if (get(store.gameFinished)) {
 		store.openScreen.set('results')
 		return
 	}
@@ -97,7 +97,7 @@ export function moveCarat(dir: number) {
 }
 
 export async function submitRow() {
-	if (get(store.gameFinished) && !openingResults) {
+	if (get(store.gameFinished)) {
 		store.openScreen.set('results')
 		return
 	}
