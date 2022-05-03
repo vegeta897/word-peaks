@@ -10,6 +10,7 @@
 	<div class="footer-row">
 		<div class="footer-item icon-item">
 			<svg class="icon" viewBox="0 0 71 55" fill="none" xmlns="http://www.w3.org/2000/svg">
+				<title>Discord</title>
 				<path clip-path="url(#clip0)" d={DiscordIconPathData} fill="#cccccc" />
 				<defs>
 					<clipPath id="clip0">
@@ -21,6 +22,7 @@
 		</div>
 		<div class="footer-item icon-item">
 			<svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 248 204">
+				<title>Twitter</title>
 				<path fill="#cccccc" d={TwitterIconPathData} />
 			</svg>
 			<a href="https://twitter.com/vegeta897">@vegeta897</a>
