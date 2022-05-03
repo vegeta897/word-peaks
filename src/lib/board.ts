@@ -29,7 +29,7 @@ export function resetBoard() {
 }
 
 export function typeLetter(letter: string) {
-	if (get(store.gameFinished) && !openingResults) {
+	if (get(store.gameFinished)) {
 		store.openScreen.set('results')
 		return
 	}
@@ -51,11 +51,12 @@ export function typeLetter(letter: string) {
 		return content
 	})
 	store.notEnoughLetters.set(false)
+	store.invalidWordPreview.set(false)
 	if (letter || _currentTile < WORD_LENGTH - 1) {
 		store.currentTile.update((ct) => ct + 1)
-		if (_currentTile + 1 === WORD_LENGTH) {
+		const typedWord = getBoardRowString(get(store.boardContent)[_currentRow])
+		if (typedWord.length === WORD_LENGTH) {
 			loadDictionary().then(async () => {
-				const typedWord = getBoardRowString(get(store.boardContent)[_currentRow])
 				if (typedWord !== get(store.answer) && !(await isValidWord(typedWord))) {
 					store.invalidWordPreview.set(true)
 				}
@@ -65,7 +66,7 @@ export function typeLetter(letter: string) {
 }
 
 export function undoLetter(moveCaratBack = true) {
-	if (get(store.gameFinished) && !openingResults) {
+	if (get(store.gameFinished)) {
 		store.openScreen.set('results')
 		return
 	}
@@ -86,7 +87,7 @@ export function undoLetter(moveCaratBack = true) {
 }
 
 export function moveCarat(dir: number) {
-	if (get(store.gameFinished) && !openingResults) {
+	if (get(store.gameFinished)) {
 		store.openScreen.set('results')
 		return
 	}
@@ -96,7 +97,7 @@ export function moveCarat(dir: number) {
 }
 
 export async function submitRow() {
-	if (get(store.gameFinished) && !openingResults) {
+	if (get(store.gameFinished)) {
 		store.openScreen.set('results')
 		return
 	}

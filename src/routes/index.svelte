@@ -31,7 +31,7 @@
 		await startGame()
 	})
 
-	const hash = get(page).url.hash?.slice(1)
+	let hash = get(page).url.hash?.slice(1)
 	const wordFromHash = decodeWord(hash)
 	gameMode.set(wordFromHash ? 'random' : 'daily')
 
@@ -47,10 +47,11 @@
 
 	async function playRandom(word?: string) {
 		const randomWord = word || (await getRandomWord())
+		hash = encodeWord(randomWord)
 		history.pushState(
 			'',
 			document.title,
-			window.location.pathname + `#${encodeWord(randomWord)}` + window.location.search
+			window.location.pathname + `#${hash}` + window.location.search
 		)
 		// window.location.hash = encodeWord(randomWord)
 		resetBoard()
@@ -60,10 +61,7 @@
 
 	async function playDaily() {
 		history.pushState('', document.title, window.location.pathname + window.location.search) // Remove # from URL
-		if (get(store.lastPlayedDaily) === getDayNumber()) {
-			openScreen.set(null)
-			return
-		}
+		if (get(store.lastPlayedDaily) === getDayNumber() && get(store.gameFinished)) return
 		resetBoard()
 		store.guessesDaily.set([])
 		const dayNumber = getDayNumber()

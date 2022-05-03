@@ -59,11 +59,13 @@
 	function shareText() {
 		shareMenu = false
 		trackEvent('resultShare')
+		let url = ''
+		if (get(store.shareURL)) {
+			url = '\nhttps://wordlepeaks.com'
+			if (lastGameMode === 'random') url += `/#${hash}`
+		}
 		copyText(
-			shareTitleText +
-				'\n\n' +
-				getEmojiGrid(get(store.guesses), get(store.answer)) +
-				(lastGameMode === 'random' ? `\nhttps://vegeta897.github.io/wordle-peaks/#${hash}` : '')
+			shareTitleText + '\n\n' + getEmojiGrid(get(store.guesses), get(store.answer)) + url
 		).then(
 			() => successToast(get(t)('main.messages.score_copied')),
 			() => errorToast()

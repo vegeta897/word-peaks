@@ -50,6 +50,11 @@
 			label: 'main.options.use_dyslexic_font',
 			click: toggle(store.dyslexicFont),
 		},
+		{
+			bind: store.shareURL,
+			label: 'main.options.include_link',
+			click: toggle(store.shareURL),
+		},
 	]
 
 	beforeUpdate(() => {
@@ -76,6 +81,7 @@
 					inputStyles="box-sizing: border-box;"
 				/>
 			</div>
+			{#if $storedLocale !== 'en'}<p>{@html $t('main.options.help_translate')}</p>{/if}
 		{/if}
 		<div class="select-container">
 			<div class="label">{$t('main.options.keyboard_layout')}</div>

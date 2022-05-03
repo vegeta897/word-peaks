@@ -51,17 +51,17 @@
 	"options": {
 		"title": "Opciones",
 		"language": "Idioma",
+		"help_translate": "Agregar o corregir traducciones en <a href=\"https://crowdin.com/project/wordle-peaks\">Crowdin</a> o <a href=\"https://github.com/vegeta897/wordle-peaks#translate\">GitHub</a>",
 		"keyboard_layout": "Diseño del teclado",
 		"hard_mode": "Modo difícil",
 		"high_contrast_mode": "Modo de alto contraste",
 		"show_all_hints": "Mostrar todas las pistas seguidas",
 		"swap_enter_backspace": "Intercambiar teclas Aceptar/Retroceso",
 		"alphabetic": "Alfabético",
-		"use_dyslexic_font": "Fuente OpenDyslexic"
+		"use_dyslexic_font": "Fuente OpenDyslexic",
+		"include_link": "Incluir enlace en el texto compartido"
 	},
 	"footer": {
-		"translate_looking": "¡Estoy buscando traductores!",
-		"translate_contribute": "Contribuye <a href=\"https://crowdin.com/project/wordle-peaks\">aquí</a> o en <a href=\"https://github.com/vegeta897/wordle-peaks#translate\">GitHub</a>",
-		"credits": "un proyecto de <a href=\"https://github.com/vegeta897/wordle-peaks\">código abierto</a><br />inspirado en <a href=\"https://www.nytimes.com/games/wordle/index.html\">Wordle</a>"
+		"credits": "un proyecto de <a href=\"https://github.com/vegeta897/wordle-peaks\">código abierto</a> inspirado en <a href=\"https://www.nytimes.com/games/wordle/index.html\">Wordle</a>"
 	}
 }
