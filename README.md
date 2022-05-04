@@ -12,6 +12,8 @@ Pull requests and issues are welcome, but please create an issue or contact me b
 2. Write code
 3. `npm run format`
 
+***Note:*** Please use NPM version 7 or greater, so that `package-lock.json` stays on version 2.
+
 ## Translate
 
 If you can contribute a translation, please check out [this link](https://crowdin.com/project/wordle-peaks), or create a pull request with a translated copy of [this file](https://github.com/vegeta897/wordle-peaks/blob/main/src/lib/translations/en/main.json) in a new locale folder (e.g. `de/main.json`).
