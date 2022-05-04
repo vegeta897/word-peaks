@@ -31,7 +31,8 @@ export const hardMode: Readable<boolean> = derived(
 	($hardModeStored) => $hardModeStored
 )
 export const changeHardMode = (changeTo: boolean) => {
-	if (!get(gameFinished) && get(guesses).length > 0) throw "Can't change that during a game!"
+	if (!get(gameFinished) && (<string[]>get(guesses)).length > 0)
+		throw "Can't change that during a game!"
 	hardModeStored.set(changeTo)
 }
 

@@ -1,0 +1,67 @@
+{
+	"tutorial": {
+		"title": "Nasıl oynanır",
+		"objective": "Kelimeyi 6 denemede bulun!",
+		"explanation": "Her tahminden sonra kutucukların renkleri alfabede önce ya da sonra olmasına göre renk değiştirecektir. Öncesi çıkarsa A harfine, sonrası çıkarsa Z harfine yakın demektir.",
+		"correct_tile": "Doğru harf",
+		"high_tile": "Harf alfabede daha öncesinde",
+		"low_tile": "Harf alfabede daha sonrasında",
+		"letter_range": "Yazılabilir harflerin aralığı siz yazdıkça klavyede ve kutucuklarda görüntülenir"
+	},
+	"messages": {
+		"not_enough_letters": "Yeterli harf yok",
+		"invalid_word": "Geçerli bir kelime değil",
+		"use_valid_letters": "Tahminler geçerli harfler içermeli",
+		"could_not_do": "Üzgünüm, bunu yapamam!",
+		"score_copied": "Skor kopyalandı!",
+		"image_copied": "Resim kopyalandı!"
+	},
+	"keyboard": {
+		"enter": "Enter"
+	},
+	"results": {
+		"win": "Halloldu!",
+		"lose": "Olamaz!",
+		"answer": "Cevap buydu: <strong> {{answer}} </strong>",
+		"try_today": "Bugünün kelimesini dene!",
+		"next_word": "Sonraki kelime",
+		"play_daily": "Günlük oyunu oyna",
+		"play_random": "Rastgele oyun oyna",
+		"share": "Paylaş",
+		"text": "Metin",
+		"image": "Resim",
+		"copy_image": "Resmi Kopyala"
+	},
+	"stats": {
+		"title": "İstatistikler",
+		"total_games": "Toplam oyun",
+		"win_rate": "Kazanma oranı",
+		"current_streak": "Mevcut seri",
+		"best_streak": "En uzun seri",
+		"guess_distribution": "Tahmin dağılımı",
+		"stats_daily": "İstatistiklere sadece günlük oyunlar dahildir"
+	},
+	"summary": {
+		"title": "Özet",
+		"daily": "Günlük",
+		"random": "Rastgele",
+		"answer": "Cevap",
+		"total_time": "Toplam süre"
+	},
+	"options": {
+		"title": "Ayarlar",
+		"language": "Dil",
+		"help_translate": "<a href=\"https://crowdin.com/project/wordle-peaks\">Crowdin'de</a> veya <a href=\"https://github.com/vegeta897/wordle-peaks#translate\">Github'da</a> tercüme ekleyip veya düzeltebilirsin",
+		"keyboard_layout": "Klavye düzeni",
+		"hard_mode": "Zor mod",
+		"high_contrast_mode": "Yüksek kontrast modu",
+		"show_all_hints": "Tüm ipuçlarını sırada göster",
+		"swap_enter_backspace": "Enter ve Backspace tuşlarının yerini değiştir",
+		"alphabetic": "Alfabetik",
+		"use_dyslexic_font": "OpenDyslexic yazı tipi",
+		"include_link": "Paylaş metnine adresi ekle"
+	},
+	"footer": {
+		"credits": "<a href=\"https://www.nytimes.com/games/wordle/index.html\">Wordle'dan</a> esinlenilmiş <a href=\"https://github.com/vegeta897/wordle-peaks\">açık kaynak</a> kodlu bir proje"
+	}
+}
