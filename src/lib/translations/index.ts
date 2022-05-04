@@ -50,6 +50,7 @@ export function getNavigatorLanguage(): string {
 	if (navigator.language.startsWith('nl')) return 'nl'
 	if (navigator.language.startsWith('es')) return 'es'
 	if (navigator.language.startsWith('pt')) return 'pt'
+	if (navigator.language.startsWith('tr')) return 'tr'
 	return 'en'
 }
 
