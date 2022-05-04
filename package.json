@@ -23,7 +23,7 @@
 		"svelte": "^3.48.0",
 		"svelte-check": "^2.7.0",
 		"svelte-local-storage-store": "^0.2.6",
-		"svelte-preprocess": "^4.10.5",
+		"svelte-preprocess": "^4.10.6",
 		"svelte-select": "^4.4.7",
 		"svelte-toggle": "^3.1.0",
 		"tslib": "^2.3.1",
