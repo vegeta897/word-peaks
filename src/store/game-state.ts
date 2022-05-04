@@ -9,7 +9,6 @@ import {
 	scoreTile,
 } from '$lib/data-model'
 import { writable as storageWritable } from 'svelte-local-storage-store'
-import type { GameDetail } from '$lib/stats'
 
 export const answerDaily: Writable<string> = storageWritable('wp-answer', '')
 export const answerRandom: Writable<string> = storageWritable('wp-answerRandom', '')
@@ -32,7 +31,8 @@ export const hardMode: Readable<boolean> = derived(
 	($hardModeStored) => $hardModeStored
 )
 export const changeHardMode = (changeTo: boolean) => {
-	if (!get(gameFinished) && get(guesses).length > 0) throw "Can't change that during a game!"
+	if (!get(gameFinished) && (<string[]>get(guesses)).length > 0)
+		throw "Can't change that during a game!"
 	hardModeStored.set(changeTo)
 }
 

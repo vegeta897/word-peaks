@@ -24,6 +24,9 @@ const config = {
 		paths: {
 			base: dev || netlify ? '' : '/wordle-peaks',
 		},
+		prerender: {
+			default: true,
+		},
 	},
 }
 
