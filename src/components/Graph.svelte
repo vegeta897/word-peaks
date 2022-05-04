@@ -6,6 +6,8 @@
 
 	// TODO: Add animations on touch
 
+	// Hills/lakes have more greenery with lower magnitudes
+
 	export let graphWidth: number
 	export let graphHeight: number
 
