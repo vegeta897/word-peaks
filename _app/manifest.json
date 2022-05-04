@@ -1,0 +1,168 @@
+{
+  ".svelte-kit/runtime/client/start.js": {
+    "file": "start-b7af380f.js",
+    "src": ".svelte-kit/runtime/client/start.js",
+    "isEntry": true,
+    "imports": [
+      "_index-8c23243b.js",
+      "_preload-helper-cc41f808.js"
+    ],
+    "dynamicImports": [
+      "src/routes/__layout.svelte",
+      ".svelte-kit/runtime/components/error.svelte",
+      "_index-7e98db5a.js"
+    ]
+  },
+  "src/routes/__layout.svelte": {
+    "file": "pages/__layout.svelte-5d2c09e9.js",
+    "src": "src/routes/__layout.svelte",
+    "isEntry": true,
+    "isDynamicEntry": true,
+    "imports": [
+      "_index-8c23243b.js",
+      "_SvelteToast.svelte_svelte_type_style_lang-1cbbd7e4.js",
+      "_preload-helper-cc41f808.js"
+    ],
+    "css": [
+      "assets/pages/__layout.svelte-5ee2325f.css"
+    ]
+  },
+  ".svelte-kit/runtime/components/error.svelte": {
+    "file": "error.svelte-8e3e9939.js",
+    "src": ".svelte-kit/runtime/components/error.svelte",
+    "isEntry": true,
+    "isDynamicEntry": true,
+    "imports": [
+      "_index-8c23243b.js"
+    ]
+  },
+  "src/routes/index.svelte": {
+    "file": "pages/index.svelte-98b1044d.js",
+    "src": "src/routes/index.svelte",
+    "isEntry": true,
+    "imports": [
+      "_preload-helper-cc41f808.js",
+      "_index-8c23243b.js",
+      "_index-7e98db5a.js",
+      "_SvelteToast.svelte_svelte_type_style_lang-1cbbd7e4.js"
+    ]
+  },
+  "_index-8c23243b.js": {
+    "file": "chunks/index-8c23243b.js"
+  },
+  "_preload-helper-cc41f808.js": {
+    "file": "chunks/preload-helper-cc41f808.js",
+    "imports": [
+      "_index-8c23243b.js"
+    ]
+  },
+  "_SvelteToast.svelte_svelte_type_style_lang-1cbbd7e4.js": {
+    "file": "chunks/SvelteToast.svelte_svelte_type_style_lang-1cbbd7e4.js",
+    "imports": [
+      "_index-8c23243b.js",
+      "_preload-helper-cc41f808.js"
+    ],
+    "dynamicImports": [
+      "src/lib/words/targets-filtered.json",
+      "src/lib/words/dictionary-filtered.json",
+      "src/lib/translations/en/main.json",
+      "src/lib/translations/fr/main.json",
+      "src/lib/translations/nl/main.json",
+      "src/lib/translations/es/main.json",
+      "src/lib/translations/pt/main.json",
+      "src/lib/translations/tr/main.json"
+    ],
+    "css": [
+      "assets/SvelteToast.svelte_svelte_type_style_lang-00aa1808.css"
+    ]
+  },
+  "_index-7e98db5a.js": {
+    "file": "chunks/index-7e98db5a.js",
+    "isDynamicEntry": true,
+    "imports": [
+      "_preload-helper-cc41f808.js",
+      "_index-8c23243b.js",
+      "_SvelteToast.svelte_svelte_type_style_lang-1cbbd7e4.js"
+    ],
+    "dynamicImports": [
+      "src/components/Idler.svelte",
+      "_idle-scheduler-bce5c71c.js",
+      "src/components/Console.svelte"
+    ],
+    "css": [
+      "assets/index-68f4bd76.css"
+    ]
+  },
+  "src/lib/translations/en/main.json": {
+    "file": "chunks/main-3435d800.js",
+    "src": "src/lib/translations/en/main.json",
+    "isDynamicEntry": true
+  },
+  "src/lib/translations/fr/main.json": {
+    "file": "chunks/main-07c8a808.js",
+    "src": "src/lib/translations/fr/main.json",
+    "isDynamicEntry": true
+  },
+  "src/lib/translations/nl/main.json": {
+    "file": "chunks/main-bd86600d.js",
+    "src": "src/lib/translations/nl/main.json",
+    "isDynamicEntry": true
+  },
+  "src/lib/translations/es/main.json": {
+    "file": "chunks/main-e299df0b.js",
+    "src": "src/lib/translations/es/main.json",
+    "isDynamicEntry": true
+  },
+  "src/lib/translations/pt/main.json": {
+    "file": "chunks/main-98e61b21.js",
+    "src": "src/lib/translations/pt/main.json",
+    "isDynamicEntry": true
+  },
+  "src/lib/translations/tr/main.json": {
+    "file": "chunks/main-cdc45eea.js",
+    "src": "src/lib/translations/tr/main.json",
+    "isDynamicEntry": true
+  },
+  "src/lib/words/targets-filtered.json": {
+    "file": "chunks/targets-filtered-02e8b7ca.js",
+    "src": "src/lib/words/targets-filtered.json",
+    "isDynamicEntry": true
+  },
+  "src/lib/words/dictionary-filtered.json": {
+    "file": "chunks/dictionary-filtered-bc31f5a8.js",
+    "src": "src/lib/words/dictionary-filtered.json",
+    "isDynamicEntry": true
+  },
+  "src/components/Console.svelte": {
+    "file": "chunks/Console-2babde46.js",
+    "src": "src/components/Console.svelte",
+    "isDynamicEntry": true,
+    "imports": [
+      "_index-8c23243b.js",
+      "_SvelteToast.svelte_svelte_type_style_lang-1cbbd7e4.js",
+      "_index-7e98db5a.js",
+      "_preload-helper-cc41f808.js"
+    ]
+  },
+  "src/components/Idler.svelte": {
+    "file": "chunks/Idler-13ac172b.js",
+    "src": "src/components/Idler.svelte",
+    "isDynamicEntry": true,
+    "imports": [
+      "_index-8c23243b.js",
+      "_idle-scheduler-bce5c71c.js",
+      "_SvelteToast.svelte_svelte_type_style_lang-1cbbd7e4.js",
+      "_preload-helper-cc41f808.js"
+    ],
+    "css": [
+      "assets/Idler-63be55c9.css"
+    ]
+  },
+  "_idle-scheduler-bce5c71c.js": {
+    "file": "chunks/idle-scheduler-bce5c71c.js",
+    "isDynamicEntry": true,
+    "imports": [
+      "_SvelteToast.svelte_svelte_type_style_lang-1cbbd7e4.js"
+    ]
+  }
+}
