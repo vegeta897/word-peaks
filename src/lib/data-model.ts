@@ -163,8 +163,17 @@ export function decodeWord(hash: string): false | string {
 
 export const alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('')
 
+export const keyboardLayoutNames = [
+	'qwerty',
+	'azerty',
+	'qwertz',
+	'dvorak',
+	'colemak',
+	'alphabetic',
+] as const
+export type KeyboardLayout = typeof keyboardLayoutNames[number]
 export const keyboardLayoutOptions: {
-	value: string
+	value: KeyboardLayout
 	label: string
 	layout: [string[], string[], string[]]
 	wideKeysRow: 0 | 1 | 2

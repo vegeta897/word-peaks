@@ -67,25 +67,6 @@ export function updateGuesses(fn: Updater<string[]>): void {
 	;(get(gameMode) === 'daily' ? guessesDaily : guessesRandom).update(fn)
 }
 
-guesses.subscribe((guessed) => {
-	boardContent.update((content) => {
-		const newBoardContent = createNewBoard()
-		content.forEach((row, r) => {
-			if (r < guessed.length) {
-				const guessedWord = guessed[r]
-				newBoardContent[r] = [...guessedWord].map((letter, l) =>
-					scoreTile(letter, get(answer), r, l, content)
-				)
-			} else if (r > 0 && r === guessed.length) {
-				newBoardContent[r].forEach((tile, t) => {
-					tile.letterBounds = getValidLetterBounds(getValidLetters(newBoardContent, r, t))
-				})
-			}
-		})
-		return newBoardContent
-	})
-})
-
 export const guessTimesDaily: Writable<number[]> = storageWritable('wp-guessTimesDaily', [])
 export const guessTimesRandom: Writable<number[]> = storageWritable('wp-guessTimesRandom', [])
 export const guessTimes: Readable<number[]> = derived(
@@ -115,3 +96,24 @@ export const validLetters: Readable<Set<string>> = derived(
 			? (new Set() as Set<string>)
 			: getValidLetters($boardContent, $currentRow, $currentTile)
 )
+
+export function initGameState() {
+	guesses.subscribe((guessed) => {
+		boardContent.update((content) => {
+			const newBoardContent = createNewBoard()
+			content.forEach((row, r) => {
+				if (r < guessed.length) {
+					const guessedWord = guessed[r]
+					newBoardContent[r] = [...guessedWord].map((letter, l) =>
+						scoreTile(letter, get(answer), r, l, content)
+					)
+				} else if (r > 0 && r === guessed.length) {
+					newBoardContent[r].forEach((tile, t) => {
+						tile.letterBounds = getValidLetterBounds(getValidLetters(newBoardContent, r, t))
+					})
+				}
+			})
+			return newBoardContent
+		})
+	})
+}
