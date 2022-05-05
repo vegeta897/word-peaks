@@ -62,6 +62,7 @@
 		"include_link": "Incluir enlace en el texto compartido"
 	},
 	"footer": {
-		"credits": "un proyecto de <a href=\"https://github.com/vegeta897/wordle-peaks\">código abierto</a> inspirado en <a href=\"https://www.nytimes.com/games/wordle/index.html\">Wordle</a>"
+		"credits": "un proyecto de <a href=\"https://github.com/vegeta897/wordle-peaks\">código abierto</a> inspirado en <a href=\"https://www.nytimes.com/games/wordle/index.html\">Wordle</a>",
+		"donate": "☕ <a href=\"https://buymeacoffee.com/vegeta897\">cómprame un café</a> si quieres apoyarme"
 	}
 }

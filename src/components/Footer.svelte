@@ -8,15 +8,13 @@
 		<p>{@html $t('main.footer.credits')}</p>
 	</div>
 	<div class="footer-row">
+		<p>{@html $t('main.footer.donate')}</p>
+	</div>
+	<div class="footer-row">
 		<div class="footer-item icon-item">
 			<svg class="icon" viewBox="0 0 71 55" fill="none" xmlns="http://www.w3.org/2000/svg">
 				<title>Discord</title>
-				<path clip-path="url(#clip0)" d={DiscordIconPathData} fill="#cccccc" />
-				<defs>
-					<clipPath id="clip0">
-						<rect width="71" height="55" fill="#ffffff" />
-					</clipPath>
-				</defs>
+				<path d={DiscordIconPathData} fill="#cccccc" />
 			</svg>
 			<pre>vegeta897#7777</pre>
 		</div>

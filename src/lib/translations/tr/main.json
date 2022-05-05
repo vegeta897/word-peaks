@@ -62,6 +62,7 @@
 		"include_link": "Paylaş metnine adresi ekle"
 	},
 	"footer": {
-		"credits": "<a href=\"https://www.nytimes.com/games/wordle/index.html\">Wordle'dan</a> esinlenilmiş <a href=\"https://github.com/vegeta897/wordle-peaks\">açık kaynak</a> kodlu bir proje"
+		"credits": "<a href=\"https://www.nytimes.com/games/wordle/index.html\">Wordle'dan</a> esinlenilmiş <a href=\"https://github.com/vegeta897/wordle-peaks\">açık kaynak</a> kodlu bir proje",
+		"donate": "☕ bana destek olmak istersen <a href=\"https://buymeacoffee.com/vegeta897\">bana bir kahve ısmarla</a>"
 	}
 }
