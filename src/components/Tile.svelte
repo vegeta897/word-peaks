@@ -83,9 +83,7 @@
 			{/if}
 		</div>
 	{/if}
-	{#if tile.letter === ''}
-		<slot />
-	{/if}
+	<slot />
 </div>
 
 <style>

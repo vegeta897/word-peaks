@@ -7,11 +7,11 @@
 	import { trackEvent } from '$lib/plausible'
 	import { animationSupported } from '$lib/transitions'
 	import { ROWS, WORD_LENGTH } from '$lib/data-model'
+	import { browser } from '$app/env'
 
 	const { boardContent, currentRow, currentTile, gameFinished, showAllHints, newUser } = store
 
 	let preloadedRows = get(store.guesses).length
-	let ready = false
 	let idle = false
 	let canAnimate = null
 
@@ -20,38 +20,37 @@
 
 	async function waitForIdle() {
 		if (canAnimate === false) return
+		idle = false
 		const thisIdleSessionID = ++idleSessionID
 		clearTimeout(idleTimeout)
-		if (get(gameFinished) && get(store.openScreen) === null && !document.hidden) {
+		if (get(store.openScreen) === null && !document.hidden) {
 			let thisTimeout: number
 			await new Promise((resolve) => {
 				idleTimeout = setTimeout(() => {
 					resolve()
-				}, 20 * 1000)
+				}, (get(gameFinished) ? 20 : 30) * 1000)
 				thisTimeout = idleTimeout
 			})
 			if (thisIdleSessionID !== idleSessionID) return
 			if (canAnimate === null) canAnimate = animationSupported()
 			if (!canAnimate) return
-			trackEvent('idleOnFinish')
+			trackEvent(get(gameFinished) ? 'idleOnFinish' : 'idleBeforeFinish')
 			const scheduler = await import('$lib/idle-scheduler')
 			scheduler.initScheduler((ROWS - get(currentRow)) * WORD_LENGTH)
 			idle = true
-		} else {
-			idle = false
 		}
 	}
 
-	gameFinished.subscribe(() => {
-		if (ready) preloadedRows = 0
-		waitForIdle()
-	})
-	store.answer.subscribe(() => waitForIdle())
-	store.openScreen.subscribe(() => waitForIdle())
-
 	onMount(() => {
-		ready = true // Prevents SSR for board
+		gameFinished.subscribe(() => {
+			preloadedRows = 0
+			waitForIdle()
+		})
 		document.addEventListener('visibilitychange', () => waitForIdle())
+		store.answer.subscribe(() => waitForIdle())
+		store.openScreen.subscribe(() => waitForIdle())
+		store.boardContent.subscribe(() => waitForIdle())
+		store.currentTile.subscribe(() => waitForIdle())
 	})
 	onDestroy(() => {
 		clearTimeout(idleTimeout)
@@ -73,7 +72,7 @@
 							showHint={!$gameFinished && (tile.id === $currentTile || $showAllHints)}
 							animate={r >= preloadedRows && r >= $currentRow - 1}
 						>
-							{#if $gameFinished && idle}
+							{#if idle && tile.letter === '' && r > $currentRow}
 								{#await import('$com/Idler.svelte') then module}
 									<svelte:component this={module.default} id={r + ':' + tile.id} />
 								{/await}

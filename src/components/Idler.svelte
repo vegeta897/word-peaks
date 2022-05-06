@@ -4,6 +4,8 @@
 	import { AnimationParts } from '$lib/idle-animations'
 	import type { IdleSchedule } from '$lib/idle-scheduler'
 	import { getSchedule, startAnimation, stopAnimation } from '$lib/idle-scheduler'
+	import { fade } from 'svelte/transition'
+	import { quadIn } from 'svelte/easing'
 
 	let mounted = false
 	let letter: string
@@ -72,7 +74,7 @@
 	onDestroy(() => (mounted = false))
 </script>
 
-<div class="frame">
+<div class="frame" transition:fade={{ duration: 200, easing: quadIn }}>
 	<div class="letter-anchor">
 		<div class="letter-animation" bind:this={letterTranslateX}>
 			<div class="letter-animation" bind:this={letterTranslateY}>
