@@ -1,6 +1,6 @@
 {
   ".svelte-kit/runtime/client/start.js": {
-    "file": "start-cfe9cddc.js",
+    "file": "start-6f7a45f9.js",
     "src": ".svelte-kit/runtime/client/start.js",
     "isEntry": true,
     "imports": [
@@ -10,7 +10,7 @@
     "dynamicImports": [
       "src/routes/__layout.svelte",
       ".svelte-kit/runtime/components/error.svelte",
-      "_index-78f88d80.js"
+      "_index-ede50456.js"
     ]
   },
   "src/routes/__layout.svelte": {
@@ -37,13 +37,13 @@
     ]
   },
   "src/routes/index.svelte": {
-    "file": "pages/index.svelte-5cf10924.js",
+    "file": "pages/index.svelte-aee0fbc6.js",
     "src": "src/routes/index.svelte",
     "isEntry": true,
     "imports": [
       "_preload-helper-cc41f808.js",
       "_index-8c23243b.js",
-      "_index-78f88d80.js",
+      "_index-ede50456.js",
       "_SvelteToast.svelte_svelte_type_style_lang-2caf4cee.js"
     ]
   },
@@ -76,8 +76,8 @@
       "assets/SvelteToast.svelte_svelte_type_style_lang-00aa1808.css"
     ]
   },
-  "_index-78f88d80.js": {
-    "file": "chunks/index-78f88d80.js",
+  "_index-ede50456.js": {
+    "file": "chunks/index-ede50456.js",
     "isDynamicEntry": true,
     "imports": [
       "_preload-helper-cc41f808.js",
@@ -90,7 +90,7 @@
       "src/components/Console.svelte"
     ],
     "css": [
-      "assets/index-68f4bd76.css"
+      "assets/index-9b95836c.css"
     ]
   },
   "src/lib/translations/en/main.json": {
@@ -134,18 +134,18 @@
     "isDynamicEntry": true
   },
   "src/components/Console.svelte": {
-    "file": "chunks/Console-fa8f5447.js",
+    "file": "chunks/Console-a90188f8.js",
     "src": "src/components/Console.svelte",
     "isDynamicEntry": true,
     "imports": [
       "_index-8c23243b.js",
       "_SvelteToast.svelte_svelte_type_style_lang-2caf4cee.js",
-      "_index-78f88d80.js",
+      "_index-ede50456.js",
       "_preload-helper-cc41f808.js"
     ]
   },
   "src/components/Idler.svelte": {
-    "file": "chunks/Idler-a0cfc741.js",
+    "file": "chunks/Idler-59f85e88.js",
     "src": "src/components/Idler.svelte",
     "isDynamicEntry": true,
     "imports": [
