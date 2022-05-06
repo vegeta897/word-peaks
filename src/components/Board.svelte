@@ -60,7 +60,7 @@
 </script>
 
 <div class="container">
-	{#if ready}
+	{#if browser}
 		<div class="board">
 			{#each $boardContent as boardRow, r}
 				<div class="tile-row">
@@ -136,8 +136,18 @@
 	}
 
 	.loading {
-		color: #999;
+		color: #aaa;
 		font-size: 1.3em;
+		background: linear-gradient(to left, #aaa1, #aaa3 20%, #aaa, #aaa3 80%, #aaa1);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		animation: glimmer 3s linear infinite;
+		background-size: 200%;
+	}
+	@keyframes glimmer {
+		to {
+			background-position: 200% center;
+		}
 	}
 
 	@media (max-width: 480px) {
