@@ -54,7 +54,7 @@
 
 	onMount(async () => {
 		mounted = true
-		await sleep(Math.random()) // Ensures random first idler
+		await sleep(Math.random() * 100) // Ensures random first idler
 		while (mounted) {
 			const schedule = await getSchedule(id)
 			if ('wait' in schedule) {
