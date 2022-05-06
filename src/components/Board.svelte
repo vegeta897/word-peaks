@@ -47,7 +47,6 @@
 			waitForIdle()
 		})
 		document.addEventListener('visibilitychange', () => waitForIdle())
-		store.answer.subscribe(() => waitForIdle())
 		store.openScreen.subscribe(() => waitForIdle())
 		store.boardContent.subscribe(() => waitForIdle())
 		store.currentTile.subscribe(() => waitForIdle())
