@@ -62,7 +62,7 @@
 	})
 </script>
 
-<div class="container">
+<div class="container" style="--row-count: {ROWS}">
 	{#if ready}
 		<div class="board">
 			{#each $boardContent as boardRow, r}
@@ -104,7 +104,7 @@
 	.container {
 		margin: 0 auto 6px;
 		padding: 0 4px;
-		height: 378px;
+		height: calc(var(--row-count) * (var(--tile-size) + var(--tile-row-margin-bottom)));
 		display: flex;
 		align-items: flex-start;
 		justify-content: center;
@@ -116,7 +116,8 @@
 	}
 
 	:root {
-		--tile-row-margin-bottom: 6px;
+		--tile-row-margin-bottom: 4px;
+		--tile-size: 57px;
 	}
 
 	.tile-row {
@@ -150,17 +151,16 @@
 	}
 
 	@media (max-width: 480px) {
-		.container {
-			height: 354px;
+		:root {
+			--tile-size: 53px;
 		}
 	}
 	@media (max-width: 360px) {
 		.container {
-			height: 312px;
 			margin-bottom: 4px;
 		}
 		:root {
-			--tile-row-margin-bottom: 4px;
+			--tile-size: 48px;
 		}
 	}
 	@media (max-width: 320px) {

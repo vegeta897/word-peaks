@@ -91,8 +91,8 @@
 <style>
 	.tile-container {
 		position: relative;
-		width: 57px;
-		height: 57px;
+		width: var(--tile-size);
+		height: var(--tile-size);
 		margin: 0 2px;
 	}
 
@@ -222,10 +222,6 @@
 	}
 
 	@media (max-width: 480px) {
-		.tile-container {
-			width: 53px;
-			height: 53px;
-		}
 		.hint {
 			font-size: 0.48em;
 			gap: 4px;
@@ -233,8 +229,6 @@
 	}
 	@media (max-width: 360px) {
 		.tile-container {
-			width: 48px;
-			height: 48px;
 			margin: 0 1px;
 		}
 		.hint {
