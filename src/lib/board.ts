@@ -15,8 +15,6 @@ import { toast } from '@zerodevx/svelte-toast'
 import type { SvelteToastOptions } from '@zerodevx/svelte-toast'
 import { saveGameDetail, recordGuessTime } from '$lib/stats'
 
-let openingResults = false
-
 export function resetBoard() {
 	toast.pop()
 	store.boardContent.set(createNewBoard())
@@ -96,15 +94,19 @@ export function moveCarat(dir: number) {
 	store.currentTile.update((ct) => ct + dir)
 }
 
+let submitting = false
 export async function submitRow() {
+	if (submitting) return
 	if (get(store.gameFinished)) {
 		store.openScreen.set('results')
 		return
 	}
+	submitting = true
 	const rowNumber = get(store.currentRow)
 	if (!hasEnoughLetters(get(store.boardContent), rowNumber)) {
 		store.notEnoughLetters.set(true)
 		showError(get(t)('main.messages.not_enough_letters'), () => store.notEnoughLetters.set(false))
+		submitting = false
 		return
 	}
 	const submittedRow = get(store.boardContent)[rowNumber]
@@ -112,6 +114,7 @@ export async function submitRow() {
 	if (submittedWord !== get(store.answer) && !(await isValidWord(submittedWord))) {
 		store.invalidWord.set(true)
 		showError(get(t)('main.messages.invalid_word'), () => store.invalidWord.set(false))
+		submitting = false
 		return
 	}
 	if (
@@ -125,16 +128,15 @@ export async function submitRow() {
 		showError(get(t)('main.messages.use_valid_letters'), () =>
 			store.invalidHardModeGuess.set(false)
 		)
+		submitting = false
 		return
 	}
 	trackEvent('submitGuess')
 	recordGuessTime(rowNumber + 1)
 	store.updateGuesses((words) => [...words, submittedWord])
 	if (get(store.gameFinished)) {
-		openingResults = true
 		setTimeout(() => {
 			store.openScreen.set('results')
-			openingResults = false
 		}, 1700)
 		const won = get(store.gameWon)
 		trackEvent(won ? 'gameWon' : 'gameLost')
@@ -161,6 +163,7 @@ export async function submitRow() {
 	} else {
 		store.currentTile.set(0)
 	}
+	submitting = false
 }
 
 const showError = (m: string, onPop?: (id?: number) => any) => {
