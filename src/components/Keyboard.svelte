@@ -5,8 +5,8 @@
 	import { moveCarat, submitRow, typeLetter, undoLetter } from '$lib/board'
 	import { get } from 'svelte/store'
 
-	function handleKeydown({ key, ctrlKey, target }: KeyboardEvent) {
-		if (ctrlKey || get(openScreen) !== null) return
+	function handleKeydown({ key, ctrlKey, target, repeat }: KeyboardEvent) {
+		if (ctrlKey || repeat || get(openScreen) !== null) return
 		if (key === 'Backspace') undoLetter()
 		if (key === 'Delete') undoLetter(false)
 		if (key === 'Enter') {
