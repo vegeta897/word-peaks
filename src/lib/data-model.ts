@@ -124,7 +124,7 @@ export const getDayNumber = (): number => {
 }
 
 export async function getWordByDay(day: number): Promise<string> {
-	if (!targetWords) await loadTargets()
+	await loadTargets()
 	return targetWords![day % targetWords!.length]
 }
 
@@ -140,7 +140,7 @@ export function pickRandom<T>(arr: T[]): T {
 }
 
 export async function getRandomWord(): Promise<string> {
-	if (!targetWords) await loadTargets()
+	await loadTargets()
 	return pickRandom(targetWords!)
 }
 
