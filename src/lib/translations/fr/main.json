@@ -14,7 +14,8 @@
 		"use_valid_letters": "Votre mot doit utiliser des lettres valides",
 		"could_not_do": "Désolé, je ne peux pas faire ça !",
 		"score_copied": "Score copié !",
-		"image_copied": "Image copiée !"
+		"image_copied": "Image copiée !",
+		"need_reload": "Mise à jour nécessaire, veuillez recharger la page"
 	},
 	"keyboard": {
 		"enter": "Entrer"

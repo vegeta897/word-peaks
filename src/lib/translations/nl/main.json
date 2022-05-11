@@ -14,7 +14,8 @@
 		"use_valid_letters": "Gokken moeten geldige letters gebruiken",
 		"could_not_do": "Sorry, kon dat niet doen!",
 		"score_copied": "Score gekopieerd!",
-		"image_copied": "Afbeelding gekopieerd!"
+		"image_copied": "Afbeelding gekopieerd!",
+		"need_reload": "Update nodig, herlaad de pagina a.u.b."
 	},
 	"keyboard": {
 		"enter": "Invoeren"

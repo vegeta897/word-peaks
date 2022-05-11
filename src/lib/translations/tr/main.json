@@ -14,7 +14,8 @@
 		"use_valid_letters": "Tahminler geçerli harfler içermeli",
 		"could_not_do": "Üzgünüm, bunu yapamam!",
 		"score_copied": "Skor kopyalandı!",
-		"image_copied": "Resim kopyalandı!"
+		"image_copied": "Resim kopyalandı!",
+		"need_reload": "Güncelleme gerekli, lütfen sayfayı yeniden yükleyin"
 	},
 	"keyboard": {
 		"enter": "Enter"

@@ -31,7 +31,9 @@ export function typeLetter(letter: string) {
 		store.openScreen.set('results')
 		return
 	}
-	loadDictionary()
+	loadDictionary().catch((e) => {
+		showError(get(t)('main.messages.need_reload'), () => {}, 8000)
+	})
 	const _currentTile = get(store.currentTile)
 	if (_currentTile === WORD_LENGTH) return
 	const _currentRow = get(store.currentRow)
@@ -111,7 +113,15 @@ export async function submitRow() {
 	}
 	const submittedRow = get(store.boardContent)[rowNumber]
 	const submittedWord = getBoardRowString(submittedRow)
-	if (submittedWord !== get(store.answer) && !(await isValidWord(submittedWord))) {
+	let validWord: boolean
+	try {
+		validWord = await isValidWord(submittedWord)
+	} catch (e) {
+		showError(get(t)('main.messages.need_reload'), () => {}, 8000)
+		submitting = false
+		return
+	}
+	if (submittedWord !== get(store.answer) && !validWord) {
 		store.invalidWord.set(true)
 		showError(get(t)('main.messages.invalid_word'), () => store.invalidWord.set(false))
 		submitting = false
@@ -166,11 +176,12 @@ export async function submitRow() {
 	submitting = false
 }
 
-const showError = (m: string, onPop?: (id?: number) => any) => {
+const showError = (m: string, onPop?: (id?: number) => any, duration?: number) => {
 	toast.pop()
 	const toastOptions: SvelteToastOptions = {
 		theme: { '--toastBackground': 'var(--error-color)' },
 	}
 	if (onPop) toastOptions.onpop = onPop
+	if (duration !== undefined) toastOptions.duration = duration
 	toast.push(m, toastOptions)
 }

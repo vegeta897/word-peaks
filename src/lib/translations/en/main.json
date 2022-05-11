@@ -14,7 +14,8 @@
 		"use_valid_letters": "Guesses must use valid letters",
 		"could_not_do": "Sorry, couldn't do that!",
 		"score_copied": "Score copied!",
-		"image_copied": "Image copied!"
+		"image_copied": "Image copied!",
+		"need_reload": "Update needed, please reload the page"
 	},
 	"keyboard": {
 		"enter": "Enter"

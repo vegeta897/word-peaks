@@ -14,7 +14,8 @@
 		"use_valid_letters": "As tentativas devem usar letras válidas",
 		"could_not_do": "Desculpe, não é possível fazer isso!",
 		"score_copied": "Pontuação copiada!",
-		"image_copied": "Imagem copiada!"
+		"image_copied": "Imagem copiada!",
+		"need_reload": "Atualização necessária, recarregue a página"
 	},
 	"keyboard": {
 		"enter": "Enter"
