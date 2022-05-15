@@ -201,7 +201,7 @@
 	button {
 		border-radius: 4px;
 		border: 0;
-		padding: 0 1.2rem;
+		padding: 0;
 		height: 3rem;
 		font-size: 1.2em;
 		font-weight: 700;
