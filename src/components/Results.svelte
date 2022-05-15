@@ -5,8 +5,6 @@
 	import { onMount } from 'svelte'
 	import * as store from '$src/store'
 	import { get } from 'svelte/store'
-	import { fade } from 'svelte/transition'
-	import { cubicIn, cubicOut } from 'svelte/easing'
 	import {
 		copyImage,
 		copyText,
@@ -73,7 +71,6 @@
 	}
 
 	let shareMenu: boolean
-	let showShareButtons: boolean
 	let imageShared: boolean
 
 	let canvas: HTMLCanvasElement
@@ -138,23 +135,14 @@
 		</div>
 		<div class="column">
 			{#if lastGameFinished}
-				{#if shareMenu && showShareButtons}
-					<div
-						class="share-buttons"
-						in:fade={{ duration: 150, easing: cubicOut }}
-						out:fade={{ duration: 100, easing: cubicIn }}
-						on:outroend={() => (showShareButtons = false)}
-					>
+				{#if shareMenu}
+					<div class="share-buttons">
 						<button on:click={shareText} class="share-button">{$t('main.results.text')}</button>
 						<button on:click={onShareImage} class="share-button">{$t('main.results.image')}</button>
 					</div>
-				{:else if !shareMenu && !showShareButtons}
-					<button
-						in:fade={{ duration: 150, easing: cubicOut }}
-						out:fade={{ duration: 100, easing: cubicIn }}
-						on:outroend={() => (showShareButtons = true)}
-						on:click={() => (shareMenu = true)}
-						class="share-button">{$t('main.results.share')}</button
+				{:else}
+					<button on:click={() => (shareMenu = true)} class="share-button"
+						>{$t('main.results.share')}</button
 					>
 				{/if}
 			{/if}
