@@ -26,8 +26,7 @@
 	let featureHeight: number
 	let graphedRows: null | Board
 
-	$: canDraw =
-		graphedRows && graphWidth > 0 && graphHeight > 0 && $currentRow >= 0 && rowMargin >= 0
+	$: canDraw = graphedRows && graphWidth > 0 && graphHeight > 0 && $currentRow > 0 && rowMargin >= 0
 
 	beforeUpdate(() => {
 		rowMargin = parseInt(

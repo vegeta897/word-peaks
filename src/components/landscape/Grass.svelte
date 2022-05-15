@@ -7,43 +7,118 @@
 	export let rowHeight: number
 	export let columnWidth: number
 
+	let cachedBoard: Board
+
 	const grassHeight = 5
 
+	const edgeData: { x: number; y: number }[][] = []
 	let pathData: string = ''
 
 	beforeUpdate(() => {
-		const islandData: { x: number; y: number }[][] = [
-			[
-				{ x: 0.5, y: 1 },
-				{ x: 1, y: 0.5 },
-				{ x: 1.5, y: 0 },
-				{ x: 2, y: 0.5 },
-				{ x: 2.5, y: 1 },
-				{ x: 3, y: 1.5 },
-				{ x: 3, y: 2.5 },
-				{ x: 2.5, y: 3 },
-				{ x: 0.5, y: 3 },
-				{ x: 0, y: 2.5 },
-				{ x: 0, y: 1.5 },
-			],
-		]
-		const holeData: { x: number; y: number }[][] = [
-			[
-				{ x: 1.5, y: 1 },
-				{ x: 1, y: 1.5 },
-				{ x: 1.5, y: 2 },
-				{ x: 2, y: 1.5 },
-			],
-		]
-		// type PathPart =
-		// 	| ['M' | 'L' | 'l', number, number]
-		// 	| ['H' | 'h' | 'V' | 'v', number]
-		// 	| ['A' | 'a', number, number, number, 0 | 1, 0 | 1, number, number]
+		if (board !== cachedBoard) {
+			cachedBoard = board
+			edgeData.length = 0
+			//TODO: Move this to a different file
+
+			const inBounds = (x: number, y: number) =>
+				y >= 0 && y < board.length && x >= 0 && x < WORD_LENGTH
+			const isGrass = (x: number, y: number) => inBounds(x, y) && board[y][x].polarity === 0
+			// const randomBoard = board.map((row) =>
+			// 	[...row].map((tile) => ({ polarity: Math.random() > 0.5 ? 1 : 0 }))
+			// )
+			// const isGrass = (x: number, y: number) => inBounds(x, y) && randomBoard[y][x].polarity === 0
+			const isEdge = (x: number, y: number) =>
+				x === 0 || y === 0 || y === board.length - 1 || x === WORD_LENGTH - 1
+
+			type Dir = 'up' | 'down' | 'left' | 'right'
+
+			const turnCW: Record<Dir, Dir> = { right: 'down', down: 'left', left: 'up', up: 'right' }
+			const turnCCW: Record<Dir, Dir> = { right: 'up', down: 'right', left: 'down', up: 'left' }
+			const go: Record<Dir, (x: number, y: number) => [number, number]> = {
+				up: (x: number, y: number) => [x, y - 1],
+				down: (x: number, y: number) => [x, y + 1],
+				left: (x: number, y: number) => [x - 1, y],
+				right: (x: number, y: number) => [x + 1, y],
+			}
+			const goTurn: Record<Dir, (x: number, y: number) => [number, number]> = {
+				up: (x: number, y: number) => [x - 1, y - 1],
+				down: (x: number, y: number) => [x + 1, y + 1],
+				left: (x: number, y: number) => [x - 1, y + 1],
+				right: (x: number, y: number) => [x + 1, y - 1],
+			}
+
+			let grassMode: boolean
+
+			const crawled: (undefined | true)[][] = new Array(board.length)
+				.fill(0)
+				.map(() => new Array(WORD_LENGTH))
+
+			const crawlTiles = (x: number, y: number): boolean => {
+				if (crawled[y][x]) return
+				crawled[y][x] = true
+				let invalid = false
+				const neighbors = Object.values(go).map((fn) => fn(x, y))
+				if (grassMode) neighbors.push(...Object.values(goTurn).map((fn) => fn(x, y)))
+				for (const neighbor of neighbors) {
+					if (inBounds(...neighbor) && isGrass(...neighbor) === grassMode) {
+						if (!grassMode && isEdge(...neighbor)) invalid = true
+						const crawled = crawlTiles(...neighbor)
+						invalid = invalid || crawled
+					}
+				}
+				return invalid
+			}
+
+			let edged: (undefined | Dir)[][]
+			let shape: { x: number; y: number }[]
+
+			const edge = (x: number, y: number, moving: Dir) => {
+				if (edged[y][x] === moving) return
+				edged[y][x] = edged[y][x] || moving
+				shape.push(
+					{
+						up: { x, y: y + 0.5 },
+						down: { x: x + 1, y: y + 0.5 },
+						left: { x: x + 0.5, y: y + 1 },
+						right: { x: x + 0.5, y },
+					}[moving]
+				)
+				// Just trust this
+				if (grassMode) {
+					if (isGrass(...goTurn[moving](x, y)))
+						return edge(...goTurn[moving](x, y), turnCCW[moving])
+					if (isGrass(...go[moving](x, y))) return edge(...go[moving](x, y), moving)
+				} else {
+					if (!isGrass(...go[moving](x, y))) {
+						if (!isGrass(...goTurn[moving](x, y)))
+							return edge(...goTurn[moving](x, y), turnCCW[moving])
+						return edge(...go[moving](x, y), moving)
+					}
+				}
+				edge(x, y, turnCW[moving])
+			}
+
+			for (let y = 0; y < board.length; y++) {
+				const row = board[y]
+				for (let x = 0; x < row.length; x++) {
+					if (crawled[y][x]) continue
+					grassMode = isGrass(x, y)
+					if (!grassMode && isEdge(x, y)) continue
+					const invalidHole = crawlTiles(x, y)
+					if (!grassMode && invalidHole) continue
+					edged = new Array(board.length).fill(0).map(() => new Array(WORD_LENGTH))
+					shape = []
+					edge(x, y, 'right')
+					edgeData.push(grassMode ? shape : shape.reverse())
+				}
+			}
+		}
+
 		const tileRadius = Math.min(rowHeight, columnWidth) / 3
 		const xToCorner = columnWidth / 2 - tileRadius
 		const yToCorner = rowHeight / 2 - tileRadius
 
-		pathData = [...islandData, ...holeData]
+		pathData = edgeData
 			.map((nodes) => {
 				const [first, ...rest] = nodes
 				let pathString = `M${first.x * columnWidth} ${first.y * rowHeight} `
