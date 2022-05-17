@@ -4,7 +4,7 @@
 	import { boardContent, currentRow } from '$src/store'
 	import { get } from 'svelte/store'
 	import { beforeUpdate, onMount } from 'svelte'
-	import Peak from '$com/landscape/Peak.svelte'
+	import Peaks from '$com/landscape/Peaks.svelte'
 	import Grass from '$com/landscape/Grass.svelte'
 
 	// TODO: Add animations on touch
@@ -75,6 +75,7 @@
 			`}
 		/>
 		<Grass board={graphedRows} {rowHeight} {columnWidth} />
+		<Peaks board={graphedRows} {rowHeight} {columnWidth} />
 	</svg>
 {/if}
 
