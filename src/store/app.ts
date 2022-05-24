@@ -16,7 +16,7 @@ export const showAllHints: Writable<boolean> = storageWritable('wp-showAllHints'
 export const swapEnterBackspace: Writable<boolean> = storageWritable('wp-swapEnterBackspace', false)
 export const keyboardLayout: Writable<KeyboardLayout> = storageWritable(
 	'wp-keyboardLayout',
-	'qwerty'
+	'alphabetic'
 )
 export const dyslexicFont: Writable<boolean> = storageWritable('wp-dyslexicFont', false)
 export const shareURL: Writable<boolean> = storageWritable('wp-shareURL', true)
