@@ -31,8 +31,8 @@
 {#if !countdown || msLeft > 0}
 	<slot name="title" />
 	<span class={$$props.class}>
-		<span class:fade={hours === 0}>{showHours ? hours : ''}</span><span class:fade={minutes === 0}
-			>{showHours ? ':' + padZero(minutes) : minutes}</span
+		<span class:fade={hours === 0}>{showHours ? hours : ''}</span><span
+			class:fade={minutes === 0 && hours === 0}>{showHours ? ':' + padZero(minutes) : minutes}</span
 		>:{padZero(seconds)}
 	</span>
 {/if}
