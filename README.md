@@ -44,3 +44,5 @@ The word list for the game itself will remain in English. If you want to play wi
 ---
 
 _Made with [SvelteKit](https://kit.svelte.dev/)_
+
+[![MadeWithSvelte.com shield](https://madewithsvelte.com/storage/repo-shields/3728-shield.svg)](https://madewithsvelte.com/p/wordle-peaks/shield-link)
