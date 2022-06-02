@@ -24,8 +24,6 @@
 	$: hours = Math.floor(msLeft / HOUR)
 	$: showHours = hours > 0 || alwaysShowHours
 
-	// afterUpdate(() => console.log(span && span.innerText, countdown, ms))
-
 	onDestroy(() => {
 		clearInterval(interval)
 	})

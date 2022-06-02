@@ -82,13 +82,7 @@ export function getEmojiGrid({
 	const today = new Date()
 	const aprilFools = today.getMonth() === 3 && today.getDate() === 1 // April 1st
 	let timeStringPad: number
-	if (guessTimes) {
-		guessTimes[2] = '12:30'
-		timeStringPad = guessTimes.reduce((prev, curr) =>
-			prev === null || prev.length < curr.length ? curr : prev
-		).length
-		console.log(timeStringPad)
-	}
+	if (guessTimes) timeStringPad = longestStringLength(guessTimes)
 	return (
 		'  ' +
 		guesses
@@ -150,13 +144,26 @@ export function drawResults(
 		boardContent,
 		guesses,
 		caption,
-	}: { highContrast: boolean; boardContent: Board; guesses: string[]; caption: string }
+		guessTimes,
+		showURL,
+		hash,
+	}: {
+		highContrast: boolean
+		boardContent: Board
+		guesses: string[]
+		caption: string
+		guessTimes?: string[]
+		showURL: boolean
+		hash?: string
+	}
 ): void {
 	if (!canvas) return
-	canvas.height = guesses.length * 100 + 60
+	canvas.width = 504 + (guessTimes ? longestStringLength(guessTimes) * 28 + 6 : 0)
+	canvas.style.width = Math.round(canvas.width / 2) + 'px'
+	canvas.height = guesses.length * 100 + 60 + (showURL ? 44 : 0)
 	const ctx = canvas.getContext('2d')!
 	ctx.fillStyle = highContrast ? '#161a25' : '#312236'
-	ctx.fillRect(0, 0, 504, 660)
+	ctx.fillRect(0, 0, canvas.width, canvas.height)
 	const roundedRectangle = (
 		x: number,
 		y: number,
@@ -175,6 +182,9 @@ export function drawResults(
 		ctx.closePath()
 		ctx.fill()
 	}
+	ctx.font = '50px Arial'
+	ctx.textAlign = 'right'
+	ctx.textBaseline = 'middle'
 	boardContent.forEach((row, r) => {
 		if (r >= guesses.length) return
 		row.forEach((tile, t) => {
@@ -194,9 +204,23 @@ export function drawResults(
 			const l = 88
 			roundedRectangle(x, y, l, l, topRadius, bottomRadius)
 		})
+		if (guessTimes) {
+			ctx.fillStyle = '#a7a1a9'
+			ctx.fillText(guessTimes[r], canvas.width - 6, r * 100 + 55)
+		}
 	})
+	ctx.fillStyle = '#cccccc'
 	ctx.font = '40px Arial'
 	ctx.textAlign = 'center'
-	ctx.fillStyle = '#cccccc'
-	ctx.fillText(caption, 252, guesses.length * 100 + 44)
+	ctx.textBaseline = 'alphabetic'
+	ctx.fillText(caption, canvas.width / 2, guesses.length * 100 + 44)
+	if (showURL) {
+		let url = 'wordlepeaks.com'
+		if (hash) url += '/#' + hash
+		ctx.fillStyle = '#a7a1a9'
+		ctx.fillText(url, canvas.width / 2, guesses.length * 100 + 92)
+	}
 }
+
+const longestStringLength = (strArr: string[]) =>
+	strArr.reduce((prev, curr) => (prev === null || prev.length < curr.length ? curr : prev)).length

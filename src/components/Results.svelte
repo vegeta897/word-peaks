@@ -20,7 +20,6 @@
 	let lastGameDetail: GameDetail | null
 	export let playDaily: () => {}
 	export let playRandom: () => {}
-	export let hash: string
 
 	const _guessesDaily = get(store.guessesDaily)
 	const _lastPlayedDaily = get(store.lastPlayedDaily)
@@ -73,9 +72,9 @@
 		</div>
 		<div class="column">
 			{#if lastGameMode === 'random' || nextWordReady || !dailyFinished}
-				<button on:click={playDaily} class="play-button">{$t('main.results.play_daily')}</button>
+				<button on:click={playDaily}>{$t('main.results.play_daily')}</button>
 			{/if}
-			<button on:click={playRandom} class="play-button">{$t('main.results.play_random')}</button>
+			<button on:click={playRandom}>{$t('main.results.play_random')}</button>
 		</div>
 	</div>
 </Screen>
@@ -119,24 +118,16 @@
 		font-size: 1.2em;
 		font-weight: 700;
 		min-width: 10rem;
+		background: #04883b;
+	}
+
+	button:hover {
+		background: var(--correct-color);
 	}
 
 	button:focus {
 		outline: 1px solid #fff;
 		outline-offset: 2px;
-	}
-
-	button.play-button {
-		background: #04883b;
-	}
-
-	button.play-button:hover {
-		background: var(--correct-color);
-	}
-
-	.share-buttons button {
-		min-width: 3rem;
-		width: 50%;
 	}
 
 	.daily-text {

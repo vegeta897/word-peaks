@@ -23,6 +23,7 @@
 	type SpanContainer = { span?: HTMLSpanElement }
 	const totalTimeElement: SpanContainer = { span: undefined }
 	const guessTimeElements: SpanContainer[] = []
+	const getGuessTimes = () => guessTimeElements.map((e) => e.span!.innerText)
 
 	let canvas: HTMLCanvasElement
 	let shareTitleText: string
@@ -42,8 +43,8 @@
 		}
 		let totalTime = ''
 		if (get(store.shareTimes)) {
-			totalTime = `\n${get(t)('main.summary.total_time')}: ${totalTimeElement.span!.innerText}`
-			emojiGridParams.guessTimes = guessTimeElements.map((e) => e.span!.innerText)
+			totalTime = `\n  ${get(t)('main.summary.total_time')}: ${totalTimeElement.span!.innerText}`
+			emojiGridParams.guessTimes = getGuessTimes()
 		}
 		let url = ''
 		if (get(store.shareURL)) {
@@ -59,6 +60,15 @@
 	async function onShareImage() {
 		shareMenu = false
 		imageShared = true
+		drawResults(canvas, {
+			highContrast: get(store.highContrast),
+			boardContent: get(store.boardContent),
+			guesses: get(store.guesses),
+			caption: shareTitleText,
+			guessTimes: get(store.shareTimes) ? getGuessTimes() : undefined,
+			showURL: get(store.shareURL),
+			hash: lastGameDetail!.hash || undefined,
+		})
 		trackEvent('resultShare')
 		await shareImage(
 			canvas,
@@ -107,12 +117,6 @@
 			gameMode: lastGameDetail!.mode,
 			hardMode: get(store.lastPlayedWasHard),
 			day: lastGameDetail!.dayNumber,
-		})
-		drawResults(canvas, {
-			highContrast: get(store.highContrast),
-			boardContent: get(store.boardContent),
-			guesses: get(store.guesses),
-			caption: shareTitleText,
 		})
 	})
 </script>
@@ -196,7 +200,7 @@
 		{/if}
 	</div>
 	<div class="image-share" style:display={imageShared ? 'flex' : 'none'}>
-		<canvas bind:this={canvas} width="504" height="0" style={'width:252px'} />
+		<canvas bind:this={canvas} height="0" style={'width:252px'} />
 		<button on:click={onCopyImage}>{$t('main.results.copy_image')}</button>
 	</div>
 </section>
