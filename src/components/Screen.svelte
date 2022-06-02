@@ -63,6 +63,7 @@
 	.column {
 		max-width: 520px;
 		width: 100%;
+		margin-top: 60px;
 		display: flex;
 		align-items: flex-start;
 		justify-content: center;
@@ -76,8 +77,10 @@
 		min-height: 60px;
 		background-color: var(--tertiary-color);
 		display: flex;
+		position: fixed;
 		align-items: center;
 		justify-content: center;
+		z-index: 999999;
 	}
 
 	svg {

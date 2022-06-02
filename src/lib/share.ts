@@ -70,25 +70,36 @@ const aprilFoolsDown = [
 	'🔻',
 ]
 const aprilFoolsCorrect = ['🟩', '🐸', '🍀', '🔋', '📗', '💹', '✅', '✳️', '❇️', '🟢']
-export function getEmojiGrid(guesses: string[], answer: string): string {
+export function getEmojiGrid({
+	guesses,
+	answer,
+	guessTimes,
+}: {
+	guesses: string[]
+	answer: string
+	guessTimes?: string[]
+}): string {
 	const today = new Date()
 	const aprilFools = today.getMonth() === 3 && today.getDate() === 1 // April 1st
+	let timeStringPad: number
+	if (guessTimes) timeStringPad = longestStringLength(guessTimes)
 	return (
 		'  ' +
 		guesses
-			.map((word) =>
-				[...word]
-					.map((letter, l) => {
-						if (letter === answer[l]) return aprilFools ? pickRandom(aprilFoolsCorrect) : '🟩'
-						return letter > answer[l]
-							? aprilFools
-								? pickRandom(aprilFoolsDown)
-								: '🔽'
-							: aprilFools
-							? pickRandom(aprilFoolsUp)
-							: '🔼'
-					})
-					.join('')
+			.map(
+				(word, w) =>
+					[...word]
+						.map((letter, l) => {
+							if (letter === answer[l]) return aprilFools ? pickRandom(aprilFoolsCorrect) : '🟩'
+							return letter > answer[l]
+								? aprilFools
+									? pickRandom(aprilFoolsDown)
+									: '🔽'
+								: aprilFools
+								? pickRandom(aprilFoolsUp)
+								: '🔼'
+						})
+						.join('') + (guessTimes ? ' ' + guessTimes[w].padStart(timeStringPad) : '')
 			)
 			.join('\n  ')
 	)
@@ -133,13 +144,28 @@ export function drawResults(
 		boardContent,
 		guesses,
 		caption,
-	}: { highContrast: boolean; boardContent: Board; guesses: string[]; caption: string }
+		guessTimes,
+		totalTime,
+		showURL,
+		hash,
+	}: {
+		highContrast: boolean
+		boardContent: Board
+		guesses: string[]
+		caption: string
+		guessTimes?: string[]
+		totalTime?: string
+		showURL: boolean
+		hash?: string
+	}
 ): void {
 	if (!canvas) return
-	canvas.height = guesses.length * 100 + 60
+	canvas.width = 504 + (guessTimes ? longestStringLength(guessTimes) * 28 + 6 : 0)
+	canvas.style.maxWidth = `min(100%, ${Math.round(canvas.width / 2)}px)`
+	canvas.height = guesses.length * 100 + 60 + (showURL ? 44 : 0)
 	const ctx = canvas.getContext('2d')!
 	ctx.fillStyle = highContrast ? '#161a25' : '#312236'
-	ctx.fillRect(0, 0, 504, 660)
+	ctx.fillRect(0, 0, canvas.width, canvas.height)
 	const roundedRectangle = (
 		x: number,
 		y: number,
@@ -158,6 +184,9 @@ export function drawResults(
 		ctx.closePath()
 		ctx.fill()
 	}
+	ctx.font = '50px Arial'
+	ctx.textAlign = 'right'
+	ctx.textBaseline = 'middle'
 	boardContent.forEach((row, r) => {
 		if (r >= guesses.length) return
 		row.forEach((tile, t) => {
@@ -177,9 +206,25 @@ export function drawResults(
 			const l = 88
 			roundedRectangle(x, y, l, l, topRadius, bottomRadius)
 		})
+		if (guessTimes) {
+			ctx.fillStyle = '#a7a1a9'
+			ctx.fillText(guessTimes[r], canvas.width - 6, r * 100 + 55)
+		}
 	})
-	ctx.font = '40px Arial'
-	ctx.textAlign = 'center'
+	ctx.textBaseline = 'alphabetic'
 	ctx.fillStyle = '#cccccc'
-	ctx.fillText(caption, 252, guesses.length * 100 + 44)
+	if (totalTime) ctx.fillText(totalTime, canvas.width - 6, guesses.length * 100 + 44)
+	ctx.font = '40px Arial'
+	ctx.textAlign = totalTime ? 'left' : 'center'
+	ctx.fillText(caption, totalTime ? 8 : canvas.width / 2, guesses.length * 100 + 44)
+	if (showURL) {
+		ctx.font = '40px Arial'
+		let url = 'wordlepeaks.com'
+		if (hash) url += '/#' + hash
+		ctx.fillStyle = '#a7a1a9'
+		ctx.fillText(url, totalTime ? 8 : canvas.width / 2, guesses.length * 100 + 92)
+	}
 }
+
+const longestStringLength = (strArr: string[]) =>
+	strArr.reduce((prev, curr) => (prev === null || prev.length < curr.length ? curr : prev)).length

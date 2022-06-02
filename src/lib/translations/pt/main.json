@@ -60,7 +60,8 @@
 		"swap_enter_backspace": "Trocar a posição das teclas Enter/Apagar",
 		"alphabetic": "Alfabético",
 		"use_dyslexic_font": "Fonte OpenDyslexic",
-		"include_link": "Incluir link no texto de compartilhamento"
+		"include_link": "Incluir link",
+		"include_times": "Incluir tempos"
 	},
 	"footer": {
 		"credits": "um projeto <a href=\"https://github.com/vegeta897/wordle-peaks\">open source</a> inspirado por <a href=\"https://www.nytimes.com/games/wordle/index.html\">Wordle</a>",

@@ -4,6 +4,7 @@
 	export let ms: number | false = false
 	export let countdown: number | false = false
 	export let alwaysShowHours: boolean = false
+	export let bindContainer: { span: HTMLSpanElement | undefined } = { span: undefined }
 
 	const padZero = (value: number) => value.toString().padStart(2, '0')
 	const MINUTE = 60 * 1000
@@ -12,7 +13,7 @@
 	let msLeft = countdown ? countdown - new Date() : ms
 
 	let interval
-	if (countdown) {
+	if (countdown && msLeft > 0) {
 		interval = setInterval(() => {
 			msLeft = countdown - new Date()
 		}, 1000)
@@ -30,7 +31,7 @@
 
 {#if !countdown || msLeft > 0}
 	<slot name="title" />
-	<span class={$$props.class}>
+	<span bind:this={bindContainer.span} class={$$props.class}>
 		<span class:fade={hours === 0}>{showHours ? hours : ''}</span><span
 			class:fade={minutes === 0 && hours === 0}>{showHours ? ':' + padZero(minutes) : minutes}</span
 		>:{padZero(seconds)}

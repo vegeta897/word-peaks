@@ -50,7 +50,7 @@
 		display: flex;
 		justify-content: center;
 		flex-wrap: wrap;
-		padding: 2em 0;
+		padding: 2rem 0.5rem;
 	}
 
 	.stats-item {
