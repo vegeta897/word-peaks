@@ -66,6 +66,7 @@
 				? { hash: lastGameDetail!.hash }
 				: { day: lastGameDetail!.dayNumber }
 		)
+		canvas.scrollIntoView({ block: 'center' })
 	}
 
 	function onCopyImage() {
@@ -172,8 +173,8 @@
 	<div class="share">
 		{#if shareMenu}
 			<div class="share-buttons">
-				<button on:click={shareText} class="share-button">{$t('main.results.text')}</button>
-				<button on:click={onShareImage} class="share-button">{$t('main.results.image')}</button>
+				<button on:click={shareText}>{$t('main.results.text')}</button>
+				<button on:click={onShareImage}>{$t('main.results.image')}</button>
 			</div>
 			<div class="share-options">
 				{#each toggleOptions as toggleOption}
@@ -191,14 +192,12 @@
 				{/each}
 			</div>
 		{:else}
-			<button on:click={() => (shareMenu = true)} class="share-button"
-				>{$t('main.results.share')}</button
-			>
+			<button on:click={() => (shareMenu = true)}>{$t('main.results.share')}</button>
 		{/if}
 	</div>
 	<div class="image-share" style:display={imageShared ? 'flex' : 'none'}>
 		<canvas bind:this={canvas} width="504" height="0" style={'width:252px'} />
-		<button on:click={onCopyImage} class="share-button">{$t('main.results.copy_image')}</button>
+		<button on:click={onCopyImage}>{$t('main.results.copy_image')}</button>
 	</div>
 </section>
 
@@ -207,7 +206,7 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		padding: 2em 0;
+		padding: 2rem 0.5rem;
 	}
 
 	.info {
@@ -295,6 +294,26 @@
 		justify-content: center;
 	}
 
+	button {
+		border-radius: 4px;
+		border: 0;
+		padding: 0 1rem;
+		height: 3rem;
+		font-size: 1.2em;
+		font-weight: 700;
+		min-width: 10rem;
+		background: var(--cta-color);
+	}
+
+	button:hover {
+		background: #3388de;
+	}
+
+	button:focus {
+		outline: 1px solid #fff;
+		outline-offset: 2px;
+	}
+
 	.share > button {
 		font-size: 1.5em;
 		height: 4rem;
@@ -310,7 +329,6 @@
 
 	.share-buttons button {
 		margin: 0.3rem 0;
-		padding: 0 1rem;
 		min-width: 100%;
 	}
 
@@ -326,29 +344,6 @@
 		font-size: 1.2em;
 		margin: 0.5rem 0;
 		padding: 0.4rem 0.8rem 0.4rem 0;
-	}
-
-	button {
-		border-radius: 4px;
-		border: 0;
-		padding: 0;
-		height: 3rem;
-		font-size: 1.2em;
-		font-weight: 700;
-		min-width: 10rem;
-	}
-
-	button:focus {
-		outline: 1px solid #fff;
-		outline-offset: 2px;
-	}
-
-	button.share-button {
-		background: var(--cta-color);
-	}
-
-	button.share-button:hover {
-		background: #3388de;
 	}
 
 	.image-share {
