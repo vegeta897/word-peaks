@@ -60,7 +60,8 @@
 		"swap_enter_backspace": "Enter ve Backspace tuşlarının yerini değiştir",
 		"alphabetic": "Alfabetik",
 		"use_dyslexic_font": "OpenDyslexic yazı tipi",
-		"include_link": "Paylaş metnine adresi ekle"
+		"include_link": "Adresi ekle",
+		"include_times": "Süre ekle"
 	},
 	"footer": {
 		"credits": "<a href=\"https://www.nytimes.com/games/wordle/index.html\">Wordle'dan</a> esinlenilmiş <a href=\"https://github.com/vegeta897/wordle-peaks\">açık kaynak</a> kodlu bir proje",
