@@ -97,7 +97,7 @@
 				on:click={toggleOption.click}
 				hideLabel
 				label={$t(toggleOption.label)}
-				style="transform: scale(1.6); touch-action: manipulation;"
+				style="transform: scale(1.6); touch-action: manipulation; flex-basis: 2.5rem;"
 				toggledColor="var(--accent-color)"
 				untoggledColor="#695d6e"><div class="label">{$t(toggleOption.label)}</div></Toggle
 			>
