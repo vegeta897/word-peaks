@@ -66,6 +66,7 @@
 			guesses: get(store.guesses),
 			caption: shareTitleText,
 			guessTimes: get(store.shareTimes) ? getGuessTimes() : undefined,
+			totalTime: get(store.shareTimes) ? totalTimeElement.span!.innerText : undefined,
 			showURL: get(store.shareURL),
 			hash: lastGameDetail!.hash || undefined,
 		})
@@ -199,7 +200,7 @@
 			<button on:click={() => (shareMenu = true)}>{$t('main.results.share')}</button>
 		{/if}
 	</div>
-	<div class="image-share" style:display={imageShared ? 'flex' : 'none'}>
+	<div class="image-share" style:display={imageShared && !shareMenu ? 'flex' : 'none'}>
 		<canvas bind:this={canvas} />
 		<button on:click={onCopyImage}>{$t('main.results.copy_image')}</button>
 	</div>

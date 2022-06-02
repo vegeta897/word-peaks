@@ -145,6 +145,7 @@ export function drawResults(
 		guesses,
 		caption,
 		guessTimes,
+		totalTime,
 		showURL,
 		hash,
 	}: {
@@ -153,6 +154,7 @@ export function drawResults(
 		guesses: string[]
 		caption: string
 		guessTimes?: string[]
+		totalTime?: string
 		showURL: boolean
 		hash?: string
 	}
@@ -209,16 +211,18 @@ export function drawResults(
 			ctx.fillText(guessTimes[r], canvas.width - 6, r * 100 + 55)
 		}
 	})
-	ctx.fillStyle = '#cccccc'
-	ctx.font = '40px Arial'
-	ctx.textAlign = 'center'
 	ctx.textBaseline = 'alphabetic'
-	ctx.fillText(caption, canvas.width / 2, guesses.length * 100 + 44)
+	ctx.fillStyle = '#cccccc'
+	if (totalTime) ctx.fillText(totalTime, canvas.width - 6, guesses.length * 100 + 44)
+	ctx.font = '40px Arial'
+	ctx.textAlign = totalTime ? 'left' : 'center'
+	ctx.fillText(caption, totalTime ? 8 : canvas.width / 2, guesses.length * 100 + 44)
 	if (showURL) {
+		ctx.font = '40px Arial'
 		let url = 'wordlepeaks.com'
 		if (hash) url += '/#' + hash
 		ctx.fillStyle = '#a7a1a9'
-		ctx.fillText(url, canvas.width / 2, guesses.length * 100 + 92)
+		ctx.fillText(url, totalTime ? 8 : canvas.width / 2, guesses.length * 100 + 92)
 	}
 }
 
