@@ -159,7 +159,7 @@ export function drawResults(
 ): void {
 	if (!canvas) return
 	canvas.width = 504 + (guessTimes ? longestStringLength(guessTimes) * 28 + 6 : 0)
-	canvas.style.width = Math.round(canvas.width / 2) + 'px'
+	canvas.style.maxWidth = `min(100%, ${Math.round(canvas.width / 2)}px)`
 	canvas.height = guesses.length * 100 + 60 + (showURL ? 44 : 0)
 	const ctx = canvas.getContext('2d')!
 	ctx.fillStyle = highContrast ? '#161a25' : '#312236'

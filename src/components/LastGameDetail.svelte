@@ -200,7 +200,7 @@
 		{/if}
 	</div>
 	<div class="image-share" style:display={imageShared ? 'flex' : 'none'}>
-		<canvas bind:this={canvas} height="0" style={'width:252px'} />
+		<canvas bind:this={canvas} />
 		<button on:click={onCopyImage}>{$t('main.results.copy_image')}</button>
 	</div>
 </section>
