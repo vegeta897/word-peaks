@@ -70,25 +70,42 @@ const aprilFoolsDown = [
 	'🔻',
 ]
 const aprilFoolsCorrect = ['🟩', '🐸', '🍀', '🔋', '📗', '💹', '✅', '✳️', '❇️', '🟢']
-export function getEmojiGrid(guesses: string[], answer: string): string {
+export function getEmojiGrid({
+	guesses,
+	answer,
+	guessTimes,
+}: {
+	guesses: string[]
+	answer: string
+	guessTimes?: string[]
+}): string {
 	const today = new Date()
 	const aprilFools = today.getMonth() === 3 && today.getDate() === 1 // April 1st
+	let timeStringPad: number
+	if (guessTimes) {
+		guessTimes[2] = '12:30'
+		timeStringPad = guessTimes.reduce((prev, curr) =>
+			prev === null || prev.length < curr.length ? curr : prev
+		).length
+		console.log(timeStringPad)
+	}
 	return (
 		'  ' +
 		guesses
-			.map((word) =>
-				[...word]
-					.map((letter, l) => {
-						if (letter === answer[l]) return aprilFools ? pickRandom(aprilFoolsCorrect) : '🟩'
-						return letter > answer[l]
-							? aprilFools
-								? pickRandom(aprilFoolsDown)
-								: '🔽'
-							: aprilFools
-							? pickRandom(aprilFoolsUp)
-							: '🔼'
-					})
-					.join('')
+			.map(
+				(word, w) =>
+					[...word]
+						.map((letter, l) => {
+							if (letter === answer[l]) return aprilFools ? pickRandom(aprilFoolsCorrect) : '🟩'
+							return letter > answer[l]
+								? aprilFools
+									? pickRandom(aprilFoolsDown)
+									: '🔽'
+								: aprilFools
+								? pickRandom(aprilFoolsUp)
+								: '🔼'
+						})
+						.join('') + (guessTimes ? ' ' + guessTimes[w].padStart(timeStringPad) : '')
 			)
 			.join('\n  ')
 	)

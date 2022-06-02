@@ -1,4 +1,4 @@
-import { ROWS } from '$lib/data-model'
+import { encodeWord, ROWS } from '$lib/data-model'
 import type { GameMode } from '$lib/data-model'
 import * as store from '$src/store'
 import { get } from 'svelte/store'
@@ -26,6 +26,7 @@ export type GameDetail = {
 	answer: string
 	guesses: string[]
 	guessTimes: number[]
+	hash: string | null
 }
 
 export function saveGameDetail() {
@@ -37,6 +38,7 @@ export function saveGameDetail() {
 		answer: get(store.answer),
 		guesses: get(store.guesses),
 		guessTimes: get(store.guessTimes),
+		hash: mode === 'daily' ? null : encodeWord(get(store.answer)),
 	})
 }
 

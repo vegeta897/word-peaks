@@ -1,21 +1,11 @@
 <script lang="ts">
-	import { trackEvent } from '$lib/plausible'
 	import type { GameMode } from '$lib/data-model'
 	import { getDayEnd, getDayNumber } from '$lib/data-model'
 	import { onMount } from 'svelte'
 	import * as store from '$src/store'
 	import { get } from 'svelte/store'
-	import {
-		copyImage,
-		copyText,
-		drawResults,
-		getEmojiGrid,
-		getShareTitle,
-		shareImage,
-	} from '$lib/share'
 	import Stats from '$com/Stats.svelte'
 	import { t } from '$lib/translations'
-	import { toast } from '@zerodevx/svelte-toast'
 	import Screen from '$com/Screen.svelte'
 	import LastGameDetail from '$com/LastGameDetail.svelte'
 	import Time from '$com/Time.svelte'
@@ -43,74 +33,12 @@
 	let nextWordReady = nextDailyTime < new Date()
 	setInterval(() => (nextWordReady = nextDailyTime < new Date()), 1000)
 
-	let shareTitleText: string
-
-	const successToast = (message: string) =>
-		toast.push(message, {
-			theme: { '--toastBackground': 'var(--cta-color)' },
-		})
-	const errorToast = () =>
-		toast.push(get(t)('main.messages.could_not_do'), {
-			theme: { '--toastBackground': 'var(--cta-color)' },
-		})
-
-	function shareText() {
-		shareMenu = false
-		trackEvent('resultShare')
-		let url = ''
-		if (get(store.shareURL)) {
-			url = '\nhttps://wordlepeaks.com'
-			if (lastGameMode === 'random') url += `/#${hash}`
-		}
-		copyText(
-			shareTitleText + '\n\n' + getEmojiGrid(get(store.guesses), get(store.answer)) + url
-		).then(
-			() => successToast(get(t)('main.messages.score_copied')),
-			() => errorToast()
-		)
-	}
-
-	let shareMenu: boolean
-	let imageShared: boolean
-
-	let canvas: HTMLCanvasElement
-
-	async function onShareImage() {
-		shareMenu = false
-		imageShared = true
-		trackEvent('resultShare')
-		await shareImage(canvas, lastGameMode === 'random' ? { hash } : { day: _lastPlayedDaily + 1 })
-	}
-
-	function onCopyImage() {
-		try {
-			copyImage(canvas)
-			successToast(get(t)('main.messages.image_copied'))
-		} catch (e) {
-			errorToast()
-		}
-	}
-
 	onMount(() => {
 		lastGameMode = get(store.gameMode)
 		lastGameFinished = get(store.gameFinished)
 		lastGameWon = get(store.gameWon)
 		lastAnswer = get(store.answer)
 		lastGameDetail = get(store.lastGameDetail)
-
-		shareTitleText = getShareTitle({
-			gameWon: get(store.gameWon),
-			guesses: get(store.guesses),
-			gameMode: lastGameMode,
-			hardMode: get(store.lastPlayedWasHard),
-			day: _lastPlayedDaily + 1,
-		})
-		drawResults(canvas, {
-			highContrast: get(store.highContrast),
-			boardContent: get(store.boardContent),
-			guesses: get(store.guesses),
-			caption: shareTitleText,
-		})
 	})
 </script>
 
@@ -124,6 +52,16 @@
 	{#if lastGameFinished && !lastGameWon}
 		<h3 class="answer">{@html $t('main.results.answer', { answer: lastAnswer.toUpperCase() })}</h3>
 	{/if}
+	<div class="tabs-container">
+		{#if lastGameDetail && lastGameMode === lastGameDetail.mode && lastAnswer === lastGameDetail.answer}
+			<Tabs tab1Title={$t('main.summary.title')} tab2Title={$t('main.stats.title')}>
+				<LastGameDetail {lastGameDetail} slot="tab-1" />
+				<Stats slot="tab-2" gameMode={lastGameMode} />
+			</Tabs>
+		{:else}
+			<Stats gameMode={lastGameMode} />
+		{/if}
+	</div>
 	<div class="next-up">
 		<div class="column">
 			<div class="countdown">
@@ -134,37 +72,11 @@
 			</div>
 		</div>
 		<div class="column">
-			{#if lastGameFinished}
-				{#if shareMenu}
-					<div class="share-buttons">
-						<button on:click={shareText} class="share-button">{$t('main.results.text')}</button>
-						<button on:click={onShareImage} class="share-button">{$t('main.results.image')}</button>
-					</div>
-				{:else}
-					<button on:click={() => (shareMenu = true)} class="share-button"
-						>{$t('main.results.share')}</button
-					>
-				{/if}
-			{/if}
 			{#if lastGameMode === 'random' || nextWordReady || !dailyFinished}
 				<button on:click={playDaily} class="play-button">{$t('main.results.play_daily')}</button>
 			{/if}
 			<button on:click={playRandom} class="play-button">{$t('main.results.play_random')}</button>
 		</div>
-	</div>
-	<div class="image-share" class:hidden={!imageShared}>
-		<canvas bind:this={canvas} width="504" height="0" style={'width:252px'} />
-		<button on:click={onCopyImage} class="share-button">{$t('main.results.copy_image')}</button>
-	</div>
-	<div class="tabs-container">
-		{#if lastGameDetail && lastGameMode === lastGameDetail.mode && lastAnswer === lastGameDetail.answer}
-			<Tabs tab1Title={$t('main.summary.title')} tab2Title={$t('main.stats.title')}>
-				<LastGameDetail {lastGameDetail} slot="tab-1" />
-				<Stats slot="tab-2" gameMode={lastGameMode} />
-			</Tabs>
-		{:else}
-			<Stats gameMode={lastGameMode} />
-		{/if}
 	</div>
 </Screen>
 
@@ -181,6 +93,7 @@
 	}
 
 	.next-up {
+		margin-top: 1.4rem;
 		display: flex;
 		justify-content: space-around;
 		align-items: center;
@@ -213,26 +126,12 @@
 		outline-offset: 2px;
 	}
 
-	button.share-button {
-		background: var(--cta-color);
-	}
-
-	button.share-button:hover {
-		background: #3388de;
-	}
-
 	button.play-button {
 		background: #04883b;
 	}
 
 	button.play-button:hover {
 		background: var(--correct-color);
-	}
-
-	.share-buttons {
-		display: flex;
-		justify-content: space-between;
-		gap: 1rem;
 	}
 
 	.share-buttons button {
@@ -264,30 +163,9 @@
 		padding: 0 0.6rem;
 	}
 
-	.image-share {
-		margin-top: 1rem;
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-		gap: 0.8rem;
-	}
-
-	.image-share canvas {
-		padding: 4px;
-		border: 1px solid var(--primary-color);
-		box-shadow: 0 0 8px var(--primary-color);
-		/*transform: scale(0.5);*/
-	}
-
-	.hidden {
-		display: none;
-	}
-
 	.tabs-container {
 		background: var(--tertiary-color);
 		border-radius: 1rem;
-		margin-top: 1.4rem;
 	}
 
 	@media (max-width: 400px) {

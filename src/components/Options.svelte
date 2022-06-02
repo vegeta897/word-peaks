@@ -32,9 +32,7 @@
 		}
 	}
 
-	const toggle = (prop: Writable<boolean>) => () => {
-		prop.set(!get(prop))
-	}
+	const toggle = (prop: Writable<boolean>) => () => prop.set(!get(prop))
 
 	const toggleOptions = [
 		{ bind: hardModeToggle, label: 'main.options.hard_mode', click: toggleHardMode },
@@ -49,11 +47,6 @@
 			bind: store.dyslexicFont,
 			label: 'main.options.use_dyslexic_font',
 			click: toggle(store.dyslexicFont),
-		},
-		{
-			bind: store.shareURL,
-			label: 'main.options.include_link',
-			click: toggle(store.shareURL),
 		},
 	]
 
