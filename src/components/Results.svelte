@@ -93,6 +93,7 @@
 
 	.next-up {
 		margin-top: 1.4rem;
+		padding: 0 1rem;
 		display: flex;
 		justify-content: space-around;
 		align-items: center;
