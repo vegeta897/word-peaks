@@ -15,7 +15,8 @@
 		"could_not_do": "¡Lo sentimos, no se pudo hacer eso!",
 		"score_copied": "¡Puntuación copiada!",
 		"image_copied": "¡Imagen copiada!",
-		"need_reload": "Actualización necesaria, por favor recarga la página"
+		"need_reload": "Actualización necesaria, por favor recarga la página",
+		"new": "Nuevo"
 	},
 	"keyboard": {
 		"enter": "Aceptar"
@@ -39,7 +40,11 @@
 		"win_rate": "Porcentaje de victorias",
 		"current_streak": "Racha actual",
 		"best_streak": "Mejor racha",
-		"guess_distribution": "Distribución de intentos",
+		"winning_guesses": "Adivinanzas ganadoras",
+		"average_guess_time": "Tiempo promedio de adivinanza",
+		"fastest_game": "Juego más rápido",
+		"average_game": "Juego promedio",
+		"average_guess": "Suposición promedio",
 		"stats_daily": "Sólo cuentan las estadísticas diarias"
 	},
 	"summary": {

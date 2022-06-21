@@ -13,7 +13,7 @@ import { t } from '$lib/translations'
 import { trackEvent } from '$lib/plausible'
 import { toast } from '@zerodevx/svelte-toast'
 import type { SvelteToastOptions } from '@zerodevx/svelte-toast'
-import { saveGameDetail, recordGuessTime } from '$lib/stats'
+import { saveGameDetail, recordGuessTime, updateStats } from '$lib/stats'
 
 export function resetBoard() {
 	toast.pop()
@@ -165,19 +165,7 @@ export async function submitRow() {
 		store[gameMode === 'daily' ? 'lastPlayedDailyWasHard' : 'lastPlayedRandomWasHard'].set(
 			get(store.hardMode)
 		)
-		if (gameMode === 'daily')
-			store.stats.update((_stats) => {
-				const streak = won ? _stats.currentStreak + 1 : 0
-				const distribution = [..._stats.distribution]
-				distribution[get(store.guesses).length - 1]++
-				return {
-					currentStreak: streak,
-					bestStreak: streak > _stats.bestStreak ? streak : _stats.bestStreak,
-					totalGames: _stats.totalGames + 1,
-					wonGames: _stats.wonGames + (won ? 1 : 0),
-					distribution,
-				}
-			})
+		if (gameMode === 'daily') updateStats(won)
 		saveGameDetail()
 	} else {
 		store.currentTile.set(0)

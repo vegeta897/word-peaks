@@ -15,7 +15,8 @@
 		"could_not_do": "Üzgünüm, bunu yapamam!",
 		"score_copied": "Skor kopyalandı!",
 		"image_copied": "Resim kopyalandı!",
-		"need_reload": "Güncelleme gerekli, lütfen sayfayı yeniden yükleyin"
+		"need_reload": "Güncelleme gerekli, lütfen sayfayı yeniden yükleyin",
+		"new": "Yeni"
 	},
 	"keyboard": {
 		"enter": "Enter"
@@ -39,7 +40,11 @@
 		"win_rate": "Kazanma oranı",
 		"current_streak": "Mevcut seri",
 		"best_streak": "En uzun seri",
-		"guess_distribution": "Tahmin dağılımı",
+		"winning_guesses": "Kazanan Tahminler",
+		"average_guess_time": "Ortalama Tahmin Süresi",
+		"fastest_game": "En Hızlı Oyun",
+		"average_game": "Ortalama Oyun",
+		"average_guess": "Ortalama Tahmin",
 		"stats_daily": "İstatistiklere sadece günlük oyunlar dahildir"
 	},
 	"summary": {

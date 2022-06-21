@@ -19,6 +19,55 @@ export const newStats = (): Stats => ({
 	distribution: new Array(ROWS).fill(0),
 })
 
+export type TimeStats = {
+	totalTime: number
+	gameCount: number
+	guessTotals: number[]
+	guessCounts: number[]
+	fastestGame: number
+}
+
+export const newTimeStats = (): TimeStats => ({
+	totalTime: 0,
+	gameCount: 0,
+	guessTotals: new Array(ROWS).fill(0),
+	guessCounts: new Array(ROWS).fill(0),
+	fastestGame: 0,
+})
+
+export function updateStats(won: boolean) {
+	const guessCount = get(store.guesses).length
+	store.stats.update((stats) => {
+		const streak = won ? stats.currentStreak + 1 : 0
+		const distribution = [...stats.distribution]
+		distribution[guessCount - 1]++
+		return {
+			currentStreak: streak,
+			bestStreak: streak > stats.bestStreak ? streak : stats.bestStreak,
+			totalGames: stats.totalGames + 1,
+			wonGames: stats.wonGames + (won ? 1 : 0),
+			distribution,
+		}
+	})
+	const guessTimes = get(store.guessTimes)
+	const gameTime = guessTimes.at(-1)! - guessTimes[0]
+	store.timeStats.update((timeStats) => {
+		const guessTotals = timeStats.guessTotals.map((t, g) =>
+			g < guessCount ? t + (guessTimes[g + 1] - guessTimes[g]) : t
+		)
+		return {
+			gameCount: timeStats.gameCount + 1,
+			totalTime: timeStats.totalTime + gameTime,
+			guessTotals,
+			guessCounts: timeStats.guessCounts.map((c, g) => (g < guessCount ? c + 1 : c)),
+			fastestGame:
+				timeStats.fastestGame === 0 || gameTime < timeStats.fastestGame
+					? gameTime
+					: timeStats.fastestGame,
+		}
+	})
+}
+
 export type GameDetail = {
 	mode: GameMode
 	dayNumber: number
@@ -50,6 +99,3 @@ export function recordGuessTime(row: number) {
 		}
 	)
 }
-
-export const getHighestDistribution = (stats: Stats) =>
-	stats.distribution.reduce((a, b) => Math.max(a, b), 1)

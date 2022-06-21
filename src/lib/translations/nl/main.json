@@ -15,7 +15,8 @@
 		"could_not_do": "Sorry, kon dat niet doen!",
 		"score_copied": "Score gekopieerd!",
 		"image_copied": "Afbeelding gekopieerd!",
-		"need_reload": "Update nodig, herlaad de pagina a.u.b."
+		"need_reload": "Update nodig, herlaad de pagina a.u.b.",
+		"new": "Nieuw"
 	},
 	"keyboard": {
 		"enter": "Invoeren"
@@ -39,7 +40,11 @@
 		"win_rate": "Winratio",
 		"current_streak": "Huidige reeks",
 		"best_streak": "Beste Reeks",
-		"guess_distribution": "Gok verdeling",
+		"winning_guesses": "Winnende gissingen",
+		"average_guess_time": "Gemiddelde goktijd",
+		"fastest_game": "Snelste spel",
+		"average_game": "Gemiddeld spel",
+		"average_guess": "Gemiddelde gok",
 		"stats_daily": "Statistieken gaan alleen over dagelijkse spellen"
 	},
 	"summary": {

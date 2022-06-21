@@ -15,7 +15,8 @@
 		"could_not_do": "Désolé, je ne peux pas faire ça !",
 		"score_copied": "Score copié !",
 		"image_copied": "Image copiée !",
-		"need_reload": "Mise à jour nécessaire, veuillez recharger la page"
+		"need_reload": "Mise à jour nécessaire, veuillez recharger la page",
+		"new": "Nouveau"
 	},
 	"keyboard": {
 		"enter": "Entrer"
@@ -39,7 +40,11 @@
 		"win_rate": "Taux de victoire",
 		"current_streak": "Série actuelle",
 		"best_streak": "Meilleure série",
-		"guess_distribution": "Répartition des essais",
+		"winning_guesses": "Conjectures gagnantes",
+		"average_guess_time": "Temps d'estimation moyen",
+		"fastest_game": "Jeu le plus rapide",
+		"average_game": "Jeu moyen",
+		"average_guess": "Estimation moyenne",
 		"stats_daily": "Les statistiques ne comptent que les jeux quotidiens"
 	},
 	"summary": {

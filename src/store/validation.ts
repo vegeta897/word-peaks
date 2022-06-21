@@ -3,7 +3,7 @@ import * as app from '$src/store/app'
 import type { GameMode } from '$lib/data-model'
 import type { GameDetail } from '$lib/stats'
 import { keyboardLayoutNames, ROWS, WORD_LENGTH } from '$lib/data-model'
-import { newStats } from '$lib/stats'
+import { newStats, newTimeStats } from '$lib/stats'
 import * as game from '$src/store/game-state'
 
 // TODO: Add a validate.html page that displays all localstorage values
@@ -12,6 +12,14 @@ const isValidAnswer = (value: any) =>
 	!value ||
 	(typeof value !== 'string' && !(<any>value instanceof String)) ||
 	value.length !== WORD_LENGTH
+
+const validateArrayStat = (statArr: number[], init: number[]): number[] => {
+	if (!Array.isArray(statArr) || statArr.length !== ROWS) return init
+	for (let i = 0; i < statArr.length; i++) {
+		if (!(statArr[i] >= 0)) statArr[i] = 0
+	}
+	return statArr
+}
 
 export function validateLocalStorage() {
 	// Options
@@ -29,12 +37,17 @@ export function validateLocalStorage() {
 	if (!(stats.bestStreak >= 0)) stats.bestStreak = 0
 	if (!(stats.totalGames >= 0)) stats.totalGames = 0
 	if (!(stats.wonGames >= 0)) stats.wonGames = 0
-	if (!Array.isArray(stats.distribution) || stats.distribution.length !== ROWS)
-		stats.distribution = newStats().distribution
-	for (let d = 0; d < stats.distribution.length; d++) {
-		if (!(stats.distribution[d] >= 0)) stats.distribution[d] = 0
-	}
+	stats.distribution = validateArrayStat(stats.distribution, newStats().distribution)
 	app.stats.set(stats)
+
+	// Time stats
+	const timeStats = get(app.timeStats)
+	if (!(timeStats.totalTime >= 0)) timeStats.totalTime = 0
+	if (!(timeStats.gameCount >= 0)) timeStats.gameCount = 0
+	if (!(timeStats.fastestGame >= 0)) timeStats.fastestGame = 0
+	timeStats.guessTotals = validateArrayStat(timeStats.guessTotals, newTimeStats().guessTotals)
+	timeStats.guessCounts = validateArrayStat(timeStats.guessCounts, newTimeStats().guessCounts)
+	app.timeStats.set(timeStats)
 
 	// Last game details
 	const lastDetails: [GameMode, GameDetail | null][] = [

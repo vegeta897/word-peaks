@@ -14,14 +14,14 @@
 		<div class="footer-item icon-item">
 			<svg class="icon" viewBox="0 0 71 55" fill="none" xmlns="http://www.w3.org/2000/svg">
 				<title>Discord</title>
-				<path d={DiscordIconPathData} fill="#cccccc" />
+				<path d={DiscordIconPathData} fill="#bbbbbb" />
 			</svg>
 			<pre>vegeta897#7777</pre>
 		</div>
 		<div class="footer-item icon-item">
 			<svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 248 204">
 				<title>Twitter</title>
-				<path fill="#cccccc" d={TwitterIconPathData} />
+				<path fill="#bbbbbb" d={TwitterIconPathData} />
 			</svg>
 			<a href="https://twitter.com/vegeta897">@vegeta897</a>
 		</div>
@@ -35,7 +35,6 @@
 		justify-content: center;
 		align-items: center;
 		margin: 1rem auto 0.2rem;
-		opacity: 0.8;
 	}
 
 	.footer-row {
@@ -47,6 +46,7 @@
 
 	.footer-row p {
 		margin: 0 0 0.2rem;
+		color: #bbbbbb;
 	}
 
 	.icon-item {

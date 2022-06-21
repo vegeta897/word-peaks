@@ -15,7 +15,8 @@
 		"could_not_do": "Sorry, couldn't do that!",
 		"score_copied": "Score copied!",
 		"image_copied": "Image copied!",
-		"need_reload": "Update needed, please reload the page"
+		"need_reload": "Update needed, please reload the page",
+		"new": "New"
 	},
 	"keyboard": {
 		"enter": "Enter"
@@ -39,7 +40,11 @@
 		"win_rate": "Win rate",
 		"current_streak": "Current streak",
 		"best_streak": "Best streak",
-		"guess_distribution": "Guess distribution",
+		"winning_guesses": "Winning Guesses",
+		"average_guess_time": "Average Guess Time",
+		"fastest_game": "Fastest Game",
+		"average_game": "Average Game",
+		"average_guess": "Average Guess",
 		"stats_daily": "Stats only count daily games"
 	},
 	"summary": {

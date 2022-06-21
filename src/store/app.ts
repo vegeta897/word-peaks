@@ -1,8 +1,8 @@
 import { derived, writable } from 'svelte/store'
 import type { Writable, Readable } from 'svelte/store'
 import { writable as storageWritable } from 'svelte-local-storage-store'
-import type { Stats, GameDetail } from '$lib/stats'
-import { newStats } from '$lib/stats'
+import type { Stats, GameDetail, TimeStats } from '$lib/stats'
+import { newStats, newTimeStats } from '$lib/stats'
 import { gameMode } from '$src/store/game-state'
 import type { KeyboardLayout } from '$lib/data-model'
 
@@ -25,6 +25,7 @@ export const shareTimes: Writable<boolean> = storageWritable('wp-shareTimes', fa
 export const lastPlayedDaily: Writable<number> = storageWritable('wp-lastPlayedDaily', -1)
 
 export const stats: Writable<Stats> = storageWritable('wp-stats', newStats())
+export const timeStats: Writable<TimeStats> = storageWritable('wp-timeStats', newTimeStats())
 export const lastDailyDetail: Writable<GameDetail | null> = storageWritable(
 	'wp-lastDailyDetail',
 	null
