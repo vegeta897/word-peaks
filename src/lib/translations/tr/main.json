@@ -21,7 +21,7 @@
 		"enter": "Enter"
 	},
 	"results": {
-		"win": "Halloldu!",
+		"win": "Kazandın!",
 		"lose": "Olamaz!",
 		"answer": "Cevap buydu: <strong> {{answer}} </strong>",
 		"try_today": "Bugünün kelimesini dene!",
@@ -61,10 +61,10 @@
 		"alphabetic": "Alfabetik",
 		"use_dyslexic_font": "OpenDyslexic yazı tipi",
 		"include_link": "Adresi ekle",
-		"include_times": "Süre ekle"
+		"include_times": "Süreyi ekle"
 	},
 	"footer": {
 		"credits": "<a href=\"https://www.nytimes.com/games/wordle/index.html\">Wordle'dan</a> esinlenilmiş <a href=\"https://github.com/vegeta897/wordle-peaks\">açık kaynak</a> kodlu bir proje",
-		"donate": "☕ bana destek olmak istersen <a href=\"https://buymeacoffee.com/vegeta897\">bana bir kahve ısmarla</a>"
+		"donate": "☕ bana destek olmak istersen <a href=\"https://buymeacoffee.com/vegeta897\">bir kahve ısmarla</a>"
 	}
 }
