@@ -154,6 +154,10 @@
 		min-width: 20px;
 	}
 
+	em {
+		margin-top: 1rem;
+	}
+
 	@media (max-width: 480px) {
 		.stats-item {
 			font-size: 0.8em;
