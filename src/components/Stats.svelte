@@ -14,6 +14,7 @@
 	const highestAvgGuessTime = getHighest(guessTotals.map((t, g) => t / guessCounts[g]))
 
 	const guessCount = guessCounts.reduce((a, b) => a + b, 0)
+	const totalTime = guessTotals.reduce((a, b) => a + b, 0)
 </script>
 
 <section>
@@ -68,11 +69,11 @@
 				{$t('main.stats.fastest_game')}
 			</div>
 			<div class="stats-item">
-				<strong><Time ms={$timeStats.totalTime / $timeStats.gameCount} /></strong>
+				<strong><Time ms={totalTime / $timeStats.gameCount} /></strong>
 				{$t('main.stats.average_game')}
 			</div>
 			<div class="stats-item">
-				<strong><Time ms={$timeStats.totalTime / guessCount} /></strong>
+				<strong><Time ms={totalTime / guessCount} /></strong>
 				{$t('main.stats.average_guess')}
 			</div>
 		</div>

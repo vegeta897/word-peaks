@@ -42,7 +42,6 @@ export function validateLocalStorage() {
 
 	// Time stats
 	const timeStats = get(app.timeStats)
-	if (!(timeStats.totalTime >= 0)) timeStats.totalTime = 0
 	if (!(timeStats.gameCount >= 0)) timeStats.gameCount = 0
 	if (!(timeStats.fastestGame >= 0)) timeStats.fastestGame = 0
 	timeStats.guessTotals = validateArrayStat(timeStats.guessTotals, newTimeStats().guessTotals)

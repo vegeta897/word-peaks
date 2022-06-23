@@ -20,7 +20,6 @@ export const newStats = (): Stats => ({
 })
 
 export type TimeStats = {
-	totalTime: number
 	gameCount: number
 	guessTotals: number[]
 	guessCounts: number[]
@@ -28,7 +27,6 @@ export type TimeStats = {
 }
 
 export const newTimeStats = (): TimeStats => ({
-	totalTime: 0,
 	gameCount: 0,
 	guessTotals: new Array(ROWS).fill(0),
 	guessCounts: new Array(ROWS).fill(0),
@@ -57,7 +55,6 @@ export function updateStats(won: boolean) {
 		)
 		return {
 			gameCount: timeStats.gameCount + 1,
-			totalTime: timeStats.totalTime + gameTime,
 			guessTotals,
 			guessCounts: timeStats.guessCounts.map((c, g) => (g < guessCount ? c + 1 : c)),
 			fastestGame:
