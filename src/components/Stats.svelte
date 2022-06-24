@@ -5,6 +5,7 @@
 	import { ROWS } from '$lib/data-model'
 	import { get } from 'svelte/store'
 	import Time from '$com/Time.svelte'
+	import StatBar from '$com/StatBar.svelte'
 
 	export let gameMode: GameMode
 
@@ -42,23 +43,18 @@
 			<th>{$t('main.stats.average_guess_time')}</th>
 		</tr>
 		{#each { length: ROWS } as _, g}<tr
-				><td>{g + 1}</td><td
-					><div
-						class="bar"
-						style={`width: ${Math.round((100 * $stats.distribution[g]) / highestDistribution)}%`}
-					>
+				><td>{g + 1}</td><td>
+					<StatBar percent={$stats.distribution[g] / highestDistribution}>
 						{$stats.distribution[g]}
-					</div></td
-				><td
-					>{#if $timeStats.guessTotals[g] / $timeStats.guessCounts[g]}<div
-							class="bar"
-							style={`min-width: 3em; width: ${Math.round(
-								(100 * ($timeStats.guessTotals[g] / $timeStats.guessCounts[g])) /
-									highestAvgGuessTime
-							)}%`}
+					</StatBar></td
+				><td>
+					{#if $timeStats.guessTotals[g] / $timeStats.guessCounts[g]}
+						<StatBar
+							percent={$timeStats.guessTotals[g] / $timeStats.guessCounts[g] / highestAvgGuessTime}
+							minWidth="2.7em"
 						>
 							<Time ms={$timeStats.guessTotals[g] / $timeStats.guessCounts[g]} dimming={false} />
-						</div>{/if}</td
+						</StatBar>{/if}</td
 				></tr
 			>{/each}
 	</table>
@@ -142,17 +138,6 @@
 	td:nth-child(3) {
 		display: flex;
 		justify-content: flex-end;
-	}
-
-	.bar {
-		height: 20px;
-		background-color: var(--accent-color);
-		border-radius: 8px;
-		font-weight: 700;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		min-width: 20px;
 	}
 
 	em {
