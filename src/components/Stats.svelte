@@ -61,7 +61,7 @@
 	{#if $timeStats.gameCount}
 		<div class="stats-container" style="margin-top: 1.5rem">
 			<div class="stats-item">
-				<strong><Time ms={$timeStats.fastestGame} /></strong>
+				<strong><Time ms={$timeStats.fastestGame} decimals={2} /></strong>
 				{$t('main.stats.fastest_game')}
 			</div>
 			<div class="stats-item">

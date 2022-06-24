@@ -6,6 +6,9 @@
 	export let alwaysShowHours: boolean = false
 	export let bindContainer: { span: HTMLSpanElement | undefined } = { span: undefined }
 	export let dimming: boolean = true
+	export let decimals = 0
+
+	// TODO: Decimals option
 
 	const padZero = (value: number) => value.toString().padStart(2, '0')
 	const MINUTE = 60 * 1000
@@ -20,6 +23,7 @@
 		}, 1000)
 	}
 
+	$: milliseconds = Math.round((ms % 1000) / 10 ** (3 - decimals))
 	$: seconds = Math.floor(msLeft / 1000) % 60
 	$: minutes = Math.floor(msLeft / MINUTE) % 60
 	$: hours = Math.floor(msLeft / HOUR)
@@ -36,7 +40,7 @@
 		<span class:fade={dimming && hours === 0}>{showHours ? hours : ''}</span><span
 			class:fade={dimming && minutes === 0 && hours === 0}
 			>{showHours ? ':' + padZero(minutes) : minutes}</span
-		>:{padZero(seconds)}
+		>:{padZero(seconds)}{decimals > 0 ? `.${milliseconds}` : ''}
 	</span>
 {/if}
 {#if countdown && msLeft <= 0}<slot name="after-countdown" />{/if}
