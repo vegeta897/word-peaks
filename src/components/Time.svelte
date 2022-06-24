@@ -24,6 +24,8 @@
 	}
 
 	$: milliseconds = Math.round((ms % 1000) / 10 ** (3 - decimals))
+		.toString()
+		.padStart(decimals, '0')
 	$: seconds = Math.floor(msLeft / 1000) % 60
 	$: minutes = Math.floor(msLeft / MINUTE) % 60
 	$: hours = Math.floor(msLeft / HOUR)
