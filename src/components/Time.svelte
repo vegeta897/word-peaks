@@ -23,7 +23,7 @@
 		}, 1000)
 	}
 
-	$: milliseconds = Math.round((ms % 1000) / 10 ** (3 - decimals))
+	$: milliseconds = Math.floor((ms % 1000) / 10 ** (3 - decimals))
 		.toString()
 		.padStart(decimals, '0')
 	$: seconds = Math.floor(msLeft / 1000) % 60
