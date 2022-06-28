@@ -155,7 +155,12 @@
 			--tile-size: 53px;
 		}
 	}
-	@media (max-width: 360px) {
+	@media (max-width: 420px) {
+		:root {
+			--tile-size: 50px;
+		}
+	}
+	@media (max-width: 380px) {
 		.container {
 			margin-bottom: 4px;
 		}
@@ -163,7 +168,7 @@
 			--tile-size: 48px;
 		}
 	}
-	@media (max-width: 320px) {
+	@media (max-width: 340px) {
 		.graph {
 			display: none;
 		}

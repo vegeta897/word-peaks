@@ -236,7 +236,7 @@
 			gap: 3px;
 		}
 	}
-	@media (max-width: 320px) {
+	@media (max-width: 340px) {
 		.tile-container {
 			margin: 0 2px;
 		}

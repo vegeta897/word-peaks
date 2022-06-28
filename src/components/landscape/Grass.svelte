@@ -23,6 +23,7 @@
 			const inBounds = (x: number, y: number) =>
 				y >= 0 && y < board.length && x >= 0 && x < WORD_LENGTH
 			const isGrass = (x: number, y: number) => inBounds(x, y) && board[y][x].polarity === 0
+			// Move this to Graph.svelte
 			// const randomBoard = board.map((row) =>
 			// 	[...row].map((tile) => ({ polarity: Math.random() > 0.5 ? 1 : 0 }))
 			// )

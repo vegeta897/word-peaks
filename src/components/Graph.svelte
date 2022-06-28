@@ -84,8 +84,4 @@
 		width: 100%;
 		height: 100%;
 	}
-	:root {
-		--ground-color: #c76dab;
-		--ground-edge-color: #b05492;
-	}
 </style>

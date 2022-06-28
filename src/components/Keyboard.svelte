@@ -130,6 +130,12 @@
 		}
 	}
 
+	@media (max-width: 350px) {
+		.key-row button.wide {
+			font-size: 0.75em;
+		}
+	}
+
 	@media (max-height: 631px) {
 		.key-row button {
 			height: 52px;
