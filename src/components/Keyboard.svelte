@@ -4,9 +4,10 @@
 	import { t } from '$lib/translations'
 	import { moveCarat, submitRow, typeLetter, undoLetter } from '$lib/board'
 	import { get } from 'svelte/store'
+	import { browser } from '$app/env'
 
-	function handleKeydown({ key, ctrlKey, target }: KeyboardEvent) {
-		if (ctrlKey || get(openScreen) !== null) return
+	function handleKeydown({ key, ctrlKey, target, repeat }: KeyboardEvent) {
+		if (ctrlKey || repeat || get(openScreen) !== null) return
 		if (key === 'Backspace') undoLetter()
 		if (key === 'Delete') undoLetter(false)
 		if (key === 'Enter') {
@@ -26,7 +27,7 @@
 
 <svelte:window on:keydown={handleKeydown} />
 
-<div class="keyboard">
+<div class="keyboard" style:visibility={browser ? 'visible' : 'hidden'}>
 	{#each keyboardLayoutOptions.find((o) => o.value === $keyboardLayout).layout as keyRow, r}
 		<div class="key-row">
 			{#if r === keyboardLayoutOptions.find((o) => o.value === $keyboardLayout).wideKeysRow}

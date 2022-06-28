@@ -14,7 +14,9 @@
 		"use_valid_letters": "Guesses must use valid letters",
 		"could_not_do": "Sorry, couldn't do that!",
 		"score_copied": "Score copied!",
-		"image_copied": "Image copied!"
+		"image_copied": "Image copied!",
+		"need_reload": "Update needed, please reload the page",
+		"new": "New"
 	},
 	"keyboard": {
 		"enter": "Enter"
@@ -38,7 +40,11 @@
 		"win_rate": "Win rate",
 		"current_streak": "Current streak",
 		"best_streak": "Best streak",
-		"guess_distribution": "Guess distribution",
+		"winning_guesses": "Winning Guesses",
+		"average_guess_time": "Average Guess Time",
+		"fastest_game": "Fastest Game",
+		"average_game": "Average Game",
+		"average_guess": "Average Guess",
 		"stats_daily": "Stats only count daily games"
 	},
 	"summary": {
@@ -59,9 +65,11 @@
 		"swap_enter_backspace": "Swap Enter/Backspace keys",
 		"alphabetic": "Alphabetic",
 		"use_dyslexic_font": "OpenDyslexic font",
-		"include_link": "Include link in share text"
+		"include_link": "Include link",
+		"include_times": "Include times"
 	},
 	"footer": {
-		"credits": "an <a href=\"https://github.com/vegeta897/wordle-peaks\">open source</a> project inspired by <a href=\"https://www.nytimes.com/games/wordle/index.html\">Wordle</a>"
+		"credits": "an <a href=\"https://github.com/vegeta897/wordle-peaks\">open source</a> project inspired by <a href=\"https://www.nytimes.com/games/wordle/index.html\">Wordle</a>",
+		"donate": "☕ <a href=\"https://buymeacoffee.com/vegeta897\">buy me a coffee</a> if you'd like to support me"
 	}
 }

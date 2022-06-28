@@ -14,13 +14,15 @@
 		"use_valid_letters": "Tahminler geçerli harfler içermeli",
 		"could_not_do": "Üzgünüm, bunu yapamam!",
 		"score_copied": "Skor kopyalandı!",
-		"image_copied": "Resim kopyalandı!"
+		"image_copied": "Resim kopyalandı!",
+		"need_reload": "Güncelleme gerekli, lütfen sayfayı yeniden yükleyin",
+		"new": "Yeni"
 	},
 	"keyboard": {
 		"enter": "Enter"
 	},
 	"results": {
-		"win": "Halloldu!",
+		"win": "Kazandın!",
 		"lose": "Olamaz!",
 		"answer": "Cevap buydu: <strong> {{answer}} </strong>",
 		"try_today": "Bugünün kelimesini dene!",
@@ -38,7 +40,11 @@
 		"win_rate": "Kazanma oranı",
 		"current_streak": "Mevcut seri",
 		"best_streak": "En uzun seri",
-		"guess_distribution": "Tahmin dağılımı",
+		"winning_guesses": "Kazanan Tahminler",
+		"average_guess_time": "Ortalama Tahmin Süresi",
+		"fastest_game": "En Hızlı Oyun",
+		"average_game": "Ortalama Oyun",
+		"average_guess": "Ortalama Tahmin",
 		"stats_daily": "İstatistiklere sadece günlük oyunlar dahildir"
 	},
 	"summary": {
@@ -59,9 +65,11 @@
 		"swap_enter_backspace": "Enter ve Backspace tuşlarının yerini değiştir",
 		"alphabetic": "Alfabetik",
 		"use_dyslexic_font": "OpenDyslexic yazı tipi",
-		"include_link": "Paylaş metnine adresi ekle"
+		"include_link": "Adresi ekle",
+		"include_times": "Süreyi ekle"
 	},
 	"footer": {
-		"credits": "<a href=\"https://www.nytimes.com/games/wordle/index.html\">Wordle'dan</a> esinlenilmiş <a href=\"https://github.com/vegeta897/wordle-peaks\">açık kaynak</a> kodlu bir proje"
+		"credits": "<a href=\"https://www.nytimes.com/games/wordle/index.html\">Wordle'dan</a> esinlenilmiş <a href=\"https://github.com/vegeta897/wordle-peaks\">açık kaynak</a> kodlu bir proje",
+		"donate": "☕ bana destek olmak istersen <a href=\"https://buymeacoffee.com/vegeta897\">bir kahve ısmarla</a>"
 	}
 }

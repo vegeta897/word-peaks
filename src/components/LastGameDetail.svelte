@@ -1,9 +1,125 @@
 <script lang="ts">
+	import { beforeUpdate, onMount } from 'svelte'
 	import { t } from '$lib/translations'
 	import Time from '$com/Time.svelte'
 	import type { GameDetail } from '$lib/stats'
+	import type { Writable } from 'svelte/store'
+	import { get } from 'svelte/store'
+	import Toggle from 'svelte-toggle'
+	import * as store from '$src/store'
+	import {
+		copyImage,
+		copyText,
+		drawResults,
+		getEmojiGrid,
+		getShareTitle,
+		shareImage,
+	} from '$lib/share'
+	import { trackEvent } from '$lib/plausible'
+	import { toast } from '@zerodevx/svelte-toast'
 
 	export let lastGameDetail: GameDetail | null
+
+	type SpanContainer = { span?: HTMLSpanElement }
+	const totalTimeElement: SpanContainer = { span: undefined }
+	const guessTimeElements: SpanContainer[] = []
+	const getGuessTimes = () => guessTimeElements.map((e) => e.span!.innerText)
+
+	let canvas: HTMLCanvasElement
+	let shareTitleText: string
+	let shareMenu: boolean
+	let imageShared: boolean
+
+	const toastOptions = { theme: { '--toastBackground': 'var(--cta-color)' } }
+	const successToast = (message: string) => toast.push(message, toastOptions)
+	const errorToast = () => toast.push(get(t)('main.messages.could_not_do'), toastOptions)
+
+	function shareText() {
+		shareMenu = false
+		trackEvent('resultShare')
+		const emojiGridParams: Parameters<typeof getEmojiGrid>[0] = {
+			guesses: get(store.guesses),
+			answer: get(store.answer),
+		}
+		let totalTime = ''
+		if (get(store.shareTimes)) {
+			totalTime = `\n  ${get(t)('main.summary.total_time')}: ${totalTimeElement.span!.innerText}`
+			emojiGridParams.guessTimes = getGuessTimes()
+		}
+		let url = ''
+		if (get(store.shareURL)) {
+			url = '\nhttps://wordlepeaks.com'
+			if (lastGameDetail!.hash) url += `/#${lastGameDetail!.hash}`
+		}
+		copyText(shareTitleText + '\n\n' + getEmojiGrid(emojiGridParams) + totalTime + url).then(
+			() => successToast(get(t)('main.messages.score_copied')),
+			() => errorToast()
+		)
+	}
+
+	async function onShareImage() {
+		shareMenu = false
+		imageShared = true
+		drawResults(canvas, {
+			highContrast: get(store.highContrast),
+			boardContent: get(store.boardContent),
+			guesses: get(store.guesses),
+			caption: shareTitleText,
+			guessTimes: get(store.shareTimes) ? getGuessTimes() : undefined,
+			totalTime: get(store.shareTimes) ? totalTimeElement.span!.innerText : undefined,
+			showURL: get(store.shareURL),
+			hash: lastGameDetail!.hash || undefined,
+		})
+		trackEvent('resultShare')
+		await shareImage(
+			canvas,
+			lastGameDetail!.mode === 'random'
+				? { hash: lastGameDetail!.hash }
+				: { day: lastGameDetail!.dayNumber }
+		)
+		canvas.scrollIntoView({ block: 'center' })
+	}
+
+	function onCopyImage() {
+		try {
+			copyImage(canvas)
+			successToast(get(t)('main.messages.image_copied'))
+		} catch (e) {
+			errorToast()
+		}
+	}
+
+	const toggle = (prop: Writable<boolean>) => () => prop.set(!get(prop))
+
+	const toggleOptions = [
+		{
+			bind: store.shareURL,
+			label: 'main.options.include_link',
+			click: toggle(store.shareURL),
+		},
+		{
+			bind: store.shareTimes,
+			label: 'main.options.include_times',
+			click: toggle(store.shareTimes),
+		},
+	]
+
+	beforeUpdate(() => {
+		if (guessTimeElements.length > 0) return
+		lastGameDetail!.guesses.forEach(() => {
+			guessTimeElements.push({ span: undefined })
+		})
+	})
+
+	onMount(() => {
+		shareTitleText = getShareTitle({
+			gameWon: get(store.gameWon),
+			guesses: get(store.guesses),
+			gameMode: lastGameDetail!.mode,
+			hardMode: get(store.lastPlayedWasHard),
+			day: lastGameDetail!.dayNumber,
+		})
+	})
 </script>
 
 <section>
@@ -28,7 +144,10 @@
 		</div>
 		<div class="info-item">
 			<strong>
-				<Time ms={lastGameDetail.guessTimes.at(-1) - lastGameDetail.guessTimes[0]} />
+				<Time
+					bindContainer={totalTimeElement}
+					ms={lastGameDetail.guessTimes.at(-1) - lastGameDetail.guessTimes[0]}
+				/>
 			</strong>
 			{$t('main.summary.total_time')}
 		</div>
@@ -48,10 +167,42 @@
 					{/each}
 				</div>
 				<div class="time-value">
-					<Time ms={lastGameDetail.guessTimes[g + 1] - lastGameDetail.guessTimes[g]} />
+					<Time
+						bindContainer={guessTimeElements[g]}
+						ms={lastGameDetail.guessTimes[g + 1] - lastGameDetail.guessTimes[g]}
+					/>
 				</div>
 			</div>
 		{/each}
+	</div>
+	<div class="share">
+		{#if shareMenu}
+			<div class="share-buttons">
+				<button on:click={shareText}>{$t('main.results.text')}</button>
+				<button on:click={onShareImage}>{$t('main.results.image')}</button>
+			</div>
+			<div class="share-options">
+				{#each toggleOptions as toggleOption}
+					<Toggle
+						toggled={get(toggleOption.bind)}
+						on:click={toggleOption.click}
+						hideLabel
+						label={$t(toggleOption.label)}
+						style="transform: scale(1.6); touch-action: manipulation; flex-basis: 2.5rem;"
+						toggledColor="var(--accent-color)"
+						untoggledColor="#695d6e"
+					>
+						<div class="label">{$t(toggleOption.label)}</div>
+					</Toggle>
+				{/each}
+			</div>
+		{:else}
+			<button on:click={() => (shareMenu = true)}>{$t('main.results.share')}</button>
+		{/if}
+	</div>
+	<div class="image-share" style:display={imageShared && !shareMenu ? 'flex' : 'none'}>
+		<canvas bind:this={canvas} />
+		<button on:click={onCopyImage}>{$t('main.results.copy_image')}</button>
 	</div>
 </section>
 
@@ -60,7 +211,7 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		padding: 2em 0;
+		padding: 2rem 0.5rem;
 	}
 
 	.info {
@@ -71,7 +222,7 @@
 	}
 
 	.info-item {
-		width: calc(100% / 3);
+		flex: 1 1 0;
 		display: flex;
 		flex-direction: column;
 		justify-content: flex-start;
@@ -135,6 +286,85 @@
 		display: flex;
 		justify-content: flex-end;
 		align-items: center;
+	}
+
+	.share {
+		margin-top: 1.4rem;
+		width: 100%;
+		padding: 0 7%;
+		box-sizing: border-box;
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: center;
+	}
+
+	button {
+		border-radius: 4px;
+		border: 0;
+		padding: 0 1rem;
+		height: 3rem;
+		font-size: 1.2em;
+		font-weight: 700;
+		min-width: 10rem;
+		background: var(--cta-color);
+	}
+
+	button:hover {
+		background: #3388de;
+	}
+
+	button:focus {
+		outline: 1px solid #fff;
+		outline-offset: 2px;
+	}
+
+	.share > button {
+		font-size: 1.5em;
+		height: 4rem;
+		min-width: 15rem;
+	}
+
+	.share-buttons {
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+		flex-grow: 1;
+	}
+
+	.share-buttons button {
+		margin: 0.3rem 0;
+		min-width: 100%;
+	}
+
+	.share-options {
+		max-width: 220px;
+		margin: 0 1rem;
+		flex-grow: 2;
+	}
+
+	.label {
+		order: -1;
+		flex-grow: 1.5;
+		font-size: 1.2em;
+		margin: 0.5rem 0;
+		padding: 0.4rem 0.8rem 0.4rem 0;
+	}
+
+	.image-share {
+		margin-top: 1rem;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+		gap: 0.8rem;
+	}
+
+	.image-share canvas {
+		padding: 4px;
+		border: 1px solid var(--primary-color);
+		box-shadow: 0 0 8px var(--primary-color);
+		/*transform: scale(0.5);*/
 	}
 
 	@media (max-width: 360px) {

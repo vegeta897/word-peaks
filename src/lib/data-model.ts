@@ -98,7 +98,7 @@ export const getDayNumber = (): number => {
 }
 
 export async function getWordByDay(day: number): Promise<string> {
-	if (!targetWords) await loadTargets()
+	await loadTargets()
 	return targetWords![day % targetWords!.length]
 }
 
@@ -114,7 +114,7 @@ export function pickRandom<T>(arr: T[]): T {
 }
 
 export async function getRandomWord(): Promise<string> {
-	if (!targetWords) await loadTargets()
+	await loadTargets()
 	return pickRandom(targetWords!)
 }
 
@@ -137,12 +137,31 @@ export function decodeWord(hash: string): false | string {
 
 export const alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('')
 
+export const keyboardLayoutNames = [
+	'alphabetic',
+	'qwerty',
+	'azerty',
+	'qwertz',
+	'dvorak',
+	'colemak',
+] as const
+export type KeyboardLayout = typeof keyboardLayoutNames[number]
 export const keyboardLayoutOptions: {
-	value: string
+	value: KeyboardLayout
 	label: string
 	layout: [string[], string[], string[]]
 	wideKeysRow: 0 | 1 | 2
 }[] = [
+	{
+		value: 'alphabetic',
+		label: 'Alphabetic',
+		layout: [
+			['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j'],
+			['k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't'],
+			['u', 'v', 'w', 'x', 'y', 'z'],
+		],
+		wideKeysRow: 2,
+	},
 	{
 		value: 'qwerty',
 		label: 'QWERTY',
@@ -190,16 +209,6 @@ export const keyboardLayoutOptions: {
 			['q', 'w', 'f', 'p', 'g', 'j', 'l', 'u', 'y'],
 			['a', 'r', 's', 't', 'd', 'h', 'n', 'e', 'i', 'o'],
 			['z', 'x', 'c', 'v', 'b', 'k', 'm'],
-		],
-		wideKeysRow: 2,
-	},
-	{
-		value: 'alphabetic',
-		label: 'Alphabetic',
-		layout: [
-			['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j'],
-			['k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't'],
-			['u', 'v', 'w', 'x', 'y', 'z'],
 		],
 		wideKeysRow: 2,
 	},

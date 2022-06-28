@@ -4,6 +4,10 @@ A Wordle spin-off where you narrow down the alphabet for each tile
 
 ## [🏔️ Play here](https://vegeta897.github.io/wordle-peaks/)
 
+## Donate
+
+If you want to support my work, you can [buy me a coffee](https://www.buymeacoffee.com/vegeta897) or [sponsor me](https://github.com/sponsors/vegeta897) on GitHub.
+
 ## Develop
 
 Pull requests and issues are welcome, but please create an issue or contact me before putting a lot of work into something I may not want to merge!
@@ -12,7 +16,7 @@ Pull requests and issues are welcome, but please create an issue or contact me b
 2. Write code
 3. `npm run format`
 
-***Note:*** Please use NPM version 7 or greater, so that `package-lock.json` stays on version 2.
+**_Note:_** Please use NPM version 7 or greater, so that `package-lock.json` stays on version 2.
 
 ## Translate
 
@@ -40,3 +44,5 @@ The word list for the game itself will remain in English. If you want to play wi
 ---
 
 _Made with [SvelteKit](https://kit.svelte.dev/)_
+
+[![MadeWithSvelte.com shield](https://madewithsvelte.com/storage/repo-shields/3728-shield.svg)](https://madewithsvelte.com/p/wordle-peaks/shield-link)

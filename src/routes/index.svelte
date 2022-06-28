@@ -96,7 +96,6 @@
 		<Tutorial />
 	{:else if $openScreen === 'results'}
 		<Results
-			{hash}
 			playDaily={() => {
 				openScreen.set(null)
 				gameMode.set('daily')

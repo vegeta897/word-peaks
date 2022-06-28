@@ -14,7 +14,9 @@
 		"use_valid_letters": "Gokken moeten geldige letters gebruiken",
 		"could_not_do": "Sorry, kon dat niet doen!",
 		"score_copied": "Score gekopieerd!",
-		"image_copied": "Afbeelding gekopieerd!"
+		"image_copied": "Afbeelding gekopieerd!",
+		"need_reload": "Update nodig, herlaad de pagina a.u.b.",
+		"new": "Nieuw"
 	},
 	"keyboard": {
 		"enter": "Invoeren"
@@ -38,7 +40,11 @@
 		"win_rate": "Winratio",
 		"current_streak": "Huidige reeks",
 		"best_streak": "Beste Reeks",
-		"guess_distribution": "Gok verdeling",
+		"winning_guesses": "Winnende gissingen",
+		"average_guess_time": "Gemiddelde goktijd",
+		"fastest_game": "Snelste spel",
+		"average_game": "Gemiddeld spel",
+		"average_guess": "Gemiddelde gok",
 		"stats_daily": "Statistieken gaan alleen over dagelijkse spellen"
 	},
 	"summary": {
@@ -59,9 +65,11 @@
 		"swap_enter_backspace": "Wissel Enter/Backspace toetsen",
 		"alphabetic": "Alfabetisch",
 		"use_dyslexic_font": "OpenDyslexic lettertype",
-		"include_link": "Link opnemen in deeltekst"
+		"include_link": "Link opnemen",
+		"include_times": "Inclusief duur"
 	},
 	"footer": {
-		"credits": "een <a href=\"https://github.com/vegeta897/wordle-peaks\">open source</a> project geïnspireerd door <a href=\"https://www.nytimes.com/games/wordle/index.html\">Wordle</a>"
+		"credits": "een <a href=\"https://github.com/vegeta897/wordle-peaks\">open source</a> project geïnspireerd door <a href=\"https://www.nytimes.com/games/wordle/index.html\">Wordle</a>",
+		"donate": "☕ <a href=\"https://buymeacoffee.com/vegeta897\">koop een koffie voor me</a> als je me wilt steunen"
 	}
 }

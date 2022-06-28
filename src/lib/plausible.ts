@@ -8,6 +8,7 @@ type EventName =
 	| 'resultShare'
 	| 'gameLost'
 	| 'idleOnFinish'
+	| 'idleBeforeFinish'
 
 const plausible = browser
 	? Plausible({
