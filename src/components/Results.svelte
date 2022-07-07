@@ -41,9 +41,6 @@
 		<h3 class="answer">{@html $t('main.results.answer', { answer: lastAnswer.toUpperCase() })}</h3>
 	{/if}
 	<div class="tabs-container">
-		{#if $timeStats.gameCount > 0 && $timeStats.gameCount < 3}<div class="new-tag">
-				{$t('main.messages.new')}
-			</div>{/if}
 		{#if lastGameMode === lastGameDetail?.mode && lastAnswer === lastGameDetail?.answer}
 			<Tabs tab1Title={$t('main.summary.title')} tab2Title={$t('main.stats.title')}>
 				<LastGameDetail {lastGameDetail} slot="tab-1" />
@@ -148,17 +145,6 @@
 		background: var(--tertiary-color);
 		border-radius: 1rem;
 		position: relative;
-	}
-
-	.new-tag {
-		background: var(--accent-color);
-		border-radius: 6px;
-		padding: 2px 5px;
-		font-weight: 700;
-		position: absolute;
-		right: -4px;
-		top: -6px;
-		pointer-events: none;
 	}
 
 	@media (max-width: 400px) {
