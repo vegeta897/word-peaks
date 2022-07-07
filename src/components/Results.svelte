@@ -104,7 +104,7 @@
 	}
 
 	button {
-		border-radius: 4px;
+		border-radius: 6px;
 		border: 0;
 		padding: 0;
 		height: 3rem;
@@ -133,10 +133,7 @@
 
 	.countdown {
 		display: flex;
-		flex-wrap: wrap;
-		align-items: baseline;
-		justify-content: center;
-		align-content: space-around;
+		flex-direction: column;
 		text-align: center;
 		font-size: 1.2em;
 	}

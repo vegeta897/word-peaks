@@ -300,7 +300,7 @@
 	}
 
 	button {
-		border-radius: 4px;
+		border-radius: 6px;
 		border: 0;
 		padding: 0 1rem;
 		height: 3rem;
