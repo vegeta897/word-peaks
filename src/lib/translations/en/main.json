@@ -16,7 +16,8 @@
 		"score_copied": "Score copied!",
 		"image_copied": "Image copied!",
 		"need_reload": "Update needed, please reload the page",
-		"new": "New"
+		"new": "New",
+		"new_best": "New best!"
 	},
 	"keyboard": {
 		"enter": "Enter"

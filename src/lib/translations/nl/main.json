@@ -16,7 +16,8 @@
 		"score_copied": "Score gekopieerd!",
 		"image_copied": "Afbeelding gekopieerd!",
 		"need_reload": "Update nodig, herlaad de pagina a.u.b.",
-		"new": "Nieuw"
+		"new": "Nieuw",
+		"new_best": "Nieuwe beste!"
 	},
 	"keyboard": {
 		"enter": "Invoeren"

@@ -16,7 +16,8 @@
 		"score_copied": "Skor kopyalandı!",
 		"image_copied": "Resim kopyalandı!",
 		"need_reload": "Güncelleme gerekli, lütfen sayfayı yeniden yükleyin",
-		"new": "Yeni"
+		"new": "Yeni",
+		"new_best": "Yeni en iyi!"
 	},
 	"keyboard": {
 		"enter": "Enter"

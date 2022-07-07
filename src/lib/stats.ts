@@ -33,7 +33,19 @@ export const newTimeStats = (): TimeStats => ({
 	fastestGame: 0,
 })
 
-export function updateStats(won: boolean) {
+const getGameTime = (guessTimes: number[]) => guessTimes.at(-1)! - guessTimes[0]
+
+export function finishGame(won: boolean) {
+	const mode = get(store.gameMode)
+	let fastest = false
+	if (mode === 'daily') {
+		fastest = getGameTime(get(store.guessTimes)) < get(store.timeStats).fastestGame
+		updateStats(won)
+	}
+	saveGameDetail(fastest)
+}
+
+function updateStats(won: boolean) {
 	const guessCount = get(store.guesses).length
 	store.stats.update((stats) => {
 		const streak = won ? stats.currentStreak + 1 : 0
@@ -48,7 +60,7 @@ export function updateStats(won: boolean) {
 		}
 	})
 	const guessTimes = get(store.guessTimes)
-	const gameTime = guessTimes.at(-1)! - guessTimes[0]
+	const gameTime = getGameTime(guessTimes)
 	store.timeStats.update((timeStats) => {
 		const guessTotals = timeStats.guessTotals.map((t, g) =>
 			g < guessCount ? t + (guessTimes[g + 1] - guessTimes[g]) : t
@@ -73,9 +85,10 @@ export type GameDetail = {
 	guesses: string[]
 	guessTimes: number[]
 	hash: string | null
+	fastest: boolean
 }
 
-export function saveGameDetail() {
+function saveGameDetail(fastest: boolean) {
 	const mode = get(store.gameMode)
 	store[mode === 'daily' ? 'lastDailyDetail' : 'lastRandomDetail'].set({
 		mode,
@@ -85,6 +98,7 @@ export function saveGameDetail() {
 		guesses: get(store.guesses),
 		guessTimes: get(store.guessTimes),
 		hash: mode === 'daily' ? null : encodeWord(get(store.answer)),
+		fastest,
 	})
 }
 

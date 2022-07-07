@@ -16,7 +16,8 @@
 		"score_copied": "Pontuação copiada!",
 		"image_copied": "Imagem copiada!",
 		"need_reload": "Atualização necessária, recarregue a página",
-		"new": "Novo"
+		"new": "Novo",
+		"new_best": "Novo melhor!"
 	},
 	"keyboard": {
 		"enter": "Enter"

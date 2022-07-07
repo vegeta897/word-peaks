@@ -150,6 +150,7 @@
 				/>
 			</strong>
 			{$t('main.summary.total_time')}
+			{#if lastGameDetail.fastest}<div class="new-tag">{$t('main.messages.new_best')}</div>{/if}
 		</div>
 	</div>
 	<div class="time-stats">
@@ -233,6 +234,15 @@
 
 	.info-item strong {
 		font-size: 1.6em;
+	}
+
+	.new-tag {
+		background: var(--accent-color);
+		border-radius: 6px;
+		padding: 2px 5px;
+		font-weight: 700;
+		font-size: 0.8em;
+		margin-top: 2px;
 	}
 
 	.time-stats {
