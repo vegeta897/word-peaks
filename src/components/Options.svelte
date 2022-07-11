@@ -48,6 +48,11 @@
 			label: 'main.options.use_dyslexic_font',
 			click: toggle(store.dyslexicFont),
 		},
+		{
+			bind: store.allowDancing,
+			label: 'main.options.allow_dancing_letters',
+			click: toggle(store.allowDancing),
+		},
 	]
 
 	beforeUpdate(() => {
