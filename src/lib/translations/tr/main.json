@@ -16,7 +16,8 @@
 		"score_copied": "Skor kopyalandı!",
 		"image_copied": "Resim kopyalandı!",
 		"need_reload": "Güncelleme gerekli, lütfen sayfayı yeniden yükleyin",
-		"new": "Yeni"
+		"new": "Yeni",
+		"new_best": "Yeni en iyi!"
 	},
 	"keyboard": {
 		"enter": "Enter"
@@ -65,6 +66,7 @@
 		"swap_enter_backspace": "Enter ve Backspace tuşlarının yerini değiştir",
 		"alphabetic": "Alfabetik",
 		"use_dyslexic_font": "OpenDyslexic yazı tipi",
+		"allow_dancing_letters": "Dans eden harflere izin ver",
 		"include_link": "Adresi ekle",
 		"include_times": "Süreyi ekle"
 	},

@@ -19,6 +19,7 @@
 	let idleSessionID = 0
 
 	async function waitForIdle() {
+		if (!get(store.allowDancing)) return
 		if (canAnimate === false) return
 		idle = false
 		const thisIdleSessionID = ++idleSessionID

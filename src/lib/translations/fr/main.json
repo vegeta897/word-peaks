@@ -16,7 +16,8 @@
 		"score_copied": "Score copié !",
 		"image_copied": "Image copiée !",
 		"need_reload": "Mise à jour nécessaire, veuillez recharger la page",
-		"new": "Nouveau"
+		"new": "Nouveau",
+		"new_best": "Nouveau meilleur!"
 	},
 	"keyboard": {
 		"enter": "Entrer"
@@ -65,6 +66,7 @@
 		"swap_enter_backspace": "Échanger les touches Entrer/Retour",
 		"alphabetic": "Alphabétique",
 		"use_dyslexic_font": "Police OpenDyslexic",
+		"allow_dancing_letters": "Autoriser les lettres dansantes",
 		"include_link": "Inclure le lien",
 		"include_times": "Inclure temps"
 	},

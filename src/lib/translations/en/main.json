@@ -16,7 +16,8 @@
 		"score_copied": "Score copied!",
 		"image_copied": "Image copied!",
 		"need_reload": "Update needed, please reload the page",
-		"new": "New"
+		"new": "New",
+		"new_best": "New best!"
 	},
 	"keyboard": {
 		"enter": "Enter"
@@ -65,6 +66,7 @@
 		"swap_enter_backspace": "Swap Enter/Backspace keys",
 		"alphabetic": "Alphabetic",
 		"use_dyslexic_font": "OpenDyslexic font",
+		"allow_dancing_letters": "Allow dancing letters",
 		"include_link": "Include link",
 		"include_times": "Include times"
 	},

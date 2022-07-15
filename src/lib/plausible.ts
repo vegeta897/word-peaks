@@ -17,5 +17,15 @@ const plausible = browser
 	  })
 	: { trackPageview() {}, trackEvent() {} }
 
-export const trackPageview = () => !dev && plausible.trackPageview()
-export const trackEvent = (eventName: EventName) => !dev && plausible.trackEvent(eventName)
+export const trackPageview = () => track('pageview')
+export const trackEvent = (eventName: EventName) => track(eventName)
+
+function track(type: 'pageview' | EventName) {
+	if (dev) return
+	try {
+		if (type === 'pageview') plausible.trackPageview()
+		else plausible.trackEvent(type)
+	} catch (e) {
+		console.warn(`Failed to track ${type}`, e)
+	}
+}

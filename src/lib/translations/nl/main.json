@@ -16,7 +16,8 @@
 		"score_copied": "Score gekopieerd!",
 		"image_copied": "Afbeelding gekopieerd!",
 		"need_reload": "Update nodig, herlaad de pagina a.u.b.",
-		"new": "Nieuw"
+		"new": "Nieuw",
+		"new_best": "Nieuwe beste!"
 	},
 	"keyboard": {
 		"enter": "Invoeren"
@@ -65,6 +66,7 @@
 		"swap_enter_backspace": "Wissel Enter/Backspace toetsen",
 		"alphabetic": "Alfabetisch",
 		"use_dyslexic_font": "OpenDyslexic lettertype",
+		"allow_dancing_letters": "Dansende letters toestaan",
 		"include_link": "Link opnemen",
 		"include_times": "Inclusief duur"
 	},

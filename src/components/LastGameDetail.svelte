@@ -150,6 +150,7 @@
 				/>
 			</strong>
 			{$t('main.summary.total_time')}
+			{#if lastGameDetail.fastest}<div class="new-tag">{$t('main.messages.new_best')}</div>{/if}
 		</div>
 	</div>
 	<div class="time-stats">
@@ -235,6 +236,15 @@
 		font-size: 1.6em;
 	}
 
+	.new-tag {
+		background: var(--accent-color);
+		border-radius: 6px;
+		padding: 2px 5px;
+		font-weight: 700;
+		font-size: 0.8em;
+		margin-top: 2px;
+	}
+
 	.time-stats {
 		margin: 1.4rem 0.4rem 0;
 		text-align: right;
@@ -300,7 +310,7 @@
 	}
 
 	button {
-		border-radius: 4px;
+		border-radius: 6px;
 		border: 0;
 		padding: 0 1rem;
 		height: 3rem;

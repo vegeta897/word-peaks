@@ -1,7 +1,5 @@
 <script lang="ts">
-	import type { GameMode } from '$lib/data-model'
 	import { getDayEnd, getDayNumber } from '$lib/data-model'
-	import { onMount } from 'svelte'
 	import * as store from '$src/store'
 	import { timeStats } from '$src/store'
 	import { get } from 'svelte/store'
@@ -11,35 +9,25 @@
 	import LastGameDetail from '$com/LastGameDetail.svelte'
 	import Time from '$com/Time.svelte'
 	import Tabs from '$com/Tabs.svelte'
-	import type { GameDetail } from '$lib/stats'
 
-	// Don't use store, we don't want/need dynamic content for the results
-	let lastAnswer: string
-	let lastGameMode: GameMode
-	let lastGameFinished: boolean
-	let lastGameWon: boolean
-	let lastGameDetail: GameDetail | null
 	export let playDaily: () => {}
 	export let playRandom: () => {}
 
-	const _guessesDaily = get(store.guessesDaily)
-	const _lastPlayedDaily = get(store.lastPlayedDaily)
+	// Get store data once before mounting, we don't want it to be dynamic
+	const lastAnswer = get(store.answer)
+	const lastGameMode = get(store.gameMode)
+	const lastGameFinished = get(store.gameFinished)
+	const lastGameWon = get(store.gameWon)
+	const lastGameDetail = get(store.lastGameDetail)
+	const guessesDaily = get(store.guessesDaily)
+	const lastPlayedDaily = get(store.lastPlayedDaily)
 	const dailyFinished =
-		_lastPlayedDaily === getDayNumber() &&
-		(_guessesDaily.length === 6 ||
-			_guessesDaily[_guessesDaily.length - 1] === get(store.answerDaily))
+		lastPlayedDaily === getDayNumber() &&
+		(guessesDaily.length === 6 || guessesDaily[guessesDaily.length - 1] === get(store.answerDaily))
 
-	const nextDailyTime = getDayEnd(_lastPlayedDaily)
+	const nextDailyTime = getDayEnd(lastPlayedDaily)
 	let nextWordReady = nextDailyTime < new Date()
 	setInterval(() => (nextWordReady = nextDailyTime < new Date()), 1000)
-
-	onMount(() => {
-		lastGameMode = get(store.gameMode)
-		lastGameFinished = get(store.gameFinished)
-		lastGameWon = get(store.gameWon)
-		lastAnswer = get(store.answer)
-		lastGameDetail = get(store.lastGameDetail)
-	})
 </script>
 
 <Screen
@@ -53,10 +41,7 @@
 		<h3 class="answer">{@html $t('main.results.answer', { answer: lastAnswer.toUpperCase() })}</h3>
 	{/if}
 	<div class="tabs-container">
-		{#if $timeStats.gameCount > 0 && $timeStats.gameCount < 3}<div class="new-tag">
-				{$t('main.messages.new')}
-			</div>{/if}
-		{#if lastGameDetail && lastGameMode === lastGameDetail.mode && lastAnswer === lastGameDetail.answer}
+		{#if lastGameMode === lastGameDetail?.mode && lastAnswer === lastGameDetail?.answer}
 			<Tabs tab1Title={$t('main.summary.title')} tab2Title={$t('main.stats.title')}>
 				<LastGameDetail {lastGameDetail} slot="tab-1" />
 				<Stats slot="tab-2" gameMode={lastGameMode} />
@@ -116,7 +101,7 @@
 	}
 
 	button {
-		border-radius: 4px;
+		border-radius: 6px;
 		border: 0;
 		padding: 0;
 		height: 3rem;
@@ -145,10 +130,7 @@
 
 	.countdown {
 		display: flex;
-		flex-wrap: wrap;
-		align-items: baseline;
-		justify-content: center;
-		align-content: space-around;
+		flex-direction: column;
 		text-align: center;
 		font-size: 1.2em;
 	}
@@ -163,17 +145,6 @@
 		background: var(--tertiary-color);
 		border-radius: 1rem;
 		position: relative;
-	}
-
-	.new-tag {
-		background: var(--accent-color);
-		border-radius: 6px;
-		padding: 2px 5px;
-		font-weight: 700;
-		position: absolute;
-		right: -4px;
-		top: -6px;
-		pointer-events: none;
 	}
 
 	@media (max-width: 400px) {

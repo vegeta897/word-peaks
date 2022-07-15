@@ -19,6 +19,7 @@ export const keyboardLayout: Writable<KeyboardLayout> = storageWritable(
 	'alphabetic'
 )
 export const dyslexicFont: Writable<boolean> = storageWritable('wp-dyslexicFont', false)
+export const allowDancing: Writable<boolean> = storageWritable('wp-allowDancing', true)
 export const shareURL: Writable<boolean> = storageWritable('wp-shareURL', true)
 export const shareTimes: Writable<boolean> = storageWritable('wp-shareTimes', false)
 
