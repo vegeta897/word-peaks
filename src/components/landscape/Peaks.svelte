@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { Board } from '$lib/data-model'
 	import { beforeUpdate } from 'svelte'
+	import Rand from 'rand-seed'
 
 	export let board: Board
 	export let rowHeight: number
@@ -11,6 +12,7 @@
 		x2: number
 		y1: number
 		y2: number
+		rng: Rand
 	}
 	type Peak = {
 		x: number
@@ -36,22 +38,26 @@
 					y1: y * rowHeight * 2,
 					x2: 0,
 					y2: (y + 1) * rowHeight * 2,
+					rng: new Rand(row[x].letter + y + x),
 				}
 				do {
 					peakZone.x2 = (x + 1) * columnWidth
 					x++
 				} while (x < row.length && row[x].polarity < 0)
-				const halfWidth = (peakZone.x2 - peakZone.x1) / 2
-				peaks.push({
-					x: peakZone.x1 + halfWidth,
-					y: (y + 0.5) * rowHeight,
-					radius: Math.min(MAX_RADIUS, halfWidth),
-				})
 				peakZones.push(peakZone)
 			}
 		}
 		// TODO: Random seed from letter and row number to determine first peak vertical position, then try to fill smaller peaks in rest of space (max radius must be smaller with each peak placed)
-
+		for (const peakZone of peakZones) {
+			const halfWidth = (peakZone.x2 - peakZone.x1) / 2
+			// TODO: Use easing to weigh toward 0.5
+			const yOffset = peakZone.rng.next() * rowHeight
+			peaks.push({
+				x: peakZone.x1 + halfWidth,
+				y: peakZone.y1 / 2 + yOffset,
+				radius: Math.min(MAX_RADIUS, halfWidth),
+			})
+		}
 		// peaks = peakTiles.map((peak) => ({
 		// 	x: (peak.x + 0.5) * columnWidth,
 		// 	y: (peak.y + 0.5) * rowHeight,
