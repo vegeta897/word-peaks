@@ -3,7 +3,10 @@
 	import { get } from 'svelte/store'
 	import { browser } from '$app/env'
 	const storeProps = Object.entries(store)
-		.filter(([_, propValue]) => typeof propValue !== 'function' && 'update' in propValue)
+		.filter(
+			([propName, propValue]) =>
+				typeof propValue !== 'function' && 'update' in propValue && propName !== 'boardContent'
+		)
 		.map(([propName, propValue]) => {
 			return [propName, get(propValue)]
 		})
