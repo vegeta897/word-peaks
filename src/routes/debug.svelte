@@ -1,19 +1,22 @@
 <script lang="ts">
 	import * as store from '$src/store'
 	import { get } from 'svelte/store'
+	import { browser } from '$app/env'
 	const storeProps = Object.entries(store)
 		.filter(([_, propValue]) => typeof propValue !== 'function' && 'update' in propValue)
 		.map(([propName, propValue]) => {
 			return [propName, get(propValue)]
 		})
-	console.log(storeProps)
+	if (browser) console.log(storeProps)
 	const storePropsString = JSON.stringify(storeProps)
 </script>
 
 <section>
 	<h1>Wordle Peaks Debug Info</h1>
-	<button on:click={() => navigator.clipboard.writeText(storePropsString)}>Copy</button>
-	<textarea aria-label="Debug text" rows="10" readonly>{storePropsString}</textarea>
+	{#if browser}
+		<button on:click={() => navigator.clipboard.writeText(storePropsString)}>Copy</button>
+		<textarea aria-label="Debug text" rows="10" readOnly>{storePropsString}</textarea>
+	{/if}
 </section>
 
 <style>
