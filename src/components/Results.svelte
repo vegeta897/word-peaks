@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { getDayEnd, getDayNumber } from '$lib/data-model'
 	import * as store from '$src/store'
-	import { timeStats } from '$src/store'
 	import { get } from 'svelte/store'
 	import Stats from '$com/Stats.svelte'
 	import { t } from '$lib/translations'
