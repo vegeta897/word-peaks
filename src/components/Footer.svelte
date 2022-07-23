@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { t } from '$lib/translations'
 	import { DiscordIconPathData, TwitterIconPathData } from '$lib/icons'
+	import { debugMode } from '$src/store'
 </script>
 
 <footer>
@@ -26,6 +27,7 @@
 			<a href="https://twitter.com/vegeta897">@vegeta897</a>
 		</div>
 	</div>
+	{#if $debugMode}<div class="footer-row">🐞 Debug mode enabled</div>{/if}
 </footer>
 
 <style>
@@ -52,7 +54,7 @@
 	.icon-item {
 		display: flex;
 		align-items: center;
-		margin: 0.2rem 0.7rem 0;
+		margin: 0.2rem 0.7rem;
 	}
 
 	.icon-item .icon {

@@ -154,18 +154,23 @@ export async function submitRow() {
 	recordGuessTime(rowNumber + 1)
 	store.updateGuesses((words) => [...words, submittedWord])
 	if (get(store.gameFinished)) {
+		const debugMode = get(store.debugMode)
+		const gameMode = get(store.gameMode)
+		if (debugMode) console.log(`Game finished, mode: ${gameMode}`)
 		setTimeout(() => {
 			store.openScreen.set('results')
 		}, 1700)
 		const won = get(store.gameWon)
 		trackEvent(won ? 'gameWon' : 'gameLost')
+		if (debugMode) console.log(`Event tracked: ${won ? 'gameWon' : 'gameLost'}`)
 		if (get(store.newUser)) trackEvent('firstFinish')
 		store.newUser.set(false)
-		const gameMode = get(store.gameMode)
 		store[gameMode === 'daily' ? 'lastPlayedDailyWasHard' : 'lastPlayedRandomWasHard'].set(
 			get(store.hardMode)
 		)
+		if (debugMode) console.log(`Calling finishGame function (won = ${won})`)
 		finishGame(won)
+		if (debugMode) console.log('End of game finish code')
 	} else {
 		store.currentTile.set(0)
 	}
