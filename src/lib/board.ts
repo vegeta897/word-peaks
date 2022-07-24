@@ -169,6 +169,7 @@ export async function submitRow() {
 			get(store.hardMode)
 		)
 		if (debugMode) console.log(`Calling finishGame function (won = ${won})`)
+		if (debugMode) console.log(finishGame)
 		finishGame(won)
 		if (debugMode) console.log('End of game finish code')
 	} else {

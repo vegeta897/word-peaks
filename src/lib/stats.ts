@@ -127,6 +127,7 @@ function saveGameDetail(fastest: boolean) {
 }
 
 export function recordGuessTime(row: number) {
+	if (get(store.debugMode)) console.log(`Recording guess time for row ${row}`)
 	store[get(store.gameMode) === 'daily' ? 'guessTimesDaily' : 'guessTimesRandom'].update(
 		(guessTimes) => {
 			guessTimes[row] = new Date().getTime()
