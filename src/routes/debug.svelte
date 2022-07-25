@@ -15,6 +15,10 @@
 		})
 	if (browser) console.log(storeProps)
 	const storePropsString = JSON.stringify(storeProps)
+
+	const lastElement = 'lastElement'
+	const testArray = [0, 1, 2, lastElement]
+	const atNegativeOne = testArray.at(-1)
 </script>
 
 <section>
@@ -25,6 +29,9 @@
 		>
 	</div>
 	{#if browser}
+		<div>
+			Array.at() test: <pre>{atNegativeOne === lastElement}</pre>
+		</div>
 		<button on:click={() => navigator.clipboard.writeText(storePropsString)}>Copy</button>
 		<textarea aria-label="Debug text" rows="10" readOnly>{storePropsString}</textarea>
 	{/if}
@@ -39,6 +46,10 @@
 
 	div {
 		margin-bottom: 1rem;
+	}
+
+	pre {
+		display: inline-block;
 	}
 
 	input {
