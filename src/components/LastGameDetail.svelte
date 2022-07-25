@@ -146,7 +146,8 @@
 			<strong>
 				<Time
 					bindContainer={totalTimeElement}
-					ms={lastGameDetail.guessTimes.at(-1) - lastGameDetail.guessTimes[0]}
+					ms={lastGameDetail.guessTimes[lastGameDetail.guessTimes.length - 1] -
+						lastGameDetail.guessTimes[0]}
 				/>
 			</strong>
 			{$t('main.summary.total_time')}

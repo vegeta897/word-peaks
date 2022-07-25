@@ -33,11 +33,12 @@ export const newTimeStats = (): TimeStats => ({
 	fastestGame: 0,
 })
 
-const getGameTime = (guessTimes: number[]) => guessTimes.at(-1)! - guessTimes[0]
+const getGameTime = (guessTimes: number[]) => guessTimes[guessTimes.length - 1]! - guessTimes[0]
 
 export function finishGame(won: boolean) {
-	const mode = get(store.gameMode)
 	const debugMode = get(store.debugMode)
+	if (debugMode) console.log('Start finishGame function')
+	const mode = get(store.gameMode)
 	let fastest = false
 	if (mode === 'daily') {
 		fastest = getGameTime(get(store.guessTimes)) < get(store.timeStats).fastestGame
