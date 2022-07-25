@@ -1,6 +1,6 @@
 {
   ".svelte-kit/runtime/client/start.js": {
-    "file": "start-c74b8288.js",
+    "file": "start-2f3af9f1.js",
     "src": ".svelte-kit/runtime/client/start.js",
     "isEntry": true,
     "imports": [
@@ -11,17 +11,17 @@
       "src/routes/__layout.svelte",
       ".svelte-kit/runtime/components/error.svelte",
       "src/routes/debug.svelte",
-      "_index-1244a3b2.js"
+      "_index-007f647f.js"
     ]
   },
   "src/routes/__layout.svelte": {
-    "file": "pages/__layout.svelte-178a118d.js",
+    "file": "pages/__layout.svelte-71048230.js",
     "src": "src/routes/__layout.svelte",
     "isEntry": true,
     "isDynamicEntry": true,
     "imports": [
       "_index-3a3d0142.js",
-      "_index-5ea31675.js",
+      "_index-fc77318f.js",
       "_SvelteToast.svelte_svelte_type_style_lang-df2cca5a.js",
       "_preload-helper-b55195a1.js"
     ],
@@ -39,28 +39,28 @@
     ]
   },
   "src/routes/debug.svelte": {
-    "file": "pages/debug.svelte-84457335.js",
+    "file": "pages/debug.svelte-e3093089.js",
     "src": "src/routes/debug.svelte",
     "isEntry": true,
     "isDynamicEntry": true,
     "imports": [
       "_index-3a3d0142.js",
-      "_index-5ea31675.js",
+      "_index-fc77318f.js",
       "_preload-helper-b55195a1.js"
     ],
     "css": [
-      "assets/pages/debug.svelte-cd4d1cf1.css"
+      "assets/pages/debug.svelte-4ef9db23.css"
     ]
   },
   "src/routes/index.svelte": {
-    "file": "pages/index.svelte-8d9a5989.js",
+    "file": "pages/index.svelte-0c698470.js",
     "src": "src/routes/index.svelte",
     "isEntry": true,
     "imports": [
       "_preload-helper-b55195a1.js",
       "_index-3a3d0142.js",
-      "_index-1244a3b2.js",
-      "_index-5ea31675.js",
+      "_index-007f647f.js",
+      "_index-fc77318f.js",
       "_SvelteToast.svelte_svelte_type_style_lang-df2cca5a.js"
     ]
   },
@@ -73,8 +73,8 @@
       "_index-3a3d0142.js"
     ]
   },
-  "_index-5ea31675.js": {
-    "file": "chunks/index-5ea31675.js",
+  "_index-fc77318f.js": {
+    "file": "chunks/index-fc77318f.js",
     "imports": [
       "_index-3a3d0142.js",
       "_preload-helper-b55195a1.js"
@@ -102,18 +102,18 @@
       "assets/SvelteToast.svelte_svelte_type_style_lang-00aa1808.css"
     ]
   },
-  "_index-1244a3b2.js": {
-    "file": "chunks/index-1244a3b2.js",
+  "_index-007f647f.js": {
+    "file": "chunks/index-007f647f.js",
     "isDynamicEntry": true,
     "imports": [
       "_preload-helper-b55195a1.js",
       "_index-3a3d0142.js",
       "_SvelteToast.svelte_svelte_type_style_lang-df2cca5a.js",
-      "_index-5ea31675.js"
+      "_index-fc77318f.js"
     ],
     "dynamicImports": [
       "src/components/Idler.svelte",
-      "_idle-scheduler-264380a8.js",
+      "_idle-scheduler-e14af1c1.js",
       "src/components/Console.svelte"
     ],
     "css": [
@@ -161,36 +161,36 @@
     "isDynamicEntry": true
   },
   "src/components/Console.svelte": {
-    "file": "chunks/Console-d8239467.js",
+    "file": "chunks/Console-24fc3d85.js",
     "src": "src/components/Console.svelte",
     "isDynamicEntry": true,
     "imports": [
       "_index-3a3d0142.js",
-      "_index-5ea31675.js",
-      "_index-1244a3b2.js",
+      "_index-fc77318f.js",
+      "_index-007f647f.js",
       "_preload-helper-b55195a1.js",
       "_SvelteToast.svelte_svelte_type_style_lang-df2cca5a.js"
     ]
   },
   "src/components/Idler.svelte": {
-    "file": "chunks/Idler-6a052c86.js",
+    "file": "chunks/Idler-54d5712b.js",
     "src": "src/components/Idler.svelte",
     "isDynamicEntry": true,
     "imports": [
       "_index-3a3d0142.js",
-      "_idle-scheduler-264380a8.js",
-      "_index-5ea31675.js",
+      "_idle-scheduler-e14af1c1.js",
+      "_index-fc77318f.js",
       "_preload-helper-b55195a1.js"
     ],
     "css": [
       "assets/Idler-63be55c9.css"
     ]
   },
-  "_idle-scheduler-264380a8.js": {
-    "file": "chunks/idle-scheduler-264380a8.js",
+  "_idle-scheduler-e14af1c1.js": {
+    "file": "chunks/idle-scheduler-e14af1c1.js",
     "isDynamicEntry": true,
     "imports": [
-      "_index-5ea31675.js"
+      "_index-fc77318f.js"
     ]
   }
 }
