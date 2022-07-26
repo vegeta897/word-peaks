@@ -41,10 +41,6 @@
 		margin-bottom: 1rem;
 	}
 
-	pre {
-		display: inline-block;
-	}
-
 	input {
 		margin-right: 0.5rem;
 	}
