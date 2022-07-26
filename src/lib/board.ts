@@ -38,13 +38,8 @@ export function typeLetter(letter: string) {
 	if (_currentTile === WORD_LENGTH) return
 	const _currentRow = get(store.currentRow)
 	if (_currentRow === 0 && _currentTile === 0) recordGuessTime(_currentRow)
-	let tileHadLetter: boolean
-	let nextTileIsBlank: boolean
 	store.boardContent.update((content) => {
 		const tile = content[_currentRow][_currentTile]
-		tileHadLetter = tile.letter !== ''
-		const nextTile = content[_currentRow][_currentTile + 1]
-		nextTileIsBlank = !nextTile || nextTile?.letter === ''
 		const [lower, upper] = getValidLetterBounds(get(store.validLetters))
 		tile.polarity = 0
 		if (letter && letter < lower) {
@@ -58,11 +53,7 @@ export function typeLetter(letter: string) {
 	store.notEnoughLetters.set(false)
 	store.invalidWordPreview.set(false)
 	if (letter || _currentTile < WORD_LENGTH - 1) {
-		if (tileHadLetter! || nextTileIsBlank!) {
-			// Only advance carat if tile had a letter or next tile was blank
-			// This makes for better UX when typing a word "backwards"
-			store.currentTile.update((ct) => ct + 1)
-		}
+		store.currentTile.update((ct) => ct + 1)
 		const typedWord = getBoardRowString(get(store.boardContent)[_currentRow])
 		if (typedWord.length === WORD_LENGTH) {
 			loadDictionary().then(async () => {
