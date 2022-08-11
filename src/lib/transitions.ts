@@ -32,6 +32,14 @@ export const squish = (node: HTMLElement, opts: any): AnimationConfig => ({
 	},
 })
 
+// Change an "InOut" easing to "OutIn" (which weighs toward 0.5)
+export const flipInOutEasing =
+	(easingFunction: (x: number) => number) =>
+	(x: number): number => {
+		if (x < 0.5) return easingFunction(x + 0.5) - 0.5
+		return easingFunction(x - 0.5) + 0.5
+	}
+
 // Based on https://codepen.io/danwilson/pen/xGBKVq
 export const animationSupported = (): boolean => {
 	// Unfortunately we can't risk having Chrome iOS's flickering animation bugs

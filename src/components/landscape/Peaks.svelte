@@ -2,6 +2,8 @@
 	import type { Board } from '$lib/data-model'
 	import { beforeUpdate } from 'svelte'
 	import Rand from 'rand-seed'
+	import { flipInOutEasing } from '$lib/transitions'
+	import { cubicInOut } from 'svelte/easing'
 
 	export let board: Board
 	export let rowHeight: number
@@ -50,12 +52,13 @@
 		// TODO: Random seed from letter and row number to determine first peak vertical position, then try to fill smaller peaks in rest of space (max radius must be smaller with each peak placed)
 		for (const peakZone of peakZones) {
 			const halfWidth = (peakZone.x2 - peakZone.x1) / 2
-			// TODO: Use easing to weigh toward 0.5
-			const yOffset = peakZone.rng.next() * rowHeight
+			const maxRadius = halfWidth - 4
+			// Weigh toward 0.5
+			const yOffset = flipInOutEasing(cubicInOut)(peakZone.rng.next()) * rowHeight
 			peaks.push({
 				x: peakZone.x1 + halfWidth,
 				y: peakZone.y1 / 2 + yOffset,
-				radius: Math.min(MAX_RADIUS, halfWidth),
+				radius: Math.min(MAX_RADIUS, maxRadius),
 			})
 		}
 		// peaks = peakTiles.map((peak) => ({
@@ -86,8 +89,8 @@
 		stroke-linejoin="miter"
 		stroke-miterlimit="8"
 		d={`M${peak.x - peak.radius} ${peak.y}
-				l${peak.radius} ${-peak.radius * 1.5}
-				l${peak.radius} ${peak.radius * 1.5}
+				l${peak.radius} ${-peak.radius * 1.8}
+				l${peak.radius} ${peak.radius * 1.8}
 				a${peak.radius} ${peak.radius / 2} 0 0 1 ${-peak.radius * 2} 0
 			Z`}
 	/>
