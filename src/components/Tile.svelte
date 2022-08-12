@@ -105,7 +105,7 @@
 		box-sizing: border-box;
 		border: 2px solid #5b505e;
 		position: absolute;
-		border-radius: 8px;
+		border-radius: 14%;
 		width: 100%;
 		height: 100%;
 		color: #fff;
@@ -131,14 +131,14 @@
 	}
 
 	.tile.before {
-		border-top-left-radius: 20px;
-		border-top-right-radius: 20px;
+		border-top-left-radius: 35%;
+		border-top-right-radius: 35%;
 		background: var(--before-color);
 	}
 
 	.tile.after {
-		border-bottom-left-radius: 20px;
-		border-bottom-right-radius: 20px;
+		border-bottom-left-radius: 35%;
+		border-bottom-right-radius: 35%;
 		background: var(--after-color);
 	}
 
