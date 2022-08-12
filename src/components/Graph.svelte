@@ -6,6 +6,7 @@
 	import { beforeUpdate, onMount } from 'svelte'
 	import Peaks from '$com/landscape/Peaks.svelte'
 	import Grass from '$com/landscape/Grass.svelte'
+	import Hill from '$com/landscape/Hill.svelte'
 
 	// TODO: Add animations on touch
 
@@ -48,34 +49,43 @@
 			graphedRows = get(boardContent).slice(0, cr)
 		})
 	})
+
+	let redraw = 0
 </script>
 
 {#if canDraw}
-	<svg xmlns="http://www.w3.org/2000/svg">
-		<rect
-			x="0.5"
-			y={platformHeight + 0.5}
-			width={graphWidth - 1}
-			height={rowHeight * $currentRow - platformHeight * 2 - 1}
-			stroke="#D6D3D7"
-			stroke-width="1"
-			fill="none"
-			rx={platformRadius}
-		/>
-		<path
-			fill="none"
-			stroke="#D6D3D7"
-			stroke-width="1"
-			d={`M0.5 ${rowHeight * $currentRow - platformHeight - platformRadius - 1}
-				v${platformHeight}
-				a${platformRadius} ${platformRadius} 0 0 0 ${platformRadius} ${platformRadius}
-				h${graphWidth - platformRadius * 2 - 1}
-				a${platformRadius} ${platformRadius} 0 0 0 ${platformRadius} ${-platformRadius}
-				v${-platformHeight}
-			`}
-		/>
-		<Grass board={graphedRows} {rowHeight} {columnWidth} />
-		<Peaks board={graphedRows} {rowHeight} {columnWidth} />
+	<svg xmlns="http://www.w3.org/2000/svg" on:click={() => redraw++}>
+		{#key redraw}
+			<Hill x={50} y={50} />
+			<Hill x={18} y={25} size={35} delay={200} />
+			<Hill x={60} y={18} size={30} delay={350} />
+			<Hill x={20} y={70} size={25} delay={450} />
+			<Hill x={102} y={55} size={25} delay={500} />
+		{/key}
+		<!--		<rect-->
+		<!--			x="0.5"-->
+		<!--			y={platformHeight + 0.5}-->
+		<!--			width={graphWidth - 1}-->
+		<!--			height={rowHeight * $currentRow - platformHeight * 2 - 1}-->
+		<!--			stroke="#D6D3D7"-->
+		<!--			stroke-width="1"-->
+		<!--			fill="none"-->
+		<!--			rx={platformRadius}-->
+		<!--		/>-->
+		<!--		<path-->
+		<!--			fill="none"-->
+		<!--			stroke="#D6D3D7"-->
+		<!--			stroke-width="1"-->
+		<!--			d={`M0.5 ${rowHeight * $currentRow - platformHeight - platformRadius - 1}-->
+		<!--				v${platformHeight}-->
+		<!--				a${platformRadius} ${platformRadius} 0 0 0 ${platformRadius} ${platformRadius}-->
+		<!--				h${graphWidth - platformRadius * 2 - 1}-->
+		<!--				a${platformRadius} ${platformRadius} 0 0 0 ${platformRadius} ${-platformRadius}-->
+		<!--				v${-platformHeight}-->
+		<!--			`}-->
+		<!--		/>-->
+		<!--		<Grass board={graphedRows} {rowHeight} {columnWidth} />-->
+		<!--		<Peaks board={graphedRows} {rowHeight} {columnWidth} />-->
 	</svg>
 {/if}
 
