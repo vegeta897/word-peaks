@@ -40,6 +40,13 @@ export const flipInOutEasing =
 		return easingFunction(x - 0.5) + 0.5
 	}
 
+export const bezierEasing = {
+	cubicIn: '0.32, 0, 0.67, 0;',
+	cubicInOut: '0.65, 0, 0.35, 1;',
+	sineIn: '0.12, 0, 0.39, 0;',
+	sineInOut: '0.37, 0, 0.63, 1;',
+} as const
+
 // Based on https://codepen.io/danwilson/pen/xGBKVq
 export const animationSupported = (): boolean => {
 	// Unfortunately we can't risk having Chrome iOS's flickering animation bugs

@@ -56,11 +56,11 @@
 {#if canDraw}
 	<svg xmlns="http://www.w3.org/2000/svg" on:click={() => redraw++}>
 		{#key redraw}
-			<Hill x={50} y={50} />
-			<Hill x={18} y={25} size={35} delay={200} />
-			<Hill x={60} y={18} size={30} delay={350} />
-			<Hill x={20} y={70} size={25} delay={450} />
-			<Hill x={102} y={55} size={25} delay={500} />
+			<Hill x={50} y={50} width={50} length={20} />
+			<Hill x={18} y={25} width={35} length={10} delay={200} />
+			<Hill x={60} y={18} width={30} length={10} delay={350} />
+			<Hill x={20} y={60} width={25} length={10} delay={450} />
+			<Hill x={95} y={35} width={25} length={5} delay={500} />
 		{/key}
 		<!--		<rect-->
 		<!--			x="0.5"-->
