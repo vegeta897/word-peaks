@@ -75,16 +75,16 @@
 			<animate
 				attributeName="y1"
 				values={`${width + length};${radius};${radius};${width + length}`}
-				keyTimes="0;0.4;0.6;1"
-				dur={DURATION * 1.5 + 'ms'}
+				keyTimes="0;0.25;0.75;1"
+				dur={DURATION * 2 + 'ms'}
 				fill="freeze"
 				calcMode="spline"
-				keySplines={`${bezierEasing.cubicInOut}0,0,0,0;${bezierEasing.cubicIn}`}
+				keySplines={`${bezierEasing.cubicIn}0,0,0,0;${bezierEasing.cubicOut}`}
 			/>
 			<animate
 				attributeName="opacity"
 				values="1;0"
-				begin={DURATION * 1.5 + 'ms'}
+				begin={DURATION * 2 + 'ms'}
 				dur="1ms"
 				fill="freeze"
 				calcMode="discrete"

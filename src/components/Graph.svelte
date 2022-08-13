@@ -8,6 +8,7 @@
 	import Grass from '$com/landscape/Grass.svelte'
 	import Hill from '$com/landscape/Hill.svelte'
 	import Tree from '$com/landscape/Tree.svelte'
+	import Pond from '$com/landscape/Pond.svelte'
 
 	// TODO: Add animations on touch
 
@@ -62,7 +63,10 @@
 			<Hill x={60} y={18} width={30} length={10} delay={350} />
 			<Hill x={20} y={60} width={25} length={10} delay={450} />
 			<Hill x={95} y={35} width={25} length={5} delay={500} />
-			<Tree x={105} y={58} width={20} length={12} />
+			<Tree x={103} y={58} width={15} length={8} delay={500} />
+			<Tree x={121} y={64} width={15} length={8} delay={700} />
+			<Tree x={114} y={79} width={11} length={6} delay={900} />
+			<Pond x={124} y={32} />
 		{/key}
 		<!--		<rect-->
 		<!--			x="0.5"-->
