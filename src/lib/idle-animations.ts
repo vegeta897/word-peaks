@@ -38,7 +38,7 @@ export const hopIn = defineAnimation({
 		{ transform: 'rotate(0)', offset: 0.8 },
 	],
 	scale: [
-		{ easing: 'ease-out' },
+		{ transform: 'scaleY(1)', easing: 'ease-out' },
 		{ transform: 'scaleY(0.8)', offset: 0.3, easing: 'ease-out' },
 		{ transform: 'scaleY(1.2)', offset: 0.5 },
 		{ transform: 'scaleY(1)', offset: 0.6 },
@@ -65,7 +65,7 @@ export const hopOut = defineAnimation({
 		{ transform: 'skew(0)', offset: 1 },
 	],
 	scale: [
-		{ easing: 'ease-out' },
+		{ transform: 'scaleY(1)', easing: 'ease-out' },
 		{ transform: 'scaleY(0.8)', offset: 0.3, easing: 'ease-out' },
 		{ transform: 'scaleY(1.2)', offset: 0.5 },
 		{ transform: 'scaleY(1)', offset: 0.6 },
@@ -112,7 +112,7 @@ export const dropOut = defineAnimation({
 		{ transform: 'rotate(0)', offset: 1 },
 	],
 	scale: [
-		{ easing: 'ease-in' },
+		{ transform: 'scaleY(1)', easing: 'ease-in' },
 		{ transform: 'scaleY(0.8)', offset: 0.3, easing: 'ease-out' },
 		{ transform: 'scaleY(1.1)', offset: 0.4, easing: 'ease-in' },
 		{ transform: 'scaleY(1)', offset: 0.5, easing: 'ease-in' },
