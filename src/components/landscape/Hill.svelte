@@ -55,7 +55,7 @@
 				dur={DURATION / 2 + 'ms'}
 				values={`${height};0`}
 				calcMode="spline"
-				keySplines={'0.54, 0, 0.68, 1;'}
+				keySplines={'0.54, 0, 0.68, 1'}
 				fill="freeze"
 			/>
 			<animate

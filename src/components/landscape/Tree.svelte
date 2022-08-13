@@ -59,7 +59,7 @@
 				begin={DURATION / 2 + 'ms'}
 				dur={DURATION + 'ms'}
 				calcMode="spline"
-				keySplines={bezierEasing.cubicOut + bezierEasing.cubicIn}
+				keySplines={`${bezierEasing.cubicOut};${bezierEasing.cubicIn}`}
 				fill="freeze"
 			/>
 		</circle>
@@ -79,7 +79,7 @@
 				dur={DURATION * 2 + 'ms'}
 				fill="freeze"
 				calcMode="spline"
-				keySplines={`${bezierEasing.cubicIn}0,0,0,0;${bezierEasing.cubicOut}`}
+				keySplines={`${bezierEasing.sineOut};0,0,0,0;${bezierEasing.cubicOut}`}
 			/>
 			<animate
 				attributeName="opacity"
