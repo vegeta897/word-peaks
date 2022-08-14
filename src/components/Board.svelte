@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onDestroy, onMount } from 'svelte'
-	import Graph from '$com/Graph.svelte'
+	import Graph from '$com/Landscape.svelte'
 	import * as store from '$src/store'
 	import Tile from '$com/Tile.svelte'
 	import { get } from 'svelte/store'
@@ -42,8 +42,8 @@
 		}
 	}
 
-	let graphWidth: number
-	let graphHeight: number
+	let landWidth: number
+	let landHeight: number
 
 	onMount(() => {
 		gameFinished.subscribe(() => {
@@ -89,10 +89,10 @@
 			class="graph"
 			class:minimized={$newUser && $currentRow === 0}
 			class:invisible={!$newUser && $currentRow === 0}
-			bind:clientWidth={graphWidth}
-			bind:clientHeight={graphHeight}
+			bind:clientWidth={landWidth}
+			bind:clientHeight={landHeight}
 		>
-			<Graph {graphWidth} {graphHeight} />
+			<Graph {landWidth} {landHeight} />
 		</div>
 	{:else}
 		<div class="loading">loading...</div>
