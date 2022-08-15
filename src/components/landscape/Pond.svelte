@@ -7,8 +7,8 @@
 	export let delay = 0
 	let draw = false
 
-	console.log(10 * Math.sin(0.785))
-	console.log(10 - 10 * Math.cos(0.785))
+	// console.log(10 * Math.sin(0.785))
+	// console.log(10 - 10 * Math.cos(0.785))
 
 	onMount(() => {
 		setTimeout(() => (draw = true), delay)
@@ -38,5 +38,14 @@
 			stroke-linejoin="round"
 			d="M18 15 a10 10 0 0 0 7.07 -2.93 a10 10 0 0 0 14.14 0 a10 10 0 0 0 7.07 2.93 M34 30 a10 10 0 0 0 7.07 -2.93 a10 10 0 0 0 7.07 2.93"
 		/>
+		<!-- Bezier curve method? -->
+		<!--		<path-->
+		<!--			stroke="#ffffff"-->
+		<!--			stroke-width="2"-->
+		<!--			fill="none"-->
+		<!--			stroke-linecap="round"-->
+		<!--			stroke-linejoin="round"-->
+		<!--			d="M18 25 c0 0 4 0 8 -4 c4 5 10 5 14 0 c4 4 8 4 8 4"-->
+		<!--		/>-->
 	</svg>
 {/if}

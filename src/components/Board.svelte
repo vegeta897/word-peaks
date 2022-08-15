@@ -92,7 +92,7 @@
 			bind:clientWidth={landWidth}
 			bind:clientHeight={landHeight}
 		>
-			<Graph {landWidth} {landHeight} />
+			<Graph width={landWidth} height={landHeight} />
 		</div>
 	{:else}
 		<div class="loading">loading...</div>

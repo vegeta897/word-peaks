@@ -49,7 +49,7 @@
 			/>
 		</path>
 		<svg y={height}>
-			<path fill="#e38f2f" d={hillFillPath} vector-effect="non-scaling-stroke" />
+			<path fill="#e38f2f" d={hillFillPath} />
 			<animate
 				attributeName="y"
 				dur={DURATION / 2 + 'ms'}

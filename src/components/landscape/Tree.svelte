@@ -27,10 +27,22 @@
 {#if draw}
 	<svg {x} {y}>
 		<svg>
-			<circle
-				cx={radius}
-				cy={radius}
-				r={radius - STROKE_HALF}
+			<!--			<circle-->
+			<!--				cx={radius}-->
+			<!--				cy={radius}-->
+			<!--				r={radius - STROKE_HALF}-->
+			<!--				fill="#312236"-->
+			<!--				stroke="#ffffff"-->
+			<!--				stroke-width={STROKE_WIDTH}-->
+			<!--			/>-->
+			<!-- TODO: Add pill-shaped trees using below rounded rectangle method -->
+			<rect
+				rx={radius - STROKE_HALF}
+				ry={radius - STROKE_HALF}
+				x={STROKE_HALF}
+				y={STROKE_HALF}
+				width={width - STROKE_WIDTH}
+				height={width - STROKE_WIDTH}
 				fill="#312236"
 				stroke="#ffffff"
 				stroke-width={STROKE_WIDTH}
@@ -46,7 +58,8 @@
 			/>
 			<animate
 				attributeName="opacity"
-				values="0;1"
+				values="0;0;1;1"
+				keyTimes="0;0.5;0.6;1"
 				dur={DURATION * 1.6 + 'ms'}
 				calcMode="discrete"
 				fill="freeze"
