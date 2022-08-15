@@ -2,9 +2,9 @@
 	import { boardContent, currentRow } from '$src/store'
 	import { get } from 'svelte/store'
 	import { beforeUpdate } from 'svelte'
-	import Hill from '$com/landscape/Hill.svelte'
-	import Tree from '$com/landscape/Tree.svelte'
-	import Pond from '$com/landscape/Pond.svelte'
+	// import Hill from '$com/landscape/Hill.svelte'
+	// import Tree from '$com/landscape/Tree.svelte'
+	// import Pond from '$com/landscape/Pond.svelte'
 	import type { Landscape } from '$lib/landscape'
 	import { getFeatures } from '$lib/landscape'
 
@@ -43,7 +43,7 @@
 				features: [],
 			}
 		}
-		landscape.features = getFeatures(landscape, get(boardContent), get(currentRow))
+		getFeatures(landscape, get(boardContent), get(currentRow))
 	}
 
 	beforeUpdate(() => updateLandscape())
@@ -54,16 +54,18 @@
 
 <svg xmlns="http://www.w3.org/2000/svg" on:click={() => redraw++}>
 	{#key redraw}
-		<Hill x={50} y={40} width={50} length={20} />
-		<Hill x={18} y={16} width={35} length={10} delay={200} />
-		<Hill x={60} y={10} width={30} length={10} delay={350} />
-		<Hill x={20} y={50} width={25} length={10} delay={450} />
-		<Hill x={95} y={25} width={25} length={5} delay={500} />
-		<Tree x={103} y={48} width={15} length={8} delay={500} />
-		<Tree x={121} y={54} width={15} length={8} delay={700} />
-		<Tree x={114} y={69} width={11} length={6} delay={900} />
-		<Pond x={124} y={22} />
-		{#each landscape.features as feature}{/each}
+		<!--		<Hill x={50} y={40} width={50} length={20} />-->
+		<!--		<Hill x={18} y={16} width={35} length={10} delay={200} />-->
+		<!--		<Hill x={60} y={10} width={30} length={10} delay={350} />-->
+		<!--		<Hill x={20} y={50} width={25} length={10} delay={450} />-->
+		<!--		<Hill x={95} y={25} width={25} length={5} delay={500} />-->
+		<!--		<Tree x={103} y={48} width={15} length={8} delay={500} />-->
+		<!--		<Tree x={121} y={54} width={15} length={8} delay={700} />-->
+		<!--		<Tree x={114} y={69} width={11} length={6} delay={900} />-->
+		<!--		<Pond x={124} y={22} />-->
+		{#each landscape.features as feature}
+			<svelte:component this={feature.component} {...feature.props} />
+		{/each}
 	{/key}
 </svg>
 

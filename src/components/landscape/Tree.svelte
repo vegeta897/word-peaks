@@ -8,8 +8,8 @@
 
 	export let x = 0
 	export let y = 0
-	export let width = 20
-	export let length = 20
+	export let width = 12
+	export let length = 8
 	export let delay = 0
 	let draw = false
 
