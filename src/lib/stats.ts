@@ -50,18 +50,11 @@ export function finishGame(won: boolean) {
 }
 
 function updateStats(won: boolean) {
-	const debugMode = get(store.debugMode)
 	const guessCount = get(store.guesses).length
-	if (debugMode) console.log('Updating store.stats')
 	store.stats.update((stats) => {
-		if (debugMode) console.log(`Previous stats: ${JSON.stringify(stats)}`)
-		if (debugMode) console.log(`Previous streak: ${stats.currentStreak}`)
 		const streak = won ? stats.currentStreak + 1 : 0
-		if (debugMode) console.log(`New streak: ${streak}`)
 		const distribution = [...stats.distribution]
-		if (debugMode) console.log(`Previous distribution: ${distribution}`)
 		distribution[guessCount - 1]++
-		if (debugMode) console.log(`New distribution: ${distribution}`)
 		return {
 			currentStreak: streak,
 			bestStreak: streak > stats.bestStreak ? streak : stats.bestStreak,
@@ -70,17 +63,12 @@ function updateStats(won: boolean) {
 			distribution,
 		}
 	})
-	if (debugMode) console.log(`Saved stats: ${JSON.stringify(get(store.stats))}`)
 	const guessTimes = get(store.guessTimes)
 	const gameTime = getGameTime(guessTimes)
-	if (debugMode) console.log('Updating store.timeStats')
-	if (debugMode) console.log(`gameTime = ${gameTime}`)
 	store.timeStats.update((timeStats) => {
-		if (debugMode) console.log(`Previous timeStats: ${JSON.stringify(timeStats)}`)
 		const guessTotals = timeStats.guessTotals.map((t, g) =>
 			g < guessCount ? t + (guessTimes[g + 1] - guessTimes[g]) : t
 		)
-		if (debugMode) console.log(`guessTotals = ${guessTotals}`)
 		return {
 			gameCount: timeStats.gameCount + 1,
 			guessTotals,
@@ -91,7 +79,6 @@ function updateStats(won: boolean) {
 					: timeStats.fastestGame,
 		}
 	})
-	if (debugMode) console.log(`Saved timeStats: ${JSON.stringify(get(store.timeStats))}`)
 }
 
 export type GameDetail = {
@@ -106,9 +93,7 @@ export type GameDetail = {
 }
 
 function saveGameDetail(fastest: boolean) {
-	const debugMode = get(store.debugMode)
 	const mode = get(store.gameMode)
-	if (debugMode) console.log(`Saving game detail for mode: ${mode}`)
 	store[mode === 'daily' ? 'lastDailyDetail' : 'lastRandomDetail'].set({
 		mode,
 		dayNumber: mode === 'daily' ? get(store.lastPlayedDaily) + 1 : 0,
@@ -119,12 +104,6 @@ function saveGameDetail(fastest: boolean) {
 		hash: mode === 'daily' ? null : encodeWord(get(store.answer)),
 		fastest,
 	})
-	if (debugMode)
-		console.log(
-			`Saved game detail: ${JSON.stringify(
-				get(store[mode === 'daily' ? 'lastDailyDetail' : 'lastRandomDetail'])
-			)}`
-		)
 }
 
 export function recordGuessTime(row: number) {

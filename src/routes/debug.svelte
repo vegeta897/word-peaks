@@ -3,8 +3,6 @@
 	import { get } from 'svelte/store'
 	import { browser } from '$app/env'
 
-	const { debugMode } = store
-
 	const storeProps = Object.entries(store)
 		.filter(
 			([propName, propValue]) =>
@@ -19,11 +17,6 @@
 
 <section>
 	<h1>Wordle Peaks Debug Info</h1>
-	<div>
-		<input type="checkbox" id="debugMode" bind:checked={$debugMode} /><label for="debugMode"
-			>Debug Mode</label
-		>
-	</div>
 	{#if browser}
 		<button on:click={() => navigator.clipboard.writeText(storePropsString)}>Copy</button>
 		<textarea aria-label="Debug text" rows="10" readOnly>{storePropsString}</textarea>

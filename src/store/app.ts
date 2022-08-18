@@ -42,4 +42,3 @@ export const lastGameDetail: Readable<GameDetail | null> = derived(
 )
 
 export const newUser: Writable<boolean> = writable(false)
-export const debugMode: Writable<boolean> = storageWritable('wp-debugMode', false)

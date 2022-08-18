@@ -6,8 +6,6 @@ import { keyboardLayoutNames, ROWS, WORD_LENGTH } from '$lib/data-model'
 import { newStats, newTimeStats } from '$lib/stats'
 import * as game from '$src/store/game-state'
 
-// TODO: Add a validate.html page that displays all localstorage values
-
 const isValidAnswer = (value: any) =>
 	!value ||
 	(typeof value !== 'string' && !(<any>value instanceof String)) ||
