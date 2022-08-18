@@ -2,16 +2,17 @@
 	import { t } from '$lib/translations'
 	import { openScreen, highContrast, gameMode, lastPlayedDaily } from '$src/store'
 	import { OptionsIconPathData } from '$lib/icons'
+	import { browser } from '$app/env'
 </script>
 
 <header class:high-contrast={$highContrast}>
 	<div class="heading-container">
 		<h1>Wordle Peaks</h1>
-		<div class="game-mode" class:large={$gameMode === 'random'}>
-			{$gameMode === 'daily' ? `#${$lastPlayedDaily + 1}` : '∞'}
-		</div>
+		{#if browser}<div class="game-mode" class:large={$gameMode === 'random'}>
+				{$gameMode === 'daily' ? `#${$lastPlayedDaily + 1}` : '∞'}
+			</div>{/if}
 	</div>
-	<div class="buttons">
+	<div class="buttons" style:visibility={browser ? 'visible' : 'hidden'}>
 		<button
 			title={$t('main.tutorial.title')}
 			class="test"
