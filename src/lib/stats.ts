@@ -36,16 +36,12 @@ export const newTimeStats = (): TimeStats => ({
 const getGameTime = (guessTimes: number[]) => guessTimes[guessTimes.length - 1]! - guessTimes[0]
 
 export function finishGame(won: boolean) {
-	const debugMode = get(store.debugMode)
-	if (debugMode) console.log('Start finishGame function')
 	const mode = get(store.gameMode)
 	let fastest = false
 	if (mode === 'daily') {
 		fastest = getGameTime(get(store.guessTimes)) < get(store.timeStats).fastestGame
-		if (debugMode) console.log(`Calling updateStats`)
 		updateStats(won)
 	}
-	if (debugMode) console.log(`Calling saveGameDetail (fastest = ${fastest})`)
 	saveGameDetail(fastest)
 }
 
@@ -107,7 +103,6 @@ function saveGameDetail(fastest: boolean) {
 }
 
 export function recordGuessTime(row: number) {
-	if (get(store.debugMode)) console.log(`Recording guess time for row ${row}`)
 	store[get(store.gameMode) === 'daily' ? 'guessTimesDaily' : 'guessTimesRandom'].update(
 		(guessTimes) => {
 			guessTimes[row] = new Date().getTime()
