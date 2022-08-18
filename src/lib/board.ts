@@ -151,7 +151,7 @@ export async function submitRow() {
 		}, 1700)
 		const won = get(store.gameWon)
 		trackEvent(won ? 'gameWon' : 'gameLost')
-		if (debugMode) console.log(`Event tracked: ${won ? 'gameWon' : 'gameLost'}`)
+		if (gameMode === 'daily') trackEvent('dailyFinish')
 		if (get(store.newUser)) trackEvent('firstFinish')
 		store.newUser.set(false)
 		store[gameMode === 'daily' ? 'lastPlayedDailyWasHard' : 'lastPlayedRandomWasHard'].set(
