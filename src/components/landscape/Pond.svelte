@@ -16,7 +16,7 @@
 </script>
 
 {#if draw}
-	<svg {x} {y}>
+	<svg {x} {y} viewBox="0 0 70 40" width="35" height="20">
 		<!-- Use path data for pond outline -->
 		<rect x="10" y="0" rx="10" ry="10" width="45" height="20" fill="#ffffff" />
 		<rect x="0" y="10" rx="10" ry="10" width="70" height="20" fill="#ffffff" />
@@ -38,7 +38,7 @@
 			stroke-linejoin="round"
 			d="M18 15 a10 10 0 0 0 7.07 -2.93 a10 10 0 0 0 14.14 0 a10 10 0 0 0 7.07 2.93 M34 30 a10 10 0 0 0 7.07 -2.93 a10 10 0 0 0 7.07 2.93"
 		/>
-		<!-- Bezier curve method? -->
+		<!-- Bezier curve method? Look at quadratic curves too -->
 		<!--		<path-->
 		<!--			stroke="#ffffff"-->
 		<!--			stroke-width="2"-->

@@ -10,10 +10,21 @@
 
 	// TODO: Add animations on touch
 
+	// Remember to test new-player UX
+
 	export let width: number
 	export let height: number
 
-	let landscape: null | Landscape
+	const landscape: Landscape = {
+		rows: 0,
+		metrics: {
+			width: 0,
+			height: 0,
+			tileHeight: 0,
+			rowMargin: 0,
+		},
+		features: [],
+	}
 
 	function updateLandscape() {
 		// TODO: Check if metrics have changed, or current row exceeds drawn rows
@@ -26,29 +37,23 @@
 		)
 		const tileHeight = parseInt(documentStyle.getPropertyValue('--tile-size').split('px')[0])
 		if (
-			!landscape ||
 			landscape.metrics.width !== width ||
 			landscape.metrics.height !== height ||
 			landscape.metrics.tileHeight !== tileHeight ||
 			landscape.metrics.rowMargin !== rowMargin
 		) {
-			landscape = {
-				rows: 0,
-				metrics: {
-					width,
-					height,
-					tileHeight,
-					rowMargin,
-				},
-				features: [],
-			}
+			landscape.metrics.width = width
+			landscape.metrics.height = height
+			landscape.metrics.tileHeight = tileHeight
+			landscape.metrics.rowMargin = rowMargin
+			landscape.rows = 0
+			landscape.features.length = 0
 		}
 		getFeatures(landscape, get(boardContent), get(currentRow))
 	}
 
 	beforeUpdate(() => updateLandscape())
 	currentRow.subscribe(() => updateLandscape())
-
 	let redraw = 0
 </script>
 
