@@ -68,7 +68,8 @@
 		"use_dyslexic_font": "Police OpenDyslexic",
 		"allow_dancing_letters": "Autoriser les lettres dansantes",
 		"include_link": "Inclure le lien",
-		"include_times": "Inclure temps"
+		"include_times": "Inclure temps",
+		"show_precise_times": "Afficher des heures précises"
 	},
 	"footer": {
 		"credits": "un projet <a href=\"https://github.com/vegeta897/wordle-peaks\">open source</a> inspiré par <a href=\"https://www.nytimes.com/games/wordle/index.html\">Wordle</a>",

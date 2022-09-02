@@ -20,6 +20,8 @@
 
 	export let lastGameDetail: GameDetail | null
 
+	const { preciseTimes } = store
+
 	type SpanContainer = { span?: HTMLSpanElement }
 	const totalTimeElement: SpanContainer = { span: undefined }
 	const guessTimeElements: SpanContainer[] = []
@@ -148,6 +150,7 @@
 					bindContainer={totalTimeElement}
 					ms={lastGameDetail.guessTimes[lastGameDetail.guessTimes.length - 1] -
 						lastGameDetail.guessTimes[0]}
+					decimals={$preciseTimes ? 2 : 0}
 				/>
 			</strong>
 			{$t('main.summary.total_time')}
@@ -172,6 +175,7 @@
 					<Time
 						bindContainer={guessTimeElements[g]}
 						ms={lastGameDetail.guessTimes[g + 1] - lastGameDetail.guessTimes[g]}
+						decimals={$preciseTimes ? 2 : 0}
 					/>
 				</div>
 			</div>

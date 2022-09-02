@@ -28,6 +28,7 @@ export function validateLocalStorage() {
 	if (![true, false].includes(get(app.allowDancing))) app.allowDancing.set(true)
 	if (![true, false].includes(get(app.shareURL))) app.shareURL.set(true)
 	if (![true, false].includes(get(app.shareTimes))) app.shareTimes.set(false)
+	if (![true, false].includes(get(app.preciseTimes))) app.preciseTimes.set(false)
 	if (!keyboardLayoutNames.includes(get(app.keyboardLayout))) app.keyboardLayout.set('qwerty')
 
 	// Stats
