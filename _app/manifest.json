@@ -1,6 +1,6 @@
 {
   ".svelte-kit/runtime/client/start.js": {
-    "file": "start-d7389dce.js",
+    "file": "start-25afa888.js",
     "src": ".svelte-kit/runtime/client/start.js",
     "isEntry": true,
     "imports": [
@@ -11,17 +11,17 @@
       "src/routes/__layout.svelte",
       ".svelte-kit/runtime/components/error.svelte",
       "src/routes/debug.svelte",
-      "_index-dd7b48a8.js"
+      "_index-d20a1573.js"
     ]
   },
   "src/routes/__layout.svelte": {
-    "file": "pages/__layout.svelte-0b2409e8.js",
+    "file": "pages/__layout.svelte-261d3585.js",
     "src": "src/routes/__layout.svelte",
     "isEntry": true,
     "isDynamicEntry": true,
     "imports": [
       "_index-3a3d0142.js",
-      "_index-4c29f057.js",
+      "_index-5aff5946.js",
       "_SvelteToast.svelte_svelte_type_style_lang-0222dcb5.js",
       "_preload-helper-b55195a1.js"
     ],
@@ -39,13 +39,13 @@
     ]
   },
   "src/routes/debug.svelte": {
-    "file": "pages/debug.svelte-1c1945bc.js",
+    "file": "pages/debug.svelte-5ee539bb.js",
     "src": "src/routes/debug.svelte",
     "isEntry": true,
     "isDynamicEntry": true,
     "imports": [
       "_index-3a3d0142.js",
-      "_index-4c29f057.js",
+      "_index-5aff5946.js",
       "_preload-helper-b55195a1.js"
     ],
     "css": [
@@ -53,14 +53,14 @@
     ]
   },
   "src/routes/index.svelte": {
-    "file": "pages/index.svelte-5460bff8.js",
+    "file": "pages/index.svelte-116c382e.js",
     "src": "src/routes/index.svelte",
     "isEntry": true,
     "imports": [
       "_preload-helper-b55195a1.js",
       "_index-3a3d0142.js",
-      "_index-dd7b48a8.js",
-      "_index-4c29f057.js",
+      "_index-d20a1573.js",
+      "_index-5aff5946.js",
       "_SvelteToast.svelte_svelte_type_style_lang-0222dcb5.js"
     ]
   },
@@ -73,8 +73,8 @@
       "_index-3a3d0142.js"
     ]
   },
-  "_index-4c29f057.js": {
-    "file": "chunks/index-4c29f057.js",
+  "_index-5aff5946.js": {
+    "file": "chunks/index-5aff5946.js",
     "imports": [
       "_index-3a3d0142.js",
       "_preload-helper-b55195a1.js"
@@ -102,18 +102,18 @@
       "assets/SvelteToast.svelte_svelte_type_style_lang-00aa1808.css"
     ]
   },
-  "_index-dd7b48a8.js": {
-    "file": "chunks/index-dd7b48a8.js",
+  "_index-d20a1573.js": {
+    "file": "chunks/index-d20a1573.js",
     "isDynamicEntry": true,
     "imports": [
       "_preload-helper-b55195a1.js",
       "_index-3a3d0142.js",
       "_SvelteToast.svelte_svelte_type_style_lang-0222dcb5.js",
-      "_index-4c29f057.js"
+      "_index-5aff5946.js"
     ],
     "dynamicImports": [
       "src/components/Idler.svelte",
-      "_idle-scheduler-f7c7a5ef.js",
+      "_idle-scheduler-91b1a5cf.js",
       "src/components/Console.svelte"
     ],
     "css": [
@@ -151,7 +151,7 @@
     "isDynamicEntry": true
   },
   "src/lib/words/targets-filtered.json": {
-    "file": "chunks/targets-filtered-ad800e36.js",
+    "file": "chunks/targets-filtered-d30f16c1.js",
     "src": "src/lib/words/targets-filtered.json",
     "isDynamicEntry": true
   },
@@ -161,36 +161,36 @@
     "isDynamicEntry": true
   },
   "src/components/Console.svelte": {
-    "file": "chunks/Console-074f35c7.js",
+    "file": "chunks/Console-a2f4cadd.js",
     "src": "src/components/Console.svelte",
     "isDynamicEntry": true,
     "imports": [
       "_index-3a3d0142.js",
-      "_index-4c29f057.js",
-      "_index-dd7b48a8.js",
+      "_index-5aff5946.js",
+      "_index-d20a1573.js",
       "_preload-helper-b55195a1.js",
       "_SvelteToast.svelte_svelte_type_style_lang-0222dcb5.js"
     ]
   },
   "src/components/Idler.svelte": {
-    "file": "chunks/Idler-598218bd.js",
+    "file": "chunks/Idler-342e60e4.js",
     "src": "src/components/Idler.svelte",
     "isDynamicEntry": true,
     "imports": [
       "_index-3a3d0142.js",
-      "_idle-scheduler-f7c7a5ef.js",
-      "_index-4c29f057.js",
+      "_idle-scheduler-91b1a5cf.js",
+      "_index-5aff5946.js",
       "_preload-helper-b55195a1.js"
     ],
     "css": [
       "assets/Idler-63be55c9.css"
     ]
   },
-  "_idle-scheduler-f7c7a5ef.js": {
-    "file": "chunks/idle-scheduler-f7c7a5ef.js",
+  "_idle-scheduler-91b1a5cf.js": {
+    "file": "chunks/idle-scheduler-91b1a5cf.js",
     "isDynamicEntry": true,
     "imports": [
-      "_index-4c29f057.js"
+      "_index-5aff5946.js"
     ]
   }
 }
