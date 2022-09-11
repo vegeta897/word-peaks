@@ -116,7 +116,7 @@
 
 	:root {
 		--tile-row-margin-bottom: 4px;
-		--tile-size: 57px;
+		--tile-size: 54px;
 	}
 
 	.tile-row {
@@ -161,20 +161,17 @@
 
 	@media (max-width: 480px) {
 		:root {
-			--tile-size: 53px;
+			--tile-size: 50px;
 		}
 	}
 	@media (max-width: 420px) {
 		:root {
-			--tile-size: 50px;
+			--tile-size: 46px;
 		}
 	}
 	@media (max-width: 360px) {
 		.container {
 			margin-bottom: 4px;
-		}
-		:root {
-			--tile-size: 48px;
 		}
 	}
 	@media (max-width: 340px) {
