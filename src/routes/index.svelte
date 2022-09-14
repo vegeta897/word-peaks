@@ -76,39 +76,37 @@
 		}
 </script>
 
-<div>
-	<div class:minimized={$openScreen !== null}>
-		<section>
-			<Header />
-			<Board />
-			<Keyboard />
-			{#if consoleMode}
-				{#await import('$com/Console.svelte') then c}
-					<svelte:component this={c.default} />
-				{/await}
-			{/if}
-		</section>
-		<Footer />
-	</div>
-	{#if $openScreen === 'options'}
-		<Options />
-	{:else if $openScreen === 'tutorial'}
-		<Tutorial />
-	{:else if $openScreen === 'results'}
-		<Results
-			playDaily={() => {
-				openScreen.set(null)
-				gameMode.set('daily')
-				playDaily()
-			}}
-			playRandom={() => {
-				openScreen.set(null)
-				gameMode.set('random')
-				playRandom()
-			}}
-		/>
-	{/if}
+<div class:minimized={$openScreen !== null}>
+	<section>
+		<Header />
+		<Board />
+		<Keyboard />
+		{#if consoleMode}
+			{#await import('$com/Console.svelte') then c}
+				<svelte:component this={c.default} />
+			{/await}
+		{/if}
+	</section>
+	<Footer />
 </div>
+{#if $openScreen === 'options'}
+	<Options />
+{:else if $openScreen === 'tutorial'}
+	<Tutorial />
+{:else if $openScreen === 'results'}
+	<Results
+		playDaily={() => {
+			openScreen.set(null)
+			gameMode.set('daily')
+			playDaily()
+		}}
+		playRandom={() => {
+			openScreen.set(null)
+			gameMode.set('random')
+			playRandom()
+		}}
+	/>
+{/if}
 
 <style>
 	.minimized {

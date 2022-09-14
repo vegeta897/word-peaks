@@ -70,6 +70,7 @@
 		user-select: none;
 		padding: 0 4px;
 		touch-action: manipulation;
+		/*max-width: 520px;*/
 	}
 
 	.key-row {
@@ -85,7 +86,7 @@
 		padding: 0;
 		margin-left: 0.125rem;
 		margin-right: 0.125rem;
-		width: 48px;
+		width: 51px;
 		height: 58px;
 		border-radius: 4px;
 		border: 0;

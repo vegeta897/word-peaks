@@ -59,7 +59,7 @@
 
 <style>
 	#main {
-		max-width: 528px;
+		max-width: 558px;
 		margin: 0 auto;
 	}
 </style>
