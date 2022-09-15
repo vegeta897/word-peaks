@@ -1,6 +1,6 @@
 import { get } from 'svelte/store'
 import { lastPlayedDaily, storeVersion } from './app'
-import { answerDaily, guessesDaily, initGameState } from './game-state'
+import { answerDaily, guessesDaily } from './game-state'
 import { validateLocalStorage } from './validation'
 
 const VERSION = 1
@@ -17,7 +17,6 @@ if (!loadedStoreVersion || loadedStoreVersion < 1) {
 storeVersion.set(VERSION)
 
 validateLocalStorage()
-initGameState()
 
 export * from './app'
 export * from './game-state'

@@ -49,7 +49,7 @@ export const notEnoughLetters: Writable<boolean> = writable(false)
 export const invalidWord: Writable<boolean> = writable(false)
 export const invalidWordPreview: Writable<boolean> = writable(false)
 
-export const boardContent: Writable<Board> = writable(createNewBoard())
+export const boardContent: Writable<Board> = writable([])
 
 export const answer: Readable<string> = derived(
 	[gameMode, answerDaily, answerRandom],
@@ -99,20 +99,21 @@ export const validLetters: Readable<Set<string>> = derived(
 
 export function initGameState() {
 	guesses.subscribe((guessed) => {
-		boardContent.update((content) => {
+		boardContent.update(() => {
 			const newBoardContent = createNewBoard()
-			content.forEach((row, r) => {
+			if (guessed.length === 0) return newBoardContent
+			for (let r = 0; r < ROWS; r++) {
 				if (r < guessed.length) {
 					const guessedWord = guessed[r]
 					newBoardContent[r] = [...guessedWord].map((letter, l) =>
-						scoreTile(letter, get(answer), r, l, content)
+						scoreTile(letter, get(answer), r, l, newBoardContent)
 					)
 				} else if (r > 0 && r === guessed.length) {
 					newBoardContent[r].forEach((tile, t) => {
 						tile.letterBounds = getValidLetterBounds(getValidLetters(newBoardContent, r, t))
 					})
 				}
-			})
+			}
 			return newBoardContent
 		})
 	})
