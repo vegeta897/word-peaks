@@ -39,14 +39,14 @@ export type IdleSchedule = {
 // Avoid letters that don't look as good for the first idler
 const firstLetterAlphabet = alphabet.filter((l) => !['l', 'i'].includes(l))
 
-export async function getSchedule(id: string): Promise<IdleSchedule | { wait: number }> {
+export function getSchedule(id: string): IdleSchedule | { wait: number } {
 	const firstIdler = idlerIDs.size === 0
 	idlerIDs.add(id)
 	// Only one idle animation for the first 20 seconds
 	// One additional animation allowed every 30 seconds
-	// Maximum animations is idler count divided by 3-6
+	// Maximum animations is idler count divided by 3-5
 	const maxAnimations = Math.min(
-		idlers / randomInt(3, 6),
+		idlers / randomInt(3, 5),
 		((Date.now() - scheduleBegin) / 1000 - 20) / 30
 	)
 	if (!firstIdler && animating.size > maxAnimations)

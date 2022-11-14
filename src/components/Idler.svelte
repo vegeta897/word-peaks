@@ -56,7 +56,7 @@
 		mounted = true
 		await sleep(Math.random() * 100) // Ensures random first idler
 		while (mounted) {
-			const schedule = await getSchedule(id)
+			const schedule = getSchedule(id)
 			if ('wait' in schedule) {
 				await sleep(schedule.wait)
 				continue
