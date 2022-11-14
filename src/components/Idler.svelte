@@ -90,7 +90,6 @@
 
 <style>
 	.frame {
-		overflow: hidden;
 		position: relative;
 		left: 2px;
 		top: 2px;

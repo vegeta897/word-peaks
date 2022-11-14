@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { fly, squish } from '$lib/../lib/transitions'
-	import { quadIn, quadOut } from 'svelte/easing'
+	import { fly, fade } from '$lib/../lib/transitions'
+	import { quadOut } from 'svelte/easing'
 	import {
 		invalidWord,
 		invalidWordPreview,
@@ -17,10 +17,6 @@
 	export let animate = false
 	export let inCurrentRow = false
 
-	let tileFlipDuration: number
-	let tileFlipDelay: number
-
-	$: tileFlipDuration = animate ? 250 : 0
 	$: tileFlipDelay = animate ? 150 : 0
 
 	const typeAnimation = {
@@ -30,21 +26,30 @@
 	}
 </script>
 
-<div class="tile-container" on:click={() => inCurrentRow && currentTile.set(tile.id)}>
+<div
+	class="tile-container"
+	class:correct={tile.scored && tile.distance === 0}
+	class:before={tile.distance < 0}
+	class:after={tile.distance > 0}
+	class:animate
+	class:shimmy={$invalidWord && inCurrentRow}
+	class:shake={inCurrentRow &&
+		(($notEnoughLetters && !tile.letter) ||
+			($invalidHardModeGuess &&
+				tile.letter &&
+				tile.letterBounds &&
+				(tile.letter < tile.letterBounds[0] || tile.letter > tile.letterBounds[1])))}
+	style={`animation-delay: ${
+		tile.id * ($notEnoughLetters || $invalidHardModeGuess ? 20 : 0)
+	}ms; --tile-animation-delay: ${tile.id * tileFlipDelay}ms;`}
+	on:click={() => inCurrentRow && currentTile.set(tile.id)}
+>
 	{#if tile.scored}
 		<div
-			class="tile scored filled"
-			class:correct={tile.distance === 0}
-			class:before={tile.distance < 0}
-			class:after={tile.distance > 0}
-			in:squish|local={{
-				easing: quadOut,
-				delay: (tile.id + 1) * tileFlipDelay,
-				duration: tileFlipDuration,
-			}}
-		>
-			{tile.letter}
-		</div>
+			class="tile-background"
+			style={`animation-delay: ${tile.id * tileFlipDelay}ms,${tile.id * tileFlipDelay}ms;`}
+		/>
+		<div class="tile scored filled">{tile.letter}</div>
 	{:else}
 		<div
 			class="tile"
@@ -55,31 +60,19 @@
 			class:finished={gameFinished}
 			class:clickable={inCurrentRow}
 			class:invalid={$invalidWordPreview && inCurrentRow}
-			class:shimmy={$invalidWord && inCurrentRow}
-			class:shake={inCurrentRow &&
-				(($notEnoughLetters && !tile.letter) ||
-					($invalidHardModeGuess &&
-						tile.letter &&
-						tile.letterBounds &&
-						(tile.letter < tile.letterBounds[0] || tile.letter > tile.letterBounds[1])))}
-			out:squish|local={{
-				easing: quadIn,
-				delay: tile.id * tileFlipDelay,
-				duration: tileFlipDuration,
+			out:fade|local={{
+				delay: tile.id * tileFlipDelay + 300,
+				duration: 0,
 			}}
-			style={`animation-delay: ${
-				tile.id * ($notEnoughLetters || $invalidHardModeGuess ? 20 : 0)
-			}ms`}
 		>
 			{#if tile.letter}<div in:fly={typeAnimation}>{tile.letter}</div>{/if}
 			{#if tile.letterBounds && !tile.letter && showHint}
-				{#if tile.letterBounds[0] !== tile.letterBounds[1]}
-					<span class="hint"
-						>{tile.letterBounds[0]}<span class="small">...</span>{tile.letterBounds[1]}</span
-					>
-				{:else}
-					<span class="hint">{tile.letterBounds[0]}</span>
-				{/if}
+				<span class="hint"
+					>{tile.letterBounds[0]}
+					{#if tile.letterBounds[0] !== tile.letterBounds[1]}
+						<span class="small">...</span>{tile.letterBounds[1]}
+					{/if}
+				</span>
 			{/if}
 		</div>
 	{/if}
@@ -92,6 +85,141 @@
 		width: 57px;
 		height: 57px;
 		margin: 0 3px;
+		overflow: hidden;
+	}
+
+	.tile-container.correct {
+		overflow: visible;
+	}
+
+	.tile-container.animate.correct::after {
+		content: '';
+		display: block;
+		opacity: 0;
+		width: 100%;
+		height: 100%;
+		border-radius: 4px;
+		animation-fill-mode: backwards;
+		animation-name: glow;
+		animation-duration: 0.8s;
+		animation-timing-function: ease-in;
+		animation-delay: var(--tile-animation-delay);
+		box-shadow: 0 0 10px var(--correct-color);
+	}
+
+	.tile-background {
+		width: 100%;
+		height: 100%;
+		border-radius: 4px;
+		position: absolute;
+		top: 0;
+		left: 0;
+	}
+
+	.correct .tile-background {
+		background: var(--correct-color);
+	}
+
+	.correct.animate .tile-background {
+		animation-fill-mode: backwards;
+		animation-name: illuminate;
+		animation-duration: 0.5s;
+		animation-timing-function: ease-in;
+	}
+
+	.before .tile-background {
+		border-top-left-radius: 20px;
+		border-top-right-radius: 20px;
+		background: var(--before-color);
+	}
+
+	.before.animate .tile-background {
+		animation-fill-mode: backwards;
+		animation-name: rise, bulge-upper;
+		animation-duration: 0.5s, 0.5s;
+		animation-timing-function: ease-in, ease-out;
+	}
+
+	.after .tile-background {
+		border-bottom-left-radius: 20px;
+		border-bottom-right-radius: 20px;
+		background: var(--after-color);
+	}
+
+	.after.animate .tile-background {
+		animation-fill-mode: backwards;
+		animation-name: drop, bulge-lower;
+		animation-duration: 0.5s, 0.5s;
+		animation-timing-function: ease-in, ease-out;
+	}
+
+	@keyframes drop {
+		0% {
+			transform: translateY(-102%);
+		}
+		40% {
+			transform: translateY(0);
+		}
+	}
+
+	@keyframes rise {
+		0% {
+			transform: translateY(102%);
+		}
+		40% {
+			transform: translateY(0);
+		}
+	}
+
+	@keyframes bulge-lower {
+		40% {
+			border-bottom-left-radius: 30px;
+			border-bottom-right-radius: 30px;
+		}
+		60% {
+			border-bottom-left-radius: 4px;
+			border-bottom-right-radius: 4px;
+		}
+		100% {
+			border-bottom-left-radius: 20px;
+			border-bottom-right-radius: 20px;
+		}
+	}
+
+	@keyframes bulge-upper {
+		40% {
+			border-top-left-radius: 30px;
+			border-top-right-radius: 30px;
+		}
+		60% {
+			border-top-left-radius: 4px;
+			border-top-right-radius: 4px;
+		}
+		100% {
+			border-top-left-radius: 20px;
+			border-top-right-radius: 20px;
+		}
+	}
+
+	@keyframes illuminate {
+		0% {
+			background-color: transparent;
+		}
+		60% {
+			background-color: var(--correct-color);
+		}
+	}
+
+	@keyframes glow {
+		10% {
+			opacity: 0;
+		}
+		50% {
+			opacity: 1;
+		}
+		100% {
+			opacity: 0;
+		}
 	}
 
 	.tile {
@@ -120,26 +248,10 @@
 		border-color: #988a9d;
 	}
 	.tile.scored {
-		background: var(--primary-color);
 		border: 0;
-	}
-	.tile.correct {
-		background: var(--correct-color);
 	}
 	.tile.clickable {
 		cursor: pointer;
-	}
-
-	.tile.before {
-		border-top-left-radius: 20px;
-		border-top-right-radius: 20px;
-		background: var(--before-color);
-	}
-
-	.tile.after {
-		border-bottom-left-radius: 20px;
-		border-bottom-right-radius: 20px;
-		background: var(--after-color);
 	}
 
 	.tile.before-pre:not(.finished) {
