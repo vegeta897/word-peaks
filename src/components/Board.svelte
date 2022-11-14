@@ -13,9 +13,9 @@
 
 	let preloadedRows = get(store.guesses).length
 	let idle = false
-	let canAnimate = null
+	let canAnimate: boolean | null = null
 
-	let idleTimeout
+	let idleTimeout: NodeJS.Timer | undefined
 	let idleSessionID = 0
 
 	async function waitForIdle() {
@@ -23,14 +23,12 @@
 		if (canAnimate === false) return
 		idle = false
 		const thisIdleSessionID = ++idleSessionID
-		clearTimeout(idleTimeout)
+		clearTimeout(idleTimeout!)
 		if (get(store.openScreen) === null && !document.hidden) {
-			let thisTimeout: number
-			await new Promise((resolve) => {
+			await new Promise<void>((resolve) => {
 				idleTimeout = setTimeout(() => {
 					resolve()
 				}, (get(gameFinished) ? 20 : 30) * 1000)
-				thisTimeout = idleTimeout
 			})
 			if (thisIdleSessionID !== idleSessionID) return
 			if (canAnimate === null) canAnimate = animationSupported()
@@ -53,7 +51,7 @@
 		store.currentTile.subscribe(() => waitForIdle())
 	})
 	onDestroy(() => {
-		clearTimeout(idleTimeout)
+		clearTimeout(idleTimeout!)
 		idleTimeout = undefined
 	})
 </script>

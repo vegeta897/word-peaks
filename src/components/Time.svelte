@@ -16,7 +16,7 @@
 
 	let msLeft = countdown ? countdown - new Date() : ms
 
-	let interval
+	let interval: NodeJS.Timer
 	if (countdown && msLeft > 0) {
 		interval = setInterval(() => {
 			msLeft = countdown - new Date()

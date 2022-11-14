@@ -9,8 +9,8 @@
 	import Time from '$com/Time.svelte'
 	import Tabs from '$com/Tabs.svelte'
 
-	export let playDaily: () => {}
-	export let playRandom: () => {}
+	export let playDaily: () => void
+	export let playRandom: () => void
 
 	// Get store data once before mounting, we don't want it to be dynamic
 	const lastAnswer = get(store.answer)
