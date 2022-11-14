@@ -25,13 +25,6 @@ export const fade = (node: HTMLElement, opts: any): AnimationConfig => ({
 	},
 })
 
-export const squish = (node: HTMLElement, opts: any): AnimationConfig => ({
-	...opts,
-	tick: (t: number) => {
-		node.style.setProperty('transform', `scaleX(${t})`)
-	},
-})
-
 // Based on https://codepen.io/danwilson/pen/xGBKVq
 export const animationSupported = (): boolean => {
 	// Unfortunately we can't risk having Chrome iOS's flickering animation bugs
