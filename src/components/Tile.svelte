@@ -7,17 +7,22 @@
 		invalidHardModeGuess,
 		notEnoughLetters,
 		currentTile,
+		gameFinished,
+		currentRow,
 	} from '$src/store'
 	import type { Tile } from '$lib/data-model'
 
 	export let tile: Tile
 	export let current = false
-	export let gameFinished = false
 	export let showHint = false
-	export let animate = false
 	export let inCurrentRow = false
 
-	$: tileFlipDelay = animate ? 150 : 0
+	let animate = !tile.scored
+	currentRow.subscribe(() => {
+		animate = !tile.scored
+	})
+
+	const tileFlipDelay = 150
 
 	const typeAnimation = {
 		duration: 100,
@@ -45,10 +50,7 @@
 	on:click={() => inCurrentRow && currentTile.set(tile.id)}
 >
 	{#if tile.scored}
-		<div
-			class="tile-background"
-			style={`animation-delay: ${tile.id * tileFlipDelay}ms,${tile.id * tileFlipDelay}ms;`}
-		/>
+		<div class="tile-background" />
 		<div class="tile scored filled">{tile.letter}</div>
 	{:else}
 		<div
@@ -57,7 +59,7 @@
 			class:current
 			class:before-pre={!tile.scored && tile.polarity < 0}
 			class:after-pre={!tile.scored && tile.polarity > 0}
-			class:finished={gameFinished}
+			class:finished={$gameFinished}
 			class:clickable={inCurrentRow}
 			class:invalid={$invalidWordPreview && inCurrentRow}
 			out:fade|local={{
@@ -112,6 +114,7 @@
 		height: 100%;
 		border-radius: 4px;
 		position: absolute;
+		animation-delay: var(--tile-animation-delay);
 		top: 0;
 		left: 0;
 	}
@@ -136,7 +139,7 @@
 	.before.animate .tile-background {
 		animation-fill-mode: backwards;
 		animation-name: rise, bulge-upper;
-		animation-duration: 0.5s, 0.5s;
+		animation-duration: 0.5s;
 		animation-timing-function: ease-in, ease-out;
 	}
 
@@ -149,7 +152,7 @@
 	.after.animate .tile-background {
 		animation-fill-mode: backwards;
 		animation-name: drop, bulge-lower;
-		animation-duration: 0.5s, 0.5s;
+		animation-duration: 0.5s;
 		animation-timing-function: ease-in, ease-out;
 	}
 

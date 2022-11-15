@@ -11,7 +11,6 @@
 
 	const { boardContent, currentRow, currentTile, gameFinished, showAllHints, newUser } = store
 
-	let preloadedRows = get(store.guesses).length
 	let idle = false
 	let canAnimate: boolean | null = null
 
@@ -42,7 +41,6 @@
 
 	onMount(() => {
 		gameFinished.subscribe(() => {
-			preloadedRows = 0
 			waitForIdle()
 		})
 		document.addEventListener('visibilitychange', () => waitForIdle())
@@ -66,9 +64,7 @@
 							{tile}
 							current={r === $currentRow && tile.id === $currentTile}
 							inCurrentRow={!$gameFinished && r === $currentRow}
-							gameFinished={$gameFinished}
 							showHint={!$gameFinished && (tile.id === $currentTile || $showAllHints)}
-							animate={r >= preloadedRows && r >= $currentRow - 1}
 						>
 							{#if idle && tile.letter === '' && r > $currentRow}
 								{#await import('$com/Idler.svelte') then module}
