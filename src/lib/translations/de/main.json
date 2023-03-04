@@ -1,0 +1,78 @@
+{
+	"tutorial": {
+		"title": "So wird gespielt",
+		"objective": "Erraten Sie das Wort in 6 Versuchen!",
+		"explanation": "Nachdem ein Wort eingegeben wird, werden die jeweiligen Boxen anzeigen, ob der gesuchte Buchstabe höher oder niedriger im Alphabet ist. Höher bedeutet näher an A, niedriger bedeutet näher an Z.",
+		"correct_tile": "Buchstabe ist korrekt",
+		"high_tile": "Buchstabe ist zu früh im Alphabet",
+		"low_tile": "Buchstabe ist zu spät im Alphabet",
+		"letter_range": "Der Bereich der möglichen Buchstaben wird auf der Kachel und der Tastatur angezeigt, während Sie schreiben"
+	},
+	"messages": {
+		"not_enough_letters": "Nicht genug Buchstaben",
+		"invalid_word": "Kein gültiges Wort",
+		"use_valid_letters": "Versuche müssen gültige Buchstaben verwenden",
+		"could_not_do": "Das ist leider nicht möglich!",
+		"score_copied": "Ergebnis kopiert!",
+		"image_copied": "Bild kopiert!",
+		"need_reload": "Aktualisierung erforderlich, bitte laden Sie die Seite neu",
+		"new": "Neu",
+		"new_best": "Neuer Rekord!"
+	},
+	"keyboard": {
+		"enter": "Eingabe"
+	},
+	"results": {
+		"win": "Du hast es verstanden!",
+		"lose": "Oh nein!",
+		"answer": "Die Antwort lautete <strong>{{answer}}</strong>",
+		"try_today": "Versuchen Sie das heutige Wort!",
+		"next_word": "Nächstes Wort",
+		"play_daily": "Tägliches Spiel",
+		"play_random": "Zufälliges Spiel",
+		"share": "Teilen",
+		"text": "Text",
+		"image": "Bild",
+		"copy_image": "Bild kopieren"
+	},
+	"stats": {
+		"title": "Statistiken",
+		"total_games": "Gesamtspiele",
+		"win_rate": "Gewinnquote",
+		"current_streak": "Derzeitige Serie",
+		"best_streak": "Rekord",
+		"winning_guesses": "Erfolgreiche Schätzungen",
+		"average_guess_time": "Durchschnittliche Ratezeit",
+		"fastest_game": "Schnellstes Spiel",
+		"average_game": "Durchschnittliches Spiel",
+		"average_guess": "Durchschnittliche Schätzung",
+		"stats_daily": "Statistik zählt nur tägliche Spiele"
+	},
+	"summary": {
+		"title": "Zusammenfassung",
+		"daily": "Täglich",
+		"random": "Zufällig",
+		"answer": "Antwort",
+		"total_time": "Verstrichene Zeit"
+	},
+	"options": {
+		"title": "Einstellungen",
+		"language": "Sprache",
+		"help_translate": "Füge Übersetzungen hinzu oder korrigiere sie auf <a href=\"https://crowdin.com/project/wordle-peaks\">Crowdin</a> oder <a href=\"https://github.com/vegeta897/wordle-peaks#translate\">GitHub</a>",
+		"keyboard_layout": "Tastatur-Layout",
+		"hard_mode": "Schwerer Modus",
+		"high_contrast_mode": "Kontrastmodus",
+		"show_all_hints": "Zeige alle Hinweise in Zeile",
+		"swap_enter_backspace": "Enter/Backspace-Tasten tauschen",
+		"alphabetic": "Alphabetisch",
+		"use_dyslexic_font": "OpenDyslexic Schriftart",
+		"allow_dancing_letters": "Erlaube Tanzbuchstaben",
+		"include_link": "Link einbeziehen",
+		"include_times": "Zeiten einbeziehen",
+		"show_precise_times": "Genaue Zeiten anzeigen"
+	},
+	"footer": {
+		"credits": "ein <a href=\"https://github.com/vegeta897/wordle-peaks\">Open Source</a> Projekt<br />inspiriert von <a href=\"https://www.nytimes.com/games/wordle/index.html\">Wordle</a>",
+		"donate": "☕ <a href=\"https://buymeacoffee.com/vegeta897\">Kaufe mir einen Kaffee</a>, wenn du mich unterstützen möchtest"
+	}
+}
