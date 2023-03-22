@@ -6,7 +6,8 @@
 	import { aprilFools } from '$lib/share'
 
 	$: isAprilFools = $lastPlayedDaily && aprilFools()
-	$: peaColor = $boardContent.some((r) => r.some((t) => t.scored && t.distance === 0))
+	$: peaColor =
+		isAprilFools && $boardContent.some((r) => r.some((t) => t.scored && t.distance === 0))
 </script>
 
 <header class:high-contrast={$highContrast}>
