@@ -23,7 +23,9 @@
 <script lang="ts">
 	import '../app.css'
 	import { SvelteToast } from '@zerodevx/svelte-toast'
-	import { highContrast, dyslexicFont } from '$src/store'
+	import { highContrast, dyslexicFont, lastPlayedDaily } from '$src/store'
+	import { aprilFools } from '$lib/share'
+	$: isAprilFools = $lastPlayedDaily && aprilFools()
 </script>
 
 <svelte:head>
@@ -49,6 +51,9 @@
 				font-size: 0.9em;
 			}
 		</style>
+	{/if}
+	{#if isAprilFools}
+		<title>Wordle Peas</title>
 	{/if}
 </svelte:head>
 

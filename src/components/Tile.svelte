@@ -9,8 +9,10 @@
 		currentTile,
 		gameFinished,
 		currentRow,
+		lastPlayedDaily,
 	} from '$src/store'
 	import type { Tile } from '$lib/data-model'
+	import { aprilFools } from '$lib/share'
 
 	export let tile: Tile
 	export let current = false
@@ -29,6 +31,8 @@
 		from: 'bottom',
 		easing: quadOut,
 	}
+
+	$: isAprilFools = $lastPlayedDaily && aprilFools()
 </script>
 
 <div
@@ -44,6 +48,7 @@
 				tile.letter &&
 				tile.letterBounds &&
 				(tile.letter < tile.letterBounds[0] || tile.letter > tile.letterBounds[1])))}
+	class:pea={isAprilFools}
 	style={`animation-delay: ${
 		tile.id * ($notEnoughLetters || $invalidHardModeGuess ? 20 : 0)
 	}ms; --tile-animation-delay: ${tile.id * tileFlipDelay}ms;`}
@@ -64,7 +69,7 @@
 			class:invalid={$invalidWordPreview && inCurrentRow}
 			out:fade|local={{
 				delay: tile.id * tileFlipDelay + 300,
-				duration: 0,
+				duration: tile.polarity === 0 && isAprilFools ? 100 : 0,
 			}}
 		>
 			{#if tile.letter}<div in:fly={typeAnimation}>{tile.letter}</div>{/if}
@@ -109,6 +114,10 @@
 		box-shadow: 0 0 10px var(--correct-color);
 	}
 
+	.tile-container.animate.correct.pea::after {
+		border-radius: 100%;
+	}
+
 	.tile-background {
 		width: 100%;
 		height: 100%;
@@ -121,6 +130,10 @@
 
 	.correct .tile-background {
 		background: var(--correct-color);
+	}
+
+	.correct.pea .tile-background {
+		border-radius: 100%;
 	}
 
 	.correct.animate .tile-background {

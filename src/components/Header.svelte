@@ -1,13 +1,17 @@
 <script lang="ts">
 	import { t } from '$lib/translations'
-	import { openScreen, highContrast, gameMode, lastPlayedDaily } from '$src/store'
+	import { openScreen, highContrast, gameMode, lastPlayedDaily, boardContent } from '$src/store'
 	import { OptionsIconPathData } from '$lib/icons'
 	import { browser } from '$app/env'
+	import { aprilFools } from '$lib/share'
+
+	$: isAprilFools = $lastPlayedDaily && aprilFools()
+	$: peaColor = $boardContent.some((r) => r.some((t) => t.scored && t.distance === 0))
 </script>
 
 <header class:high-contrast={$highContrast}>
 	<div class="heading-container">
-		<h1>Wordle Peaks</h1>
+		<h1>Wordle <span class:pea={peaColor}>{isAprilFools ? 'Peas' : 'Peaks'}</span></h1>
 		{#if browser}<div class="game-mode" class:large={$gameMode === 'random'}>
 				{$gameMode === 'daily' ? `#${$lastPlayedDaily + 1}` : '∞'}
 			</div>{/if}
@@ -60,6 +64,11 @@
 	h1 {
 		text-align: left;
 		margin: 0;
+	}
+
+	.pea {
+		color: var(--correct-color);
+		transition: color 2s ease-in;
 	}
 
 	.game-mode {

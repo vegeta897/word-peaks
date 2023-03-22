@@ -8,6 +8,7 @@
 	import Toggle from 'svelte-toggle'
 	import * as store from '$src/store'
 	import {
+		aprilFools,
 		copyImage,
 		copyText,
 		drawResults,
@@ -122,6 +123,8 @@
 			day: lastGameDetail!.dayNumber,
 		})
 	})
+
+	const isAprilFools = aprilFools()
 </script>
 
 <section>
@@ -166,6 +169,7 @@
 							class="guess-letter"
 							class:before={letter < lastGameDetail.answer[l]}
 							class:after={letter > lastGameDetail.answer[l]}
+							class:pea={isAprilFools && letter === lastGameDetail.answer[l]}
 						>
 							{letter.toUpperCase()}
 						</div>
@@ -294,6 +298,9 @@
 		border-color: var(--after-color);
 		border-bottom-left-radius: 8px;
 		border-bottom-right-radius: 8px;
+	}
+	.guess-letter.pea {
+		border-radius: 100%;
 	}
 
 	.time-value {
