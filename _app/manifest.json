@@ -1,29 +1,34 @@
 {
   ".svelte-kit/runtime/client/start.js": {
-    "file": "start-a5d83151.js",
+    "file": "start-80ef3388.js",
     "src": ".svelte-kit/runtime/client/start.js",
     "isEntry": true,
     "imports": [
       "_index-3a3d0142.js",
-      "_preload-helper-b55195a1.js"
+      "_index-9ad74cf1.js",
+      "_preload-helper-adf57ee2.js",
+      "_singletons-d1fb5791.js"
     ],
     "dynamicImports": [
       "src/routes/__layout.svelte",
       ".svelte-kit/runtime/components/error.svelte",
       "src/routes/debug.svelte",
-      "_index-6795f66b.js"
+      "_index-4e4917df.js",
+      "src/routes/random.svelte"
     ]
   },
   "src/routes/__layout.svelte": {
-    "file": "pages/__layout.svelte-6eaf7da9.js",
+    "file": "pages/__layout.svelte-345ac736.js",
     "src": "src/routes/__layout.svelte",
     "isEntry": true,
     "isDynamicEntry": true,
     "imports": [
       "_index-3a3d0142.js",
-      "_index-d7eb66fb.js",
-      "_share-126a6957.js",
-      "_preload-helper-b55195a1.js"
+      "_index-a2348384.js",
+      "_share-625b378c.js",
+      "_index-9ad74cf1.js",
+      "_data-model-b985f351.js",
+      "_preload-helper-adf57ee2.js"
     ],
     "css": [
       "assets/pages/__layout.svelte-42bdb3ef.css"
@@ -39,54 +44,75 @@
     ]
   },
   "src/routes/debug.svelte": {
-    "file": "pages/debug.svelte-4c43fa05.js",
+    "file": "pages/debug.svelte-e0bb6b72.js",
     "src": "src/routes/debug.svelte",
     "isEntry": true,
     "isDynamicEntry": true,
     "imports": [
       "_index-3a3d0142.js",
-      "_index-d7eb66fb.js",
-      "_preload-helper-b55195a1.js"
+      "_index-a2348384.js",
+      "_index-9ad74cf1.js",
+      "_data-model-b985f351.js",
+      "_preload-helper-adf57ee2.js"
     ],
     "css": [
       "assets/pages/debug.svelte-52844910.css"
     ]
   },
+  "src/routes/random.svelte": {
+    "file": "pages/random.svelte-b38cafa8.js",
+    "src": "src/routes/random.svelte",
+    "isEntry": true,
+    "isDynamicEntry": true,
+    "imports": [
+      "_index-3a3d0142.js",
+      "_singletons-d1fb5791.js",
+      "_data-model-b985f351.js",
+      "_preload-helper-adf57ee2.js"
+    ]
+  },
   "src/routes/index.svelte": {
-    "file": "pages/index.svelte-38fd84f2.js",
+    "file": "pages/index.svelte-6637cad9.js",
     "src": "src/routes/index.svelte",
     "isEntry": true,
     "imports": [
-      "_preload-helper-b55195a1.js",
+      "_preload-helper-adf57ee2.js",
       "_index-3a3d0142.js",
-      "_index-6795f66b.js",
-      "_index-d7eb66fb.js",
-      "_share-126a6957.js"
+      "_index-4e4917df.js",
+      "_data-model-b985f351.js",
+      "_index-a2348384.js",
+      "_share-625b378c.js",
+      "_index-9ad74cf1.js"
     ]
   },
   "_index-3a3d0142.js": {
     "file": "chunks/index-3a3d0142.js"
   },
-  "_preload-helper-b55195a1.js": {
-    "file": "chunks/preload-helper-b55195a1.js",
+  "_index-9ad74cf1.js": {
+    "file": "chunks/index-9ad74cf1.js",
     "imports": [
       "_index-3a3d0142.js"
     ]
   },
-  "_index-d7eb66fb.js": {
-    "file": "chunks/index-d7eb66fb.js",
+  "_singletons-d1fb5791.js": {
+    "file": "chunks/singletons-d1fb5791.js"
+  },
+  "_preload-helper-adf57ee2.js": {
+    "file": "chunks/preload-helper-adf57ee2.js"
+  },
+  "_index-a2348384.js": {
+    "file": "chunks/index-a2348384.js",
     "imports": [
       "_index-3a3d0142.js",
-      "_preload-helper-b55195a1.js"
-    ],
-    "dynamicImports": [
-      "src/lib/words/dictionary-filtered.json"
+      "_index-9ad74cf1.js",
+      "_data-model-b985f351.js"
     ]
   },
-  "_share-126a6957.js": {
-    "file": "chunks/share-126a6957.js",
+  "_share-625b378c.js": {
+    "file": "chunks/share-625b378c.js",
     "imports": [
-      "_preload-helper-b55195a1.js",
+      "_preload-helper-adf57ee2.js",
+      "_index-9ad74cf1.js",
       "_index-3a3d0142.js"
     ],
     "dynamicImports": [
@@ -102,18 +128,29 @@
       "assets/share-5cb86517.css"
     ]
   },
-  "_index-6795f66b.js": {
-    "file": "chunks/index-6795f66b.js",
+  "_data-model-b985f351.js": {
+    "file": "chunks/data-model-b985f351.js",
+    "imports": [
+      "_preload-helper-adf57ee2.js"
+    ],
+    "dynamicImports": [
+      "src/lib/words/dictionary-filtered.json"
+    ]
+  },
+  "_index-4e4917df.js": {
+    "file": "chunks/index-4e4917df.js",
     "isDynamicEntry": true,
     "imports": [
-      "_preload-helper-b55195a1.js",
+      "_preload-helper-adf57ee2.js",
       "_index-3a3d0142.js",
-      "_share-126a6957.js",
-      "_index-d7eb66fb.js"
+      "_share-625b378c.js",
+      "_data-model-b985f351.js",
+      "_index-a2348384.js",
+      "_index-9ad74cf1.js"
     ],
     "dynamicImports": [
       "src/components/Idler.svelte",
-      "_idle-scheduler-701290f7.js",
+      "_idle-scheduler-efe837e1.js",
       "src/components/Console.svelte"
     ],
     "css": [
@@ -161,36 +198,38 @@
     "isDynamicEntry": true
   },
   "src/components/Console.svelte": {
-    "file": "chunks/Console-14d1c095.js",
+    "file": "chunks/Console-7d573c2d.js",
     "src": "src/components/Console.svelte",
     "isDynamicEntry": true,
     "imports": [
       "_index-3a3d0142.js",
-      "_index-d7eb66fb.js",
-      "_index-6795f66b.js",
-      "_preload-helper-b55195a1.js",
-      "_share-126a6957.js"
+      "_index-a2348384.js",
+      "_index-4e4917df.js",
+      "_index-9ad74cf1.js",
+      "_data-model-b985f351.js",
+      "_preload-helper-adf57ee2.js",
+      "_share-625b378c.js"
     ]
   },
   "src/components/Idler.svelte": {
-    "file": "chunks/Idler-ad3220a0.js",
+    "file": "chunks/Idler-e8a57ab6.js",
     "src": "src/components/Idler.svelte",
     "isDynamicEntry": true,
     "imports": [
       "_index-3a3d0142.js",
-      "_idle-scheduler-701290f7.js",
-      "_index-d7eb66fb.js",
-      "_preload-helper-b55195a1.js"
+      "_idle-scheduler-efe837e1.js",
+      "_data-model-b985f351.js",
+      "_preload-helper-adf57ee2.js"
     ],
     "css": [
       "assets/Idler-dc87e64a.css"
     ]
   },
-  "_idle-scheduler-701290f7.js": {
-    "file": "chunks/idle-scheduler-701290f7.js",
+  "_idle-scheduler-efe837e1.js": {
+    "file": "chunks/idle-scheduler-efe837e1.js",
     "isDynamicEntry": true,
     "imports": [
-      "_index-d7eb66fb.js"
+      "_data-model-b985f351.js"
     ]
   }
 }
