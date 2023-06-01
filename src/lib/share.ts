@@ -18,7 +18,7 @@ export function getShareTitle({
 	const score = gameWon ? guesses.length : 'X'
 	const dayText = gameMode === 'random' ? '∞ ' : `#${day!} `
 	const scoreText = `${score}/6${hardMode ? '*' : ''}`
-	const gameName = aprilFools() ? 'Wordle Peas' : 'Wordle Peaks'
+	const gameName = aprilFools() ? 'Word Peas' : 'Word Peaks'
 	return `${gameName} ${dayText}${scoreText}`
 }
 
@@ -69,7 +69,7 @@ export async function shareImage(
 	const imageUrl = canvas.toDataURL()
 	const imageBlob = await (await fetch(imageUrl)).blob()
 	const filesArray = [
-		new File([imageBlob], `wordle-peaks-${hash || day}.png`, {
+		new File([imageBlob], `word-peaks-${hash || day}.png`, {
 			type: imageBlob.type,
 			lastModified: new Date().getTime(),
 		}),
@@ -170,7 +170,7 @@ export function drawResults(
 	ctx.fillText(caption, totalTime ? 8 : canvas.width / 2, guesses.length * 100 + 44)
 	if (showURL) {
 		ctx.font = '40px Arial'
-		let url = 'wordlepeaks.com'
+		let url = 'wordpeaks.com'
 		if (hash) url += '/#' + hash
 		ctx.fillStyle = '#a7a1a9'
 		ctx.fillText(url, totalTime ? 8 : canvas.width / 2, guesses.length * 100 + 92)

@@ -57,7 +57,7 @@
 	}
 
 	console.log(
-		'Welcome to %cWordle Peaks %cconsole edition!',
+		'Welcome to %cWord Peaks %cconsole edition!',
 		'font-weight:bold',
 		'font-style: italic'
 	)

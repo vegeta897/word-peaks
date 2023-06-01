@@ -58,7 +58,7 @@
 	"options": {
 		"title": "Options",
 		"language": "Langue",
-		"help_translate": "Ajouter ou corriger des traductions sur <a href=\"https://crowdin.com/project/wordle-peaks\">Crowdin</a> ou <a href=\"https://github.com/vegeta897/wordle-peaks#translate\">GitHub</a>",
+		"help_translate": "Ajouter ou corriger des traductions sur <a href=\"https://crowdin.com/project/word-peaks\">Crowdin</a> ou <a href=\"https://github.com/vegeta897/word-peaks#translate\">GitHub</a>",
 		"keyboard_layout": "Configuration du clavier",
 		"hard_mode": "Mode difficile",
 		"high_contrast_mode": "Mode contraste élevé",
@@ -72,7 +72,7 @@
 		"show_precise_times": "Afficher des heures précises"
 	},
 	"footer": {
-		"credits": "un projet <a href=\"https://github.com/vegeta897/wordle-peaks\">open source</a> inspiré par <a href=\"https://www.nytimes.com/games/wordle/index.html\">Wordle</a>",
+		"credits": "un projet <a href=\"https://github.com/vegeta897/word-peaks\">open source</a>",
 		"donate": "☕ <a href=\"https://buymeacoffee.com/vegeta897\">achète-moi un café</a> si tu veux me soutenir"
 	}
 }

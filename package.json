@@ -1,5 +1,5 @@
 {
-	"name": "wordle-peaks",
+	"name": "word-peaks",
 	"version": "0.0.1",
 	"private": true,
 	"scripts": {
@@ -33,7 +33,7 @@
 		"plausible-tracker": "^0.3.5",
 		"sveltekit-i18n": "^2.1.3"
 	},
-	"homepage": "https://github.com/vegeta897/wordle-peaks#readme",
-	"issues": "https://github.com/vegeta897/wordle-peaks/issues",
+	"homepage": "https://github.com/vegeta897/word-peaks#readme",
+	"issues": "https://github.com/vegeta897/word-peaks/issues",
 	"type": "module"
 }

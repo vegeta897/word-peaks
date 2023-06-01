@@ -13,7 +13,7 @@ type EventName =
 
 const plausible = browser
 	? Plausible({
-			domain: 'vegeta897.github.io/wordle-peaks',
+			domain: 'vegeta897.github.io/word-peaks',
 			apiHost: 'https://plausible.pixelatomy.com',
 	  })
 	: { trackPageview() {}, trackEvent() {} }

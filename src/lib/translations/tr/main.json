@@ -58,7 +58,7 @@
 	"options": {
 		"title": "Ayarlar",
 		"language": "Dil",
-		"help_translate": "<a href=\"https://crowdin.com/project/wordle-peaks\">Crowdin'de</a> veya <a href=\"https://github.com/vegeta897/wordle-peaks#translate\">Github'da</a> tercüme ekleyip veya düzeltebilirsin",
+		"help_translate": "<a href=\"https://crowdin.com/project/word-peaks\">Crowdin'de</a> veya <a href=\"https://github.com/vegeta897/word-peaks#translate\">Github'da</a> tercüme ekleyip veya düzeltebilirsin",
 		"keyboard_layout": "Klavye düzeni",
 		"hard_mode": "Zor mod",
 		"high_contrast_mode": "Yüksek kontrast modu",
@@ -72,7 +72,7 @@
 		"show_precise_times": "Kesin zamanları göster"
 	},
 	"footer": {
-		"credits": "<a href=\"https://www.nytimes.com/games/wordle/index.html\">Wordle'dan</a> esinlenilmiş <a href=\"https://github.com/vegeta897/wordle-peaks\">açık kaynak</a> kodlu bir proje",
+		"credits": "<a href=\"https://github.com/vegeta897/word-peaks\">açık kaynak</a> kodlu bir proje",
 		"donate": "☕ bana destek olmak istersen <a href=\"https://buymeacoffee.com/vegeta897\">bir kahve ısmarla</a>"
 	}
 }

@@ -12,7 +12,7 @@
 
 <header class:high-contrast={$highContrast}>
 	<div class="heading-container">
-		<h1>Wordle <span class:pea={peaColor}>{isAprilFools ? 'Peas' : 'Peaks'}</span></h1>
+		<h1>Word <span class:pea={peaColor}>{isAprilFools ? 'Peas' : 'Peaks'}</span></h1>
 		{#if browser}<div class="game-mode" class:large={$gameMode === 'random'}>
 				{$gameMode === 'daily' ? `#${$lastPlayedDaily + 1}` : '∞'}
 			</div>{/if}

@@ -51,7 +51,7 @@
 		}
 		let url = ''
 		if (get(store.shareURL)) {
-			url = '\nhttps://wordlepeaks.com'
+			url = '\nhttps://wordpeaks.com'
 			if (lastGameDetail!.hash) url += `/#${lastGameDetail!.hash}`
 		}
 		copyText(shareTitleText + '\n\n' + getEmojiGrid(emojiGridParams) + totalTime + url).then(

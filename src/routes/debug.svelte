@@ -16,7 +16,7 @@
 </script>
 
 <section>
-	<h1>Wordle Peaks Debug Info</h1>
+	<h1>Word Peaks Debug Info</h1>
 	{#if browser}
 		<button on:click={() => navigator.clipboard.writeText(storePropsString)}>Copy</button>
 		<textarea aria-label="Debug text" rows="10" readOnly>{storePropsString}</textarea>
