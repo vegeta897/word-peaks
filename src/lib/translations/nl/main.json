@@ -58,7 +58,7 @@
 	"options": {
 		"title": "Instellingen",
 		"language": "Taal",
-		"help_translate": "Vertalingen toevoegen of repareren op <a href=\"https://crowdin.com/project/word-peaks\">Crowdin</a> of <a href=\"https://github.com/vegeta897/word-peaks#translate\">GitHub</a>",
+		"help_translate": "Vertalingen toevoegen of repareren op <a href=\"https://crowdin.com/project/wordle-peaks\">Crowdin</a> of <a href=\"https://github.com/vegeta897/word-peaks#translate\">GitHub</a>",
 		"keyboard_layout": "Toetsenbordindeling",
 		"hard_mode": "Moeilijke Modus",
 		"high_contrast_mode": "Hoog contrast modus",

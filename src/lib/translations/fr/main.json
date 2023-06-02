@@ -58,7 +58,7 @@
 	"options": {
 		"title": "Options",
 		"language": "Langue",
-		"help_translate": "Ajouter ou corriger des traductions sur <a href=\"https://crowdin.com/project/word-peaks\">Crowdin</a> ou <a href=\"https://github.com/vegeta897/word-peaks#translate\">GitHub</a>",
+		"help_translate": "Ajouter ou corriger des traductions sur <a href=\"https://crowdin.com/project/wordle-peaks\">Crowdin</a> ou <a href=\"https://github.com/vegeta897/word-peaks#translate\">GitHub</a>",
 		"keyboard_layout": "Configuration du clavier",
 		"hard_mode": "Mode difficile",
 		"high_contrast_mode": "Mode contraste élevé",

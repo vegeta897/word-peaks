@@ -20,7 +20,7 @@ Pull requests and issues are welcome, but please create an issue or contact me b
 
 ## Translate
 
-If you can contribute a translation, please check out [this link](https://crowdin.com/project/word-peaks), or create a pull request with a translated copy of [this file](https://github.com/vegeta897/word-peaks/blob/main/src/lib/translations/en/main.json) in a new locale folder (e.g. `de/main.json`).
+If you can contribute a translation, please check out [this link](https://crowdin.com/project/wordle-peaks), or create a pull request with a translated copy of [this file](https://github.com/vegeta897/word-peaks/blob/main/src/lib/translations/en/main.json) in a new locale folder (e.g. `de/main.json`).
 
 Or if you don't want to do any of that, you can just get in touch with me and send the translation in whatever way is convenient for you.
 
