@@ -1,20 +1,20 @@
 {
-	"name": "Wordle Peaks",
-	"short_name": "Wordle Peaks",
-	"description": "A Wordle spin-off",
+	"name": "Word Peaks",
+	"short_name": "Word Peaks",
+	"description": "A Word spin-off",
 	"icons": [
 		{
-			"src": "https://vegeta897.github.io/wordle-peaks/android-chrome-192x192.png?v=1",
+			"src": "https://vegeta897.github.io/word-peaks/android-chrome-192x192.png?v=1",
 			"sizes": "192x192",
 			"type": "image/png"
 		},
 		{
-			"src": "https://vegeta897.github.io/wordle-peaks/android-chrome-512x512.png?v=1",
+			"src": "https://vegeta897.github.io/word-peaks/android-chrome-512x512.png?v=1",
 			"sizes": "512x512",
 			"type": "image/png"
 		}
 	],
-	"start_url": "https://vegeta897.github.io/wordle-peaks/",
+	"start_url": "https://vegeta897.github.io/word-peaks/",
 	"display": "standalone",
 	"theme_color": "#15a850",
 	"background_color": "#312236"
