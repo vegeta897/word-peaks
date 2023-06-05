@@ -16,7 +16,7 @@
 				<title>Discord</title>
 				<path d={DiscordIconPathData} fill="#bbbbbb" />
 			</svg>
-			<pre>vegeta897#7777</pre>
+			<pre>vegeta897</pre>
 		</div>
 		<div class="footer-item icon-item">
 			<svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 248 204">
