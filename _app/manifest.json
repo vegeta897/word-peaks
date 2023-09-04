@@ -1,6 +1,6 @@
 {
   ".svelte-kit/runtime/client/start.js": {
-    "file": "start-b292c82a.js",
+    "file": "start-e477fdbf.js",
     "src": ".svelte-kit/runtime/client/start.js",
     "isEntry": true,
     "imports": [
@@ -13,7 +13,7 @@
       "src/routes/__layout.svelte",
       ".svelte-kit/runtime/components/error.svelte",
       "src/routes/debug.svelte",
-      "_index-f38dc3f0.js",
+      "_index-61fec679.js",
       "src/routes/random.svelte"
     ]
   },
@@ -72,13 +72,13 @@
     ]
   },
   "src/routes/index.svelte": {
-    "file": "pages/index.svelte-834091ae.js",
+    "file": "pages/index.svelte-2096cd8a.js",
     "src": "src/routes/index.svelte",
     "isEntry": true,
     "imports": [
       "_preload-helper-5828fb0a.js",
       "_index-3a3d0142.js",
-      "_index-f38dc3f0.js",
+      "_index-61fec679.js",
       "_data-model-38a4e65f.js",
       "_index-f6a9d205.js",
       "_share-c4e5744e.js",
@@ -137,8 +137,8 @@
       "src/lib/words/dictionary-filtered.json"
     ]
   },
-  "_index-f38dc3f0.js": {
-    "file": "chunks/index-f38dc3f0.js",
+  "_index-61fec679.js": {
+    "file": "chunks/index-61fec679.js",
     "isDynamicEntry": true,
     "imports": [
       "_preload-helper-5828fb0a.js",
@@ -154,7 +154,7 @@
       "src/components/Console.svelte"
     ],
     "css": [
-      "assets/index-c38a54e1.css"
+      "assets/index-8d255a29.css"
     ]
   },
   "src/lib/translations/en/main.json": {
@@ -198,13 +198,13 @@
     "isDynamicEntry": true
   },
   "src/components/Console.svelte": {
-    "file": "chunks/Console-7caf410c.js",
+    "file": "chunks/Console-1b9006b9.js",
     "src": "src/components/Console.svelte",
     "isDynamicEntry": true,
     "imports": [
       "_index-3a3d0142.js",
       "_index-f6a9d205.js",
-      "_index-f38dc3f0.js",
+      "_index-61fec679.js",
       "_index-9ad74cf1.js",
       "_data-model-38a4e65f.js",
       "_preload-helper-5828fb0a.js",
