@@ -21,7 +21,7 @@
 
 	export let lastGameDetail: GameDetail | null
 
-	const { preciseTimes } = store
+	const { preciseTimes, gameWon } = store
 
 	type SpanContainer = { span?: HTMLSpanElement }
 	const totalTimeElement: SpanContainer = { span: undefined }
@@ -249,6 +249,16 @@
 		<canvas bind:this={canvas} />
 		<button on:click={onCopyImage}>{$t('main.results.copy_image')}</button>
 	</div>
+	{#if $gameWon && !shareMenu}
+		<div class="promo">
+			<strong>Too easy?</strong><br />Try the
+			<a
+				on:auxclick={() => trackEvent('promoLinkFollow')}
+				on:click={() => trackEvent('promoLinkFollow')}
+				href="https://www.youtube.com/watch?v=0vCi_Jpeg-o">Super Sunday Challenge!</a
+			>
+		</div>
+	{/if}
 </section>
 
 <style>
@@ -431,6 +441,13 @@
 		padding: 4px;
 		border: 1px solid var(--primary-color);
 		box-shadow: 0 0 8px var(--primary-color);
+	}
+
+	.promo {
+		margin-top: 1rem;
+		text-align: center;
+		line-height: 1.5rem;
+		font-size: 1.2em;
 	}
 
 	@media (max-width: 360px) {

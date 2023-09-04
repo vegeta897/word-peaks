@@ -10,6 +10,7 @@ type EventName =
 	| 'idleOnFinish'
 	| 'idleBeforeFinish'
 	| 'dailyFinish'
+	| 'promoLinkFollow'
 
 const plausible = browser
 	? Plausible({
@@ -22,7 +23,10 @@ export const trackPageview = () => track('pageview')
 export const trackEvent = (eventName: EventName) => track(eventName)
 
 function track(type: 'pageview' | EventName) {
-	if (dev) return
+	if (dev) {
+		console.log('Tracked', type, 'event')
+		return
+	}
 	try {
 		if (type === 'pageview') plausible.trackPageview()
 		else plausible.trackEvent(type)
