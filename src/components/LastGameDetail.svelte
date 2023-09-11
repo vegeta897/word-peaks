@@ -249,7 +249,7 @@
 		<canvas bind:this={canvas} />
 		<button on:click={onCopyImage}>{$t('main.results.copy_image')}</button>
 	</div>
-	{#if $gameWon && !shareMenu}
+	<!-- {#if $gameWon && !shareMenu}
 		<div class="promo">
 			<strong>Too easy?</strong><br />Try the
 			<a
@@ -258,7 +258,7 @@
 				href="https://www.youtube.com/watch?v=0vCi_Jpeg-o">Super Sunday Challenge!</a
 			>
 		</div>
-	{/if}
+	{/if} -->
 </section>
 
 <style>
