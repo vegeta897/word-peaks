@@ -77,7 +77,7 @@
 		await shareImage(
 			canvas,
 			lastGameDetail!.mode === 'random'
-				? { hash: lastGameDetail!.hash }
+				? { hash: lastGameDetail!.hash || undefined }
 				: { day: lastGameDetail!.dayNumber }
 		)
 		canvas.scrollIntoView({ block: 'center' })
@@ -249,16 +249,15 @@
 		<canvas bind:this={canvas} />
 		<button on:click={onCopyImage}>{$t('main.results.copy_image')}</button>
 	</div>
-	<!-- {#if $gameWon && !shareMenu}
+	{#if !shareMenu}
 		<div class="promo">
-			<strong>Too easy?</strong><br />Try the
 			<a
 				on:auxclick={() => trackEvent('promoLinkFollow')}
 				on:click={() => trackEvent('promoLinkFollow')}
-				href="https://www.youtube.com/watch?v=0vCi_Jpeg-o">Super Sunday Challenge!</a
+				href="https://buymeacoffee.com/vegeta897">☕ Buy me a coffee</a
 			>
 		</div>
-	{/if} -->
+	{/if}
 </section>
 
 <style>
@@ -444,7 +443,7 @@
 	}
 
 	.promo {
-		margin-top: 1rem;
+		margin-top: 1.25rem;
 		text-align: center;
 		line-height: 1.5rem;
 		font-size: 1.2em;
