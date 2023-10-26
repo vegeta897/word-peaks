@@ -1,6 +1,6 @@
 {
   ".svelte-kit/runtime/client/start.js": {
-    "file": "start-0a66643e.js",
+    "file": "start-0e002d38.js",
     "src": ".svelte-kit/runtime/client/start.js",
     "isEntry": true,
     "imports": [
@@ -13,21 +13,21 @@
       "src/routes/__layout.svelte",
       ".svelte-kit/runtime/components/error.svelte",
       "src/routes/debug.svelte",
-      "_index-9dc5b534.js",
+      "_index-5558104d.js",
       "src/routes/random.svelte"
     ]
   },
   "src/routes/__layout.svelte": {
-    "file": "pages/__layout.svelte-13c03c45.js",
+    "file": "pages/__layout.svelte-7ed3b98c.js",
     "src": "src/routes/__layout.svelte",
     "isEntry": true,
     "isDynamicEntry": true,
     "imports": [
       "_index-3a3d0142.js",
-      "_index-f6a9d205.js",
+      "_index-40b0c476.js",
       "_share-c4e5744e.js",
       "_index-9ad74cf1.js",
-      "_data-model-38a4e65f.js",
+      "_data-model-fdceb7e4.js",
       "_preload-helper-5828fb0a.js"
     ],
     "css": [
@@ -44,15 +44,15 @@
     ]
   },
   "src/routes/debug.svelte": {
-    "file": "pages/debug.svelte-446c095d.js",
+    "file": "pages/debug.svelte-d07d6f5a.js",
     "src": "src/routes/debug.svelte",
     "isEntry": true,
     "isDynamicEntry": true,
     "imports": [
       "_index-3a3d0142.js",
-      "_index-f6a9d205.js",
+      "_index-40b0c476.js",
       "_index-9ad74cf1.js",
-      "_data-model-38a4e65f.js",
+      "_data-model-fdceb7e4.js",
       "_preload-helper-5828fb0a.js"
     ],
     "css": [
@@ -60,27 +60,27 @@
     ]
   },
   "src/routes/random.svelte": {
-    "file": "pages/random.svelte-05788c46.js",
+    "file": "pages/random.svelte-adc08e5a.js",
     "src": "src/routes/random.svelte",
     "isEntry": true,
     "isDynamicEntry": true,
     "imports": [
       "_index-3a3d0142.js",
       "_singletons-1b661bce.js",
-      "_data-model-38a4e65f.js",
+      "_data-model-fdceb7e4.js",
       "_preload-helper-5828fb0a.js"
     ]
   },
   "src/routes/index.svelte": {
-    "file": "pages/index.svelte-1ae5fe20.js",
+    "file": "pages/index.svelte-371f82f1.js",
     "src": "src/routes/index.svelte",
     "isEntry": true,
     "imports": [
       "_preload-helper-5828fb0a.js",
       "_index-3a3d0142.js",
-      "_index-9dc5b534.js",
-      "_data-model-38a4e65f.js",
-      "_index-f6a9d205.js",
+      "_index-5558104d.js",
+      "_data-model-fdceb7e4.js",
+      "_index-40b0c476.js",
       "_share-c4e5744e.js",
       "_index-9ad74cf1.js"
     ]
@@ -100,12 +100,12 @@
   "_preload-helper-5828fb0a.js": {
     "file": "chunks/preload-helper-5828fb0a.js"
   },
-  "_index-f6a9d205.js": {
-    "file": "chunks/index-f6a9d205.js",
+  "_index-40b0c476.js": {
+    "file": "chunks/index-40b0c476.js",
     "imports": [
       "_index-3a3d0142.js",
       "_index-9ad74cf1.js",
-      "_data-model-38a4e65f.js"
+      "_data-model-fdceb7e4.js"
     ]
   },
   "_share-c4e5744e.js": {
@@ -128,8 +128,8 @@
       "assets/share-5cb86517.css"
     ]
   },
-  "_data-model-38a4e65f.js": {
-    "file": "chunks/data-model-38a4e65f.js",
+  "_data-model-fdceb7e4.js": {
+    "file": "chunks/data-model-fdceb7e4.js",
     "imports": [
       "_preload-helper-5828fb0a.js"
     ],
@@ -137,20 +137,20 @@
       "src/lib/words/dictionary-filtered.json"
     ]
   },
-  "_index-9dc5b534.js": {
-    "file": "chunks/index-9dc5b534.js",
+  "_index-5558104d.js": {
+    "file": "chunks/index-5558104d.js",
     "isDynamicEntry": true,
     "imports": [
       "_preload-helper-5828fb0a.js",
       "_index-3a3d0142.js",
       "_share-c4e5744e.js",
-      "_data-model-38a4e65f.js",
-      "_index-f6a9d205.js",
+      "_data-model-fdceb7e4.js",
+      "_index-40b0c476.js",
       "_index-9ad74cf1.js"
     ],
     "dynamicImports": [
       "src/components/Idler.svelte",
-      "_idle-scheduler-5cd3b9a4.js",
+      "_idle-scheduler-9ec41365.js",
       "src/components/Console.svelte"
     ],
     "css": [
@@ -193,43 +193,43 @@
     "isDynamicEntry": true
   },
   "src/lib/words/dictionary-filtered.json": {
-    "file": "chunks/dictionary-filtered-f3776eb4.js",
+    "file": "chunks/dictionary-filtered-925adc0f.js",
     "src": "src/lib/words/dictionary-filtered.json",
     "isDynamicEntry": true
   },
   "src/components/Console.svelte": {
-    "file": "chunks/Console-498e9e4a.js",
+    "file": "chunks/Console-f7c97820.js",
     "src": "src/components/Console.svelte",
     "isDynamicEntry": true,
     "imports": [
       "_index-3a3d0142.js",
-      "_index-f6a9d205.js",
-      "_index-9dc5b534.js",
+      "_index-40b0c476.js",
+      "_index-5558104d.js",
       "_index-9ad74cf1.js",
-      "_data-model-38a4e65f.js",
+      "_data-model-fdceb7e4.js",
       "_preload-helper-5828fb0a.js",
       "_share-c4e5744e.js"
     ]
   },
   "src/components/Idler.svelte": {
-    "file": "chunks/Idler-ae8a9601.js",
+    "file": "chunks/Idler-acd34ef0.js",
     "src": "src/components/Idler.svelte",
     "isDynamicEntry": true,
     "imports": [
       "_index-3a3d0142.js",
-      "_idle-scheduler-5cd3b9a4.js",
-      "_data-model-38a4e65f.js",
+      "_idle-scheduler-9ec41365.js",
+      "_data-model-fdceb7e4.js",
       "_preload-helper-5828fb0a.js"
     ],
     "css": [
       "assets/Idler-dc87e64a.css"
     ]
   },
-  "_idle-scheduler-5cd3b9a4.js": {
-    "file": "chunks/idle-scheduler-5cd3b9a4.js",
+  "_idle-scheduler-9ec41365.js": {
+    "file": "chunks/idle-scheduler-9ec41365.js",
     "isDynamicEntry": true,
     "imports": [
-      "_data-model-38a4e65f.js"
+      "_data-model-fdceb7e4.js"
     ]
   }
 }
