@@ -20,11 +20,13 @@ const idlerIDs: Set<string> = new Set()
 const animating: Set<string> = new Set()
 let idlers: number
 let scheduleBegin: number
+let fastStart = false
 
-export function initScheduler(_idlers: number) {
+export function initScheduler(_idlers: number, _fastStart = false) {
 	idlerIDs.clear()
 	animating.clear()
 	idlers = _idlers
+	fastStart = _fastStart
 	scheduleBegin = Date.now()
 }
 
@@ -40,15 +42,14 @@ export type IdleSchedule = {
 const firstLetterAlphabet = alphabet.filter((l) => !['l', 'i'].includes(l))
 
 export function getSchedule(id: string): IdleSchedule | { wait: number } {
-	const firstIdler = idlerIDs.size === 0
+	const firstIdler = !fastStart && idlerIDs.size === 0
 	idlerIDs.add(id)
 	// Only one idle animation for the first 20 seconds
 	// One additional animation allowed every 30 seconds
 	// Maximum animations is idler count divided by 3-5
-	const maxAnimations = Math.min(
-		idlers / randomInt(3, 5),
-		((Date.now() - scheduleBegin) / 1000 - 20) / 30
-	)
+	const maxAnimations = fastStart
+		? idlers / 3
+		: Math.min(idlers / randomInt(3, 5), ((Date.now() - scheduleBegin) / 1000 - 20) / 30)
 	if (!firstIdler && animating.size > maxAnimations)
 		return { wait: randomFloat(5000, idlers * 2 * 1000) }
 	const letter = pickRandom(firstIdler ? firstLetterAlphabet : alphabet)

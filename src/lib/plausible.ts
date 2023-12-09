@@ -11,6 +11,7 @@ type EventName =
 	| 'idleBeforeFinish'
 	| 'dailyFinish'
 	| 'promoLinkFollow'
+	| 'danceClick'
 
 const plausible = browser
 	? Plausible({

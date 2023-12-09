@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onDestroy, onMount } from 'svelte'
+	import { onDestroy, onMount, tick } from 'svelte'
 	import Peaks from '$com/Peaks.svelte'
 	import * as store from '$src/store'
 	import Tile from '$com/Tile.svelte'
@@ -8,8 +8,10 @@
 	import { animationSupported } from '$lib/transitions'
 	import { ROWS, WORD_LENGTH } from '$lib/data-model'
 	import { browser } from '$app/env'
+	import { fade } from 'svelte/transition'
 
-	const { boardContent, currentRow, currentTile, gameFinished, showAllHints, newUser } = store
+	const { boardContent, currentRow, currentTile, gameFinished, showAllHints, newUser, guesses } =
+		store
 
 	let idle = false
 	let canAnimate: boolean | null = null
@@ -21,6 +23,7 @@
 		if (!get(store.allowDancing)) return
 		if (canAnimate === false) return
 		idle = false
+		danceClickProgress = 0
 		const thisIdleSessionID = ++idleSessionID
 		clearTimeout(idleTimeout!)
 		if (get(store.openScreen) === null && !document.hidden) {
@@ -52,6 +55,26 @@
 		clearTimeout(idleTimeout!)
 		idleTimeout = undefined
 	})
+
+	let danceClickProgress = 0
+
+	async function danceClick(t: number) {
+		if (canAnimate === null) canAnimate = animationSupported()
+		if (!canAnimate) return
+		if (danceClickProgress === t) {
+			danceClickProgress++
+			if (danceClickProgress === WORD_LENGTH) {
+				trackEvent('danceClick')
+				clearTimeout(idleTimeout!)
+				await tick()
+				const scheduler = await import('$lib/idle-scheduler')
+				scheduler.initScheduler(5 * WORD_LENGTH, true)
+				idle = true
+			}
+		} else {
+			danceClickProgress = 0
+		}
+	}
 </script>
 
 <div class="container">
@@ -59,16 +82,26 @@
 		<div class="board">
 			{#each $boardContent as boardRow, r}
 				<div class="tile-row">
-					{#each boardRow as tile (r + '.' + tile.id)}
+					{#each boardRow as tile, t (r + '.' + t)}
 						<Tile
 							{tile}
-							current={r === $currentRow && tile.id === $currentTile}
+							current={r === $currentRow && t === $currentTile}
 							inCurrentRow={!$gameFinished && r === $currentRow}
-							showHint={!$gameFinished && (tile.id === $currentTile || $showAllHints)}
+							showHint={!$gameFinished && (t === $currentTile || $showAllHints)}
 						>
+							{#if !idle && !$guesses[0] && r === ROWS - 1}
+								<div
+									class="dance-tile"
+									style:opacity={((t < danceClickProgress ? 1 : 0) * danceClickProgress) / 5}
+									on:click={() => danceClick(t)}
+									out:fade={{ duration: 500 }}
+								>
+									{'DANCE'[t]}
+								</div>
+							{/if}
 							{#if idle && tile.letter === '' && r > $currentRow}
 								{#await import('$com/Idler.svelte') then module}
-									<svelte:component this={module.default} id={r + ':' + tile.id} />
+									<svelte:component this={module.default} id={r + ':' + t} />
 								{/await}
 							{/if}
 						</Tile>
@@ -158,5 +191,19 @@
 		.tile-row {
 			margin-bottom: 4px;
 		}
+	}
+
+	.dance-tile {
+		font-size: 2rem;
+		font-weight: 700;
+		color: #5b505e;
+		line-height: 2rem;
+		display: inline-flex;
+		justify-content: center;
+		align-items: center;
+		width: 100%;
+		height: 100%;
+		user-select: none;
+		position: absolute;
 	}
 </style>
