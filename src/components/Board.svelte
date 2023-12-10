@@ -166,6 +166,7 @@
 		font-size: 1.3em;
 		background: linear-gradient(to left, #aaa1, #aaa3 20%, #aaa, #aaa3 80%, #aaa1);
 		-webkit-background-clip: text;
+		background-clip: text;
 		-webkit-text-fill-color: transparent;
 		animation: glimmer 3s linear infinite;
 		background-size: 200%;
