@@ -48,7 +48,7 @@ export function getSchedule(id: string): IdleSchedule | { wait: number } {
 	// One additional animation allowed every 30 seconds
 	// Maximum animations is idler count divided by 3-5
 	const maxAnimations = fastStart
-		? idlers / 3
+		? idlers / 2.5
 		: Math.min(idlers / randomInt(3, 5), ((Date.now() - scheduleBegin) / 1000 - 20) / 30)
 	if (!firstIdler && animating.size > maxAnimations)
 		return { wait: randomFloat(5000, idlers * 2 * 1000) }
