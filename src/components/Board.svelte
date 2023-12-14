@@ -59,6 +59,7 @@
 	let danceClickProgress = 0
 
 	async function danceClick(t: number) {
+		if (!get(store.allowDancing)) return
 		if (canAnimate === null) canAnimate = animationSupported()
 		if (!canAnimate) return
 		if (danceClickProgress === t) {
