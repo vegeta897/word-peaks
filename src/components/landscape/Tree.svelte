@@ -15,6 +15,11 @@
 
 	// TODO: Make default values of animated elements be their end states, so that the animate elements can be conditional
 
+	// TODO: Randomize animation speed (seeded in landscape.ts)
+	// Use x to determine delay?
+
+	// TODO: Use something slightly dimmer than #ffffff
+
 	let radius: number
 
 	$: radius = width / 2
@@ -36,6 +41,7 @@
 			<!--				stroke-width={STROKE_WIDTH}-->
 			<!--			/>-->
 			<!-- TODO: Add pill-shaped trees using below rounded rectangle method -->
+			<!-- Tree shape influenced by polarity blend, e.g. pine trees near mountains -->
 			<rect
 				rx={radius - STROKE_HALF}
 				ry={radius - STROKE_HALF}

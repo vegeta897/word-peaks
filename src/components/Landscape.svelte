@@ -5,7 +5,7 @@
 	// import Hill from '$com/landscape/Hill.svelte'
 	// import Tree from '$com/landscape/Tree.svelte'
 	// import Pond from '$com/landscape/Pond.svelte'
-	import type { Landscape } from '$lib/landscape'
+	import type { Feature, Metrics } from '$lib/landscape'
 	import { getFeatures } from '$lib/landscape'
 
 	// TODO: Add animations on touch
@@ -15,16 +15,14 @@
 	export let width: number
 	export let height: number
 
-	const landscape: Landscape = {
-		rows: 0,
-		metrics: {
+	let rows = 0
+	let metrics: Metrics = {
 			width: 0,
 			height: 0,
 			tileHeight: 0,
 			rowMargin: 0,
-		},
-		features: [],
-	}
+		}
+		let features: Feature[] = []
 
 	function updateLandscape() {
 		// TODO: Check if metrics have changed, or current row exceeds drawn rows
@@ -37,19 +35,23 @@
 		)
 		const tileHeight = parseInt(documentStyle.getPropertyValue('--tile-size').split('px')[0])
 		if (
-			landscape.metrics.width !== width ||
-			landscape.metrics.height !== height ||
-			landscape.metrics.tileHeight !== tileHeight ||
-			landscape.metrics.rowMargin !== rowMargin
+			metrics.width !== width ||
+			metrics.height !== height ||
+			metrics.tileHeight !== tileHeight ||
+			metrics.rowMargin !== rowMargin
 		) {
-			landscape.metrics.width = width
-			landscape.metrics.height = height
-			landscape.metrics.tileHeight = tileHeight
-			landscape.metrics.rowMargin = rowMargin
-			landscape.rows = 0
-			landscape.features.length = 0
+			metrics.width = width
+			metrics.height = height
+			metrics.tileHeight = tileHeight
+			metrics.rowMargin = rowMargin
+			rows = 0 
+			features.length = 0
 		}
-		getFeatures(landscape, get(boardContent), get(currentRow))
+		const newFeatures = getFeatures(rows,metrics,features, get(boardContent), get(currentRow))
+		if(newFeatures) {
+			features = newFeatures.features
+			rows = newFeatures.rows
+		}
 	}
 
 	beforeUpdate(() => updateLandscape())
@@ -68,7 +70,7 @@
 		<!--		<Tree x={121} y={54} width={15} length={8} delay={700} />-->
 		<!--		<Tree x={114} y={69} width={11} length={6} delay={900} />-->
 		<!--		<Pond x={124} y={22} />-->
-		{#each landscape.features as feature}
+		{#each features as feature}
 			<svelte:component this={feature.component} {...feature.props} />
 		{/each}
 	{/key}

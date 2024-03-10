@@ -19,25 +19,21 @@ const featureComponents = {
 	pond: Pond,
 }
 const featureSizes = {
-	hill: { width: 32, height: 25 },
-	tree: { width: 12, height: 20 },
-	pond: { width: 35, height: 20 },
+	hill: { width: 32, height: 27 },
+	tree: { width: 14, height: 22 },
+	pond: { width: 37, height: 22 },
 }
 
-export type Landscape = {
-	rows: number
-	metrics: {
-		width: number
-		height: number
-		tileHeight: number
-		rowMargin: number
-	}
-	features: Feature[]
+export type Metrics = {
+	width: number
+	height: number
+	tileHeight: number
+	rowMargin: number
 }
 
 const DEG_TO_RAD = Math.PI / 180
 
-function featureInBounds({ boundingBox }: Feature, { metrics }: Landscape): boolean {
+function featureInBounds({ boundingBox }: Feature, metrics: Metrics): boolean {
 	return (
 		boundingBox.x >= 0 &&
 		boundingBox.y >= 0 &&
@@ -92,17 +88,17 @@ type Spawner = {
 	finished?: true
 }
 
-export function getFeatures(landscape: Landscape, board: Board, currentRow: number) {
-	if (landscape.rows === currentRow) return
-	const features = [...landscape.features]
+export function getFeatures(rows:number, metrics: Metrics, existingFeatures:Feature[], board: Board, currentRow: number) {
+	if (rows === currentRow) return
+	const features = [...existingFeatures]
 	console.time('getFeatures')
-	const columnWidth = landscape.metrics.width / WORD_LENGTH
-	const rowHeight = landscape.metrics.height / ROWS
-	while (landscape.rows < currentRow) {
+	const columnWidth = metrics.width / WORD_LENGTH
+	const rowHeight = metrics.height / ROWS
+	while (rows < currentRow) {
 		const spawners: Spawner[] = []
-		const row = landscape.rows
+		const row = rows
 		const y = (row + 0.5) * rowHeight
-		const rowTiles = board[landscape.rows]
+		const rowTiles = board[rows]
 		for (const tile of rowTiles) {
 			const column = tile.id
 			const x = (column + 0.5) * columnWidth
@@ -115,12 +111,15 @@ export function getFeatures(landscape: Landscape, board: Board, currentRow: numb
 			}
 		}
 		// TODO: Spawners create a "heat map" that dictates chances of a feature being a particular type
+		// Don't use individual spawning nodes
+		// This should make for better ponds
 		const spawnerCount = spawners.length
 		let spawnersFinished = 0
 		const rowWord = board[row].map((t) => t.letter).join('')
 		const rng = new Rand(rowWord)
 		while (spawnersFinished < spawnerCount) {
 			for (const spawner of spawners) {
+				if (spawner.finished) continue
 				const featureSize = featureSizes[spawner.type]
 				const newFeature = {
 					type: spawner.type,
@@ -146,7 +145,7 @@ export function getFeatures(landscape: Landscape, board: Board, currentRow: numb
 						const rad = degree * DEG_TO_RAD
 						newFeature.boundingBox.x = spawner.x + radius * Math.cos(rad) - featureSize.width / 2
 						newFeature.boundingBox.y = spawner.y + radius * Math.sin(rad) - featureSize.height / 2
-						const inBounds = featureInBounds(newFeature, landscape)
+						const inBounds = featureInBounds(newFeature, metrics)
 						const intersects = features.some((otherFeature) =>
 							featuresIntersect(newFeature, otherFeature)
 						)
@@ -155,23 +154,25 @@ export function getFeatures(landscape: Landscape, board: Board, currentRow: numb
 							newFeature.props.y = newFeature.boundingBox.y
 							features.push(newFeature)
 							spawner.spawned++
-							spawner.finished = true
 							break
 						}
 						degree += 5
 						if (degree > startDegree + 360) {
 							degree = startDegree
 							radius += 5
+							if (radius > metrics.height / ROWS) {
+								spawner.finished = true
+								spawnersFinished++
+							}
 						}
-					} while (radius < landscape.metrics.height / ROWS)
-					spawnersFinished++
+					} while (!spawner.finished)
 				}
 			}
 		}
-		landscape.rows++
+		rows++
 	}
-	landscape.features = features
 	console.timeEnd('getFeatures')
+	return {rows,features}
 }
 
 // Hills spawn radiating outward, with the largest hill(s) in center
