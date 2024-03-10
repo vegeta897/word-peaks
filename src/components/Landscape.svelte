@@ -17,12 +17,12 @@
 
 	let rows = 0
 	let metrics: Metrics = {
-			width: 0,
-			height: 0,
-			tileHeight: 0,
-			rowMargin: 0,
-		}
-		let features: Feature[] = []
+		width: 0,
+		height: 0,
+		tileHeight: 0,
+		rowMargin: 0,
+	}
+	let features: Feature[] = []
 
 	function updateLandscape() {
 		// TODO: Check if metrics have changed, or current row exceeds drawn rows
@@ -44,11 +44,11 @@
 			metrics.height = height
 			metrics.tileHeight = tileHeight
 			metrics.rowMargin = rowMargin
-			rows = 0 
+			rows = 0
 			features.length = 0
 		}
-		const newFeatures = getFeatures(rows,metrics,features, get(boardContent), get(currentRow))
-		if(newFeatures) {
+		const newFeatures = getFeatures(rows, metrics, features, get(boardContent), get(currentRow))
+		if (newFeatures) {
 			features = newFeatures.features
 			rows = newFeatures.rows
 		}

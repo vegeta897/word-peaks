@@ -88,7 +88,13 @@ type Spawner = {
 	finished?: true
 }
 
-export function getFeatures(rows:number, metrics: Metrics, existingFeatures:Feature[], board: Board, currentRow: number) {
+export function getFeatures(
+	rows: number,
+	metrics: Metrics,
+	existingFeatures: Feature[],
+	board: Board,
+	currentRow: number
+) {
 	if (rows === currentRow) return
 	const features = [...existingFeatures]
 	console.time('getFeatures')
@@ -172,7 +178,7 @@ export function getFeatures(rows:number, metrics: Metrics, existingFeatures:Feat
 		rows++
 	}
 	console.timeEnd('getFeatures')
-	return {rows,features}
+	return { rows, features }
 }
 
 // Hills spawn radiating outward, with the largest hill(s) in center
