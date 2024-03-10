@@ -1,0 +1,15 @@
+{
+	"prettier.requireConfig": true,
+	"prettier.semi": false,
+	"prettier.singleQuote": true,
+	"prettier.endOfLine": "lf",
+	"editor.formatOnSave": true,
+	"editor.defaultFormatter": "esbenp.prettier-vscode",
+	"editor.rulers": [100],
+	"editor.tabSize": 2,
+	"editor.renderWhitespace": "trailing",
+	"[svelte]": {
+		"editor.defaultFormatter": "svelte.svelte-vscode"
+	},
+	"editor.defaultColorDecorators": true
+}
