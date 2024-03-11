@@ -39,7 +39,7 @@ The word list for the game itself will remain in English. If you want to play wi
 
 ### Assets
 
-- Word lists sourced and modified from [hello wordl](https://github.com/lynn/hello-wordl) ([license](https://github.com/lynn/hello-wordl/blob/main/LICENSE))
+- Word lists sourced and modified from [hello](https://github.com/lynn/hello) ([license](https://github.com/lynn/hello/blob/main/LICENSE))
 - [OpenDyslexic](https://opendyslexic.org/) font ([license](https://github.com/vegeta897/word-peaks/blob/main/static/font/LICENSE))
 
 ---
