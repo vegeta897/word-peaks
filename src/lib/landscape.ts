@@ -197,6 +197,7 @@ export function getLandscape(
 		}
 		rows++
 	}
+	features.sort(({ y: ay }, { y: by }) => ay - by) // Sort features for proper overlapping
 	console.timeEnd('getFeatures')
 	return { features, tileMap, rows, openTiles }
 }
