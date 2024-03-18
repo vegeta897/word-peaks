@@ -1,6 +1,6 @@
 import type { Board, GameMode } from '$lib/data-model'
 import { toast } from '@zerodevx/svelte-toast'
-import { pickRandom } from '$lib/data-model'
+import { dev } from '$app/env'
 
 export function getShareTitle({
 	gameWon,
@@ -18,58 +18,10 @@ export function getShareTitle({
 	const score = gameWon ? guesses.length : 'X'
 	const dayText = gameMode === 'random' ? '∞ ' : `#${day!} `
 	const scoreText = `${score}/6${hardMode ? '*' : ''}`
-	return `Wordle Peaks ${dayText}${scoreText}`
+	const gameName = aprilFools() ? 'Word Peas' : 'Word Peaks'
+	return `${gameName} ${dayText}${scoreText}`
 }
 
-const aprilFoolsUp = [
-	'🔼',
-	'⚠️',
-	'💩',
-	'👆',
-	'☝️',
-	'👍',
-	'🙏',
-	'👃',
-	'🩸',
-	'🌲',
-	'💧',
-	'🎄',
-	'🍙',
-	'🏔️',
-	'⛰️',
-	'🌋',
-	'🗻',
-	'🏠',
-	'🗼',
-	'⛵',
-	'🔔',
-	'⬆️',
-	'⏫',
-	'⏏️',
-	'🔺',
-]
-const aprilFoolsDown = [
-	'🔽',
-	'💎',
-	'👇',
-	'👎',
-	'🩲',
-	'🍑',
-	'🍕',
-	'💡',
-	'🛡️',
-	'💖',
-	'💗',
-	'💓',
-	'💔',
-	'❤️',
-	'💙',
-	'💜',
-	'⬇️',
-	'⏬',
-	'🔻',
-]
-const aprilFoolsCorrect = ['🟩', '🐸', '🍀', '🔋', '📗', '💹', '✅', '✳️', '❇️', '🟢']
 export function getEmojiGrid({
 	guesses,
 	answer,
@@ -79,8 +31,6 @@ export function getEmojiGrid({
 	answer: string
 	guessTimes?: string[]
 }): string {
-	const today = new Date()
-	const aprilFools = today.getMonth() === 3 && today.getDate() === 1 // April 1st
 	let timeStringPad: number
 	if (guessTimes) timeStringPad = longestStringLength(guessTimes)
 	return (
@@ -90,14 +40,8 @@ export function getEmojiGrid({
 				(word, w) =>
 					[...word]
 						.map((letter, l) => {
-							if (letter === answer[l]) return aprilFools ? pickRandom(aprilFoolsCorrect) : '🟩'
-							return letter > answer[l]
-								? aprilFools
-									? pickRandom(aprilFoolsDown)
-									: '🔽'
-								: aprilFools
-								? pickRandom(aprilFoolsUp)
-								: '🔼'
+							if (letter === answer[l]) return aprilFools() ? '🟢' : '🟩'
+							return letter > answer[l] ? '🔽' : '🔼'
 						})
 						.join('') + (guessTimes ? ' ' + guessTimes[w].padStart(timeStringPad) : '')
 			)
@@ -125,7 +69,7 @@ export async function shareImage(
 	const imageUrl = canvas.toDataURL()
 	const imageBlob = await (await fetch(imageUrl)).blob()
 	const filesArray = [
-		new File([imageBlob], `wordle-peaks-${hash || day}.png`, {
+		new File([imageBlob], `word-peaks-${hash || day}.png`, {
 			type: imageBlob.type,
 			lastModified: new Date().getTime(),
 		}),
@@ -187,6 +131,7 @@ export function drawResults(
 	ctx.font = '50px Arial'
 	ctx.textAlign = 'right'
 	ctx.textBaseline = 'middle'
+	const isAprilFools = aprilFools()
 	boardContent.forEach((row, r) => {
 		if (r >= guesses.length) return
 		row.forEach((tile, t) => {
@@ -204,7 +149,13 @@ export function drawResults(
 			const x = 8 + t * 100
 			const y = 8 + r * 100
 			const l = 88
-			roundedRectangle(x, y, l, l, topRadius, bottomRadius)
+			if (isAprilFools && tile.distance === 0) {
+				ctx.beginPath()
+				ctx.arc(x + l / 2, y + l / 2, l / 2, 0, 2 * Math.PI)
+				ctx.fill()
+			} else {
+				roundedRectangle(x, y, l, l, topRadius, bottomRadius)
+			}
 		})
 		if (guessTimes) {
 			ctx.fillStyle = '#a7a1a9'
@@ -219,7 +170,7 @@ export function drawResults(
 	ctx.fillText(caption, totalTime ? 8 : canvas.width / 2, guesses.length * 100 + 44)
 	if (showURL) {
 		ctx.font = '40px Arial'
-		let url = 'wordlepeaks.com'
+		let url = 'wordpeaks.com'
 		if (hash) url += '/#' + hash
 		ctx.fillStyle = '#a7a1a9'
 		ctx.fillText(url, totalTime ? 8 : canvas.width / 2, guesses.length * 100 + 92)
@@ -228,3 +179,9 @@ export function drawResults(
 
 const longestStringLength = (strArr: string[]) =>
 	strArr.reduce((prev, curr) => (prev === null || prev.length < curr.length ? curr : prev)).length
+
+export const aprilFools = () => {
+	if (dev) return true
+	const today = new Date()
+	return today.getMonth() === 3 && today.getDate() === 1
+}

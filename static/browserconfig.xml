@@ -2,7 +2,7 @@
 <browserconfig>
     <msapplication>
         <tile>
-            <square150x150logo src="https://vegeta897.github.io/wordle-peaks/mstile-150x150.png?v=1"/>
+            <square150x150logo src="https://vegeta897.github.io/word-peaks/mstile-150x150.png?v=1"/>
             <TileColor>#2b5797</TileColor>
         </tile>
     </msapplication>

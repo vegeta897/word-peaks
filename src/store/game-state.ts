@@ -49,7 +49,7 @@ export const notEnoughLetters: Writable<boolean> = writable(false)
 export const invalidWord: Writable<boolean> = writable(false)
 export const invalidWordPreview: Writable<boolean> = writable(false)
 
-export const boardContent: Writable<Board> = writable(createNewBoard())
+export const boardContent: Writable<Board> = writable([])
 
 export const answer: Readable<string> = derived(
 	[gameMode, answerDaily, answerRandom],
@@ -67,21 +67,31 @@ export function updateGuesses(fn: Updater<string[]>): void {
 	;(get(gameMode) === 'daily' ? guessesDaily : guessesRandom).update(fn)
 }
 
-export const guessTimesDaily: Writable<number[]> = storageWritable('wp-guessTimesDaily', [])
-export const guessTimesRandom: Writable<number[]> = storageWritable('wp-guessTimesRandom', [])
+export const guessTimesDaily: Writable<number[]> = storageWritable(
+	'wp-guessTimesDaily',
+	[]
+)
+export const guessTimesRandom: Writable<number[]> = storageWritable(
+	'wp-guessTimesRandom',
+	[]
+)
 export const guessTimes: Readable<number[]> = derived(
 	[gameMode, guessTimesDaily, guessTimesRandom],
 	([$gameMode, $guessTimesDaily, $guessTimesRandom]) =>
 		$gameMode === 'daily' ? $guessTimesDaily : $guessTimesRandom
 )
 
-export const currentRow: Readable<number> = derived(guesses, ($guesses) => $guesses.length)
+export const currentRow: Readable<number> = derived(
+	guesses,
+	($guesses) => $guesses.length
+)
 
 export const currentTile: Writable<number> = writable(0)
 
 export const gameWon: Readable<boolean> = derived(
 	[answer, guesses],
-	([$answer, $guesses]) => $guesses.length > 0 && $guesses[$guesses.length - 1] === $answer
+	([$answer, $guesses]) =>
+		$guesses.length > 0 && $guesses[$guesses.length - 1] === $answer
 )
 
 export const gameFinished: Readable<boolean> = derived(
@@ -99,9 +109,10 @@ export const validLetters: Readable<Set<string>> = derived(
 
 export function initGameState() {
 	guesses.subscribe((guessed) => {
-		boardContent.update((content) => {
+		boardContent.update(() => {
 			const newBoardContent = createNewBoard()
-			content.forEach((row, r) => {
+			if (guessed.length === 0) return newBoardContent
+			for (let r = 0; r < ROWS; r++) {
 				if (r < guessed.length) {
 					const guessedWord = guessed[r]
 					newBoardContent[r] = [...guessedWord].map((letter, l) =>
@@ -109,10 +120,12 @@ export function initGameState() {
 					)
 				} else if (r > 0 && r === guessed.length) {
 					newBoardContent[r].forEach((tile, t) => {
-						tile.letterBounds = getValidLetterBounds(getValidLetters(newBoardContent, r, t))
+						tile.letterBounds = getValidLetterBounds(
+							getValidLetters(newBoardContent, r, t)
+						)
 					})
 				}
-			})
+			}
 			return newBoardContent
 		})
 	})

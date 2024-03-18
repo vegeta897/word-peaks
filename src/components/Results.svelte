@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { getDayEnd, getDayNumber } from '$lib/data-model'
 	import * as store from '$src/store'
-	import { timeStats } from '$src/store'
 	import { get } from 'svelte/store'
 	import Stats from '$com/Stats.svelte'
 	import { t } from '$lib/translations'
@@ -10,8 +9,8 @@
 	import Time from '$com/Time.svelte'
 	import Tabs from '$com/Tabs.svelte'
 
-	export let playDaily: () => {}
-	export let playRandom: () => {}
+	export let playDaily: () => void
+	export let playRandom: () => void
 
 	// Get store data once before mounting, we don't want it to be dynamic
 	const lastAnswer = get(store.answer)

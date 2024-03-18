@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onDestroy, onMount } from 'svelte'
+	import { onDestroy, onMount, tick } from 'svelte'
 	import Landscape from '$com/Landscape.svelte'
 	import * as store from '$src/store'
 	import Tile from '$com/Tile.svelte'
@@ -8,29 +8,36 @@
 	import { animationSupported } from '$lib/transitions'
 	import { ROWS, WORD_LENGTH } from '$lib/data-model'
 	import { browser } from '$app/env'
+	import { fade } from 'svelte/transition'
 
-	const { boardContent, currentRow, currentTile, gameFinished, showAllHints, newUser } = store
+	const {
+		boardContent,
+		currentRow,
+		currentTile,
+		gameFinished,
+		showAllHints,
+		newUser,
+		guesses,
+	} = store
 
-	let preloadedRows = get(store.guesses).length
 	let idle = false
-	let canAnimate = null
+	let canAnimate: boolean | null = null
 
-	let idleTimeout
+	let idleTimeout: NodeJS.Timer | undefined
 	let idleSessionID = 0
 
 	async function waitForIdle() {
 		if (!get(store.allowDancing)) return
 		if (canAnimate === false) return
 		idle = false
+		danceClickProgress = 0
 		const thisIdleSessionID = ++idleSessionID
-		clearTimeout(idleTimeout)
+		clearTimeout(idleTimeout!)
 		if (get(store.openScreen) === null && !document.hidden) {
-			let thisTimeout: number
-			await new Promise((resolve) => {
+			await new Promise<void>((resolve) => {
 				idleTimeout = setTimeout(() => {
 					resolve()
 				}, (get(gameFinished) ? 20 : 30) * 1000)
-				thisTimeout = idleTimeout
 			})
 			if (thisIdleSessionID !== idleSessionID) return
 			if (canAnimate === null) canAnimate = animationSupported()
@@ -44,7 +51,6 @@
 
 	onMount(() => {
 		gameFinished.subscribe(() => {
-			preloadedRows = 0
 			waitForIdle()
 		})
 		document.addEventListener('visibilitychange', () => waitForIdle())
@@ -53,9 +59,30 @@
 		store.currentTile.subscribe(() => waitForIdle())
 	})
 	onDestroy(() => {
-		clearTimeout(idleTimeout)
+		clearTimeout(idleTimeout!)
 		idleTimeout = undefined
 	})
+
+	let danceClickProgress = 0
+
+	async function danceClick(t: number) {
+		if (!get(store.allowDancing)) return
+		if (canAnimate === null) canAnimate = animationSupported()
+		if (!canAnimate) return
+		if (danceClickProgress === t) {
+			danceClickProgress++
+			if (danceClickProgress === WORD_LENGTH) {
+				trackEvent('danceClick')
+				clearTimeout(idleTimeout!)
+				await tick()
+				const scheduler = await import('$lib/idle-scheduler')
+				scheduler.initScheduler(5 * WORD_LENGTH, true)
+				idle = true
+			}
+		} else {
+			danceClickProgress = 0
+		}
+	}
 </script>
 
 <div class="container" style="--row-count: {ROWS}">
@@ -63,18 +90,27 @@
 		<div class="board">
 			{#each $boardContent as boardRow, r}
 				<div class="tile-row">
-					{#each boardRow as tile (r + '.' + tile.id)}
+					{#each boardRow as tile, t (r + '.' + t)}
 						<Tile
 							{tile}
-							current={r === $currentRow && tile.id === $currentTile}
+							current={r === $currentRow && t === $currentTile}
 							inCurrentRow={!$gameFinished && r === $currentRow}
-							gameFinished={$gameFinished}
-							showHint={!$gameFinished && (tile.id === $currentTile || $showAllHints)}
-							animate={r >= preloadedRows && r >= $currentRow - 1}
+							showHint={!$gameFinished && (t === $currentTile || $showAllHints)}
 						>
+							{#if !idle && !$guesses[0] && r === ROWS - 1}
+								<div
+									class="dance-tile"
+									style:opacity={((t < danceClickProgress ? 1 : 0) * danceClickProgress) /
+										5}
+									on:click={() => danceClick(t)}
+									out:fade={{ duration: 500 }}
+								>
+									{'DANCE'[t]}
+								</div>
+							{/if}
 							{#if idle && tile.letter === '' && r > $currentRow}
 								{#await import('$com/Idler.svelte') then module}
-									<svelte:component this={module.default} id={r + ':' + tile.id} />
+									<svelte:component this={module.default} id={r + ':' + t} />
 								{/await}
 							{/if}
 						</Tile>
@@ -127,7 +163,8 @@
 		margin-left: 4px;
 		flex-grow: 1;
 		height: 100%;
-		transition: width 400ms ease-in-out, margin-left 400ms ease-in-out, opacity 200ms ease-out;
+		transition: width 400ms ease-in-out, margin-left 400ms ease-in-out,
+			opacity 200ms ease-out;
 	}
 
 	.graph.minimized {
@@ -144,6 +181,7 @@
 		font-size: 1.3em;
 		background: linear-gradient(to left, #aaa1, #aaa3 20%, #aaa, #aaa3 80%, #aaa1);
 		-webkit-background-clip: text;
+		background-clip: text;
 		-webkit-text-fill-color: transparent;
 		animation: glimmer 3s linear infinite;
 		background-size: 200%;
@@ -173,5 +211,19 @@
 		.graph {
 			display: none;
 		}
+	}
+
+	.dance-tile {
+		font-size: 2rem;
+		font-weight: 700;
+		color: #5b505e;
+		line-height: 2rem;
+		display: inline-flex;
+		justify-content: center;
+		align-items: center;
+		width: 100%;
+		height: 100%;
+		user-select: none;
+		position: absolute;
 	}
 </style>

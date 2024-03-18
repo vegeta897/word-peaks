@@ -53,6 +53,11 @@
 			label: 'main.options.allow_dancing_letters',
 			click: toggle(store.allowDancing),
 		},
+		{
+			bind: store.preciseTimes,
+			label: 'main.options.show_precise_times',
+			click: toggle(store.preciseTimes),
+		},
 	]
 
 	beforeUpdate(() => {

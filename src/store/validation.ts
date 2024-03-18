@@ -6,8 +6,6 @@ import { keyboardLayoutNames, ROWS, WORD_LENGTH } from '$lib/data-model'
 import { newStats, newTimeStats } from '$lib/stats'
 import * as game from '$src/store/game-state'
 
-// TODO: Add a validate.html page that displays all localstorage values
-
 const isValidAnswer = (value: any) =>
 	!value ||
 	(typeof value !== 'string' && !(<any>value instanceof String)) ||
@@ -27,8 +25,10 @@ export function validateLocalStorage() {
 	if (![true, false].includes(get(app.showAllHints))) app.showAllHints.set(false)
 	if (![true, false].includes(get(app.swapEnterBackspace))) app.swapEnterBackspace.set(false)
 	if (![true, false].includes(get(app.dyslexicFont))) app.dyslexicFont.set(false)
+	if (![true, false].includes(get(app.allowDancing))) app.allowDancing.set(true)
 	if (![true, false].includes(get(app.shareURL))) app.shareURL.set(true)
 	if (![true, false].includes(get(app.shareTimes))) app.shareTimes.set(false)
+	if (![true, false].includes(get(app.preciseTimes))) app.preciseTimes.set(false)
 	if (!keyboardLayoutNames.includes(get(app.keyboardLayout))) app.keyboardLayout.set('qwerty')
 
 	// Stats

@@ -9,6 +9,8 @@ export const config: Config = {
 		nl: { lang },
 		es: { lang },
 		pt: { lang },
+		tr: { lang },
+		de: { lang },
 	},
 	loaders: [
 		{
@@ -41,6 +43,11 @@ export const config: Config = {
 			key: 'main',
 			loader: async () => (await import('./tr/main.json')).default,
 		},
+		{
+			locale: 'de',
+			key: 'main',
+			loader: async () => (await import('./de/main.json')).default,
+		},
 	],
 }
 
@@ -51,6 +58,7 @@ export function getNavigatorLanguage(): string {
 	if (navigator.language.startsWith('es')) return 'es'
 	if (navigator.language.startsWith('pt')) return 'pt'
 	if (navigator.language.startsWith('tr')) return 'tr'
+	if (navigator.language.startsWith('de')) return 'de'
 	return 'en'
 }
 

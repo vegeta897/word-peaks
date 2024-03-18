@@ -22,7 +22,7 @@ const config = {
 			},
 		},
 		paths: {
-			base: dev || netlify ? '' : '/wordle-peaks',
+			base: dev || netlify ? '' : '/word-peaks',
 		},
 		prerender: {
 			default: true,

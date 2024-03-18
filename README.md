@@ -1,8 +1,8 @@
-# Wordle Peaks
+# Word Peaks
 
-A Wordle spin-off where you narrow down the alphabet for each tile
+A word guessing game where you narrow down the alphabet for each letter
 
-## [🏔️ Play here](https://vegeta897.github.io/wordle-peaks/)
+## [🏔️ Play here](https://vegeta897.github.io/word-peaks/)
 
 ## Donate
 
@@ -20,7 +20,7 @@ Pull requests and issues are welcome, but please create an issue or contact me b
 
 ## Translate
 
-If you can contribute a translation, please check out [this link](https://crowdin.com/project/wordle-peaks), or create a pull request with a translated copy of [this file](https://github.com/vegeta897/wordle-peaks/blob/main/src/lib/translations/en/main.json) in a new locale folder (e.g. `de/main.json`).
+If you can contribute a translation, please check out [this link](https://crowdin.com/project/wordle-peaks), or create a pull request with a translated copy of [this file](https://github.com/vegeta897/word-peaks/blob/main/src/lib/translations/en/main.json) in a new locale folder (e.g. `de/main.json`).
 
 Or if you don't want to do any of that, you can just get in touch with me and send the translation in whatever way is convenient for you.
 
@@ -35,11 +35,12 @@ The word list for the game itself will remain in English. If you want to play wi
 - **Spanish**: DayFlounder1832
 - **Brazilian Portuguese**: Gabrielle Nunes, riccimurilo
 - **Turkish**: [Anıl Kuşaksız](https://github.com/anilkusaksiz)
+- **German**: [Lars](https://github.com/larswmh), Marie Leukart
 
 ### Assets
 
-- Word lists sourced and modified from [hello wordl](https://github.com/lynn/hello-wordl) ([license](https://github.com/lynn/hello-wordl/blob/main/LICENSE))
-- [OpenDyslexic](https://opendyslexic.org/) font ([license](https://github.com/vegeta897/wordle-peaks/blob/main/static/font/LICENSE))
+- Word lists sourced and modified from [hello](https://github.com/lynn/hello) ([license](https://github.com/vegeta897/word-peaks/blob/main/src/lib/words/LICENSE))
+- [OpenDyslexic](https://opendyslexic.org/) font ([license](https://github.com/vegeta897/word-peaks/blob/main/static/font/LICENSE))
 
 ---
 

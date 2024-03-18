@@ -9,10 +9,13 @@ type EventName =
 	| 'gameLost'
 	| 'idleOnFinish'
 	| 'idleBeforeFinish'
+	| 'dailyFinish'
+	| 'promoLinkFollow'
+	| 'danceClick'
 
 const plausible = browser
 	? Plausible({
-			domain: 'vegeta897.github.io/wordle-peaks',
+			domain: 'vegeta897.github.io/word-peaks',
 			apiHost: 'https://plausible.pixelatomy.com',
 	  })
 	: { trackPageview() {}, trackEvent() {} }
@@ -21,7 +24,10 @@ export const trackPageview = () => track('pageview')
 export const trackEvent = (eventName: EventName) => track(eventName)
 
 function track(type: 'pageview' | EventName) {
-	if (dev) return
+	if (dev) {
+		console.log('Tracked', type, 'event')
+		return
+	}
 	try {
 		if (type === 'pageview') plausible.trackPageview()
 		else plausible.trackEvent(type)

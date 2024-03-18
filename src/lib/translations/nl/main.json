@@ -5,7 +5,7 @@
 		"explanation": "Na elke poging laten de vakjes zien of je letters eerder of later in alfabet zitten ten opzichte van de goede letters. Eerder betekent dichter bij A, later betekent dichter bij Z.",
 		"correct_tile": "Letter is goed",
 		"high_tile": "Letter is te vroeg in het alfabet",
-		"low_tile": "Letter is te ver in het alfabet",
+		"low_tile": "Letter is te vroeg in het alfabet",
 		"letter_range": "Het bereik van mogelijke letters wordt laten zien op het vakje en op het toetsenbord als je aan het typen bent"
 	},
 	"messages": {
@@ -15,9 +15,9 @@
 		"could_not_do": "Sorry, kon dat niet doen!",
 		"score_copied": "Score gekopieerd!",
 		"image_copied": "Afbeelding gekopieerd!",
-		"need_reload": "Update nodig, herlaad de pagina a.u.b.",
+		"need_reload": "Update nodig, vernieuw de pagina",
 		"new": "Nieuw",
-		"new_best": "Nieuwe beste!"
+		"new_best": "Nieuw Record!"
 	},
 	"keyboard": {
 		"enter": "Invoeren"
@@ -41,37 +41,38 @@
 		"win_rate": "Winratio",
 		"current_streak": "Huidige reeks",
 		"best_streak": "Beste Reeks",
-		"winning_guesses": "Winnende gissingen",
+		"winning_guesses": "Winnende Gokken",
 		"average_guess_time": "Gemiddelde goktijd",
-		"fastest_game": "Snelste spel",
+		"fastest_game": "Snelste Spel",
 		"average_game": "Gemiddeld spel",
 		"average_guess": "Gemiddelde gok",
 		"stats_daily": "Statistieken gaan alleen over dagelijkse spellen"
 	},
 	"summary": {
-		"title": "Samenvatting",
+		"title": "Overzicht",
 		"daily": "Dagelijks",
 		"random": "Willekeurig",
-		"answer": "Antwoord",
+		"answer": "Beantwoorden",
 		"total_time": "Totale tijd"
 	},
 	"options": {
 		"title": "Instellingen",
 		"language": "Taal",
-		"help_translate": "Vertalingen toevoegen of repareren op <a href=\"https://crowdin.com/project/wordle-peaks\">Crowdin</a> of <a href=\"https://github.com/vegeta897/wordle-peaks#translate\">GitHub</a>",
+		"help_translate": "Vertalingen toevoegen of corrigeren op <a href=\"https://crowdin.com/project/wordle-peaks\">Crowdin</a> of <a href=\"https://github.com/vegeta897/wordle-peaks#translate\">GitHub</a>",
 		"keyboard_layout": "Toetsenbordindeling",
 		"hard_mode": "Moeilijke Modus",
 		"high_contrast_mode": "Hoog contrast modus",
 		"show_all_hints": "Toon alle hints in rij",
 		"swap_enter_backspace": "Wissel Enter/Backspace toetsen",
 		"alphabetic": "Alfabetisch",
-		"use_dyslexic_font": "OpenDyslexic lettertype",
-		"allow_dancing_letters": "Dansende letters toestaan",
-		"include_link": "Link opnemen",
-		"include_times": "Inclusief duur"
+		"use_dyslexic_font": "OpenDyslexisch lettertype",
+		"allow_dancing_letters": "Laat dansende letters toe",
+		"include_link": "Koppeling toevoegen",
+		"include_times": "Voeg tijden toe",
+		"show_precise_times": "Toon precieze tijden"
 	},
 	"footer": {
-		"credits": "een <a href=\"https://github.com/vegeta897/wordle-peaks\">open source</a> project geïnspireerd door <a href=\"https://www.nytimes.com/games/wordle/index.html\">Wordle</a>",
-		"donate": "☕ <a href=\"https://buymeacoffee.com/vegeta897\">koop een koffie voor me</a> als je me wilt steunen"
+		"credits": "een <a href=\"https://github.com/vegeta897/word-peaks\">open source</a> project",
+		"donate": "☕ <a href=\"https://buymeacoffee.com/vegeta897\">koop me een koffie</a> als je me wilt steunen"
 	}
 }
