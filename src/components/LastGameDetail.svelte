@@ -19,6 +19,8 @@
 	import { trackEvent } from '$lib/plausible'
 	import { toast } from '@zerodevx/svelte-toast'
 
+	const { preciseTimes } = store
+
 	export let lastGameDetail: GameDetail | null
 
 	type SpanContainer = { span?: HTMLSpanElement }
@@ -165,7 +167,7 @@
 					bindContainer={totalTimeElement}
 					ms={lastGameDetail.guessTimes[lastGameDetail.guessTimes.length - 1] -
 						lastGameDetail.guessTimes[0]}
-					decimals={$store.preciseTimes ? 2 : 0}
+					decimals={$preciseTimes ? 2 : 0}
 				/>
 			</strong>
 			{$t('main.summary.total_time')}
@@ -215,7 +217,7 @@
 					<Time
 						bindContainer={guessTimeElements[g]}
 						ms={lastGameDetail.guessTimes[g + 1] - lastGameDetail.guessTimes[g]}
-						decimals={$store.preciseTimes ? 2 : 0}
+						decimals={$preciseTimes ? 2 : 0}
 					/>
 				</div>
 			</div>
