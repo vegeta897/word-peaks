@@ -1,7 +1,6 @@
 <script lang="ts">
 	import * as store from '$src/store'
 	import { get } from 'svelte/store'
-	import { beforeUpdate } from 'svelte'
 	// import Hill from '$com/landscape/Hill.svelte'
 	// import Tree from '$com/landscape/Tree.svelte'
 	// import Pond from '$com/landscape/Pond.svelte'
@@ -17,16 +16,35 @@
 
 	let containerWidth: number
 	let containerHeight: number
-	let svgWidth: number = 0
-	let svgHeight: number = 0
-	let xTiles: number = 0
-	let yTiles: number = 0
+	let svgWidth = 0
+	let svgHeight = 0
+	let xTiles = 0
+	let yTiles = 0
+	let centerX = 0
+	let centerY = 0
+	let centerGrid = ''
 
 	let landscape: Landscape = {
 		rows: 0,
 		features: [],
 		tileMap: new Map(),
 		openTiles: new Map(),
+	}
+
+	function updateDimensions(width: number, height: number) {
+		const newXTiles = Math.floor(containerWidth / TILE_WIDTH)
+		const newYTiles = Math.floor(containerHeight / TILE_HEIGHT)
+		if (newXTiles === xTiles && newYTiles === newYTiles) return
+		xTiles = newXTiles
+		yTiles = newYTiles
+		centerX = Math.floor(xTiles / 2)
+		centerY = Math.floor(yTiles / 2)
+		centerGrid = xyToGrid([centerX, centerY])
+		console.log('center', centerGrid)
+		svgWidth = xTiles * TILE_WIDTH
+		svgHeight = yTiles * TILE_HEIGHT
+		clearLandscape()
+		updateLandscape()
 	}
 
 	function clearLandscape() {
@@ -40,30 +58,17 @@
 		// TODO: Check if metrics have changed, or current row exceeds drawn rows
 		// Loop through un-drawn rows as needed (e.g. loading a completed puzzle)
 		// Preserve already-drawn feature rows if metrics haven't changed
-		if (!containerWidth || !containerHeight) return
+		if (!xTiles) return
 		// console.log('container', containerWidth, 'x', containerHeight)
 		const currentRow = get(store.currentRow)
 		if (currentRow === 0) {
 			if (landscape.rows > 0) clearLandscape()
 			return
 		}
-		const newXTiles = Math.floor(containerWidth / TILE_WIDTH)
-		const newYTiles = Math.floor(containerHeight / TILE_HEIGHT)
-		// console.log('tiles', newXTiles, 'x', newYTiles)
-		if (newXTiles !== xTiles || newYTiles !== newYTiles) {
-			xTiles = newXTiles
-			yTiles = newYTiles
-			svgWidth = xTiles * TILE_WIDTH
-			svgHeight = yTiles * TILE_HEIGHT
-			clearLandscape()
-		}
-		if (currentRow > landscape.rows) {
-			const [centerX, centerY] = [Math.floor(xTiles / 2), Math.floor(yTiles / 2)]
-			const centerGrid = xyToGrid([centerX, centerY])
-			console.log('center', centerGrid)
+		if (currentRow === landscape.rows) return
+		if (landscape.rows === 0 && currentRow > landscape.rows) {
 			landscape.openTiles.set(centerGrid, { x: centerX, y: centerY })
 		}
-		if (currentRow === landscape.rows) return
 		// TODO: Return generation time to see on iOS
 		landscape = getLandscape(
 			xTiles,
@@ -73,7 +78,8 @@
 			currentRow
 		)
 	}
-	beforeUpdate(() => updateLandscape())
+	$: if (containerWidth && containerHeight)
+		updateDimensions(containerWidth, containerHeight)
 	store.currentRow.subscribe(() => updateLandscape())
 	let redraw = 0
 </script>
