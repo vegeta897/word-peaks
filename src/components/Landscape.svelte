@@ -29,28 +29,39 @@
 		openTiles: new Map(),
 	}
 
+	function clearLandscape() {
+		landscape.rows = 0
+		landscape.openTiles.clear()
+		landscape.tileMap.clear()
+		landscape.features.length = 0
+	}
+
 	function updateLandscape() {
 		// TODO: Check if metrics have changed, or current row exceeds drawn rows
 		// Loop through un-drawn rows as needed (e.g. loading a completed puzzle)
 		// Preserve already-drawn feature rows if metrics haven't changed
 		if (!containerWidth || !containerHeight) return
 		// console.log('container', containerWidth, 'x', containerHeight)
+		const currentRow = get(store.currentRow)
+		if (currentRow === 0) {
+			if (landscape.rows > 0) clearLandscape()
+			return
+		}
 		const newXTiles = Math.floor(containerWidth / TILE_WIDTH)
 		const newYTiles = Math.floor(containerHeight / TILE_HEIGHT)
 		// console.log('tiles', newXTiles, 'x', newYTiles)
-		const currentRow = get(store.currentRow)
 		if (newXTiles !== xTiles || newYTiles !== newYTiles) {
 			xTiles = newXTiles
 			yTiles = newYTiles
 			svgWidth = xTiles * TILE_WIDTH
 			svgHeight = yTiles * TILE_HEIGHT
-			landscape.rows = 0
+			clearLandscape()
+		}
+		if (currentRow > landscape.rows) {
 			const [centerX, centerY] = [Math.floor(xTiles / 2), Math.floor(yTiles / 2)]
 			const centerGrid = xyToGrid([centerX, centerY])
 			console.log('center', centerGrid)
-			landscape.openTiles = new Map([[centerGrid, { x: centerX, y: centerY }]])
-			landscape.tileMap.clear()
-			landscape.features.length = 0
+			landscape.openTiles.set(centerGrid, { x: centerX, y: centerY })
 		}
 		if (currentRow === landscape.rows) return
 		// TODO: Return generation time to see on iOS
