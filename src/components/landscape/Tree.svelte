@@ -30,18 +30,17 @@
 </script>
 
 {#if draw}
-	<svg {x} {y}>
-		<svg>
-			<!--			<circle-->
-			<!--				cx={radius}-->
-			<!--				cy={radius}-->
-			<!--				r={radius - STROKE_HALF}-->
-			<!--				fill="#312236"-->
-			<!--				stroke="#ffffff"-->
-			<!--				stroke-width={STROKE_WIDTH}-->
-			<!--			/>-->
-			<!-- TODO: Add pill-shaped trees using below rounded rectangle method -->
-			<!-- Tree shape influenced by polarity blend, e.g. pine trees near mountains -->
+	<rect
+		x={x * 1.5}
+		{y}
+		width="1.5"
+		height="1"
+		fill="#15a85040"
+		stroke="#15a850"
+		stroke-width="0.2"
+	/>
+	<!-- <svg {x} {y}>
+		<g>
 			<rect
 				rx={radius - STROKE_HALF}
 				ry={radius - STROKE_HALF}
@@ -70,7 +69,7 @@
 				calcMode="discrete"
 				fill="freeze"
 			/>
-		</svg>
+		</g>
 		<circle cx={radius} cy={radius} r="0" fill="#15a850">
 			<animate
 				attributeName="r"
@@ -109,5 +108,5 @@
 				calcMode="discrete"
 			/>
 		</line>
-	</svg>
+	</svg> -->
 {/if}

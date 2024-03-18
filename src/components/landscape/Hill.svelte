@@ -2,28 +2,24 @@
 	import { onMount } from 'svelte'
 	import { bezierEasing } from '$lib/transitions'
 
-	const STROKE_WIDTH = 2
+	const STROKE_WIDTH = 0.05
 	const STROKE_HALF = STROKE_WIDTH / 2
 	const DURATION = 700
 
 	export let x = 0
 	export let y = 0
-	export let width = 30
-	export let length = 10
+	// export let width = 30
+	// export let length = 10
 	export let delay = 0
 	let draw = false
 
-	let radius: number
-	let height: number
 	let hillPath: string
 	let hillFillPath: string
 
-	$: radius = width / 2
-	$: height = radius + length
-	$: hillPath = `M${STROKE_HALF} ${height - STROKE_HALF} V${radius} a${radius - STROKE_HALF} ${
-		radius - STROKE_HALF
-	} 0 0 1 ${width - STROKE_WIDTH} 0 v${length - STROKE_HALF}`
-	$: hillFillPath = `M0 ${height} V${radius} a${radius} ${radius} 0 0 1 ${width} 0 v${length}`
+	$: hillPath = `M${STROKE_HALF} ${0.8 - STROKE_HALF} V${0.5} a${0.5 - STROKE_HALF} ${
+		0.5 - STROKE_HALF
+	} 0 0 1 ${1 - STROKE_WIDTH} 0 v${length - STROKE_HALF}`
+	$: hillFillPath = `M0 ${0.8} V${0.5} a${0.5} ${0.5} 0 0 1 1 0 v${0.3}`
 
 	onMount(() => {
 		setTimeout(() => (draw = true), delay)
@@ -31,7 +27,19 @@
 </script>
 
 {#if draw}
-	<svg {x} {y} {height}>
+	<rect
+		x={x * 1.5}
+		{y}
+		width="4.5"
+		height="2"
+		fill="#e38f2f40"
+		stroke="#e38f2f"
+		stroke-width="0.2"
+	/>
+	<!-- <text x={x * 1.5 + 0.5} y={y + 1.5} fill="#fff" style:font="1.5px sans-serif"
+		>{x}:{y}</text
+	> -->
+	<!-- <svg {x} {y} height={0.8}>
 		<path
 			opacity="0"
 			stroke="#ffffff"
@@ -48,12 +56,12 @@
 				fill="freeze"
 			/>
 		</path>
-		<svg y={height}>
+		<svg y={0.8}>
 			<path fill="#e38f2f" d={hillFillPath} />
 			<animate
 				attributeName="y"
 				dur={DURATION / 2 + 'ms'}
-				values={`${height};0`}
+				values={`${0.8};0`}
 				calcMode="spline"
 				keySplines={'0.54, 0, 0.68, 1'}
 				fill="freeze"
@@ -62,11 +70,11 @@
 				attributeName="y"
 				begin={DURATION / 2 + 'ms'}
 				dur={DURATION / 3 + 'ms'}
-				values={`0;${height}`}
+				values={`0;${0.8}`}
 				calcMode="spline"
 				keySplines={bezierEasing.sineIn}
 				fill="freeze"
 			/>
 		</svg>
-	</svg>
+	</svg> -->
 {/if}
