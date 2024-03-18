@@ -35,21 +35,10 @@ export function createNewBoard(): Board {
 	return board
 }
 
-export function scoreTile(
-	letter: string,
-	answer: string,
-	row: number,
-	tile: number
-): Tile {
+export function scoreTile(letter: string, answer: string, tile: number): Tile {
 	const distance = alphabet.indexOf(letter) - alphabet.indexOf(answer[tile])
 	const polarity = distance === 0 ? 0 : distance > 0 ? 1 : -1
-	return {
-		id: tile,
-		scored: true,
-		distance,
-		polarity,
-		letter,
-	}
+	return { id: tile, scored: true, distance, polarity, letter }
 }
 
 export function getValidLetters(

@@ -183,7 +183,7 @@ const longestStringLength = (strArr: string[]) =>
 	).length
 
 export const aprilFools = () => {
-	if (dev) return true
+	// if (dev) return true
 	const today = new Date()
 	return today.getMonth() === 3 && today.getDate() === 1
 }

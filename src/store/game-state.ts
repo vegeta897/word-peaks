@@ -116,7 +116,7 @@ export function initGameState() {
 				if (r < guessed.length) {
 					const guessedWord = guessed[r]
 					newBoardContent[r] = [...guessedWord].map((letter, l) =>
-						scoreTile(letter, get(answer), r, l)
+						scoreTile(letter, get(answer), l)
 					)
 				} else if (r > 0 && r === guessed.length) {
 					newBoardContent[r].forEach((tile, t) => {
