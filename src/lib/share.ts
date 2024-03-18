@@ -178,7 +178,9 @@ export function drawResults(
 }
 
 const longestStringLength = (strArr: string[]) =>
-	strArr.reduce((prev, curr) => (prev === null || prev.length < curr.length ? curr : prev)).length
+	strArr.reduce((prev, curr) =>
+		prev === null || prev.length < curr.length ? curr : prev
+	).length
 
 export const aprilFools = () => {
 	if (dev) return true

@@ -46,7 +46,9 @@
 		}
 		let totalTime = ''
 		if (get(store.shareTimes)) {
-			totalTime = `\n  ${get(t)('main.summary.total_time')}: ${totalTimeElement.span!.innerText}`
+			totalTime = `\n  ${get(t)('main.summary.total_time')}: ${
+				totalTimeElement.span!.innerText
+			}`
 			emojiGridParams.guessTimes = getGuessTimes()
 		}
 		let url = ''
@@ -54,7 +56,9 @@
 			url = '\nhttps://wordpeaks.com'
 			if (lastGameDetail!.hash) url += `/#${lastGameDetail!.hash}`
 		}
-		copyText(shareTitleText + '\n\n' + getEmojiGrid(emojiGridParams) + totalTime + url).then(
+		copyText(
+			shareTitleText + '\n\n' + getEmojiGrid(emojiGridParams) + totalTime + url
+		).then(
 			() => successToast(get(t)('main.messages.score_copied')),
 			() => errorToast()
 		)
@@ -167,7 +171,9 @@
 				/>
 			</strong>
 			{$t('main.summary.total_time')}
-			{#if lastGameDetail.fastest}<div class="new-tag">{$t('main.messages.new_best')}</div>{/if}
+			{#if lastGameDetail.fastest}<div class="new-tag">
+					{$t('main.messages.new_best')}
+				</div>{/if}
 		</div>
 	</div>
 	<div class="time-stats">

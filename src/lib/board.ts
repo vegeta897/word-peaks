@@ -107,7 +107,9 @@ export async function submitRow() {
 	const rowNumber = get(store.currentRow)
 	if (!hasEnoughLetters(get(store.boardContent), rowNumber)) {
 		store.notEnoughLetters.set(true)
-		showError(get(t)('main.messages.not_enough_letters'), () => store.notEnoughLetters.set(false))
+		showError(get(t)('main.messages.not_enough_letters'), () =>
+			store.notEnoughLetters.set(false)
+		)
 		submitting = false
 		return
 	}
@@ -154,9 +156,9 @@ export async function submitRow() {
 		if (gameMode === 'daily') trackEvent('dailyFinish')
 		if (get(store.newUser)) trackEvent('firstFinish')
 		store.newUser.set(false)
-		store[gameMode === 'daily' ? 'lastPlayedDailyWasHard' : 'lastPlayedRandomWasHard'].set(
-			get(store.hardMode)
-		)
+		store[
+			gameMode === 'daily' ? 'lastPlayedDailyWasHard' : 'lastPlayedRandomWasHard'
+		].set(get(store.hardMode))
 		finishGame(won)
 	} else {
 		store.currentTile.set(0)

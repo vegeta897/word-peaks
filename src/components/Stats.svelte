@@ -9,7 +9,8 @@
 
 	export let gameMode: GameMode
 
-	const getHighest = (arr: number[]): number => arr.reduce((a, b) => (b ? Math.max(a, b) : a), 1)
+	const getHighest = (arr: number[]): number =>
+		arr.reduce((a, b) => (b ? Math.max(a, b) : a), 1)
 	const highestDistribution = getHighest(get(stats).distribution)
 	const { guessTotals, guessCounts } = get(timeStats)
 	const highestAvgGuessTime = getHighest(guessTotals.map((t, g) => t / guessCounts[g]))
@@ -50,10 +51,15 @@
 				><td>
 					{#if $timeStats.guessTotals[g] / $timeStats.guessCounts[g]}
 						<StatBar
-							percent={$timeStats.guessTotals[g] / $timeStats.guessCounts[g] / highestAvgGuessTime}
+							percent={$timeStats.guessTotals[g] /
+								$timeStats.guessCounts[g] /
+								highestAvgGuessTime}
 							minWidth="2.7em"
 						>
-							<Time ms={$timeStats.guessTotals[g] / $timeStats.guessCounts[g]} dimming={false} />
+							<Time
+								ms={$timeStats.guessTotals[g] / $timeStats.guessCounts[g]}
+								dimming={false}
+							/>
 						</StatBar>{/if}</td
 				></tr
 			>{/each}

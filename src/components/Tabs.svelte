@@ -5,11 +5,15 @@
 </script>
 
 <div class="tabs">
-	<button on:click={() => (activeTab = 1)} class="tab-button" class:active={activeTab === 1}
-		>{tab1Title}</button
+	<button
+		on:click={() => (activeTab = 1)}
+		class="tab-button"
+		class:active={activeTab === 1}>{tab1Title}</button
 	>
-	<button on:click={() => (activeTab = 2)} class="tab-button" class:active={activeTab === 2}
-		>{tab2Title}</button
+	<button
+		on:click={() => (activeTab = 2)}
+		class="tab-button"
+		class:active={activeTab === 2}>{tab2Title}</button
 	>
 </div>
 <div class="tab-content">

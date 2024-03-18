@@ -61,10 +61,17 @@
 	}
 
 	function playDaily() {
-		history.pushState('', document.title, window.location.pathname + window.location.search) // Remove # from URL
+		history.pushState(
+			'',
+			document.title,
+			window.location.pathname + window.location.search
+		) // Remove # from URL
 		const dayNumber = getDayNumber()
 		const dailyWord = getWordByDay(dayNumber)
-		if (get(store.lastPlayedDaily) === getDayNumber() && get(store.answerDaily) === dailyWord)
+		if (
+			get(store.lastPlayedDaily) === getDayNumber() &&
+			get(store.answerDaily) === dailyWord
+		)
 			return
 		resetBoard()
 		store.guessesDaily.set([])

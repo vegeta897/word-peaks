@@ -22,7 +22,8 @@
 	const lastPlayedDaily = get(store.lastPlayedDaily)
 	const dailyFinished =
 		lastPlayedDaily === getDayNumber() &&
-		(guessesDaily.length === 6 || guessesDaily[guessesDaily.length - 1] === get(store.answerDaily))
+		(guessesDaily.length === 6 ||
+			guessesDaily[guessesDaily.length - 1] === get(store.answerDaily))
 
 	const nextDailyTime = getDayEnd(lastPlayedDaily)
 	let nextWordReady = nextDailyTime < new Date()
@@ -37,7 +38,9 @@
 		: ''}
 >
 	{#if lastGameFinished && !lastGameWon}
-		<h3 class="answer">{@html $t('main.results.answer', { answer: lastAnswer.toUpperCase() })}</h3>
+		<h3 class="answer">
+			{@html $t('main.results.answer', { answer: lastAnswer.toUpperCase() })}
+		</h3>
 	{/if}
 	<div class="tabs-container">
 		{#if lastGameMode === lastGameDetail?.mode && lastAnswer === lastGameDetail?.answer}
@@ -53,7 +56,9 @@
 		<div class="column">
 			<div class="countdown">
 				<Time alwaysShowHours countdown={nextDailyTime} class="time">
-					<div slot="after-countdown" class="daily-text">{$t('main.results.try_today')}</div>
+					<div slot="after-countdown" class="daily-text">
+						{$t('main.results.try_today')}
+					</div>
 					<h3 slot="title">{$t('main.results.next_word')}</h3>
 				</Time>
 			</div>

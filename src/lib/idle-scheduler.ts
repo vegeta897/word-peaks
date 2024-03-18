@@ -118,6 +118,7 @@ const addSpinJump = (animations: IdleSchedule['animations'], iterations: number)
 	})
 }
 
-const randomFloat = (min: number, max: number): number => min + Math.random() * (max - min)
+const randomFloat = (min: number, max: number): number =>
+	min + Math.random() * (max - min)
 const randomInt = (min: number, max: number): number =>
 	Math.floor(Math.random() * (max - min + 1)) + min

@@ -9,11 +9,15 @@ import type { KeyboardLayout } from '$lib/data-model'
 export const storeVersion: Writable<number> = storageWritable('wp-version', 0)
 export const storedLocale: Writable<string> = storageWritable('wp-locale', '')
 
-export const openScreen: Writable<null | 'options' | 'tutorial' | 'results'> = writable(null)
+export const openScreen: Writable<null | 'options' | 'tutorial' | 'results'> =
+	writable(null)
 
 export const highContrast: Writable<boolean> = storageWritable('wp-highContrast', false)
 export const showAllHints: Writable<boolean> = storageWritable('wp-showAllHints', false)
-export const swapEnterBackspace: Writable<boolean> = storageWritable('wp-swapEnterBackspace', false)
+export const swapEnterBackspace: Writable<boolean> = storageWritable(
+	'wp-swapEnterBackspace',
+	false
+)
 export const keyboardLayout: Writable<KeyboardLayout> = storageWritable(
 	'wp-keyboardLayout',
 	'alphabetic'
@@ -27,7 +31,10 @@ export const preciseTimes: Writable<boolean> = storageWritable('wp-preciseTimes'
 export const lastPlayedDaily: Writable<number> = storageWritable('wp-lastPlayedDaily', -1)
 
 export const stats: Writable<Stats> = storageWritable('wp-stats', newStats())
-export const timeStats: Writable<TimeStats> = storageWritable('wp-timeStats', newTimeStats())
+export const timeStats: Writable<TimeStats> = storageWritable(
+	'wp-timeStats',
+	newTimeStats()
+)
 export const lastDailyDetail: Writable<GameDetail | null> = storageWritable(
 	'wp-lastDailyDetail',
 	null

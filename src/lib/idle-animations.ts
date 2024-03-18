@@ -1,8 +1,12 @@
 export const AnimationParts = ['translateX', 'translateY', 'rotate', 'scale'] as const
 export type AnimationPart = typeof AnimationParts[number]
 
-type AnimationDefinition = { duration: number } & Partial<Record<AnimationPart, Keyframe[]>>
-export type MultipartAnimation = { duration: number } & Partial<Record<AnimationPart, Keyframe[]>>
+type AnimationDefinition = { duration: number } & Partial<
+	Record<AnimationPart, Keyframe[]>
+>
+export type MultipartAnimation = { duration: number } & Partial<
+	Record<AnimationPart, Keyframe[]>
+>
 
 export const peek = defineAnimation({
 	duration: 600,
@@ -11,7 +15,10 @@ export const peek = defineAnimation({
 		{ transform: 'translateX(10px)' },
 	],
 	translateY: [{ transform: 'translateY(0)' }, { transform: 'translateY(0)' }],
-	rotate: [{ transform: 'rotate(-4deg)', easing: 'ease-in-out' }, { transform: 'rotate(20deg)' }],
+	rotate: [
+		{ transform: 'rotate(-4deg)', easing: 'ease-in-out' },
+		{ transform: 'rotate(20deg)' },
+	],
 	scale: [{ transform: 'scaleY(1)' }, { transform: 'scaleY(1)' }],
 })
 export const unPeek = defineAnimation({
@@ -20,7 +27,10 @@ export const unPeek = defineAnimation({
 		{ transform: 'translateX(10px)', easing: 'ease-in-out' },
 		{ transform: 'translateX(0)' },
 	],
-	rotate: [{ transform: 'rotate(20deg)', easing: 'ease-in-out' }, { transform: 'rotate(-4deg)' }],
+	rotate: [
+		{ transform: 'rotate(20deg)', easing: 'ease-in-out' },
+		{ transform: 'rotate(-4deg)' },
+	],
 })
 export const hopIn = defineAnimation({
 	duration: 700,
@@ -124,7 +134,10 @@ export const danceStart = defineAnimation({
 	duration: 300,
 	translateX: [{ transform: 'translateX(40px)' }],
 	rotate: [{ transform: 'skew(0)', easing: 'ease-in-out' }, { transform: 'skew(6deg)' }],
-	scale: [{ transform: 'scaleY(1)', easing: 'ease-in-out' }, { transform: 'scaleY(1.1)' }],
+	scale: [
+		{ transform: 'scaleY(1)', easing: 'ease-in-out' },
+		{ transform: 'scaleY(1.1)' },
+	],
 })
 export const dance = defineAnimation({
 	duration: 1000,
@@ -148,7 +161,10 @@ export const danceEnd = defineAnimation({
 	duration: 250,
 	translateX: [{ transform: 'translateX(40px)' }],
 	rotate: [{ transform: 'skew(6deg)', easing: 'ease-in-out' }, { transform: 'skew(0)' }],
-	scale: [{ transform: 'scaleY(1.1)', easing: 'ease-in-out' }, { transform: 'scaleY(1)' }],
+	scale: [
+		{ transform: 'scaleY(1.1)', easing: 'ease-in-out' },
+		{ transform: 'scaleY(1)' },
+	],
 })
 export const spinJump = defineAnimation({
 	duration: 800,
@@ -238,7 +254,8 @@ function defineAnimation(definition: AnimationDefinition): MultipartAnimation {
 			if (firstFrame.offset && firstFrame.offset > 0)
 				partKeyframes.unshift({ ...firstFrame, offset: 0 })
 			const lastFrame = partKeyframes[partKeyframes.length - 1]!
-			if (lastFrame.offset && lastFrame.offset < 1) partKeyframes.push({ ...lastFrame, offset: 1 })
+			if (lastFrame.offset && lastFrame.offset < 1)
+				partKeyframes.push({ ...lastFrame, offset: 1 })
 		}
 	}
 	return animation

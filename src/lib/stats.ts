@@ -33,7 +33,8 @@ export const newTimeStats = (): TimeStats => ({
 	fastestGame: 0,
 })
 
-const getGameTime = (guessTimes: number[]) => guessTimes[guessTimes.length - 1]! - guessTimes[0]
+const getGameTime = (guessTimes: number[]) =>
+	guessTimes[guessTimes.length - 1]! - guessTimes[0]
 
 export function finishGame(won: boolean) {
 	const mode = get(store.gameMode)

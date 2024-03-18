@@ -18,8 +18,9 @@
 	async function onLanguageChange(language: string) {
 		storedLocale.set(language)
 		await loadTranslations(language)
-		keyboardLayoutOptions.find((o) => o.value === 'alphabetic').label =
-			get(t)('main.options.alphabetic')
+		keyboardLayoutOptions.find((o) => o.value === 'alphabetic').label = get(t)(
+			'main.options.alphabetic'
+		)
 	}
 
 	const hardModeToggle: Writable<boolean> = new writable(false)
@@ -36,8 +37,16 @@
 
 	const toggleOptions = [
 		{ bind: hardModeToggle, label: 'main.options.hard_mode', click: toggleHardMode },
-		{ bind: highContrast, label: 'main.options.high_contrast_mode', click: toggle(highContrast) },
-		{ bind: showAllHints, label: 'main.options.show_all_hints', click: toggle(showAllHints) },
+		{
+			bind: highContrast,
+			label: 'main.options.high_contrast_mode',
+			click: toggle(highContrast),
+		},
+		{
+			bind: showAllHints,
+			label: 'main.options.show_all_hints',
+			click: toggle(showAllHints),
+		},
 		{
 			bind: store.swapEnterBackspace,
 			label: 'main.options.swap_enter_backspace',

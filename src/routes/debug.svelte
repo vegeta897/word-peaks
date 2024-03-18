@@ -6,7 +6,9 @@
 	const storeProps = Object.entries(store)
 		.filter(
 			([propName, propValue]) =>
-				typeof propValue !== 'function' && 'update' in propValue && propName !== 'boardContent'
+				typeof propValue !== 'function' &&
+				'update' in propValue &&
+				propName !== 'boardContent'
 		)
 		.map(([propName, propValue]) => {
 			return [propName, get(propValue)]

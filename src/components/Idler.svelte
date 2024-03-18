@@ -46,7 +46,11 @@
 	const animate = async ({ animations }: IdleSchedule) => {
 		for (const animation of animations) {
 			if (!mounted) break
-			await performAnimation(animation.animation, animation.endDelay || 0, animation.iterations)
+			await performAnimation(
+				animation.animation,
+				animation.endDelay || 0,
+				animation.iterations
+			)
 		}
 	}
 

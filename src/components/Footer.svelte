@@ -9,7 +9,12 @@
 	</div>
 	<div class="footer-row">
 		<div class="footer-item icon-item">
-			<svg class="icon" viewBox="0 0 71 55" fill="none" xmlns="http://www.w3.org/2000/svg">
+			<svg
+				class="icon"
+				viewBox="0 0 71 55"
+				fill="none"
+				xmlns="http://www.w3.org/2000/svg"
+			>
 				<title>Discord</title>
 				<path d={DiscordIconPathData} fill="#bbbbbb" />
 			</svg>

@@ -1,6 +1,11 @@
 <script lang="ts">
 	import { alphabet, keyboardLayoutOptions } from '$lib/data-model'
-	import { validLetters, swapEnterBackspace, keyboardLayout, openScreen } from '$src/store'
+	import {
+		validLetters,
+		swapEnterBackspace,
+		keyboardLayout,
+		openScreen,
+	} from '$src/store'
 	import { t } from '$lib/translations'
 	import { moveCarat, submitRow, typeLetter, undoLetter } from '$lib/board'
 	import { get } from 'svelte/store'
@@ -33,7 +38,12 @@
 			{#if r === keyboardLayoutOptions.find((o) => o.value === $keyboardLayout).wideKeysRow}
 				{#if $swapEnterBackspace}
 					<button on:click={undoLetter} class="wide"
-						><svg viewBox="0 0 21 11" xmlns="http://www.w3.org/2000/svg" width="42" height="22">
+						><svg
+							viewBox="0 0 21 11"
+							xmlns="http://www.w3.org/2000/svg"
+							width="42"
+							height="22"
+						>
 							<line x1="7" x2="21" y1="5" y2="5" />
 							<polygon points="3,5 7,2 7,8" />
 							<line x1="1" x2="1" y1="0.5" y2="9.5" />
@@ -54,7 +64,12 @@
 					<button on:click={submitRow} class="wide">{$t('main.keyboard.enter')}</button>
 				{:else}
 					<button on:click={undoLetter} class="wide">
-						<svg viewBox="0 0 21 11" xmlns="http://www.w3.org/2000/svg" width="42" height="22">
+						<svg
+							viewBox="0 0 21 11"
+							xmlns="http://www.w3.org/2000/svg"
+							width="42"
+							height="22"
+						>
 							<line x1="7" x2="21" y1="5" y2="5" />
 							<polygon points="3,5 7,2 7,8" />
 							<line x1="1" x2="1" y1="0.5" y2="9.5" />

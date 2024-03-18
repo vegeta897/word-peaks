@@ -1,6 +1,12 @@
 <script lang="ts">
 	import { t } from '$lib/translations'
-	import { openScreen, highContrast, gameMode, lastPlayedDaily, boardContent } from '$src/store'
+	import {
+		openScreen,
+		highContrast,
+		gameMode,
+		lastPlayedDaily,
+		boardContent,
+	} from '$src/store'
 	import { OptionsIconPathData } from '$lib/icons'
 	import { browser } from '$app/env'
 	import { aprilFools } from '$lib/share'

@@ -22,7 +22,8 @@
 
 			const inBounds = (x: number, y: number) =>
 				y >= 0 && y < board.length && x >= 0 && x < WORD_LENGTH
-			const isGrass = (x: number, y: number) => inBounds(x, y) && board[y][x].polarity === 0
+			const isGrass = (x: number, y: number) =>
+				inBounds(x, y) && board[y][x].polarity === 0
 			// Move this to Graph.svelte
 			// const randomBoard = board.map((row) =>
 			// 	[...row].map((tile) => ({ polarity: Math.random() > 0.5 ? 1 : 0 }))
@@ -33,8 +34,18 @@
 
 			type Dir = 'up' | 'down' | 'left' | 'right'
 
-			const turnCW: Record<Dir, Dir> = { right: 'down', down: 'left', left: 'up', up: 'right' }
-			const turnCCW: Record<Dir, Dir> = { right: 'up', down: 'right', left: 'down', up: 'left' }
+			const turnCW: Record<Dir, Dir> = {
+				right: 'down',
+				down: 'left',
+				left: 'up',
+				up: 'right',
+			}
+			const turnCCW: Record<Dir, Dir> = {
+				right: 'up',
+				down: 'right',
+				left: 'down',
+				up: 'left',
+			}
 			const go: Record<Dir, (x: number, y: number) => [number, number]> = {
 				up: (x: number, y: number) => [x, y - 1],
 				down: (x: number, y: number) => [x, y + 1],
@@ -137,7 +148,8 @@
 							return `H${x * columnWidth}`
 						}
 						const innerCorner =
-							(horizontal && y < lastY === x > lastX) || (vertical && y > lastY === x > lastX)
+							(horizontal && y < lastY === x > lastX) ||
+							(vertical && y > lastY === x > lastX)
 						const sweep = innerCorner ? 0 : 1
 						const xDir = x > lastX ? 1 : -1
 						const yDir = y > lastY ? 1 : -1
@@ -146,7 +158,9 @@
 						const arc = `a${tileRadius} ${tileRadius} 0 0 ${sweep} ${tileRadius * xDir} ${
 							tileRadius * yDir
 						}`
-						const pathPart = horizontal ? `${hLine} ${arc} ${vLine}` : `${vLine} ${arc} ${hLine}`
+						const pathPart = horizontal
+							? `${hLine} ${arc} ${vLine}`
+							: `${vLine} ${arc} ${hLine}`
 						vertical = !vertical
 						horizontal = !horizontal
 						lastX = x
