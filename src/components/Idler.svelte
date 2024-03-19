@@ -4,6 +4,7 @@
 	import { AnimationParts } from '$lib/idle-animations'
 	import type { IdleSchedule } from '$lib/idle-scheduler'
 	import { getSchedule, startAnimation, stopAnimation } from '$lib/idle-scheduler'
+	import { randomInt } from '$lib/math'
 
 	let mounted = false
 	let letter: string
@@ -58,7 +59,7 @@
 
 	onMount(async () => {
 		mounted = true
-		await sleep(Math.random() * 100) // Ensures random first idler
+		await sleep(randomInt(1, 100)) // Ensures random first idler
 		while (mounted) {
 			const schedule = getSchedule(id)
 			if ('wait' in schedule) {

@@ -1,6 +1,7 @@
 export const ROWS = 6
 export const WORD_LENGTH = 5
 import targetWords from '$lib/words/targets-filtered.json'
+import { randomElement } from './math'
 
 let dictionary: string[] | undefined
 export async function loadDictionary() {
@@ -101,13 +102,7 @@ export const getDayEnd = (day: number): Date => {
 	return dayEnd
 }
 
-export function pickRandom<T>(arr: T[]): T {
-	return arr[Math.floor(Math.random() * arr.length)]
-}
-
-export function getRandomWord(): string {
-	return pickRandom(targetWords)
-}
+export const getRandomWord = (): string => randomElement(targetWords)
 
 export function encodeWord(word: string): string {
 	let sum = 0
