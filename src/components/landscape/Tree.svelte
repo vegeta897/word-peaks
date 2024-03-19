@@ -37,7 +37,7 @@
 		height="1"
 		fill="#15a85040"
 		stroke="#15a850"
-		stroke-width="0.2"
+		stroke-width="0.1"
 	/>
 	<!-- <svg {x} {y}>
 		<g>

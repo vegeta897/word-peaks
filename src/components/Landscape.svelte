@@ -1,11 +1,11 @@
 <script lang="ts">
 	import * as store from '$src/store'
 	import { get } from 'svelte/store'
-	// import Hill from '$com/landscape/Hill.svelte'
-	// import Tree from '$com/landscape/Tree.svelte'
-	// import Pond from '$com/landscape/Pond.svelte'
 	import type { Landscape } from '$lib/landscape'
 	import { getLandscape, xyToGrid } from '$lib/landscape'
+	import Tree from './landscape/Tree.svelte'
+	import Hill from './landscape/Hill.svelte'
+	import Pond from './landscape/Pond.svelte'
 
 	const TILE_WIDTH = 12
 	const TILE_HEIGHT = 8
@@ -18,70 +18,69 @@
 	let containerHeight: number
 	let svgWidth = 0
 	let svgHeight = 0
-	let xTiles = 0
-	let yTiles = 0
-	let centerX = 0
-	let centerY = 0
 	let centerGrid = ''
 
 	let landscape: Landscape = {
-		rows: 0,
+		width: 0,
+		height: 0,
+		centerX: 0,
+		centerY: 0,
+		rowsGenerated: 0,
 		features: [],
 		tileMap: new Map(),
 		openTiles: new Map(),
+		nextPondID: 1,
 	}
 
 	function updateDimensions(width: number, height: number) {
-		const newXTiles = Math.floor(containerWidth / TILE_WIDTH)
-		const newYTiles = Math.floor(containerHeight / TILE_HEIGHT)
-		if (newXTiles === xTiles && newYTiles === newYTiles) return
-		xTiles = newXTiles
-		yTiles = newYTiles
-		centerX = Math.floor(xTiles / 2)
-		centerY = Math.floor(yTiles / 2)
-		centerGrid = xyToGrid([centerX, centerY])
-		console.log('center', centerGrid)
-		svgWidth = xTiles * TILE_WIDTH
-		svgHeight = yTiles * TILE_HEIGHT
+		const newWidth = Math.floor(containerWidth / TILE_WIDTH)
+		const newHeight = Math.floor(containerHeight / TILE_HEIGHT)
+		if (newWidth === landscape.width && newHeight === landscape.height) return
+		landscape.width = newWidth
+		landscape.height = newHeight
+		landscape.centerX = Math.floor(newWidth / 2)
+		landscape.centerY = Math.floor(newHeight / 2)
+		centerGrid = xyToGrid([landscape.centerX, landscape.centerY])
+		// console.log('center', centerGrid)
+		svgWidth = newWidth * TILE_WIDTH
+		svgHeight = newHeight * TILE_HEIGHT
 		clearLandscape()
 		updateLandscape()
 	}
 
 	function clearLandscape() {
-		landscape.rows = 0
+		landscape.rowsGenerated = 0
 		landscape.openTiles.clear()
 		landscape.tileMap.clear()
 		landscape.features.length = 0
+		landscape.nextPondID = 1
 	}
 
 	function updateLandscape() {
 		// TODO: Check if metrics have changed, or current row exceeds drawn rows
 		// Loop through un-drawn rows as needed (e.g. loading a completed puzzle)
 		// Preserve already-drawn feature rows if metrics haven't changed
-		if (!xTiles) return
+		if (!landscape.width) return
 		// console.log('container', containerWidth, 'x', containerHeight)
 		const currentRow = get(store.currentRow)
 		if (currentRow === 0) {
-			if (landscape.rows > 0) clearLandscape()
+			if (landscape.rowsGenerated > 0) clearLandscape()
 			return
 		}
-		if (currentRow === landscape.rows) return
-		if (landscape.rows === 0 && currentRow > landscape.rows) {
-			landscape.openTiles.set(centerGrid, { x: centerX, y: centerY })
+		if (currentRow === landscape.rowsGenerated) return
+		if (landscape.rowsGenerated === 0 && currentRow > landscape.rowsGenerated) {
+			landscape.openTiles.set(centerGrid, { x: landscape.centerX, y: landscape.centerY })
 		}
 		// TODO: Return generation time to see on iOS
-		landscape = getLandscape(
-			xTiles,
-			yTiles,
-			landscape,
-			get(store.boardContent),
-			currentRow
-		)
+		landscape = getLandscape(landscape, get(store.boardContent), currentRow, `${seed}`)
 	}
 	$: if (containerWidth && containerHeight)
 		updateDimensions(containerWidth, containerHeight)
 	store.currentRow.subscribe(() => updateLandscape())
 	let redraw = 0
+	let seed = 0
+
+	// TODO: Might want to set viewbox equal to svg dimensions to avoid blurry lines
 </script>
 
 <div bind:clientWidth={containerWidth} bind:clientHeight={containerHeight}>
@@ -89,21 +88,22 @@
 		xmlns="http://www.w3.org/2000/svg"
 		width={svgWidth}
 		height={svgHeight}
-		viewBox="0 0 {xTiles * 1.5} {yTiles}"
-		on:click={() => redraw++}
+		viewBox="0 0 {landscape.width * 1.5} {landscape.height}"
+		on:click={() => {
+			seed++
+			clearLandscape()
+			updateLandscape()
+		}}
 	>
 		{#key redraw}
-			<!--		<Hill x={50} y={40} width={50} length={20} />-->
-			<!--		<Hill x={18} y={16} width={35} length={10} delay={200} />-->
-			<!--		<Hill x={60} y={10} width={30} length={10} delay={350} />-->
-			<!--		<Hill x={20} y={50} width={25} length={10} delay={450} />-->
-			<!--		<Hill x={95} y={25} width={25} length={5} delay={500} />-->
-			<!--		<Tree x={103} y={48} width={15} length={8} delay={500} />-->
-			<!--		<Tree x={121} y={54} width={15} length={8} delay={700} />-->
-			<!--		<Tree x={114} y={69} width={11} length={6} delay={900} />-->
-			<!--		<Pond x={124} y={22} />-->
-			{#each landscape.features as { component, x, y, props }}
-				<svelte:component this={component} {x} {y} {...props} />
+			{#each landscape.features as feature}
+				{#if feature.type === 'tree'}
+					<Tree x={feature.x} y={feature.y} />
+				{:else if feature.type === 'hill'}
+					<Hill x={feature.x} y={feature.y} />
+				{:else}
+					<Pond tiles={feature.tiles} />
+				{/if}
 			{/each}
 		{/key}
 	</svg>

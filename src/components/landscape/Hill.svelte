@@ -34,7 +34,7 @@
 		height="2"
 		fill="#e38f2f40"
 		stroke="#e38f2f"
-		stroke-width="0.2"
+		stroke-width="0.1"
 	/>
 	<!-- <text x={x * 1.5 + 0.5} y={y + 1.5} fill="#fff" style:font="1.5px sans-serif"
 		>{x}:{y}</text

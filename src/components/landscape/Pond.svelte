@@ -2,8 +2,6 @@
 	import { onMount } from 'svelte'
 	import { bezierEasing } from '$lib/transitions'
 
-	export let x = 0
-	export let y = 0
 	export let delay = 0
 	export let tiles: [x: number, y: number][] = []
 	let draw = false
@@ -20,15 +18,17 @@
 </script>
 
 {#if draw}
-	<rect
-		x={x * 1.5}
-		{y}
-		width="1.5"
-		height="1"
-		fill="#567de840"
-		stroke="#567de8"
-		stroke-width="0.2"
-	/>
+	{#each tiles as [x, y]}
+		<rect
+			x={x * 1.5}
+			{y}
+			width="1.5"
+			height="1"
+			fill="#567de840"
+			stroke="#567de8"
+			stroke-width="0.1"
+		/>
+	{/each}
 	<!-- <svg {x} {y} viewBox="0 0 70 40" width="35" height="20">
 		<path
 			stroke="#fff"
