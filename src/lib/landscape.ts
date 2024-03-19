@@ -27,6 +27,7 @@ export type Landscape = {
 	tileMap: Map<string, Feature>
 	openTiles: Map<string, Tile>
 	nextPondID: number
+	generationTime?: number
 }
 
 export function getLandscape(
@@ -35,6 +36,7 @@ export function getLandscape(
 	currentRow: number,
 	seedPrefix = ''
 ): Landscape {
+	const startTime = performance.now()
 	console.time('getFeatures')
 	const { tileMap, openTiles, width, height, centerX, centerY } = existingLandscape
 	let { features, rowsGenerated, nextPondID } = existingLandscape
@@ -47,6 +49,7 @@ export function getLandscape(
 		const rng = new Rand(seed)
 		const getRng = () => rng.next()
 		for (const tile of rowTiles) {
+			// TODO: Seperate these into functions
 			if (tile.polarity === 0) {
 				// trees
 				for (let i = 0; i < 6; i++) {
@@ -168,6 +171,7 @@ export function getLandscape(
 				// console.log(grid)
 				// openTiles.delete(grid)
 				for (let i = 0; i < 6; i++) {
+					if (openPondTiles.size === 0) break // TODO: Find better firstPondGrid instead
 					const openGridsArray = [...openPondTiles]
 					const openGridWeights = openGridsArray.map(([, { weight }]) => weight)
 					const [grid, { x, y }] = randomElementWeighted(
@@ -234,6 +238,7 @@ export function getLandscape(
 		centerX,
 		centerY,
 		nextPondID,
+		generationTime: performance.now() - startTime,
 	}
 }
 

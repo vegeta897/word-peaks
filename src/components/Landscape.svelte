@@ -108,6 +108,9 @@
 		{/key}
 	</svg>
 </div>
+<p style="position: absolute; top: 30px;">
+	seed: {seed} time: {landscape.generationTime?.toFixed(1)}ms
+</p>
 
 <style>
 	div {
