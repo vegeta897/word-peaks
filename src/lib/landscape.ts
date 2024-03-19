@@ -1,11 +1,18 @@
 import type { Board } from '$lib/data-model'
 import Rand from 'rand-seed'
+import { fillPond } from './landscape/pond'
+import {
+	type XY,
+	getDistance,
+	randomElementWeighted,
+	getNeighbors,
+	xyToGrid,
+	randomInt,
+} from './math'
 
-type XY = [x: number, y: number]
-
-type Hill = { type: 'hill'; x: number; y: number }
-type Tree = { type: 'tree'; x: number; y: number }
-type Pond = { type: 'pond'; pondID: number; tiles: XY[] }
+export type Hill = { type: 'hill'; x: number; y: number }
+export type Tree = { type: 'tree'; x: number; y: number }
+export type Pond = { type: 'pond'; pondID: number; tiles: XY[] }
 export type Feature = Hill | Tree | Pond
 
 type Tile = {
@@ -13,6 +20,7 @@ type Tile = {
 	y: number
 	fromCenter?: number
 	noHill?: boolean
+	noPond?: boolean
 	nearPonds?: number
 	nearTrees?: number
 }
@@ -150,64 +158,31 @@ export function getLandscape(
 				}
 			} else {
 				// pond
-				const openTilesArray = [...openTiles]
-				// const [grid, { x, y }] = randomElement(openTilesArray, getRng)
-				const [firstPondGrid, { x, y }] = randomElementWeighted(
-					openTilesArray,
-					openTilesArray.map(
-						([, { fromCenter, nearPonds }]) =>
-							(maxDistance - (fromCenter || 0)) / ((nearPonds || 0) + 1)
-					),
-					getRng
-				)
-				const pondTiles: XY[] = []
-				const openPondTiles = new Map([[firstPondGrid, { weight: 1, x, y }]])
-				const feature: Feature = {
-					type: 'pond',
-					tiles: pondTiles,
-					pondID: nextPondID++,
-				}
-				const mergeWithPonds: Set<Pond> = new Set()
-				// console.log(grid)
-				// openTiles.delete(grid)
-				for (let i = 0; i < 6; i++) {
-					if (openPondTiles.size === 0) break // TODO: Find better firstPondGrid instead
-					const openGridsArray = [...openPondTiles]
-					const openGridWeights = openGridsArray.map(([, { weight }]) => weight)
-					const [grid, { x, y }] = randomElementWeighted(
-						openGridsArray,
-						openGridWeights,
+				let generatedPond: ReturnType<typeof fillPond> = false
+				const pondID = nextPondID++
+				while (!generatedPond) {
+					const openTilesArray = [...openTiles].filter(([, { noPond }]) => !noPond)
+					// const [grid, { x, y }] = randomElement(openTilesArray, getRng)
+					const [startGrid, openTile] = randomElementWeighted(
+						openTilesArray,
+						openTilesArray.map(
+							([, { fromCenter, nearPonds }]) =>
+								(maxDistance - (fromCenter || 0)) / ((nearPonds || 0) + 1)
+						),
 						getRng
 					)
-					openPondTiles.delete(grid)
-					openTiles.delete(grid)
-					pondTiles.push([x, y])
-					tileMap.set(grid, feature)
-					getNeighbors(x, y).forEach(([nx, ny]) => {
-						if (nx < 0 || nx >= width || ny < 0 || ny >= height) return
-						const nGrid = xyToGrid([nx, ny])
-						if (tileMap.has(nGrid)) {
-							const neighborFeature = tileMap.get(nGrid)!
-							if (
-								neighborFeature.type === 'pond' &&
-								neighborFeature.pondID !== feature.pondID
-							)
-								mergeWithPonds.add(neighborFeature)
-							return
-						}
-						const fromCenter = getDistance(nx - centerX, ny - centerY)
-						let weight = fromCenter
-						let openTile = openTiles.get(nGrid)
-						if (openTile) {
-							openTile.nearPonds = (openTile.nearPonds || 0) + 1
-							weight *= openTile.nearPonds
-						} else {
-							openTile = { x: nx, y: ny, fromCenter, nearPonds: 1 }
-							openTiles.set(nGrid, openTile)
-						}
-						openPondTiles.set(nGrid, { weight: weight, x: nx, y: ny })
-					})
+					generatedPond = fillPond(
+						startGrid,
+						openTile.x,
+						openTile.y,
+						pondID,
+						getRng,
+						existingLandscape
+					)
+					if (!generatedPond) openTile.noPond = true
 				}
+				const { pondTiles, mergeWithPonds, feature } = generatedPond
+				pondTiles.forEach((_, grid) => tileMap.set(grid, feature))
 				if (mergeWithPonds.size > 0) {
 					// Remove merged ponds
 					features = features.filter((f) => !mergeWithPonds.has(f as Pond))
@@ -226,7 +201,7 @@ export function getLandscape(
 	// Sort features for proper overlapping
 	features.sort((a, b) => (a.type === 'pond' ? -1 : a.y) - (b.type === 'pond' ? -1 : b.y))
 	console.timeEnd('getFeatures')
-	// console.log(features)
+	console.log(features)
 	// console.log(openTiles)
 	return {
 		features,
@@ -241,44 +216,7 @@ export function getLandscape(
 		generationTime: performance.now() - startTime,
 	}
 }
-
-// TODO: Move this to random.ts
-function randomFloat(min: number, max: number, rng = Math.random) {
-	return min + rng() * (max - min)
-}
-function randomInt(min: number, max: number, rng = Math.random) {
-	return min + Math.floor(rng() * (max - min + 1))
-}
-function randomElement<T>(arr: T[], rng = Math.random): T {
-	return arr[Math.floor(rng() * arr.length)]
-}
-// Based on https://github.com/ChrisCavs/aimless.js/blob/main/src/weighted.ts
-function randomElementWeighted<T>(arr: T[], weights: number[], rng = Math.random) {
-	if (arr.length === 1) return arr[0]
-	const totalWeight = weights.reduce((sum, weight) => sum + weight, 0)
-	const random = randomFloat(0, totalWeight, rng)
-	let cumulativeWeight = 0
-	for (let i = 0; i < arr.length; i++) {
-		cumulativeWeight += weights[i]
-		if (random < cumulativeWeight) return arr[i]
-	}
-	return arr[0] // Should never reach here, but just in case
-}
-
-export const xyToGrid = ([x, y]: XY) => `${x}:${y}`
-const gridToXY = (grid: string) => grid.split(':').map((v) => +v)
-
 // prettier-ignore
 const hillSubtiles = [[0, 0],[1, 0],[2, 0],[0, 1],[1, 1],[2, 1]]
 // prettier-ignore
 const hillNeighbors = [[0, -1],[1, -1],[2, -1],[-1, 0],[-1, 1],[0, 2],[1, 2],[2, 2],[3, 0],[3, 1]]
-// prettier-ignore
-const neighbors = [[-1, 0],[1, 0],[0, -1],[0, 1]]
-function getNeighborGrids(grid: string) {
-	const [x, y] = gridToXY(grid)
-	return neighbors.map(([nx, ny]) => xyToGrid([x + nx, y + ny]))
-}
-const getNeighbors = (x: number, y: number) =>
-	neighbors.map(([nx, ny]) => [x + nx, y + ny])
-
-const getDistance = (x: number, y: number) => Math.sqrt(x ** 2 + y ** 2)

@@ -2,10 +2,11 @@
 	import * as store from '$src/store'
 	import { get } from 'svelte/store'
 	import type { Landscape } from '$lib/landscape'
-	import { getLandscape, xyToGrid } from '$lib/landscape'
+	import { getLandscape } from '$lib/landscape'
 	import Tree from './landscape/Tree.svelte'
 	import Hill from './landscape/Hill.svelte'
 	import Pond from './landscape/Pond.svelte'
+	import { xyToGrid } from '$lib/math'
 
 	const TILE_WIDTH = 12
 	const TILE_HEIGHT = 8
@@ -33,8 +34,8 @@
 	}
 
 	function updateDimensions(width: number, height: number) {
-		const newWidth = Math.floor(containerWidth / TILE_WIDTH)
-		const newHeight = Math.floor(containerHeight / TILE_HEIGHT)
+		const newWidth = Math.floor(width / TILE_WIDTH)
+		const newHeight = Math.floor(height / TILE_HEIGHT)
 		if (newWidth === landscape.width && newHeight === landscape.height) return
 		landscape.width = newWidth
 		landscape.height = newHeight
