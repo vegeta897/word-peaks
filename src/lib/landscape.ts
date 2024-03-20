@@ -94,7 +94,6 @@ export function getLandscape(
 				}
 			} else if (tile.polarity < 0) {
 				// hill
-				// TODO: Prevent creating hill directly below/above another hill
 				let validXY: null | XY = null
 				const hillGrids: string[] = []
 				while (validXY === null) {
@@ -112,6 +111,8 @@ export function getLandscape(
 						if (originX < 0 || originX + 2 >= width) continue
 						const originY = tile.y - stY
 						if (originY < 0 || originY + 1 >= height) continue
+						const openTile = openTiles.get(xyToGrid([originX, originY]))
+						if (openTile?.noHill) continue
 						hillGrids.length = 0
 						for (const [hsX, hsY] of hillSubtiles) {
 							const hillGrid = xyToGrid([originX + hsX, originY + hsY])
@@ -142,14 +143,16 @@ export function getLandscape(
 					if (nx < 0 || nx >= width || ny < 0 || ny >= height) continue
 					const nGrid = xyToGrid([nx, ny])
 					if (tileMap.has(nGrid)) continue
+					const noHill = nxRel === 0 // No hills directly above or below other hills
 					const openTile = openTiles.get(nGrid)
-					if (openTile) {
-						//
+					if (openTile && noHill) {
+						openTile.noHill = noHill
 					} else {
 						openTiles.set(nGrid, {
 							x: nx,
 							y: ny,
 							centerWeight: getCenterWeight(existingLandscape, nx, ny),
+							noHill,
 						})
 					}
 				}
