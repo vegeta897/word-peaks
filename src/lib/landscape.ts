@@ -1,24 +1,17 @@
 import type { Board } from '$lib/data-model'
 import Rand from 'rand-seed'
 import { fillPond } from './landscape/pond'
-import {
-	type XY,
-	getDistance,
-	randomElementWeighted,
-	getNeighbors,
-	xyToGrid,
-	randomInt,
-} from './math'
+import { type XY, randomElementWeighted, getNeighbors, xyToGrid, randomInt } from './math'
 
 export type Hill = { type: 'hill'; x: number; y: number }
 export type Tree = { type: 'tree'; x: number; y: number }
 export type Pond = { type: 'pond'; pondID: number; tiles: XY[] }
 export type Feature = Hill | Tree | Pond
 
-type Tile = {
+type OpenTile = {
 	x: number
 	y: number
-	fromCenter?: number
+	centerWeight: number
 	noHill?: boolean
 	noPond?: boolean
 	nearPonds?: number
@@ -33,7 +26,7 @@ export type Landscape = {
 	rowsGenerated: number
 	features: Feature[]
 	tileMap: Map<string, Feature>
-	openTiles: Map<string, Tile>
+	openTiles: Map<string, OpenTile>
 	nextPondID: number
 	generationTime?: number
 }
@@ -48,8 +41,14 @@ export function getLandscape(
 	console.time('getFeatures')
 	const { tileMap, openTiles, width, height, centerX, centerY } = existingLandscape
 	let { features, rowsGenerated, nextPondID } = existingLandscape
-	const maxDistance = getDistance(centerX + 1, centerY + 1)
 	let seed = seedPrefix
+	if (rowsGenerated === 0 && currentRow > rowsGenerated) {
+		openTiles.set(xyToGrid([centerX, centerY]), {
+			x: centerX,
+			y: centerY,
+			centerWeight: 1,
+		})
+	}
 	while (rowsGenerated < currentRow) {
 		const rowTiles = board[rowsGenerated]
 		const rowWord = rowTiles.map((t) => t.letter).join('')
@@ -65,11 +64,8 @@ export function getLandscape(
 					// const [grid, { x, y }] = randomElement(openTilesArray, getRng)
 					const [grid, { x, y }] = randomElementWeighted(
 						openTilesArray,
-						openTilesArray.map(([, { fromCenter, nearTrees }]) =>
-							// TODO: This is bad and crappy
-							Math.round(
-								(2 ** maxDistance - 2 ** (fromCenter || 0)) * ((nearTrees || 0) + 1)
-							)
+						openTilesArray.map(
+							([, { centerWeight, nearTrees }]) => centerWeight * ((nearTrees || 0) + 1)
 						),
 						getRng
 					)
@@ -87,7 +83,7 @@ export function getLandscape(
 							openTiles.set(nGrid, {
 								x: nx,
 								y: ny,
-								fromCenter: getDistance(nx - centerX, ny - centerY),
+								centerWeight: getCenterWeight(existingLandscape, nx, ny),
 								nearTrees: 1,
 							})
 						}
@@ -98,12 +94,13 @@ export function getLandscape(
 				}
 			} else if (tile.polarity < 0) {
 				// hill
+				// TODO: Prevent creating hill directly below/above another hill
 				let validXY: null | XY = null
 				const hillGrids: string[] = []
 				while (validXY === null) {
 					const openHillTiles = [...openTiles].filter(([, { noHill }]) => !noHill)
-					const openTileWeights = openHillTiles.map(([, { fromCenter }]) =>
-						Math.round(2 ** maxDistance - 2 ** (fromCenter || 0))
+					const openTileWeights = openHillTiles.map(
+						([, { centerWeight }]) => centerWeight
 					)
 					// console.log(openTileWeights)
 					const [, tile] = randomElementWeighted(openHillTiles, openTileWeights, getRng)
@@ -152,7 +149,7 @@ export function getLandscape(
 						openTiles.set(nGrid, {
 							x: nx,
 							y: ny,
-							fromCenter: getDistance(nx - centerX, ny - centerY),
+							centerWeight: getCenterWeight(existingLandscape, nx, ny),
 						})
 					}
 				}
@@ -166,8 +163,7 @@ export function getLandscape(
 					const [startGrid, openTile] = randomElementWeighted(
 						openTilesArray,
 						openTilesArray.map(
-							([, { fromCenter, nearPonds }]) =>
-								(maxDistance - (fromCenter || 0)) / ((nearPonds || 0) + 1)
+							([, { centerWeight, nearPonds }]) => centerWeight / ((nearPonds || 0) + 1)
 						),
 						getRng
 					)
@@ -220,3 +216,9 @@ export function getLandscape(
 const hillSubtiles = [[0, 0],[1, 0],[2, 0],[0, 1],[1, 1],[2, 1]]
 // prettier-ignore
 const hillNeighbors = [[0, -1],[1, -1],[2, -1],[-1, 0],[-1, 1],[0, 2],[1, 2],[2, 2],[3, 0],[3, 1]]
+
+export function getCenterWeight({ centerX, centerY }: Landscape, x: number, y: number) {
+	const verticalCenter = 1 - Math.abs(y - centerY) / (centerY + 1)
+	const horizontalCenter = 1 - Math.abs(x - centerX) / (centerX + 1)
+	return verticalCenter * horizontalCenter
+}

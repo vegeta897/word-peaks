@@ -6,7 +6,6 @@
 	import Tree from './landscape/Tree.svelte'
 	import Hill from './landscape/Hill.svelte'
 	import Pond from './landscape/Pond.svelte'
-	import { xyToGrid } from '$lib/math'
 
 	const TILE_WIDTH = 12
 	const TILE_HEIGHT = 8
@@ -19,7 +18,6 @@
 	let containerHeight: number
 	let svgWidth = 0
 	let svgHeight = 0
-	let centerGrid = ''
 
 	let landscape: Landscape = {
 		width: 0,
@@ -41,7 +39,6 @@
 		landscape.height = newHeight
 		landscape.centerX = Math.floor(newWidth / 2)
 		landscape.centerY = Math.floor(newHeight / 2)
-		centerGrid = xyToGrid([landscape.centerX, landscape.centerY])
 		// console.log('center', centerGrid)
 		svgWidth = newWidth * TILE_WIDTH
 		svgHeight = newHeight * TILE_HEIGHT
@@ -69,9 +66,6 @@
 			return
 		}
 		if (currentRow === landscape.rowsGenerated) return
-		if (landscape.rowsGenerated === 0 && currentRow > landscape.rowsGenerated) {
-			landscape.openTiles.set(centerGrid, { x: landscape.centerX, y: landscape.centerY })
-		}
 		// TODO: Return generation time to see on iOS
 		landscape = getLandscape(landscape, get(store.boardContent), currentRow, `${seed}`)
 	}

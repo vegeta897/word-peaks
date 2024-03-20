@@ -1,4 +1,4 @@
-import type { Feature, Landscape, Pond } from '$lib/landscape'
+import { getCenterWeight, type Feature, type Landscape, type Pond } from '$lib/landscape'
 import {
 	randomElementWeighted,
 	getNeighbors,
@@ -49,7 +49,12 @@ export function fillPond(
 				openTile.nearPonds = (openTile.nearPonds || 0) + 1
 				weight *= openTile.nearPonds
 			} else {
-				openTile = { x: nx, y: ny, fromCenter, nearPonds: 1 }
+				openTile = {
+					x: nx,
+					y: ny,
+					centerWeight: getCenterWeight(landscape, nx, ny),
+					nearPonds: 1,
+				}
 				openTiles.set(nGrid, openTile)
 			}
 			openPondTiles.set(nGrid, { weight, x: nx, y: ny })

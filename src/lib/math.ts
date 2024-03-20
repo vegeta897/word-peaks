@@ -38,3 +38,5 @@ export const getNeighbors = (x: number, y: number) =>
 	neighbors.map(([nx, ny]) => [x + nx, y + ny])
 
 export const getDistance = (x: number, y: number) => Math.sqrt(x ** 2 + y ** 2)
+export const getManhattanDistance = (aX: number, aY: number, bX: number, bY: number) =>
+	Math.abs(bX - aX) + Math.abs(bY - aY)
