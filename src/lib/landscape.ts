@@ -1,10 +1,29 @@
 import type { Board } from '$lib/data-model'
 import Rand from 'rand-seed'
 import { fillPond } from './landscape/pond'
-import { type XY, randomElementWeighted, getNeighbors, xyToGrid, randomInt } from './math'
+import {
+	type XY,
+	randomElementWeighted,
+	getNeighbors,
+	xyToGrid,
+	randomInt,
+	randomFloat,
+} from './math'
 
-export type Hill = { type: 'hill'; x: number; y: number }
-export type Tree = { type: 'tree'; x: number; y: number }
+export type Hill = {
+	type: 'hill'
+	x: number
+	y: number
+	xJitter: number
+	yJitter: number
+}
+export type Tree = {
+	type: 'tree'
+	x: number
+	y: number
+	xJitter: number
+	yJitter: number
+}
 export type Pond = { type: 'pond'; pondID: number; tiles: XY[] }
 export type Feature = Hill | Tree | Pond
 
@@ -88,7 +107,13 @@ export function getLandscape(
 							})
 						}
 					})
-					const feature: Feature = { type: 'tree', x, y }
+					const feature: Feature = {
+						type: 'tree',
+						x,
+						y,
+						xJitter: randomFloat(-0.3, 0.3, getRng),
+						yJitter: randomFloat(-0.3, 0.3, getRng),
+					}
 					features.push(feature)
 					tileMap.set(grid, feature)
 				}
@@ -131,7 +156,13 @@ export function getLandscape(
 				}
 				if (!validXY) throw 'could not find valid spot for hill!'
 				const [x, y] = validXY
-				const feature: Feature = { type: 'hill', x, y }
+				const feature: Feature = {
+					type: 'hill',
+					x,
+					y,
+					xJitter: randomFloat(-0.2, 0.2, getRng),
+					yJitter: randomFloat(-0.2, 0.2, getRng),
+				}
 				features.push(feature)
 				for (const hillGrid of hillGrids) {
 					tileMap.set(hillGrid, feature)
@@ -198,7 +229,7 @@ export function getLandscape(
 		rowsGenerated++
 	}
 	// Sort features for proper overlapping
-	features.sort((a, b) => (a.type === 'pond' ? -1 : a.y) - (b.type === 'pond' ? -1 : b.y))
+	features.sort((a, b) => getFeatureY(a) - getFeatureY(b))
 	console.timeEnd('getFeatures')
 	console.log(features)
 	// console.log(openTiles)
@@ -224,4 +255,9 @@ export function getCenterWeight({ centerX, centerY }: Landscape, x: number, y: n
 	const verticalCenter = 1 - Math.abs(y - centerY) / (centerY + 1)
 	const horizontalCenter = 1 - Math.abs(x - centerX) / (centerX + 1)
 	return verticalCenter * horizontalCenter
+}
+
+function getFeatureY(feature: Feature) {
+	if (feature.type === 'pond') return -1
+	return feature.y + feature.yJitter
 }

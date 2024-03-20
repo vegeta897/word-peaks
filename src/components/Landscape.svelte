@@ -7,8 +7,9 @@
 	import Hill from './landscape/Hill.svelte'
 	import Pond from './landscape/Pond.svelte'
 
-	const TILE_WIDTH = 12
-	const TILE_HEIGHT = 8
+	// TODO: Scale these down for smaller container widths
+	const TILE_WIDTH = 18
+	const TILE_HEIGHT = 12
 
 	// TODO: Add animations on touch
 
@@ -84,18 +85,24 @@
 		width={svgWidth}
 		height={svgHeight}
 		viewBox="0 0 {landscape.width * 1.5} {landscape.height}"
-		on:click={() => {
-			seed++
-			clearLandscape()
-			updateLandscape()
-		}}
+		on:click={() => redraw++}
 	>
 		{#key redraw}
 			{#each landscape.features as feature}
 				{#if feature.type === 'tree'}
-					<Tree x={feature.x} y={feature.y} />
+					<Tree
+						x={feature.x}
+						y={feature.y}
+						xJitter={feature.xJitter}
+						yJitter={feature.yJitter}
+					/>
 				{:else if feature.type === 'hill'}
-					<Hill x={feature.x} y={feature.y} />
+					<Hill
+						x={feature.x}
+						y={feature.y}
+						xJitter={feature.xJitter}
+						yJitter={feature.yJitter}
+					/>
 				{:else}
 					<Pond tiles={feature.tiles} />
 				{/if}
@@ -106,6 +113,14 @@
 <p style="position: absolute; top: 30px;">
 	seed: {seed} time: {landscape.generationTime?.toFixed(1)}ms
 </p>
+<button
+	on:click={() => {
+		seed++
+		clearLandscape()
+		updateLandscape()
+	}}
+	style="position: absolute; top: 50px; right: 10px;">seed</button
+>
 
 <style>
 	div {

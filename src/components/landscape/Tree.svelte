@@ -2,14 +2,16 @@
 	import { onMount } from 'svelte'
 	import { bezierEasing } from '$lib/transitions'
 
-	const STROKE_WIDTH = 2
+	const STROKE_WIDTH = 0.2
 	const STROKE_HALF = STROKE_WIDTH / 2
 	const DURATION = 500
 
-	export let x = 0
-	export let y = 0
-	export let width = 12
-	export let length = 8
+	export let x: number
+	export let y: number
+	export let xJitter: number
+	export let yJitter: number
+	export let width = 1.25
+	export let length = 0.75
 	export let delay = 0
 	let draw = false
 
@@ -30,7 +32,7 @@
 </script>
 
 {#if draw}
-	<rect
+	<!-- <rect
 		x={x * 1.5}
 		{y}
 		width="1.5"
@@ -38,8 +40,8 @@
 		fill="#15a85040"
 		stroke="#15a850"
 		stroke-width="0.1"
-	/>
-	<!-- <svg {x} {y}>
+	/> -->
+	<svg x={(x + xJitter) * 1.5 + 0.125} y={y + yJitter - 1.5}>
 		<g>
 			<rect
 				rx={radius - STROKE_HALF}
@@ -108,5 +110,5 @@
 				calcMode="discrete"
 			/>
 		</line>
-	</svg> -->
+	</svg>
 {/if}
