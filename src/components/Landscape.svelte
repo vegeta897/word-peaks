@@ -11,9 +11,11 @@
 	const TILE_WIDTH = 18
 	const TILE_HEIGHT = 12
 
-	// TODO: Add animations on touch
+	// TODO: Add animations on touch and hover
 
 	// TODO: Remember to test new-player UX
+
+	// TODO: Support high-contrast color mode
 
 	let containerWidth: number
 	let containerHeight: number
@@ -67,8 +69,22 @@
 			return
 		}
 		if (currentRow === landscape.rowsGenerated) return
-		// TODO: Return generation time to see on iOS
 		landscape = getLandscape(landscape, get(store.boardContent), currentRow, `${seed}`)
+		// landscape.features.push({
+		// 	type: 'pond',
+		// 	pondID: 1,
+		// 	tiles: [
+		// 		[1, 1],
+		// 		[2, 1],
+		// 		[3, 1],
+		// 		[2, 2],
+		// 		[2, 3],
+		// 		[3, 3],
+		// 		[4, 3],
+		// 		[4, 2],
+		// 		[4, 1],
+		// 	],
+		// })
 	}
 	$: if (containerWidth && containerHeight)
 		updateDimensions(containerWidth, containerHeight)

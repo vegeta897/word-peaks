@@ -84,7 +84,7 @@
 			let edged: (undefined | Dir)[][]
 			let shape: { x: number; y: number }[]
 
-			const edge = (x: number, y: number, moving: Dir) => {
+			const edge = (x: number, y: number, moving: Dir): void => {
 				if (edged[y][x] === moving) return
 				edged[y][x] = edged[y][x] || moving
 				shape.push(

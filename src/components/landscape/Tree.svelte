@@ -10,6 +10,7 @@
 	export let y: number
 	export let xJitter: number
 	export let yJitter: number
+	// TODO: Add length/width jitter
 	export let width = 1.25
 	export let length = 0.75
 	export let delay = 0

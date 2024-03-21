@@ -6,11 +6,82 @@
 	export let tiles: [x: number, y: number][] = []
 	let draw = false
 
-	// console.log(10 * Math.sin(0.785))
-	// console.log(10 - 10 * Math.cos(0.785))
-
 	// TODO: Blue drops fall from above, falling into pond and turn into expanding circles
 	// which then fade out?
+
+	type Dir = 0 | 1 | 2 | 3 // down | right | up | left
+	type Edge = [x1: number, y1: number, x2: number, y2: number, dir: Dir]
+	const EDGES: Edge[] = [
+		[0, 0, 0, 1, 0],
+		[0, 1, 1, 1, 1],
+		[1, 1, 1, 0, 2],
+		[1, 0, 0, 0, 3],
+	]
+	const nextDirOffets = [1, 3, 0]
+
+	function crawlTiles(tiles: [x: number, y: number][]) {
+		const segmentMap: Map<string, string> = new Map()
+		const startsMap: Map<string, string> = new Map()
+		for (const [x, y] of tiles) {
+			for (const [ex1, ey1, ex2, ey2, dir] of EDGES) {
+				const sx1 = x + ex1
+				const sy1 = y + ey1
+				const sx2 = x + ex2
+				const sy2 = y + ey2
+				const startKey = `${sx1}:${sy1}:${dir}`
+				const segmentKey =
+					dir > 1 ? `${sx2}:${sy2}:${dir % 2}` : `${sx1}:${sy1}:${dir % 2}`
+				const existingSegment = segmentMap.get(segmentKey)
+				if (existingSegment) {
+					segmentMap.delete(segmentKey)
+					startsMap.delete(existingSegment)
+				} else {
+					segmentMap.set(segmentKey, startKey)
+					startsMap.set(startKey, `${sx2}:${sy2}`)
+				}
+			}
+		}
+		const paths: [x: number, y: number][][] = []
+		let currentPath: [x: number, y: number][] = []
+		let nextStartKey: string | undefined = undefined
+		while (startsMap.size > 0) {
+			const [startKey, toGrid] = nextStartKey
+				? [nextStartKey, startsMap.get(nextStartKey)!]
+				: [...startsMap][0]
+			startsMap.delete(startKey)
+			nextStartKey = undefined
+			const [startX, startY, dir] = startKey.split(':').map((v) => +v)
+			currentPath.push([startX, startY])
+			for (const dirOffset of nextDirOffets) {
+				const tryStartKey: string = `${toGrid}:${(dir + dirOffset) % 4}`
+				if (startsMap.has(tryStartKey)) {
+					nextStartKey = tryStartKey
+					break
+				}
+			}
+			if (!nextStartKey) {
+				paths.push(currentPath)
+				currentPath = []
+			}
+		}
+		return paths
+	}
+
+	function pathsToDataString(paths: [x: number, y: number][][]) {
+		let d = ''
+		for (const path of paths) {
+			let [lastX, lastY] = path[0]
+			let dPart = `M${lastX * 1.5} ${lastY}`
+			for (let i = 1; i < path.length; i++) {
+				const [x, y] = path[i]
+				dPart += `L${x * 1.5} ${y}`
+			}
+			d += dPart + 'Z'
+		}
+		return d
+	}
+
+	$: paths = crawlTiles(tiles)
 
 	onMount(() => {
 		setTimeout(() => (draw = true), delay)
@@ -18,7 +89,7 @@
 </script>
 
 {#if draw}
-	{#each tiles as [x, y]}
+	<!-- {#each tiles as [x, y]}
 		<rect
 			x={x * 1.5}
 			{y}
@@ -28,7 +99,15 @@
 			stroke="#567de8"
 			stroke-width="0.1"
 		/>
-	{/each}
+	{/each} -->
+	<!-- <path stroke-width="0.2" stroke="#fff" fill="none" d="M1.5,2 Q3,2 3,3 T1.5,4" />
+	<path
+		stroke-width="0.2"
+		stroke="#fff"
+		fill="none"
+		d="M1.5,5 A1.5 1 0 0 1 3,6 A1.5 1 0 0 1 1.5,7"
+	/> -->
+	<path stroke-width="0.2" stroke="#fff" fill="none" d={pathsToDataString(paths)} />
 	<!-- <svg {x} {y} viewBox="0 0 70 40" width="35" height="20">
 		<path
 			stroke="#fff"
