@@ -2,9 +2,19 @@
 	import { onMount } from 'svelte'
 	import { bezierEasing } from '$lib/transitions'
 
+	export let id: number
 	export let delay = 0
 	export let tiles: [x: number, y: number][] = []
+
+	let animateElement: SVGAnimateElement
+
+	export function redraw(delay = 0) {
+		if (delay) setTimeout(() => animateElement?.beginElement(), delay)
+		else animateElement?.beginElement()
+	}
+
 	let draw = false
+	let inColor = false
 
 	// TODO: Blue drops fall from above, falling into pond and turn into expanding circles
 	// which then fade out?
@@ -41,8 +51,8 @@
 				}
 			}
 		}
-		const paths: [x: number, y: number][][] = []
-		let currentPath: [x: number, y: number][] = []
+		const paths: [x: number, y: number, midX: number, midY: number][][] = []
+		let currentPath: [x: number, y: number, midX: number, midY: number][] = []
 		let nextStartKey: string | undefined = undefined
 		while (startsMap.size > 0) {
 			const [startKey, toGrid] = nextStartKey
@@ -51,7 +61,8 @@
 			startsMap.delete(startKey)
 			nextStartKey = undefined
 			const [startX, startY, dir] = startKey.split(':').map((v) => +v)
-			currentPath.push([startX, startY])
+			const [toX, toY] = toGrid.split(':').map((v) => +v)
+			currentPath.push([startX, startY, (startX + toX) / 2, (startY + toY) / 2])
 			for (const dirOffset of nextDirOffets) {
 				const tryStartKey: string = `${toGrid}:${(dir + dirOffset) % 4}`
 				if (startsMap.has(tryStartKey)) {
@@ -60,6 +71,7 @@
 				}
 			}
 			if (!nextStartKey) {
+				currentPath.push(currentPath[0]) // Path back to start
 				paths.push(currentPath)
 				currentPath = []
 			}
@@ -67,14 +79,23 @@
 		return paths
 	}
 
-	function pathsToDataString(paths: [x: number, y: number][][]) {
+	// TODO: Draw path in crawlTiles function
+	function pathsToDataString(
+		paths: [x: number, y: number, midX: number, midY: number][][]
+	) {
 		let d = ''
 		for (const path of paths) {
-			let [lastX, lastY] = path[0]
+			let [, , lastX, lastY] = path[0]
 			let dPart = `M${lastX * 1.5} ${lastY}`
 			for (let i = 1; i < path.length; i++) {
-				const [x, y] = path[i]
-				dPart += `L${x * 1.5} ${y}`
+				const [x, y, midX, midY] = path[i]
+				if (lastX === midX || lastY === midY) {
+					dPart += `L${midX * 1.5} ${midY}`
+				} else {
+					dPart += `Q${x * 1.5} ${y} ${midX * 1.5} ${midY}`
+				}
+				lastX = midX
+				lastY = midY
 			}
 			d += dPart + 'Z'
 		}
@@ -82,13 +103,73 @@
 	}
 
 	$: paths = crawlTiles(tiles)
+	$: pathString = pathsToDataString(paths)
+	$: pathLength = paths.reduce((acc, path) => acc + path.length, 0) * 1.2
 
-	onMount(() => {
-		setTimeout(() => (draw = true), delay)
-	})
+	onMount(() => setTimeout(() => (draw = true), delay))
+	$: animateElement?.beginElement()
 </script>
 
 {#if draw}
+	{#if inColor}
+		<path fill="#567de8" d={pathString} />
+	{:else}
+		<path
+			stroke-width="0.2"
+			stroke="#fff"
+			stroke-linecap="round"
+			fill="none"
+			stroke-dasharray={pathLength}
+			d={pathString}
+		>
+			<animate
+				bind:this={animateElement}
+				attributeName="stroke-dashoffset"
+				id="pond_draw_animate_{id}"
+				begin="indefinite"
+				values="{pathLength};0"
+				calcMode="spline"
+				keySplines={bezierEasing.sineInOut}
+				dur="{pathLength * 80}ms"
+				fill="freeze"
+			/>
+		</path>
+	{/if}
+	<clipPath id="pond_path{id}"> <path d={pathString} /> </clipPath>
+	<g clip-path="url(#pond_path{id})">
+		{#if inColor}
+			<path
+				transform="translate(0 0.09)"
+				stroke-width="0.09"
+				stroke="#312236d0"
+				fill="none"
+				d={pathString}
+			/>
+		{:else}
+			<path
+				transform="translate(0 0.15)"
+				stroke-width="0.2"
+				stroke-linecap="round"
+				stroke="#fff"
+				fill="none"
+				stroke-dasharray={pathLength}
+				d={pathString}
+			>
+				<animate
+					attributeName="stroke-dashoffset"
+					begin="pond_draw_animate_{id}.begin"
+					values="{pathLength};0"
+					calcMode="spline"
+					keySplines={bezierEasing.sineInOut}
+					dur="{pathLength * 80}ms"
+					fill="freeze"
+				/>
+			</path>
+		{/if}
+	</g>
+	{#if inColor}
+		<path stroke-width="0.1" stroke="#567de8" fill="none" d={pathString} />
+	{/if}
 	<!-- {#each tiles as [x, y]}
 		<rect
 			x={x * 1.5}
@@ -100,35 +181,4 @@
 			stroke-width="0.1"
 		/>
 	{/each} -->
-	<!-- <path stroke-width="0.2" stroke="#fff" fill="none" d="M1.5,2 Q3,2 3,3 T1.5,4" />
-	<path
-		stroke-width="0.2"
-		stroke="#fff"
-		fill="none"
-		d="M1.5,5 A1.5 1 0 0 1 3,6 A1.5 1 0 0 1 1.5,7"
-	/> -->
-	<path stroke-width="0.2" stroke="#fff" fill="none" d={pathsToDataString(paths)} />
-	<!-- <svg {x} {y} viewBox="0 0 70 40" width="35" height="20">
-		<path
-			stroke="#fff"
-			stroke-width="20"
-			stroke-linecap="round"
-			d="M20,10 h30 M10,20 h50 M30,30 h25"
-		/>
-		<path
-			stroke="#312236"
-			stroke-width="12"
-			stroke-linecap="round"
-			stroke-linejoin="round"
-			d="M20,20 V10 h30 V20 M10,20 h50 M30,20 V30 h25 V20"
-		/>
-		<path
-			stroke="#ffffff"
-			stroke-width="2"
-			fill="none"
-			stroke-linecap="round"
-			stroke-linejoin="round"
-			d="M18 15 a10 10 0 0 0 7.07 -2.93 a10 10 0 0 0 14.14 0 a10 10 0 0 0 7.07 2.93 M34 30 a10 10 0 0 0 7.07 -2.93 a10 10 0 0 0 7.07 2.93"
-		/>
-	</svg> -->
 {/if}

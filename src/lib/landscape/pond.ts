@@ -11,7 +11,6 @@ export function fillPond(
 	startGrid: string,
 	x: number,
 	y: number,
-	pondID: number,
 	getRng: () => number,
 	landscape: Landscape
 ) {
@@ -60,6 +59,11 @@ export function fillPond(
 			openPondTiles.set(nGrid, { weight, x: nx, y: ny })
 		})
 	}
-	const feature: Feature = { type: 'pond', tiles: [...pondTiles.values()], pondID }
+	const feature: Feature = {
+		type: 'pond',
+		row: 0,
+		rowFeature: 0,
+		tiles: [...pondTiles.values()],
+	}
 	return { feature, pondTiles, mergeWithPonds }
 }

@@ -7,10 +7,6 @@
 	import Hill from './landscape/Hill.svelte'
 	import Pond from './landscape/Pond.svelte'
 
-	// TODO: Scale these down for smaller container widths
-	const TILE_WIDTH = 18
-	const TILE_HEIGHT = 12
-
 	// TODO: Add animations on touch and hover
 
 	// TODO: Remember to test new-player UX
@@ -35,16 +31,21 @@
 	}
 
 	function updateDimensions(width: number, height: number) {
-		const newWidth = Math.floor(width / TILE_WIDTH)
-		const newHeight = Math.floor(height / TILE_HEIGHT)
+		// console.log(width)
+		// This is a little too aggressive
+		// TODO: Maybe reduce tree count and lake size at smaller widths
+		const tileWidth = width < 120 ? 12 : 24
+		const tileHeight = width < 120 ? 8 : 16
+		const newWidth = Math.floor(width / tileWidth)
+		const newHeight = Math.floor(height / tileHeight)
 		if (newWidth === landscape.width && newHeight === landscape.height) return
 		landscape.width = newWidth
 		landscape.height = newHeight
 		landscape.centerX = Math.floor(newWidth / 2)
 		landscape.centerY = Math.floor(newHeight / 2)
 		// console.log('center', centerGrid)
-		svgWidth = newWidth * TILE_WIDTH
-		svgHeight = newHeight * TILE_HEIGHT
+		svgWidth = newWidth * tileWidth
+		svgHeight = newHeight * tileHeight
 		clearLandscape()
 		updateLandscape()
 	}
@@ -69,7 +70,13 @@
 			return
 		}
 		if (currentRow === landscape.rowsGenerated) return
-		landscape = getLandscape(landscape, get(store.boardContent), currentRow, `${seed}`)
+		landscape = getLandscape(
+			landscape,
+			get(store.boardContent),
+			get(store.answer),
+			currentRow,
+			`${seed}`
+		)
 		// landscape.features.push({
 		// 	type: 'pond',
 		// 	pondID: 1,
@@ -89,8 +96,13 @@
 	$: if (containerWidth && containerHeight)
 		updateDimensions(containerWidth, containerHeight)
 	store.currentRow.subscribe(() => updateLandscape())
-	let redraw = 0
 	let seed = 0
+
+	const featureComponents: { redraw: () => void }[] = []
+
+	function redrawFeatures() {
+		featureComponents.forEach((f) => f?.redraw())
+	}
 
 	// TODO: Might want to set viewbox equal to svg dimensions to avoid blurry lines
 </script>
@@ -100,27 +112,41 @@
 		xmlns="http://www.w3.org/2000/svg"
 		width={svgWidth}
 		height={svgHeight}
-		viewBox="0 0 {landscape.width * 1.5} {landscape.height}"
-		on:click={() => redraw++}
+		viewBox="-0.1 -0.1 {landscape.width * 1.5 + 0.2} {landscape.height + 0.2}"
+		on:click={redrawFeatures}
 	>
-		{#key redraw}
-			{#each landscape.features as feature}
+		{#key seed}
+			{#each landscape.features as feature, f}
 				{#if feature.type === 'tree'}
 					<Tree
+						id={f}
 						x={feature.x}
 						y={feature.y}
 						xJitter={feature.xJitter}
 						yJitter={feature.yJitter}
+						delay={feature.row * 250 +
+							feature.rowFeature * (250 / landscape.features.length)}
+						bind:this={featureComponents[f]}
 					/>
 				{:else if feature.type === 'hill'}
 					<Hill
+						id={f}
 						x={feature.x}
 						y={feature.y}
 						xJitter={feature.xJitter}
 						yJitter={feature.yJitter}
+						delay={feature.row * 250 +
+							feature.rowFeature * (250 / landscape.features.length)}
+						bind:this={featureComponents[f]}
 					/>
 				{:else}
-					<Pond tiles={feature.tiles} />
+					<Pond
+						id={f}
+						tiles={feature.tiles}
+						delay={feature.row * 250 +
+							feature.rowFeature * (250 / landscape.features.length)}
+						bind:this={featureComponents[f]}
+					/>
 				{/if}
 			{/each}
 		{/key}

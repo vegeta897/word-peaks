@@ -24,8 +24,8 @@ export type Tree = {
 	xJitter: number
 	yJitter: number
 }
-export type Pond = { type: 'pond'; pondID: number; tiles: XY[] }
-export type Feature = Hill | Tree | Pond
+export type Pond = { type: 'pond'; tiles: XY[] }
+export type Feature = { row: number; rowFeature: number } & (Hill | Tree | Pond)
 
 type OpenTile = {
 	x: number
@@ -53,6 +53,7 @@ export type Landscape = {
 export function getLandscape(
 	existingLandscape: Landscape,
 	board: Board,
+	answer: string,
 	currentRow: number,
 	seedPrefix = ''
 ): Landscape {
@@ -60,7 +61,7 @@ export function getLandscape(
 	console.time('getFeatures')
 	const { tileMap, openTiles, width, height, centerX, centerY } = existingLandscape
 	let { features, rowsGenerated, nextPondID } = existingLandscape
-	let seed = seedPrefix
+	let seed = seedPrefix + answer
 	if (rowsGenerated === 0 && currentRow > rowsGenerated) {
 		openTiles.set(xyToGrid([centerX, centerY]), {
 			x: centerX,
@@ -74,17 +75,21 @@ export function getLandscape(
 		seed += rowWord
 		const rng = new Rand(seed)
 		const getRng = () => rng.next()
+		let rowFeature = 0
+		const winningRow = rowWord === answer
 		for (const tile of rowTiles) {
 			// TODO: Seperate these into functions
 			if (tile.polarity === 0) {
 				// trees
 				for (let i = 0; i < 6; i++) {
+					if (openTiles.size === 0) break
 					const openTilesArray = [...openTiles]
 					// const [grid, { x, y }] = randomElement(openTilesArray, getRng)
 					const [grid, { x, y }] = randomElementWeighted(
 						openTilesArray,
-						openTilesArray.map(
-							([, { centerWeight, nearTrees }]) => centerWeight * ((nearTrees || 0) + 1)
+						openTilesArray.map(([, { centerWeight, nearTrees }]) =>
+							// Prioritize center tree placement on winning row
+							winningRow ? centerWeight ** 3 : centerWeight * ((nearTrees || 0) + 1)
 						),
 						getRng
 					)
@@ -109,6 +114,8 @@ export function getLandscape(
 					})
 					const feature: Feature = {
 						type: 'tree',
+						row: rowsGenerated,
+						rowFeature,
 						x,
 						y,
 						xJitter: randomFloat(-0.3, 0.3, getRng),
@@ -123,6 +130,7 @@ export function getLandscape(
 				const hillGrids: string[] = []
 				while (validXY === null) {
 					const openHillTiles = [...openTiles].filter(([, { noHill }]) => !noHill)
+					if (openHillTiles.length === 0) break
 					const openTileWeights = openHillTiles.map(
 						([, { centerWeight }]) => centerWeight
 					)
@@ -154,10 +162,12 @@ export function getLandscape(
 						tile.noHill = true
 					}
 				}
-				if (!validXY) throw 'could not find valid spot for hill!'
+				if (!validXY) continue
 				const [x, y] = validXY
 				const feature: Feature = {
 					type: 'hill',
+					row: rowsGenerated,
+					rowFeature,
 					x,
 					y,
 					xJitter: randomFloat(-0.2, 0.2, getRng),
@@ -190,9 +200,9 @@ export function getLandscape(
 			} else {
 				// pond
 				let generatedPond: ReturnType<typeof fillPond> = false
-				const pondID = nextPondID++
 				while (!generatedPond) {
 					const openTilesArray = [...openTiles].filter(([, { noPond }]) => !noPond)
+					if (openTilesArray.length === 0) break
 					// const [grid, { x, y }] = randomElement(openTilesArray, getRng)
 					const [startGrid, openTile] = randomElementWeighted(
 						openTilesArray,
@@ -205,13 +215,15 @@ export function getLandscape(
 						startGrid,
 						openTile.x,
 						openTile.y,
-						pondID,
 						getRng,
 						existingLandscape
 					)
 					if (!generatedPond) openTile.noPond = true
 				}
+				if (!generatedPond) continue
 				const { pondTiles, mergeWithPonds, feature } = generatedPond
+				feature.row = rowsGenerated
+				feature.rowFeature = rowFeature
 				pondTiles.forEach((_, grid) => tileMap.set(grid, feature))
 				if (mergeWithPonds.size > 0) {
 					// Remove merged ponds
@@ -225,13 +237,14 @@ export function getLandscape(
 				}
 				features.push(feature)
 			}
+			rowFeature++
 		}
 		rowsGenerated++
 	}
 	// Sort features for proper overlapping
 	features.sort((a, b) => getFeatureY(a) - getFeatureY(b))
 	console.timeEnd('getFeatures')
-	console.log(features)
+	// console.log(features)
 	// console.log(openTiles)
 	return {
 		features,

@@ -6,15 +6,25 @@
 	const STROKE_HALF = STROKE_WIDTH / 2
 	const DURATION = 500
 
+	export let id: number
 	export let x: number
 	export let y: number
 	export let xJitter: number
 	export let yJitter: number
 	// TODO: Add length/width jitter
-	export let width = 1.25
-	export let length = 0.75
+	export let width = 1
+	export let length = 0.5
 	export let delay = 0
+
+	let animateElement: SVGAnimateElement
+
+	export function redraw(delay = 0) {
+		if (delay) setTimeout(() => animateElement?.beginElement(), delay)
+		else animateElement?.beginElement()
+	}
+
 	let draw = false
+	let inColor = false
 
 	// TODO: Make default values of animated elements be their end states, so that the animate elements can be conditional
 
@@ -27,9 +37,8 @@
 
 	$: radius = width / 2
 
-	onMount(() => {
-		setTimeout(() => (draw = true), delay)
-	})
+	onMount(() => setTimeout(() => (draw = true), delay))
+	$: animateElement?.beginElement()
 </script>
 
 {#if draw}
@@ -42,21 +51,20 @@
 		stroke="#15a850"
 		stroke-width="0.1"
 	/> -->
-	<svg x={(x + xJitter) * 1.5 + 0.125} y={y + yJitter - 1.5}>
-		<g>
-			<rect
-				rx={radius - STROKE_HALF}
-				ry={radius - STROKE_HALF}
-				x={STROKE_HALF}
-				y={STROKE_HALF}
-				width={width - STROKE_WIDTH}
-				height={width - STROKE_WIDTH}
-				fill="#312236"
-				stroke="#ffffff"
-				stroke-width={STROKE_WIDTH}
-			/>
+	<g transform="translate({(x + xJitter) * 1.5 + 0.25} {y + yJitter - 1})">
+		{#if inColor}
 			<line
-				stroke="#ffffff"
+				stroke="#312236"
+				stroke-width={STROKE_WIDTH * 2}
+				stroke-linecap="round"
+				x1={radius}
+				y1={width}
+				x2={radius}
+				y2={width + length - STROKE_HALF}
+			/>
+			<circle cx={radius} cy={radius} r={radius + STROKE_HALF} fill="#312236" />
+			<line
+				stroke="#15a850"
 				stroke-width={STROKE_WIDTH}
 				stroke-linecap="round"
 				x1={radius}
@@ -64,21 +72,55 @@
 				x2={radius}
 				y2={width + length}
 			/>
-			<animate
-				attributeName="opacity"
-				values="0;0;1;1"
-				keyTimes="0;0.5;0.6;1"
-				dur={DURATION * 1.6 + 'ms'}
-				calcMode="discrete"
-				fill="freeze"
-			/>
-		</g>
+			<circle cx={radius} cy={radius} r={radius} fill="#15a850" />
+		{:else}
+			<g>
+				<line
+					stroke="#312236"
+					stroke-width={STROKE_WIDTH * 2}
+					stroke-linecap="round"
+					x1={radius}
+					y1={width}
+					x2={radius}
+					y2={width + length - STROKE_HALF}
+				/>
+				<circle cx={radius} cy={radius} r={radius + STROKE_HALF} fill="#312236" />
+				<rect
+					rx={radius - STROKE_HALF}
+					ry={radius - STROKE_HALF}
+					x={STROKE_HALF}
+					y={STROKE_HALF}
+					width={width - STROKE_WIDTH}
+					height={width - STROKE_WIDTH}
+					fill="#312236"
+					stroke="#ffffff"
+					stroke-width={STROKE_WIDTH}
+				/>
+				<line
+					stroke="#ffffff"
+					stroke-width={STROKE_WIDTH}
+					stroke-linecap="round"
+					x1={radius}
+					y1={width}
+					x2={radius}
+					y2={width + length}
+				/>
+				<animate
+					attributeName="opacity"
+					values="0;0;1;1"
+					keyTimes="0;0.4;0.6;1"
+					begin="tree_draw_animate_{id}.begin"
+					dur="{DURATION * 2}ms"
+					fill="freeze"
+				/>
+			</g>
+		{/if}
 		<circle cx={radius} cy={radius} r="0" fill="#15a850">
 			<animate
 				attributeName="r"
 				values={`0;${radius};0`}
-				begin={DURATION / 2 + 'ms'}
-				dur={DURATION + 'ms'}
+				begin="tree_draw_animate_{id}.begin+{DURATION * 0.4 + 'ms'}"
+				dur="{DURATION * 1.1}ms"
 				calcMode="spline"
 				keySplines={`${bezierEasing.cubicOut};${bezierEasing.cubicIn}`}
 				fill="freeze"
@@ -94,22 +136,25 @@
 			y2={width + length}
 		>
 			<animate
+				bind:this={animateElement}
 				attributeName="y1"
+				id="tree_draw_animate_{id}"
 				values={`${width + length};${radius};${radius};${width + length}`}
 				keyTimes="0;0.25;0.75;1"
-				dur={DURATION * 2 + 'ms'}
+				begin="indefinite"
+				dur="{DURATION * 2}ms"
 				fill="freeze"
 				calcMode="spline"
 				keySplines={`${bezierEasing.sineOut};0,0,0,0;${bezierEasing.cubicOut}`}
 			/>
 			<animate
-				attributeName="opacity"
-				values="1;0"
-				begin={DURATION * 2 + 'ms'}
-				dur="1ms"
+				attributeName="stroke-width"
+				values="{STROKE_WIDTH};{STROKE_WIDTH};0"
+				keyTimes="0;0.9;1"
+				begin="tree_draw_animate_{id}.begin"
+				dur="{DURATION * 2}ms"
 				fill="freeze"
-				calcMode="discrete"
 			/>
 		</line>
-	</svg>
+	</g>
 {/if}
