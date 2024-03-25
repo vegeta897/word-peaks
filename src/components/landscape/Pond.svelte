@@ -1,10 +1,11 @@
 <script lang="ts">
 	import { onMount } from 'svelte'
 	import { bezierEasing } from '$lib/transitions'
+	import type { XY } from '$lib/math'
 
 	export let id: number
 	export let delay = 0
-	export let tiles: [x: number, y: number][] = []
+	export let tiles: XY[] = []
 
 	let animateElement: SVGAnimateElement
 
@@ -29,7 +30,15 @@
 	]
 	const nextDirOffets = [1, 3, 0]
 
-	function crawlTiles(tiles: [x: number, y: number][]) {
+	function getPathSegment([x, y]: XY, [midX, midY]: XY, [prevMidX, prevMidY]: XY) {
+		if (prevMidX === midX || prevMidY === midY) {
+			return `L${midX * 1.5} ${midY}`
+		} else {
+			return `Q${x * 1.5} ${y} ${midX * 1.5} ${midY}`
+		}
+	}
+
+	function createPondPath(tiles: [x: number, y: number][]) {
 		const segmentMap: Map<string, string> = new Map()
 		const startsMap: Map<string, string> = new Map()
 		for (const [x, y] of tiles) {
@@ -51,8 +60,11 @@
 				}
 			}
 		}
-		const paths: [x: number, y: number, midX: number, midY: number][][] = []
-		let currentPath: [x: number, y: number, midX: number, midY: number][] = []
+		let pathData = ''
+		let newPath = true
+		let prevMid: XY
+		let first: XY
+		let firstMid: XY
 		let nextStartKey: string | undefined = undefined
 		while (startsMap.size > 0) {
 			const [startKey, toGrid] = nextStartKey
@@ -62,7 +74,17 @@
 			nextStartKey = undefined
 			const [startX, startY, dir] = startKey.split(':').map((v) => +v)
 			const [toX, toY] = toGrid.split(':').map((v) => +v)
-			currentPath.push([startX, startY, (startX + toX) / 2, (startY + toY) / 2])
+			const midX = (startX + toX) / 2
+			const midY = (startY + toY) / 2
+			if (newPath) {
+				first = [startX, startY]
+				firstMid = [midX, midY]
+				pathData += `M${midX * 1.5} ${midY}`
+			} else {
+				pathData += getPathSegment([startX, startY], [midX, midY], prevMid!)
+			}
+			newPath = false
+			prevMid = [midX, midY]
 			for (const dirOffset of nextDirOffets) {
 				const tryStartKey: string = `${toGrid}:${(dir + dirOffset) % 4}`
 				if (startsMap.has(tryStartKey)) {
@@ -71,40 +93,15 @@
 				}
 			}
 			if (!nextStartKey) {
-				currentPath.push(currentPath[0]) // Path back to start
-				paths.push(currentPath)
-				currentPath = []
+				pathData += getPathSegment(first!, firstMid!, prevMid)
+				pathData += 'Z'
+				newPath = true
 			}
 		}
-		return paths
+		return pathData
 	}
 
-	// TODO: Draw path in crawlTiles function
-	function pathsToDataString(
-		paths: [x: number, y: number, midX: number, midY: number][][]
-	) {
-		let d = ''
-		for (const path of paths) {
-			let [, , lastX, lastY] = path[0]
-			let dPart = `M${lastX * 1.5} ${lastY}`
-			for (let i = 1; i < path.length; i++) {
-				const [x, y, midX, midY] = path[i]
-				if (lastX === midX || lastY === midY) {
-					dPart += `L${midX * 1.5} ${midY}`
-				} else {
-					dPart += `Q${x * 1.5} ${y} ${midX * 1.5} ${midY}`
-				}
-				lastX = midX
-				lastY = midY
-			}
-			d += dPart + 'Z'
-		}
-		return d
-	}
-
-	$: paths = crawlTiles(tiles)
-	$: pathString = pathsToDataString(paths)
-	$: pathLength = paths.reduce((acc, path) => acc + path.length, 0) * 1.2
+	$: pondPath = createPondPath(tiles)
 
 	onMount(() => setTimeout(() => (draw = true), delay))
 	$: animateElement?.beginElement()
@@ -112,30 +109,17 @@
 
 {#if draw}
 	{#if inColor}
-		<path fill="#567de8" d={pathString} />
+		<path fill="#567de8" d={pondPath} />
 	{:else}
 		<path
 			stroke-width="0.2"
 			stroke="#fff"
 			stroke-linecap="round"
 			fill="none"
-			stroke-dasharray={pathLength}
-			d={pathString}
-		>
-			<animate
-				bind:this={animateElement}
-				attributeName="stroke-dashoffset"
-				id="pond_draw_animate_{id}"
-				begin="indefinite"
-				values="{pathLength};0"
-				calcMode="spline"
-				keySplines={bezierEasing.sineInOut}
-				dur="{pathLength * 80}ms"
-				fill="freeze"
-			/>
-		</path>
+			d={pondPath}
+		/>
 	{/if}
-	<clipPath id="pond_path{id}"> <path d={pathString} /> </clipPath>
+	<clipPath id="pond_path{id}"> <path d={pondPath} /> </clipPath>
 	<g clip-path="url(#pond_path{id})">
 		{#if inColor}
 			<path
@@ -143,7 +127,7 @@
 				stroke-width="0.09"
 				stroke="#312236d0"
 				fill="none"
-				d={pathString}
+				d={pondPath}
 			/>
 		{:else}
 			<path
@@ -152,23 +136,12 @@
 				stroke-linecap="round"
 				stroke="#fff"
 				fill="none"
-				stroke-dasharray={pathLength}
-				d={pathString}
-			>
-				<animate
-					attributeName="stroke-dashoffset"
-					begin="pond_draw_animate_{id}.begin"
-					values="{pathLength};0"
-					calcMode="spline"
-					keySplines={bezierEasing.sineInOut}
-					dur="{pathLength * 80}ms"
-					fill="freeze"
-				/>
-			</path>
+				d={pondPath}
+			/>
 		{/if}
 	</g>
 	{#if inColor}
-		<path stroke-width="0.1" stroke="#567de8" fill="none" d={pathString} />
+		<path stroke-width="0.1" stroke="#567de8" fill="none" d={pondPath} />
 	{/if}
 	<!-- {#each tiles as [x, y]}
 		<rect
