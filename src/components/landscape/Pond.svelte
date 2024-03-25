@@ -8,7 +8,7 @@
 
 	let animateElement: SVGAnimateElement
 
-	export function redraw(delay = 0) {
+	export function redraw(/*delay = 0*/) {
 		if (delay) setTimeout(() => animateElement?.beginElement(), delay)
 		else animateElement?.beginElement()
 	}

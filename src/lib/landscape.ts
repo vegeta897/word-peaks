@@ -25,7 +25,11 @@ export type Tree = {
 	yJitter: number
 }
 export type Pond = { type: 'pond'; tiles: XY[] }
-export type Feature = { row: number; rowFeature: number } & (Hill | Tree | Pond)
+export type Feature = { row: number; rowFeature: number; delay: number } & (
+	| Hill
+	| Tree
+	| Pond
+)
 
 type OpenTile = {
 	x: number
@@ -48,7 +52,10 @@ export type Landscape = {
 	openTiles: Map<string, OpenTile>
 	nextPondID: number
 	generationTime?: number
+	totalDelay: number
 }
+
+const FEATURE_DELAY = 100
 
 export function getLandscape(
 	existingLandscape: Landscape,
@@ -60,7 +67,7 @@ export function getLandscape(
 	const startTime = performance.now()
 	console.time('getFeatures')
 	const { tileMap, openTiles, width, height, centerX, centerY } = existingLandscape
-	let { features, rowsGenerated, nextPondID } = existingLandscape
+	let { features, rowsGenerated, nextPondID, totalDelay } = existingLandscape
 	let seed = seedPrefix + answer
 	if (rowsGenerated === 0 && currentRow > rowsGenerated) {
 		openTiles.set(xyToGrid([centerX, centerY]), {
@@ -120,8 +127,11 @@ export function getLandscape(
 						y,
 						xJitter: randomFloat(-0.3, 0.3, getRng),
 						yJitter: randomFloat(-0.3, 0.3, getRng),
+						delay: totalDelay,
 					}
 					features.push(feature)
+					totalDelay += FEATURE_DELAY
+					rowFeature++
 					tileMap.set(grid, feature)
 				}
 			} else if (tile.polarity < 0) {
@@ -172,8 +182,11 @@ export function getLandscape(
 					y,
 					xJitter: randomFloat(-0.2, 0.2, getRng),
 					yJitter: randomFloat(-0.2, 0.2, getRng),
+					delay: totalDelay,
 				}
 				features.push(feature)
+				totalDelay += FEATURE_DELAY
+				rowFeature++
 				for (const hillGrid of hillGrids) {
 					tileMap.set(hillGrid, feature)
 					openTiles.delete(hillGrid)
@@ -236,8 +249,9 @@ export function getLandscape(
 					}
 				}
 				features.push(feature)
+				totalDelay += FEATURE_DELAY
+				rowFeature++
 			}
-			rowFeature++
 		}
 		rowsGenerated++
 	}
@@ -256,6 +270,7 @@ export function getLandscape(
 		centerX,
 		centerY,
 		nextPondID,
+		totalDelay,
 		generationTime: performance.now() - startTime,
 	}
 }

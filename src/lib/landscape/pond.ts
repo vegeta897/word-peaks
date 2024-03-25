@@ -64,6 +64,7 @@ export function fillPond(
 		row: 0,
 		rowFeature: 0,
 		tiles: [...pondTiles.values()],
+		delay: landscape.totalDelay,
 	}
 	return { feature, pondTiles, mergeWithPonds }
 }

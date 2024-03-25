@@ -28,6 +28,7 @@
 		tileMap: new Map(),
 		openTiles: new Map(),
 		nextPondID: 1,
+		totalDelay: 0,
 	}
 
 	function updateDimensions(width: number, height: number) {
@@ -56,6 +57,7 @@
 		landscape.tileMap.clear()
 		landscape.features.length = 0
 		landscape.nextPondID = 1
+		landscape.totalDelay = 0
 	}
 
 	function updateLandscape() {
@@ -97,7 +99,6 @@
 		updateDimensions(containerWidth, containerHeight)
 	store.currentRow.subscribe(() => updateLandscape())
 	let seed = 0
-
 	const featureComponents: { redraw: () => void }[] = []
 
 	function redrawFeatures() {
@@ -124,8 +125,7 @@
 						y={feature.y}
 						xJitter={feature.xJitter}
 						yJitter={feature.yJitter}
-						delay={feature.row * 250 +
-							feature.rowFeature * (250 / landscape.features.length)}
+						delay={feature.delay}
 						bind:this={featureComponents[f]}
 					/>
 				{:else if feature.type === 'hill'}
@@ -135,16 +135,14 @@
 						y={feature.y}
 						xJitter={feature.xJitter}
 						yJitter={feature.yJitter}
-						delay={feature.row * 250 +
-							feature.rowFeature * (250 / landscape.features.length)}
+						delay={feature.delay}
 						bind:this={featureComponents[f]}
 					/>
 				{:else}
 					<Pond
 						id={f}
 						tiles={feature.tiles}
-						delay={feature.row * 250 +
-							feature.rowFeature * (250 / landscape.features.length)}
+						delay={feature.delay}
 						bind:this={featureComponents[f]}
 					/>
 				{/if}
