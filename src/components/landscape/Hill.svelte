@@ -36,6 +36,11 @@
 
 	const hillTopPath = 'M-1.5 -0.5 v-0.5 a1.5 1.5 0 0 1 3 0 v0.5'
 	const hillBottomPath = 'M1.5 -0.6 v0.6 a1.5 0.5 0 0 1 -3 0 v-0.6'
+	const hillPathWithStroke = `M${-1.5 - STROKE_HALF} 0 v${-2.5 - STROKE_HALF} h${
+		3 + STROKE_WIDTH
+	} v${2.5 + STROKE_HALF} a${1.5 + STROKE_HALF} ${0.5 + STROKE_HALF} 0 0 1 ${
+		-3 - STROKE_WIDTH
+	} 0`
 
 	onMount(() => setTimeout(() => (draw = true), delay))
 	$: animateElement?.beginElement()
@@ -95,59 +100,23 @@
 				fill="freeze"
 			/>
 		</g>
-		<clipPath id="hilltop_clip_{id}">
-			<rect
-				x={-1.5 - STROKE_HALF}
-				y={-2.5 - STROKE_HALF}
-				width={3 + STROKE_WIDTH}
-				height={2.5 + STROKE_HALF}
-			/>
-			<ellipse>
-				<animate
-					attributeName="rx"
-					begin="hill_draw_animate_{id}.begin"
-					dur="{DURATION}ms"
-					values="0;{1.5 + STROKE_HALF};{1.5 + STROKE_HALF}"
-					keyTimes="0;0.15;1"
-					keySplines="{bezierEasing.circOut};0.5 0.5 0.5 0.5"
-					calcMode="spline"
-					fill="freeze"
-				/>
-				<animate
-					attributeName="ry"
-					begin="hill_draw_animate_{id}.begin"
-					dur="{DURATION}ms"
-					values="0;{0.5 + STROKE_HALF};{0.5 + STROKE_HALF}"
-					keyTimes="0;0.15;1"
-					keySplines="{bezierEasing.circOut};0.5 0.5 0.5 0.5"
-					calcMode="spline"
-					fill="freeze"
-				/>
-			</ellipse>
-		</clipPath>
+		<clipPath id="hilltop_clip_{id}"> <path d={hillPathWithStroke} /> </clipPath>
 		<g clip-path="url(#hilltop_clip_{id})">
 			<path
 				d="M-1.5 1 v-2 a1.5 1.5 0 0 1 3 0 v2"
 				fill="var(--before-color)"
 				stroke="var(--before-color)"
+				stroke-width={STROKE_WIDTH}
 			>
 				<animateTransform
 					attributeName="transform"
 					type="translate"
 					begin="hill_draw_animate_{id}.begin"
 					dur="{DURATION}ms"
-					values="0 2.5;0 1;0 0;0 3.5"
-					keyTimes="0;0.15;0.6;1"
-					keySplines="0.5 0.5 0.5 0.5;{bezierEasing.cubicOut};{bezierEasing.circIn}"
+					values="0 3.25;0 0;0 3.25"
+					keyTimes="0;0.6;1"
+					keySplines="{bezierEasing.cubicOut};{bezierEasing.cubicIn}"
 					calcMode="spline"
-					fill="freeze"
-				/>
-				<animate
-					attributeName="stroke-width"
-					begin="hill_draw_animate_{id}.begin"
-					dur="{DURATION}ms"
-					values="0;{STROKE_WIDTH};{STROKE_WIDTH}"
-					keyTimes="0;0.15;1"
 					fill="freeze"
 				/>
 			</path>
