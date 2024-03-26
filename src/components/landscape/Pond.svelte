@@ -112,7 +112,7 @@
 
 {#if draw}
 	{#if inColor}
-		<path fill="#567de8" d={pondPath} />
+		<path fill="var(--after-color)" d={pondPath} />
 	{:else}
 		<path
 			stroke-width="0.2"
@@ -144,7 +144,7 @@
 		{/if}
 	</g>
 	{#if inColor}
-		<path stroke-width="0.1" stroke="#567de8" fill="none" d={pondPath} />
+		<path stroke-width="0.1" stroke="var(--after-color)" fill="none" d={pondPath} />
 	{/if}
 	<!-- {#each tiles as [x, y]}
 		<rect

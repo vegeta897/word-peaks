@@ -35,7 +35,7 @@
 		mouse && Math.max(Math.abs(centerX - mouseX), Math.abs(centerY - 1 - mouseY)) < 2
 
 	const hillTopPath = 'M-1.5 -0.5 v-0.5 a1.5 1.5 0 0 1 3 0 v0.5'
-	const hillBottomPath = 'M1.5 -0.6 v0.5 a1.5 0.5 0 0 1 -3 0 v-0.6'
+	const hillBottomPath = 'M1.5 -0.6 v0.6 a1.5 0.5 0 0 1 -3 0 v-0.6'
 
 	onMount(() => setTimeout(() => (draw = true), delay))
 	$: animateElement?.beginElement()
@@ -55,7 +55,7 @@
 		<g>
 			<path
 				fill="none"
-				stroke="#312236"
+				stroke="var(--tertiary-color)"
 				stroke-width={STROKE_WIDTH * 2}
 				d={hillTopPath}
 				style:transform="translateY({hover ? 0.4 : 0}px)"
@@ -63,23 +63,23 @@
 			/>
 			<path
 				fill="none"
-				stroke="#312236"
+				stroke="var(--tertiary-color)"
 				stroke-width={STROKE_WIDTH * 2}
 				d={hillBottomPath}
 			/>
 			<!-- <path transform="translate(0 0.2)" fill="#e38f2f" d={hillPath} /> -->
 			<path
-				stroke={inColor ? 'var(--before-color)' : 'var(--landscape-color)'}
+				stroke="var(--{inColor ? 'before-color' : 'landscape-color'})"
 				stroke-width={STROKE_WIDTH}
 				stroke-linecap="round"
-				fill={inColor ? 'var(--before-color)' : '#312236'}
+				fill="var(--{inColor ? 'before-color' : 'tertiary-color'})"
 				d={hillBottomPath}
 			/>
 			<path
-				stroke={inColor ? 'var(--before-color)' : 'var(--landscape-color)'}
+				stroke="var(--{inColor ? 'before-color' : 'landscape-color'})"
 				stroke-width={STROKE_WIDTH}
 				stroke-linecap="round"
-				fill={inColor ? 'var(--before-color)' : '#312236'}
+				fill="var(--{inColor ? 'before-color' : 'tertiary-color'})"
 				d={hillTopPath}
 				style:transform="translateY({hover ? 0.4 : 0}px)"
 				style:transition="transform {hover ? 100 : 200}ms ease-out"

@@ -57,69 +57,47 @@
 		stroke-width="0.1"
 	/> -->
 	<g transform="translate({centerX} {centerY})">
-		{#if inColor}
+		<g>
 			<line
-				stroke="#312236"
+				stroke="var(--tertiary-color)"
 				stroke-width={STROKE_WIDTH * 2}
 				stroke-linecap="round"
 				y1={-STROKE_HALF}
 				y2={-length}
 			/>
-			<circle cy={radius} r={radius + STROKE_HALF} fill="#312236" />
+			<circle
+				cy={-length - radius}
+				r={radius + STROKE_HALF}
+				fill="var(--tertiary-color)"
+				style:transform="translateY({hover ? 0.3 : 0}px)"
+				style:transition="transform {hover ? 100 : 200}ms ease-out"
+			/>
 			<line
-				stroke="#15a850"
+				stroke="var(--{inColor ? 'correct-color' : 'landscape-color'})"
 				stroke-width={STROKE_WIDTH}
 				stroke-linecap="round"
-				y1={width}
-				y2={width + length}
+				y2={-length}
 			/>
-			<circle cy={radius} r={radius} fill="#15a850" />
-		{:else}
-			<g>
-				<line
-					stroke="#312236"
-					stroke-width={STROKE_WIDTH * 2}
-					stroke-linecap="round"
-					y1={-STROKE_HALF}
-					y2={-length}
-				/>
-				<circle
-					cy={-length - radius}
-					r={radius + STROKE_HALF}
-					fill="#312236"
-					style:transform="translateY({hover ? 0.3 : 0}px)"
-					style:transition="transform {hover ? 100 : 200}ms ease-out"
-				/>
-				<line
-					stroke="var(--landscape-color)"
-					stroke-width={STROKE_WIDTH}
-					stroke-linecap="round"
-					y2={-length}
-				/>
-				<rect
-					rx={radius - STROKE_HALF}
-					ry={radius - STROKE_HALF}
-					x={-radius + STROKE_HALF}
-					y={-length - width + STROKE_HALF}
-					width={width - STROKE_WIDTH}
-					height={width - STROKE_WIDTH}
-					fill="#312236"
-					stroke="var(--landscape-color)"
-					stroke-width={STROKE_WIDTH}
-					style:transform="translateY({hover ? 0.3 : 0}px)"
-					style:transition="transform {hover ? 100 : 200}ms ease-out"
-				/>
-				<animate
-					attributeName="opacity"
-					values="0;0;1;1"
-					keyTimes="0;0.4;0.6;1"
-					begin="tree_draw_animate_{id}.begin"
-					dur="{DURATION * 2}ms"
-					fill="freeze"
-				/>
-			</g>
-		{/if}
-		<circle cy={-length - radius} r="0" fill="#15a850">
+			<circle
+				cy={-length - radius}
+				r={radius - STROKE_HALF}
+				fill="var(--{inColor ? 'correct-color' : 'tertiary-color'})"
+				stroke="var(--{inColor ? 'correct-color' : 'landscape-color'})"
+				stroke-width={STROKE_WIDTH}
+				style:transform="translateY({hover ? 0.3 : 0}px)"
+				style:transition="transform {hover ? 100 : 200}ms ease-out"
+			/>
+			<!-- Change to circle radius? -->
+			<animate
+				attributeName="opacity"
+				values="0;0;1;1"
+				keyTimes="0;0.4;0.6;1"
+				begin="tree_draw_animate_{id}.begin"
+				dur="{DURATION * 2}ms"
+				fill="freeze"
+			/>
+		</g>
+		<circle cy={-length - radius} r="0" fill="var(--correct-color)">
 			<animate
 				attributeName="r"
 				values={`0;${radius};0`}
@@ -130,7 +108,11 @@
 				fill="freeze"
 			/>
 		</circle>
-		<line stroke="#15a850" stroke-width={STROKE_WIDTH} stroke-linecap="round">
+		<line
+			stroke="var(--correct-color)"
+			stroke-width={STROKE_WIDTH}
+			stroke-linecap="round"
+		>
 			<animate
 				bind:this={animateElement}
 				attributeName="y2"
