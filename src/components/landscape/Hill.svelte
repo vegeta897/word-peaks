@@ -31,8 +31,11 @@
 
 	$: centerX = (x + xJitter + 1.5) * 1.5
 	$: centerY = y + yJitter + 1
+	$: hover =
+		mouse && Math.max(Math.abs(centerX - mouseX), Math.abs(centerY - 1 - mouseY)) < 2
 
-	const hillPath = 'M-1.5 0 v-1 a1.5 1.5 0 0 1 3 0 v1 a1.5 0.5 0 0 1 -3 0'
+	const hillTopPath = 'M-1.5 -0.5 v-0.5 a1.5 1.5 0 0 1 3 0 v0.5'
+	const hillBottomPath = 'M1.5 -0.6 v0.5 a1.5 0.5 0 0 1 -3 0 v-0.6'
 
 	onMount(() => setTimeout(() => (draw = true), delay))
 	$: animateElement?.beginElement()
@@ -50,24 +53,37 @@
 	/> -->
 	<g transform="translate({centerX} {centerY})" height={2.5 + 0.7}>
 		<g>
-			<path fill="none" stroke="#312236" stroke-width={STROKE_WIDTH * 2} d={hillPath} />
-			{#if inColor}
-				<!-- <path transform="translate(0 0.2)" fill="#e38f2f" d={hillPath} /> -->
-				<path
-					fill="var(--before-color)"
-					stroke="var(--before-color)"
-					stroke-width={STROKE_WIDTH}
-					d={hillPath}
-				/>
-			{:else}
-				<path
-					stroke="var(--landscape-color)"
-					stroke-width={STROKE_WIDTH}
-					stroke-linecap="round"
-					fill="#312236"
-					d={hillPath}
-				/>
-			{/if}
+			<path
+				fill="none"
+				stroke="#312236"
+				stroke-width={STROKE_WIDTH * 2}
+				d={hillTopPath}
+				style:transform="translateY({hover ? 0.4 : 0}px)"
+				style:transition="transform {hover ? 100 : 200}ms ease-out"
+			/>
+			<path
+				fill="none"
+				stroke="#312236"
+				stroke-width={STROKE_WIDTH * 2}
+				d={hillBottomPath}
+			/>
+			<!-- <path transform="translate(0 0.2)" fill="#e38f2f" d={hillPath} /> -->
+			<path
+				stroke={inColor ? 'var(--before-color)' : 'var(--landscape-color)'}
+				stroke-width={STROKE_WIDTH}
+				stroke-linecap="round"
+				fill={inColor ? 'var(--before-color)' : '#312236'}
+				d={hillBottomPath}
+			/>
+			<path
+				stroke={inColor ? 'var(--before-color)' : 'var(--landscape-color)'}
+				stroke-width={STROKE_WIDTH}
+				stroke-linecap="round"
+				fill={inColor ? 'var(--before-color)' : '#312236'}
+				d={hillTopPath}
+				style:transform="translateY({hover ? 0.4 : 0}px)"
+				style:transition="transform {hover ? 100 : 200}ms ease-out"
+			/>
 			<animate
 				id="hill_draw_animate_{id}"
 				bind:this={animateElement}
