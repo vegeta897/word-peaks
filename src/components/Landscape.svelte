@@ -61,7 +61,6 @@
 	}
 
 	function updateLandscape() {
-		// TODO: Check if metrics have changed, or current row exceeds drawn rows
 		// Loop through un-drawn rows as needed (e.g. loading a completed puzzle)
 		// Preserve already-drawn feature rows if metrics haven't changed
 		if (!landscape.width) return
@@ -109,17 +108,16 @@
 	let mouseX: number
 	let mouseY: number
 
-	function onMouseMove(event: MouseEvent) {
+	function onPointerMove(event: PointerEvent) {
+		if (event.pointerType === 'touch') return
 		mouse = true
 		mouseX = -0.1 + (event.offsetX / svgWidth) * (landscape.width * 1.5 + 0.2)
 		mouseY = -0.1 + (event.offsetY / svgHeight) * (landscape.height + 0.2)
 		// console.log(mouseX, mouseY)
 	}
-	function onMouseLeave(event: MouseEvent) {
+	function onMouseLeave() {
 		mouse = false
 	}
-
-	// TODO: Might want to set viewbox equal to svg dimensions to avoid blurry lines
 </script>
 
 <div bind:clientWidth={containerWidth} bind:clientHeight={containerHeight}>
@@ -129,7 +127,7 @@
 		height={svgHeight}
 		viewBox="-0.1 -0.1 {landscape.width * 1.5 + 0.2} {landscape.height + 0.2}"
 		on:click={redrawFeatures}
-		on:mousemove={onMouseMove}
+		on:pointermove={onPointerMove}
 		on:mouseleave={onMouseLeave}
 	>
 		{#key seed}
