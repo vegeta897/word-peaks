@@ -6,6 +6,9 @@
 	export let id: number
 	export let delay = 0
 	export let tiles: XY[] = []
+	export let mouse: boolean
+	export let mouseX: number
+	export let mouseY: number
 
 	let animateElement: SVGAnimateElement
 
@@ -113,7 +116,7 @@
 	{:else}
 		<path
 			stroke-width="0.2"
-			stroke="#fff"
+			stroke="var(--landscape-color)"
 			stroke-linecap="round"
 			fill="none"
 			d={pondPath}
@@ -134,7 +137,7 @@
 				transform="translate(0 0.15)"
 				stroke-width="0.2"
 				stroke-linecap="round"
-				stroke="#fff"
+				stroke="var(--landscape-color)"
 				fill="none"
 				d={pondPath}
 			/>

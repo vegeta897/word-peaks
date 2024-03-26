@@ -15,6 +15,9 @@
 	// export let width = 30
 	// export let length = 10
 	export let delay = 0
+	export let mouse: boolean
+	export let mouseX: number
+	export let mouseY: number
 
 	let animateElement: SVGAnimateElement
 
@@ -49,7 +52,7 @@
 		<g>
 			<path fill="none" stroke="#312236" stroke-width={STROKE_WIDTH * 2} d={hillPath} />
 			<path
-				stroke="#ffffff"
+				stroke="var(--landscape-color)"
 				stroke-width={STROKE_WIDTH}
 				stroke-linecap="round"
 				fill="#312236"

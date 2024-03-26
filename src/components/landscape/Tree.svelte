@@ -12,9 +12,10 @@
 	export let xJitter: number
 	export let yJitter: number
 	// TODO: Add length/width jitter
-	export let width = 1
-	export let length = 0.5
 	export let delay = 0
+	export let mouse: boolean
+	export let mouseX: number
+	export let mouseY: number
 
 	let animateElement: SVGAnimateElement
 
@@ -29,13 +30,17 @@
 	// TODO: Make default values of animated elements be their end states, so that the animate elements can be conditional
 
 	// TODO: Randomize animation speed (seeded in landscape.ts)
-	// Use x to determine delay?
 
-	// TODO: Use something slightly dimmer than #ffffff
+	let width = 1
+	let length = 0.5
+	let radius = width / 2
 
-	let radius: number
-
-	$: radius = width / 2
+	$: centerX = (x + xJitter + 0.5) * 1.5
+	$: centerY = y + yJitter + 0.5
+	$: hover =
+		mouse &&
+		Math.max(Math.abs(centerX - mouseX), Math.abs(centerY - length - radius - mouseY)) <
+			1.5
 
 	onMount(() => setTimeout(() => (draw = true), delay))
 	$: animateElement?.beginElement()
@@ -51,59 +56,58 @@
 		stroke="#15a850"
 		stroke-width="0.1"
 	/> -->
-	<g transform="translate({(x + xJitter) * 1.5 + 0.25} {y + yJitter - 1})">
+	<g transform="translate({centerX} {centerY})">
 		{#if inColor}
 			<line
 				stroke="#312236"
 				stroke-width={STROKE_WIDTH * 2}
 				stroke-linecap="round"
-				x1={radius}
-				y1={width}
-				x2={radius}
-				y2={width + length - STROKE_HALF}
+				y1={-STROKE_HALF}
+				y2={-length}
 			/>
-			<circle cx={radius} cy={radius} r={radius + STROKE_HALF} fill="#312236" />
+			<circle cy={radius} r={radius + STROKE_HALF} fill="#312236" />
 			<line
 				stroke="#15a850"
 				stroke-width={STROKE_WIDTH}
 				stroke-linecap="round"
-				x1={radius}
 				y1={width}
-				x2={radius}
 				y2={width + length}
 			/>
-			<circle cx={radius} cy={radius} r={radius} fill="#15a850" />
+			<circle cy={radius} r={radius} fill="#15a850" />
 		{:else}
 			<g>
 				<line
 					stroke="#312236"
 					stroke-width={STROKE_WIDTH * 2}
 					stroke-linecap="round"
-					x1={radius}
-					y1={width}
-					x2={radius}
-					y2={width + length - STROKE_HALF}
+					y1={-STROKE_HALF}
+					y2={-length}
 				/>
-				<circle cx={radius} cy={radius} r={radius + STROKE_HALF} fill="#312236" />
+				<circle
+					cy={-length - radius}
+					r={radius + STROKE_HALF}
+					fill="#312236"
+					style:transform="translateY({hover ? 0.3 : 0}px)"
+					style:transition="transform {hover ? 100 : 200}ms ease-out"
+				/>
+				<line
+					stroke="var(--landscape-color)"
+					stroke-width={STROKE_WIDTH}
+					stroke-linecap="round"
+					y2={-length}
+				/>
 				<rect
 					rx={radius - STROKE_HALF}
 					ry={radius - STROKE_HALF}
-					x={STROKE_HALF}
-					y={STROKE_HALF}
+					x={-radius + STROKE_HALF}
+					y={-length - width + STROKE_HALF}
 					width={width - STROKE_WIDTH}
 					height={width - STROKE_WIDTH}
 					fill="#312236"
-					stroke="#ffffff"
+					stroke="var(--landscape-color)"
 					stroke-width={STROKE_WIDTH}
-				/>
-				<line
-					stroke="#ffffff"
-					stroke-width={STROKE_WIDTH}
-					stroke-linecap="round"
-					x1={radius}
-					y1={width}
-					x2={radius}
-					y2={width + length}
+					style:transform="translateY({hover ? 0.3 : 0}px)"
+					style:transition="transform {hover ? 100 : 200}ms ease-out"
 				/>
 				<animate
 					attributeName="opacity"
@@ -115,7 +119,7 @@
 				/>
 			</g>
 		{/if}
-		<circle cx={radius} cy={radius} r="0" fill="#15a850">
+		<circle cy={-length - radius} r="0" fill="#15a850">
 			<animate
 				attributeName="r"
 				values={`0;${radius};0`}
@@ -126,20 +130,12 @@
 				fill="freeze"
 			/>
 		</circle>
-		<line
-			stroke="#15a850"
-			stroke-width={STROKE_WIDTH}
-			stroke-linecap="round"
-			x1={radius}
-			y1={width + length}
-			x2={radius}
-			y2={width + length}
-		>
+		<line stroke="#15a850" stroke-width={STROKE_WIDTH} stroke-linecap="round">
 			<animate
 				bind:this={animateElement}
-				attributeName="y1"
+				attributeName="y2"
 				id="tree_draw_animate_{id}"
-				values={`${width + length};${radius};${radius};${width + length}`}
+				values={`0;${-length - radius};${-length - radius};0`}
 				keyTimes="0;0.25;0.75;1"
 				begin="indefinite"
 				dur="{DURATION * 2}ms"

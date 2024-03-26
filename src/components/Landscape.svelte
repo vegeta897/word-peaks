@@ -105,6 +105,20 @@
 		featureComponents.forEach((f) => f?.redraw())
 	}
 
+	let mouse = false
+	let mouseX: number
+	let mouseY: number
+
+	function onMouseMove(event: MouseEvent) {
+		mouse = true
+		mouseX = -0.1 + (event.offsetX / svgWidth) * (landscape.width * 1.5 + 0.2)
+		mouseY = -0.1 + (event.offsetY / svgHeight) * (landscape.height + 0.2)
+		// console.log(mouseX, mouseY)
+	}
+	function onMouseLeave(event: MouseEvent) {
+		mouse = false
+	}
+
 	// TODO: Might want to set viewbox equal to svg dimensions to avoid blurry lines
 </script>
 
@@ -115,6 +129,8 @@
 		height={svgHeight}
 		viewBox="-0.1 -0.1 {landscape.width * 1.5 + 0.2} {landscape.height + 0.2}"
 		on:click={redrawFeatures}
+		on:mousemove={onMouseMove}
+		on:mouseleave={onMouseLeave}
 	>
 		{#key seed}
 			{#each landscape.features as feature, f}
@@ -126,6 +142,9 @@
 						xJitter={feature.xJitter}
 						yJitter={feature.yJitter}
 						delay={feature.delay}
+						{mouse}
+						{mouseX}
+						{mouseY}
 						bind:this={featureComponents[f]}
 					/>
 				{:else if feature.type === 'hill'}
@@ -136,6 +155,9 @@
 						xJitter={feature.xJitter}
 						yJitter={feature.yJitter}
 						delay={feature.delay}
+						{mouse}
+						{mouseX}
+						{mouseY}
 						bind:this={featureComponents[f]}
 					/>
 				{:else}
@@ -143,6 +165,9 @@
 						id={f}
 						tiles={feature.tiles}
 						delay={feature.delay}
+						{mouse}
+						{mouseX}
+						{mouseY}
 						bind:this={featureComponents[f]}
 					/>
 				{/if}
