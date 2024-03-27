@@ -27,7 +27,7 @@
 		features: [],
 		tileMap: new Map(),
 		openTiles: new Map(),
-		nextPondID: 1,
+		nextID: 1,
 		totalDelay: 0,
 	}
 
@@ -56,7 +56,7 @@
 		landscape.openTiles.clear()
 		landscape.tileMap.clear()
 		landscape.features.length = 0
-		landscape.nextPondID = 1
+		landscape.nextID = 1
 		landscape.totalDelay = 0
 	}
 
@@ -132,10 +132,10 @@
 		on:mouseleave={onMouseLeave}
 	>
 		{#key `${seed}${redraw}`}
-			{#each landscape.features as feature, f}
+			{#each landscape.features as feature, f (feature.id)}
 				{#if feature.type === 'tree'}
 					<Tree
-						id={f}
+						id={feature.id}
 						x={feature.x}
 						y={feature.y}
 						xJitter={feature.xJitter}
@@ -149,7 +149,7 @@
 					/>
 				{:else if feature.type === 'hill'}
 					<Hill
-						id={f}
+						id={feature.id}
 						x={feature.x}
 						y={feature.y}
 						xJitter={feature.xJitter}
@@ -163,7 +163,7 @@
 					/>
 				{:else}
 					<Pond
-						id={f}
+						id={feature.id}
 						tiles={feature.tiles}
 						delay={feature.delay}
 						{mouse}

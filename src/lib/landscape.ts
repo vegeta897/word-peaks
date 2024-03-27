@@ -27,11 +27,7 @@ export type Tree = {
 	size: number
 }
 export type Pond = { type: 'pond'; tiles: XY[] }
-export type Feature = { row: number; rowFeature: number; delay: number } & (
-	| Hill
-	| Tree
-	| Pond
-)
+export type Feature = { id: number; delay: number } & (Hill | Tree | Pond)
 
 type OpenTile = {
 	x: number
@@ -52,7 +48,7 @@ export type Landscape = {
 	features: Feature[]
 	tileMap: Map<string, Feature>
 	openTiles: Map<string, OpenTile>
-	nextPondID: number
+	nextID: number
 	generationTime?: number
 	totalDelay: number
 }
@@ -69,7 +65,7 @@ export function getLandscape(
 	const startTime = performance.now()
 	console.time('getFeatures')
 	const { tileMap, openTiles, width, height, centerX, centerY } = existingLandscape
-	let { features, rowsGenerated, nextPondID, totalDelay } = existingLandscape
+	let { features, rowsGenerated, nextID, totalDelay } = existingLandscape
 	let seed = seedPrefix + answer
 	if (rowsGenerated === 0 && currentRow > rowsGenerated) {
 		openTiles.set(xyToGrid([centerX, centerY]), {
@@ -123,8 +119,7 @@ export function getLandscape(
 					})
 					const feature: Feature = {
 						type: 'tree',
-						row: rowsGenerated,
-						rowFeature,
+						id: nextID++,
 						x,
 						y,
 						xJitter: randomFloat(-0.3, 0.3, getRng),
@@ -179,8 +174,7 @@ export function getLandscape(
 				const [x, y] = validXY
 				const feature: Feature = {
 					type: 'hill',
-					row: rowsGenerated,
-					rowFeature,
+					id: nextID++,
 					x,
 					y,
 					xJitter: randomFloat(-0.2, 0.2, getRng),
@@ -239,8 +233,7 @@ export function getLandscape(
 				}
 				if (!generatedPond) continue
 				const { pondTiles, mergeWithPonds, feature } = generatedPond
-				feature.row = rowsGenerated
-				feature.rowFeature = rowFeature
+				feature.id = nextID++
 				pondTiles.forEach((_, grid) => tileMap.set(grid, feature))
 				if (mergeWithPonds.size > 0) {
 					// Remove merged ponds
@@ -273,7 +266,7 @@ export function getLandscape(
 		height,
 		centerX,
 		centerY,
-		nextPondID,
+		nextID,
 		totalDelay,
 		generationTime: performance.now() - startTime,
 	}

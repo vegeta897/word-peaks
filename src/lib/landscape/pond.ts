@@ -61,8 +61,7 @@ export function fillPond(
 	}
 	const feature: Feature = {
 		type: 'pond',
-		row: 0,
-		rowFeature: 0,
+		id: 0, // Assigned in landscape.ts
 		tiles: [...pondTiles.values()],
 		delay: landscape.totalDelay,
 	}
