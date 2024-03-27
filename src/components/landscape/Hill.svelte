@@ -11,9 +11,7 @@
 	export let y: number
 	export let xJitter: number
 	export let yJitter: number
-	// TODO: Add length/width jitter
-	// export let width = 30
-	// export let length = 10
+	export let size: number
 	export let delay = 0
 	export let mouse: boolean
 	export let mouseX: number
@@ -31,15 +29,22 @@
 
 	$: centerX = (x + xJitter + 1.5) * 1.5
 	$: centerY = y + yJitter + 1
+	$: radius = 1.35 + 0.2 * size
 	$: hover =
-		mouse && Math.max(Math.abs(centerX - mouseX), Math.abs(centerY - 1 - mouseY)) < 2
+		mouse &&
+		Math.abs(centerX - mouseX) < radius + STROKE_HALF &&
+		Math.abs(centerY - 1 - mouseY) < radius + STROKE_HALF
 
-	const hillTopPath = 'M-1.5 -0.5 v-0.5 a1.5 1.5 0 0 1 3 0 v0.5'
-	const hillBottomPath = 'M1.5 -0.6 v0.6 a1.5 0.5 0 0 1 -3 0 v-0.6'
-	const hillPathWithStroke = `M${-1.5 - STROKE_HALF} 0 v${-2.5 - STROKE_HALF} h${
-		3 + STROKE_WIDTH
-	} v${2.5 + STROKE_HALF} a${1.5 + STROKE_HALF} ${0.5 + STROKE_HALF} 0 0 1 ${
-		-3 - STROKE_WIDTH
+	$: hillTopPath = `M-${radius} -0.5 v-0.5 a${radius} ${radius} 0 0 1 ${
+		radius * 2
+	} 0 v0.5`
+	$: hillBottomPath = `M${radius} -0.6 v0.6 a${radius} ${radius / 3} 0 0 1 -${
+		radius * 2
+	} 0 v-0.6`
+	$: hillPathWithStroke = `M${-radius - STROKE_HALF} 0 v${-2.5 - STROKE_HALF} h${
+		radius * 2 + STROKE_WIDTH
+	} v${2.5 + STROKE_HALF} a${radius + STROKE_HALF} ${radius / 3 + STROKE_HALF} 0 0 1 ${
+		-radius * 2 - STROKE_WIDTH
 	} 0`
 
 	onMount(() => setTimeout(() => (draw = true), delay))
@@ -103,7 +108,7 @@
 		<clipPath id="hilltop_clip_{id}"> <path d={hillPathWithStroke} /> </clipPath>
 		<g clip-path="url(#hilltop_clip_{id})">
 			<path
-				d="M-1.5 1 v-2 a1.5 1.5 0 0 1 3 0 v2"
+				d="M-{radius} 1 v-2 a{radius} {radius} 0 0 1 {radius * 2} 0 v2"
 				fill="var(--before-color)"
 				stroke="var(--before-color)"
 				stroke-width={STROKE_WIDTH}
@@ -113,7 +118,7 @@
 					type="translate"
 					begin="hill_draw_animate_{id}.begin"
 					dur="{DURATION}ms"
-					values="0 3.25;0 0;0 3.25"
+					values="0 3.3;0 0;0 3.3"
 					keyTimes="0;0.6;1"
 					keySplines="{bezierEasing.cubicOut};{bezierEasing.cubicIn}"
 					calcMode="spline"

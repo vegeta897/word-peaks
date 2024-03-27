@@ -11,7 +11,7 @@
 	export let y: number
 	export let xJitter: number
 	export let yJitter: number
-	// TODO: Add length/width jitter
+	export let size: number
 	export let delay = 0
 	export let mouse: boolean
 	export let mouseX: number
@@ -31,9 +31,9 @@
 
 	// TODO: Randomize animation speed (seeded in landscape.ts)
 
-	let width = 1
-	let length = 0.5
-	let radius = width / 2
+	$: width = size * 0.2 + 0.9
+	$: length = width / 2
+	$: radius = width / 2
 
 	$: centerX = (x + xJitter + 0.5) * 1.5
 	$: centerY = y + yJitter + 0.5
@@ -62,7 +62,6 @@
 				stroke="var(--tertiary-color)"
 				stroke-width={STROKE_WIDTH * 2}
 				stroke-linecap="round"
-				y1={-STROKE_HALF}
 				y2={-length}
 			/>
 			<circle

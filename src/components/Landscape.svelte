@@ -118,6 +118,7 @@
 	function onMouseLeave() {
 		mouse = false
 	}
+	let redraw = 0
 </script>
 
 <div bind:clientWidth={containerWidth} bind:clientHeight={containerHeight}>
@@ -126,11 +127,11 @@
 		width={svgWidth}
 		height={svgHeight}
 		viewBox="-0.1 -0.1 {landscape.width * 1.5 + 0.2} {landscape.height + 0.2}"
-		on:click={redrawFeatures}
+		on:click={() => redraw++}
 		on:pointermove={onPointerMove}
 		on:mouseleave={onMouseLeave}
 	>
-		{#key seed}
+		{#key `${seed}${redraw}`}
 			{#each landscape.features as feature, f}
 				{#if feature.type === 'tree'}
 					<Tree
@@ -139,6 +140,7 @@
 						y={feature.y}
 						xJitter={feature.xJitter}
 						yJitter={feature.yJitter}
+						size={feature.size}
 						delay={feature.delay}
 						{mouse}
 						{mouseX}
@@ -152,6 +154,7 @@
 						y={feature.y}
 						xJitter={feature.xJitter}
 						yJitter={feature.yJitter}
+						size={feature.size}
 						delay={feature.delay}
 						{mouse}
 						{mouseX}

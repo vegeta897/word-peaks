@@ -16,6 +16,7 @@ export type Hill = {
 	y: number
 	xJitter: number
 	yJitter: number
+	size: number
 }
 export type Tree = {
 	type: 'tree'
@@ -23,6 +24,7 @@ export type Tree = {
 	y: number
 	xJitter: number
 	yJitter: number
+	size: number
 }
 export type Pond = { type: 'pond'; tiles: XY[] }
 export type Feature = { row: number; rowFeature: number; delay: number } & (
@@ -55,7 +57,7 @@ export type Landscape = {
 	totalDelay: number
 }
 
-const FEATURE_DELAY = 100
+const FEATURE_DELAY = 20
 
 export function getLandscape(
 	existingLandscape: Landscape,
@@ -126,7 +128,8 @@ export function getLandscape(
 						x,
 						y,
 						xJitter: randomFloat(-0.3, 0.3, getRng),
-						yJitter: randomFloat(-0.3, 0.3, getRng),
+						yJitter: randomFloat(-0.25, 0.25, getRng),
+						size: getRng(),
 						delay: totalDelay,
 					}
 					features.push(feature)
@@ -182,6 +185,7 @@ export function getLandscape(
 					y,
 					xJitter: randomFloat(-0.2, 0.2, getRng),
 					yJitter: randomFloat(-0.2, 0.2, getRng),
+					size: getRng(),
 					delay: totalDelay,
 				}
 				features.push(feature)
