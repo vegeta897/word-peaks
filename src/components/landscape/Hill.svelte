@@ -41,7 +41,7 @@
 	$: hillBottomPath = `M${radius} -0.6 v0.6 a${radius} ${radius / 3} 0 0 1 -${
 		radius * 2
 	} 0 v-0.6`
-	$: hillPathWithStroke = `M${-radius - STROKE_HALF} 0 v${-2.5 - STROKE_HALF} h${
+	$: hillAnimationClip = `M${-radius - STROKE_HALF} 0 v${-2.5 - STROKE_HALF} h${
 		radius * 2 + STROKE_WIDTH
 	} v${2.5 + STROKE_HALF} a${radius + STROKE_HALF} ${radius / 3 + STROKE_HALF} 0 0 1 ${
 		-radius * 2 - STROKE_WIDTH
@@ -69,7 +69,7 @@
 				stroke-width={STROKE_WIDTH * 2}
 				d={hillTopPath}
 				style:transform="translateY({hover ? 0.4 : 0}px)"
-				style:transition="transform {hover ? 100 : 200}ms ease-out"
+				style:transition="transform {hover ? 75 : 200}ms ease-out"
 			/>
 			<path
 				fill="none"
@@ -92,7 +92,7 @@
 				fill="var(--{inColor ? 'before-color' : 'tertiary-color'})"
 				d={hillTopPath}
 				style:transform="translateY({hover ? 0.4 : 0}px)"
-				style:transition="transform {hover ? 100 : 200}ms ease-out"
+				style:transition="transform {hover ? 75 : 200}ms ease-out"
 			/>
 			<animate
 				id="hill_draw_animate_{id}"
@@ -105,26 +105,31 @@
 				fill="freeze"
 			/>
 		</g>
-		<clipPath id="hilltop_clip_{id}"> <path d={hillPathWithStroke} /> </clipPath>
-		<g clip-path="url(#hilltop_clip_{id})">
-			<path
-				d="M-{radius} 1 v-2 a{radius} {radius} 0 0 1 {radius * 2} 0 v2"
-				fill="var(--before-color)"
-				stroke="var(--before-color)"
-				stroke-width={STROKE_WIDTH}
+		<clipPath id="hill_clip_{id}"> <path d={hillAnimationClip} /> </clipPath>
+		<g clip-path="url(#hill_clip_{id})">
+			<g
+				style:transform="translateY({hover ? 0.4 : 0}px)"
+				style:transition="transform {hover ? 75 : 200}ms ease-out"
 			>
-				<animateTransform
-					attributeName="transform"
-					type="translate"
-					begin="hill_draw_animate_{id}.begin"
-					dur="{DURATION}ms"
-					values="0 3.3;0 0;0 3.3"
-					keyTimes="0;0.6;1"
-					keySplines="{bezierEasing.cubicOut};{bezierEasing.cubicIn}"
-					calcMode="spline"
-					fill="freeze"
-				/>
-			</path>
+				<path
+					d="M-{radius} 1 v-2 a{radius} {radius} 0 0 1 {radius * 2} 0 v2"
+					fill="var(--before-color)"
+					stroke="var(--before-color)"
+					stroke-width={STROKE_WIDTH}
+				>
+					<animateTransform
+						attributeName="transform"
+						type="translate"
+						begin="hill_draw_animate_{id}.begin"
+						dur="{DURATION}ms"
+						values="0 3.3;0 0;0 3.3"
+						keyTimes="0;0.6;1"
+						keySplines="{bezierEasing.cubicOut};{bezierEasing.cubicIn}"
+						calcMode="spline"
+						fill="freeze"
+					/>
+				</path>
+			</g>
 		</g>
 	</g>
 {/if}

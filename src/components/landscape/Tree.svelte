@@ -27,8 +27,6 @@
 	let draw = false
 	let inColor = false
 
-	// TODO: Make default values of animated elements be their end states, so that the animate elements can be conditional
-
 	// TODO: Randomize animation speed (seeded in landscape.ts)
 
 	$: width = size * 0.2 + 0.9
@@ -69,7 +67,7 @@
 				r={radius + STROKE_HALF}
 				fill="var(--tertiary-color)"
 				style:transform="translateY({hover ? 0.3 : 0}px)"
-				style:transition="transform {hover ? 100 : 200}ms ease-out"
+				style:transition="transform {hover ? 50 : 200}ms ease-out"
 			/>
 			<line
 				stroke="var(--{inColor ? 'correct-color' : 'landscape-color'})"
@@ -84,7 +82,7 @@
 				stroke="var(--{inColor ? 'correct-color' : 'landscape-color'})"
 				stroke-width={STROKE_WIDTH}
 				style:transform="translateY({hover ? 0.3 : 0}px)"
-				style:transition="transform {hover ? 100 : 200}ms ease-out"
+				style:transition="transform {hover ? 50 : 200}ms ease-out"
 			/>
 			<!-- Change to circle radius? -->
 			<animate
@@ -96,7 +94,13 @@
 				fill="freeze"
 			/>
 		</g>
-		<circle cy={-length - radius} r="0" fill="var(--correct-color)">
+		<circle
+			cy={-length - radius}
+			r="0"
+			fill="var(--correct-color)"
+			style:transform="translateY({hover ? 0.3 : 0}px)"
+			style:transition="transform {hover ? 50 : 200}ms ease-out"
+		>
 			<animate
 				attributeName="r"
 				values={`0;${radius};0`}
@@ -111,6 +115,8 @@
 			stroke="var(--correct-color)"
 			stroke-width={STROKE_WIDTH}
 			stroke-linecap="round"
+			style:transform="scaleY({hover ? 0.7 : 1})"
+			style:transition="transform {hover ? 50 : 200}ms ease-out"
 		>
 			<animate
 				bind:this={animateElement}
