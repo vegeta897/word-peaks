@@ -12,6 +12,16 @@
 
 	let animateElement: SVGAnimateElement
 
+	$: tileDripIndexes = tiles.length > 18 ? [0, 7, 12, 18] : [0]
+
+	// TODO: When tiles array changes, identify new tiles and put drips in them
+	// Keep old pond path outline until new drips finish
+
+	$: tileCenters = tiles.map(([x, y]) => [(x + 0.5) * 1.5, y + 0.5])
+	$: hover =
+		mouse &&
+		tileCenters.some(([x, y]) => Math.abs(x - mouseX) < 0.9 && Math.abs(y - mouseY) < 0.6)
+
 	export function redraw(/*delay = 0*/) {
 		if (delay) setTimeout(() => animateElement?.beginElement(), delay)
 		else animateElement?.beginElement()
@@ -111,49 +121,95 @@
 </script>
 
 {#if draw}
-	{#if inColor}
-		<path fill="var(--after-color)" d={pondPath} />
-	{:else}
+	<g on:mouseenter={() => (hover = true)} on:mouseleave={() => (hover = false)}>
+		<clipPath id="pond_path{id}"> <path d={pondPath} /> </clipPath>
+		<g clip-path="url(#pond_path{id})">
+			{#if inColor}
+				<path
+					transform="translate(0 0.09)"
+					stroke-width="0.09"
+					stroke="#312236d0"
+					fill="none"
+					d={pondPath}
+				/>
+			{:else}
+				<path fill="var(--landscape-color)" d={pondPath} />
+				<path
+					style:transform="translateY({hover ? 0 : 0.2}px)"
+					style:transition="transform {hover ? 250 : 500}ms ease-out"
+					fill="var(--tertiary-color)"
+					stroke-width="0.2"
+					stroke="var(--landscape-color)"
+					d={pondPath}
+				/>
+			{/if}
+		</g>
 		<path
 			stroke-width="0.2"
-			stroke="var(--landscape-color)"
+			stroke={inColor ? 'none' : 'var(--landscape-color)'}
 			stroke-linecap="round"
-			fill="none"
+			fill={inColor ? 'var(--after-color)' : 'none'}
 			d={pondPath}
 		/>
-	{/if}
-	<clipPath id="pond_path{id}"> <path d={pondPath} /> </clipPath>
+		<animate
+			bind:this={animateElement}
+			id="pond_draw_animate_{id}"
+			attributeName="opacity"
+			values="0;0;1"
+			dur="2000ms"
+			calcMode="spline"
+			fill="freeze"
+			keyTimes="0;0.8;1"
+			keySplines="0.5 0.5 0.5 0.5;{bezierEasing.cubicIn}"
+			begin="indefinite"
+		/>
+	</g>
 	<g clip-path="url(#pond_path{id})">
-		{#if inColor}
-			<path
-				transform="translate(0 0.09)"
-				stroke-width="0.09"
-				stroke="#312236d0"
-				fill="none"
-				d={pondPath}
-			/>
-		{:else}
-			<path
-				transform="translate(0 0.15)"
-				stroke-width="0.2"
-				stroke-linecap="round"
-				stroke="var(--landscape-color)"
-				fill="none"
-				d={pondPath}
-			/>
-		{/if}
+		{#each tileDripIndexes as tileIndex, t}
+			{@const [x, y] = tiles[tileIndex]}
+			<ellipse fill="var(--after-color)" cx={(x + 0.5) * 1.5} cy={y + 0.5}>
+				<animate
+					attributeName="rx"
+					values="0;6"
+					calcMode="spline"
+					fill="freeze"
+					dur="1600ms"
+					keySplines={bezierEasing.cubicOut}
+					begin="pond_draw_animate_{id}.begin+{t * 300 + 'ms'}"
+				/>
+				<animate
+					attributeName="ry"
+					values="0;4"
+					calcMode="spline"
+					fill="freeze"
+					dur="1600ms"
+					keySplines={bezierEasing.cubicOut}
+					begin="pond_draw_animate_{id}.begin+{t * 300 + 'ms'}"
+				/>
+			</ellipse>
+		{/each}
+		<animate
+			attributeName="opacity"
+			values="1;1;0"
+			begin="pond_draw_animate_{id}.begin"
+			dur="2000ms"
+			calcMode="spline"
+			fill="freeze"
+			keyTimes="0;0.8;1"
+			keySplines="0.5 0.5 0.5 0.5;{bezierEasing.cubicIn}"
+		/>
 	</g>
 	{#if inColor}
 		<path stroke-width="0.1" stroke="var(--after-color)" fill="none" d={pondPath} />
 	{/if}
-	<!-- {#each tiles as [x, y]}
+	<!-- {#each tiles as [x, y], t}
 		<rect
 			x={x * 1.5}
 			{y}
 			width="1.5"
 			height="1"
-			fill="#567de840"
-			stroke="#567de8"
+			fill={tileDripIndexes.includes(t) ? '#fff4' : '#567de840'}
+			stroke={tileDripIndexes.includes(t) ? '#fff' : '#567de8'}
 			stroke-width="0.1"
 		/>
 	{/each} -->
