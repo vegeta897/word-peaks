@@ -26,8 +26,7 @@ export type Tree = {
 	yJitter: number
 	size: number
 }
-export type Pond = { type: 'pond'; tiles: XY[] }
-export type Feature = { id: number; delay: number } & (Hill | Tree | Pond)
+export type Feature = { id: number; delay: number } & (Hill | Tree)
 
 type OpenTile = {
 	x: number
@@ -46,8 +45,10 @@ export type Landscape = {
 	centerY: number
 	rowsGenerated: number
 	features: Feature[]
-	tileMap: Map<string, Feature>
+	tileMap: Map<string, Feature | 'pond'>
 	openTiles: Map<string, OpenTile>
+	pondTiles: XY[]
+	newPondTiles: XY[]
 	nextID: number
 	generationTime?: number
 	totalDelay: number
@@ -64,8 +65,10 @@ export function getLandscape(
 ): Landscape {
 	const startTime = performance.now()
 	console.time('getFeatures')
-	const { tileMap, openTiles, width, height, centerX, centerY } = existingLandscape
+	const { tileMap, openTiles, pondTiles, newPondTiles, width, height, centerX, centerY } =
+		existingLandscape
 	let { features, rowsGenerated, nextID, totalDelay } = existingLandscape
+	newPondTiles.length = 0
 	let seed = seedPrefix + answer
 	if (rowsGenerated === 0 && currentRow > rowsGenerated) {
 		openTiles.set(xyToGrid([centerX, centerY]), {
@@ -80,7 +83,6 @@ export function getLandscape(
 		seed += rowWord
 		const rng = new Rand(seed)
 		const getRng = () => rng.next()
-		let rowFeature = 0
 		const winningRow = rowWord === answer
 		for (const tile of rowTiles) {
 			// TODO: Seperate these into functions
@@ -129,7 +131,6 @@ export function getLandscape(
 					}
 					features.push(feature)
 					totalDelay += FEATURE_DELAY
-					rowFeature++
 					tileMap.set(grid, feature)
 				}
 			} else if (tile.polarity < 0) {
@@ -184,7 +185,6 @@ export function getLandscape(
 				}
 				features.push(feature)
 				totalDelay += FEATURE_DELAY
-				rowFeature++
 				for (const hillGrid of hillGrids) {
 					tileMap.set(hillGrid, feature)
 					openTiles.delete(hillGrid)
@@ -231,23 +231,6 @@ export function getLandscape(
 					)
 					if (!generatedPond) openTile.noPond = true
 				}
-				if (!generatedPond) continue
-				const { pondTiles, mergeWithPonds, feature } = generatedPond
-				feature.id = nextID++
-				pondTiles.forEach((_, grid) => tileMap.set(grid, feature))
-				if (mergeWithPonds.size > 0) {
-					// Remove merged ponds
-					features = features.filter((f) => !mergeWithPonds.has(f as Pond))
-					for (const mergedPond of mergeWithPonds) {
-						mergedPond.tiles.forEach((tile) => {
-							tileMap.set(xyToGrid(tile), feature)
-							feature.tiles.push(tile)
-						})
-					}
-				}
-				features.push(feature)
-				totalDelay += FEATURE_DELAY
-				rowFeature++
 			}
 		}
 		rowsGenerated++
@@ -262,6 +245,8 @@ export function getLandscape(
 		tileMap,
 		rowsGenerated,
 		openTiles,
+		pondTiles,
+		newPondTiles,
 		width,
 		height,
 		centerX,
@@ -282,7 +267,4 @@ export function getCenterWeight({ centerX, centerY }: Landscape, x: number, y: n
 	return verticalCenter * horizontalCenter
 }
 
-function getFeatureY(feature: Feature) {
-	if (feature.type === 'pond') return -1
-	return feature.y + feature.yJitter
-}
+const getFeatureY = (feature: Feature) => feature.y + feature.yJitter

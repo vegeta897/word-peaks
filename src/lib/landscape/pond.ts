@@ -1,4 +1,4 @@
-import { getCenterWeight, type Feature, type Landscape, type Pond } from '$lib/landscape'
+import { getCenterWeight, type Landscape } from '$lib/landscape'
 import {
 	randomElementWeighted,
 	getNeighbors,
@@ -14,12 +14,10 @@ export function fillPond(
 	getRng: () => number,
 	landscape: Landscape
 ) {
-	const { openTiles, width, height, tileMap, centerX, centerY } = landscape
-	const pondTiles: Map<string, XY> = new Map()
+	const { openTiles, pondTiles, newPondTiles, width, height, tileMap, centerX, centerY } =
+		landscape
+	const newTiles: Map<string, XY> = new Map()
 	const openPondTiles = new Map([[startGrid, { weight: 1, x, y }]])
-	const mergeWithPonds: Set<Pond> = new Set()
-	// console.log(grid)
-	// openTiles.delete(grid)
 	for (let i = 0; i < 6; i++) {
 		if (openPondTiles.size === 0) return false
 		const openGridsArray = [...openPondTiles]
@@ -31,16 +29,12 @@ export function fillPond(
 		)
 		openPondTiles.delete(grid)
 		openTiles.delete(grid)
-		pondTiles.set(grid, [x, y])
+		newTiles.set(grid, [x, y])
 		getNeighbors(x, y).forEach(([nx, ny]) => {
 			if (nx < 0 || nx >= width || ny < 0 || ny >= height) return
 			const nGrid = xyToGrid([nx, ny])
-			if (pondTiles.has(nGrid)) return
-			if (tileMap.has(nGrid)) {
-				const neighborFeature = tileMap.get(nGrid)!
-				if (neighborFeature.type === 'pond') mergeWithPonds.add(neighborFeature)
-				return
-			}
+			if (newTiles.has(nGrid)) return
+			if (tileMap.has(nGrid)) return
 			const fromCenter = getDistance(nx - centerX, ny - centerY)
 			let weight = fromCenter
 			let openTile = openTiles.get(nGrid)
@@ -59,11 +53,8 @@ export function fillPond(
 			openPondTiles.set(nGrid, { weight, x: nx, y: ny })
 		})
 	}
-	const feature: Feature = {
-		type: 'pond',
-		id: 0, // Assigned in landscape.ts
-		tiles: [...pondTiles.values()],
-		delay: landscape.totalDelay,
-	}
-	return { feature, pondTiles, mergeWithPonds }
+	newTiles.forEach((t) => tileMap.set(xyToGrid(t), 'pond'))
+	pondTiles.push(...newTiles.values())
+	newPondTiles.push(...newTiles.values())
+	return true
 }

@@ -27,6 +27,8 @@
 		features: [],
 		tileMap: new Map(),
 		openTiles: new Map(),
+		pondTiles: [],
+		newPondTiles: [],
 		nextID: 1,
 		totalDelay: 0,
 	}
@@ -56,6 +58,8 @@
 		landscape.openTiles.clear()
 		landscape.tileMap.clear()
 		landscape.features.length = 0
+		landscape.pondTiles.length = 0
+		landscape.newPondTiles.length = 0
 		landscape.nextID = 1
 		landscape.totalDelay = 0
 	}
@@ -68,6 +72,27 @@
 		const currentRow = get(store.currentRow)
 		if (currentRow === 0) {
 			if (landscape.rowsGenerated > 0) clearLandscape()
+			// landscape.features.push({
+			// 	type: 'pond',
+			// 	id: 1,
+			// 	tiles: [
+			// 		[1, 1],
+			// 		[2, 1],
+			// 		[3, 1],
+			// 		[2, 2],
+			// 		[2, 3],
+			// 		[3, 3],
+			// 		[4, 3],
+			// 		[4, 2],
+			// 		[4, 1],
+			// 		[6, 3],
+			// 		[6, 2],
+			// 		[6, 1],
+			// 	],
+			// 	mergedTiles: [],
+			// 	delay: 100,
+			// })
+			// landscape = landscape
 			return
 		}
 		if (currentRow === landscape.rowsGenerated) return
@@ -78,21 +103,6 @@
 			currentRow,
 			`${seed}`
 		)
-		// landscape.features.push({
-		// 	type: 'pond',
-		// 	pondID: 1,
-		// 	tiles: [
-		// 		[1, 1],
-		// 		[2, 1],
-		// 		[3, 1],
-		// 		[2, 2],
-		// 		[2, 3],
-		// 		[3, 3],
-		// 		[4, 3],
-		// 		[4, 2],
-		// 		[4, 1],
-		// 	],
-		// })
 	}
 	$: if (containerWidth && containerHeight)
 		updateDimensions(containerWidth, containerHeight)
@@ -132,6 +142,13 @@
 		on:mouseleave={onMouseLeave}
 	>
 		{#key `${seed}${redraw}`}
+			<Pond
+				tiles={landscape.pondTiles}
+				newTiles={landscape.newPondTiles}
+				{mouse}
+				{mouseX}
+				{mouseY}
+			/>
 			{#each landscape.features as feature, f (feature.id)}
 				{#if feature.type === 'tree'}
 					<Tree
@@ -147,7 +164,7 @@
 						{mouseY}
 						bind:this={featureComponents[f]}
 					/>
-				{:else if feature.type === 'hill'}
+				{:else}
 					<Hill
 						id={feature.id}
 						x={feature.x}
@@ -155,16 +172,6 @@
 						xJitter={feature.xJitter}
 						yJitter={feature.yJitter}
 						size={feature.size}
-						delay={feature.delay}
-						{mouse}
-						{mouseX}
-						{mouseY}
-						bind:this={featureComponents[f]}
-					/>
-				{:else}
-					<Pond
-						id={feature.id}
-						tiles={feature.tiles}
 						delay={feature.delay}
 						{mouse}
 						{mouseX}
