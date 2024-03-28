@@ -6,13 +6,13 @@
 	import { aprilFools } from '$lib/share'
 
 	$: isAprilFools = $lastPlayedDaily && aprilFools()
-	$: peaColor =
-		isAprilFools && $boardContent.some((r) => r.some((t) => t.scored && t.distance === 0))
+	$: leakActive =
+		isAprilFools && $boardContent.some((r) => r.some((t) => t.scored && t.distance > 0))
 </script>
 
 <header class:high-contrast={$highContrast}>
 	<div class="heading-container">
-		<h1>Word <span class:pea={peaColor}>{isAprilFools ? 'Peas' : 'Peaks'}</span></h1>
+		<h1>Word <span class:leak={leakActive}>{isAprilFools ? 'Leaks' : 'Peaks'}</span></h1>
 		{#if browser}<div class="game-mode" class:large={$gameMode === 'random'}>
 				{$gameMode === 'daily' ? `#${$lastPlayedDaily + 1}` : '∞'}
 			</div>{/if}
@@ -67,8 +67,8 @@
 		margin: 0;
 	}
 
-	.pea {
-		color: var(--correct-color);
+	.leak {
+		color: var(--after-color);
 		transition: color 2s ease-in;
 	}
 

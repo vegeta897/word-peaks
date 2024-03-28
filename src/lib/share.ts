@@ -18,7 +18,7 @@ export function getShareTitle({
 	const score = gameWon ? guesses.length : 'X'
 	const dayText = gameMode === 'random' ? '∞ ' : `#${day!} `
 	const scoreText = `${score}/6${hardMode ? '*' : ''}`
-	const gameName = aprilFools() ? 'Word Peas' : 'Word Peaks'
+	const gameName = aprilFools() ? 'Word Leaks' : 'Word Peaks'
 	return `${gameName} ${dayText}${scoreText}`
 }
 
@@ -33,6 +33,7 @@ export function getEmojiGrid({
 }): string {
 	let timeStringPad: number
 	if (guessTimes) timeStringPad = longestStringLength(guessTimes)
+	const downTile = aprilFools() ? '💧' : '🔽'
 	return (
 		'  ' +
 		guesses
@@ -40,8 +41,8 @@ export function getEmojiGrid({
 				(word, w) =>
 					[...word]
 						.map((letter, l) => {
-							if (letter === answer[l]) return aprilFools() ? '🟢' : '🟩'
-							return letter > answer[l] ? '🔽' : '🔼'
+							if (letter === answer[l]) return '🟩'
+							return letter > answer[l] ? downTile : '🔼'
 						})
 						.join('') + (guessTimes ? ' ' + guessTimes[w].padStart(timeStringPad) : '')
 			)
@@ -131,7 +132,6 @@ export function drawResults(
 	ctx.font = '50px Arial'
 	ctx.textAlign = 'right'
 	ctx.textBaseline = 'middle'
-	const isAprilFools = aprilFools()
 	boardContent.forEach((row, r) => {
 		if (r >= guesses.length) return
 		row.forEach((tile, t) => {
@@ -149,13 +149,7 @@ export function drawResults(
 			const x = 8 + t * 100
 			const y = 8 + r * 100
 			const l = 88
-			if (isAprilFools && tile.distance === 0) {
-				ctx.beginPath()
-				ctx.arc(x + l / 2, y + l / 2, l / 2, 0, 2 * Math.PI)
-				ctx.fill()
-			} else {
-				roundedRectangle(x, y, l, l, topRadius, bottomRadius)
-			}
+			roundedRectangle(x, y, l, l, topRadius, bottomRadius)
 		})
 		if (guessTimes) {
 			ctx.fillStyle = '#a7a1a9'

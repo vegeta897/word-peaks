@@ -9,9 +9,19 @@
 	import { ROWS, WORD_LENGTH } from '$lib/data-model'
 	import { browser } from '$app/env'
 	import { fade } from 'svelte/transition'
+	import { aprilFools } from '$lib/share'
+	import Leak from './Leak.svelte'
 
-	const { boardContent, currentRow, currentTile, gameFinished, showAllHints, newUser, guesses } =
-		store
+	const {
+		boardContent,
+		currentRow,
+		currentTile,
+		gameFinished,
+		showAllHints,
+		newUser,
+		guesses,
+		lastPlayedDaily,
+	} = store
 
 	let idle = false
 	let canAnimate: boolean | null = null
@@ -41,6 +51,8 @@
 			idle = true
 		}
 	}
+
+	$: isAprilFools = $lastPlayedDaily && aprilFools()
 
 	onMount(() => {
 		gameFinished.subscribe(() => {
@@ -104,6 +116,9 @@
 								{#await import('$com/Idler.svelte') then module}
 									<svelte:component this={module.default} id={r + ':' + t} />
 								{/await}
+							{/if}
+							{#if isAprilFools && r === $currentRow - 1 && tile.distance > 0}
+								<Leak rowID={r} tileID={t} />
 							{/if}
 						</Tile>
 					{/each}

@@ -48,15 +48,16 @@
 				tile.letter &&
 				tile.letterBounds &&
 				(tile.letter < tile.letterBounds[0] || tile.letter > tile.letterBounds[1])))}
-	class:pea={isAprilFools}
 	style={`animation-delay: ${
 		tile.id * ($notEnoughLetters || $invalidHardModeGuess ? 20 : 0)
 	}ms; --tile-animation-delay: ${tile.id * tileFlipDelay}ms;`}
 	on:click={() => inCurrentRow && currentTile.set(tile.id)}
 >
 	{#if tile.scored}
-		<div class="tile-background" />
-		<div class="tile scored filled">{tile.letter}</div>
+		<div class="tile-clip">
+			<div class="tile-background" />
+			<div class="tile scored filled">{tile.letter}</div>
+		</div>
 	{:else}
 		<div
 			class="tile"
@@ -92,7 +93,6 @@
 		width: 57px;
 		height: 57px;
 		margin: 0 3px;
-		overflow: hidden;
 	}
 
 	.tile-container.correct {
@@ -114,8 +114,11 @@
 		box-shadow: 0 0 10px var(--correct-color);
 	}
 
-	.tile-container.animate.correct.pea::after {
-		border-radius: 100%;
+	.tile-clip {
+		overflow: hidden;
+		position: absolute;
+		width: 100%;
+		height: 100%;
 	}
 
 	.tile-background {
@@ -130,10 +133,6 @@
 
 	.correct .tile-background {
 		background: var(--correct-color);
-	}
-
-	.correct.pea .tile-background {
-		border-radius: 100%;
 	}
 
 	.correct.animate .tile-background {

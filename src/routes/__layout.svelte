@@ -53,7 +53,7 @@
 		</style>
 	{/if}
 	{#if isAprilFools}
-		<title>Word Peas</title>
+		<title>Word Leaks</title>
 	{/if}
 </svelte:head>
 

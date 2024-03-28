@@ -8,7 +8,6 @@
 	import Toggle from 'svelte-toggle'
 	import * as store from '$src/store'
 	import {
-		aprilFools,
 		copyImage,
 		copyText,
 		drawResults,
@@ -123,18 +122,6 @@
 			day: lastGameDetail!.dayNumber,
 		})
 	})
-
-	const isAprilFools = aprilFools()
-	function hopPea(element: HTMLElement) {
-		element.animate(
-			[
-				{ transform: 'translateY(0)', easing: 'ease-out' },
-				{ transform: 'translateY(-8px)', easing: 'ease-in' },
-				{ transform: 'translateY(0)' },
-			],
-			{ duration: 200 }
-		)
-	}
 </script>
 
 <section>
@@ -172,41 +159,18 @@
 	</div>
 	<div class="time-stats">
 		{#each lastGameDetail.guesses as guess, g}
-			{@const peaRow = isAprilFools && g === lastGameDetail.guesses.length - 1}
 			<div class="guess-row">
-				{#if peaRow}
-					<svg class="pea-pod" viewBox="0 0 205 43">
-						<path
-							d="M6.558,7.019c21.249,12.439 78.259,14.642 103.137,14.642c24.877,-0 82.144,-6.025 94.778,2.701c-5.183,8.163 -21.831,11.422 -21.831,11.422l-151.077,0.648c-0,-0 -16.844,-19.177 -25.007,-29.413Z"
-							style="fill:#3e7332;"
-						/>
-					</svg>
-				{/if}
 				<div class="guess-word">
 					{#each guess as letter, l}
 						<div
 							class="guess-letter"
 							class:before={letter < lastGameDetail.answer[l]}
 							class:after={letter > lastGameDetail.answer[l]}
-							class:pea={isAprilFools && letter === lastGameDetail.answer[l]}
-							on:click={(e) => peaRow && hopPea(e.currentTarget)}
 						>
 							{letter.toUpperCase()}
 						</div>
 					{/each}
 				</div>
-				{#if peaRow}
-					<svg class="pea-pod" viewBox="0 0 205 43">
-						<path
-							d="M204.555,24.196c-5.846,13.124 -16.618,15.198 -25.006,16.13c-7.791,0.866 -14.524,-0.466 -21.448,-0.311c-4.949,0.11 -11.226,1.135 -16.184,1.55c-8.177,0.684 -11.986,-0.584 -17.466,-0.496c-5.557,0.089 -9.139,1.502 -14.678,1.62c-8.597,0.184 -11.504,-2.027 -19.038,-1.967c-8.376,0.066 -10.955,1.167 -17.78,1.05c-5.494,-0.094 -14.16,-1.088 -17.551,-1.155c-7.434,-0.146 -11.777,1.093 -19.236,0.253c-11.178,-1.259 -27.431,-12.837 -29.574,-33.862c12.886,10.704 21.567,25.417 49.377,24.238c25.708,-1.091 65.566,0.338 91.802,0.43c28.889,0.101 42.417,-0.158 56.782,-7.48Z"
-							style="fill:#5ec52c;"
-						/>
-						<path
-							d="M9.14,4.704c-1.889,-2.362 -1.373,-7.053 -6.175,-3.297c-5.915,4.627 -1.473,4.433 0.438,6.835c-1.257,2.344 -2.984,4.98 -0.038,8.781c2.682,3.461 2.846,4.911 4.017,10.578c3.342,-6.453 1.562,-13.873 1.562,-13.873c-0,0 5.317,3.292 8.983,7.534c-1.19,-6.622 -4.661,-10.455 -4.661,-10.455c-0,-0 7.536,0.757 12.228,-0.989c-11.769,-1.187 -10.295,-9.002 -16.354,-5.114Z"
-							style="fill:#15a850;"
-						/>
-					</svg>
-				{/if}
 				<div class="time-value">
 					<Time
 						bindContainer={guessTimeElements[g]}
@@ -217,9 +181,6 @@
 			</div>
 		{/each}
 	</div>
-	{#if isAprilFools}<p style="font-size: 1.2em; font-weight: bold; margin-bottom: 0;">
-			Hap-<span style="color: var(--correct-color)">pea</span> April Fool's Day!
-		</p>{/if}
 	<div class="share">
 		{#if shareMenu}
 			<div class="share-buttons">
@@ -312,14 +273,6 @@
 		position: relative;
 	}
 
-	.pea-pod {
-		width: 205px;
-		position: absolute;
-		left: -26px;
-		top: -7px;
-		pointer-events: none;
-	}
-
 	.guess-word {
 		display: flex;
 		width: 190px;
@@ -352,9 +305,6 @@
 		border-color: var(--after-color);
 		border-bottom-left-radius: 8px;
 		border-bottom-right-radius: 8px;
-	}
-	.guess-letter.pea {
-		border-radius: 100%;
 	}
 
 	.time-value {
@@ -452,11 +402,6 @@
 	@media (max-width: 360px) {
 		.info-item {
 			font-size: 0.9em;
-		}
-		.pea-pod {
-			width: 185px;
-			left: -22px;
-			top: -5px;
 		}
 		.guess-word {
 			width: 170px;
