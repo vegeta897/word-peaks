@@ -45,6 +45,8 @@ export const bezierEasing = {
 	sineInOut: '0.37, 0, 0.63, 1',
 	circIn: '0.55, 0, 1, 0.45',
 	circOut: '0, 0.55, 0.45, 1',
+	expoIn: '0.7, 0, 0.84, 0',
+	expoOut: '0.16, 1, 0.3, 1',
 } as const
 
 // Based on https://codepen.io/danwilson/pen/xGBKVq

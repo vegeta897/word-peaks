@@ -13,15 +13,14 @@
 	export let yJitter: number
 	export let size: number
 	export let delay = 0
-	export let mouse: boolean
+	export let mouseOver: boolean
 	export let mouseX: number
 	export let mouseY: number
 
 	let animateElement: SVGAnimateElement
 
-	export function redraw(/*delay = 0*/) {
-		if (delay) setTimeout(() => animateElement?.beginElement(), delay)
-		else animateElement?.beginElement()
+	export function flashColor(x: number, y: number, durationExtension: number) {
+		// see tree
 	}
 
 	let draw = false
@@ -31,7 +30,7 @@
 	$: centerY = y + yJitter + 1
 	$: radius = 1.35 + 0.2 * size
 	$: hover =
-		mouse &&
+		mouseOver &&
 		Math.abs(centerX - mouseX) < radius + STROKE_HALF &&
 		Math.abs(centerY - 1 - mouseY) < radius + STROKE_HALF
 

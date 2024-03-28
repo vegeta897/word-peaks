@@ -37,6 +37,7 @@
 		// console.log(width)
 		// This is a little too aggressive
 		// TODO: Maybe reduce tree count and lake size at smaller widths
+		// TODO: Make hills 2x2 too
 		const tileWidth = width < 120 ? 12 : 24
 		const tileHeight = width < 120 ? 8 : 16
 		const newWidth = Math.floor(width / tileWidth)
@@ -108,25 +109,47 @@
 		updateDimensions(containerWidth, containerHeight)
 	store.currentRow.subscribe(() => updateLandscape())
 	let seed = 0
-	const featureComponents: { redraw: () => void }[] = []
+	const featureComponents: {
+		flashColor: (x: number, y: number, durationExtension: number) => void
+	}[] = []
 
-	function redrawFeatures() {
-		featureComponents.forEach((f) => f?.redraw())
+	let lastFlash = 0
+	let flashDurationExtension = 0
+
+	function updateMousePosition({
+		offsetX,
+		offsetY,
+	}: {
+		offsetX: number
+		offsetY: number
+	}) {
+		mouseX = -0.1 + (offsetX / svgWidth) * (landscape.width * 1.5 + 0.2)
+		mouseY = -0.1 + (offsetY / svgHeight) * (landscape.height + 0.2)
 	}
 
-	let mouse = false
+	const flashColors: svelte.JSX.MouseEventHandler<SVGElement> = (event) => {
+		updateMousePosition(event)
+		const now = Date.now()
+		// This is brilliant
+		flashDurationExtension = Math.max(0, flashDurationExtension + lastFlash + 250 - now)
+		featureComponents.forEach((f) =>
+			f?.flashColor(mouseX, mouseY, flashDurationExtension)
+		)
+		lastFlash = now
+	}
+
+	let mouseOver = false
 	let mouseX: number
 	let mouseY: number
 
 	function onPointerMove(event: PointerEvent) {
 		if (event.pointerType === 'touch') return
-		mouse = true
-		mouseX = -0.1 + (event.offsetX / svgWidth) * (landscape.width * 1.5 + 0.2)
-		mouseY = -0.1 + (event.offsetY / svgHeight) * (landscape.height + 0.2)
+		mouseOver = true
+		updateMousePosition(event)
 		// console.log(mouseX, mouseY)
 	}
 	function onMouseLeave() {
-		mouse = false
+		mouseOver = false
 	}
 	let redraw = 0
 </script>
@@ -137,7 +160,7 @@
 		width={svgWidth}
 		height={svgHeight}
 		viewBox="-0.1 -0.1 {landscape.width * 1.5 + 0.2} {landscape.height + 0.2}"
-		on:click={() => redraw++}
+		on:pointerdown={flashColors}
 		on:pointermove={onPointerMove}
 		on:mouseleave={onMouseLeave}
 	>
@@ -145,7 +168,7 @@
 			<Pond
 				tiles={landscape.pondTiles}
 				newTiles={landscape.newPondTiles}
-				{mouse}
+				{mouseOver}
 				{mouseX}
 				{mouseY}
 			/>
@@ -159,7 +182,7 @@
 						yJitter={feature.yJitter}
 						size={feature.size}
 						delay={feature.delay}
-						{mouse}
+						{mouseOver}
 						{mouseX}
 						{mouseY}
 						bind:this={featureComponents[f]}
@@ -173,7 +196,7 @@
 						yJitter={feature.yJitter}
 						size={feature.size}
 						delay={feature.delay}
-						{mouse}
+						{mouseOver}
 						{mouseX}
 						{mouseY}
 						bind:this={featureComponents[f]}
@@ -205,5 +228,6 @@
 		position: absolute;
 		top: 0;
 		left: 0;
+		touch-action: manipulation;
 	}
 </style>

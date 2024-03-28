@@ -94,9 +94,13 @@ export function getLandscape(
 					// const [grid, { x, y }] = randomElement(openTilesArray, getRng)
 					const [grid, { x, y }] = randomElementWeighted(
 						openTilesArray,
-						openTilesArray.map(([, { centerWeight, nearTrees }]) =>
+						openTilesArray.map(([, { y, centerWeight, nearTrees }]) =>
 							// Prioritize center tree placement on winning row
-							winningRow ? centerWeight ** 3 : centerWeight * ((nearTrees || 0) + 1)
+							y === 0 // Trees at the top would be cut off
+								? 0
+								: winningRow
+								? centerWeight ** 3
+								: centerWeight * ((nearTrees || 0) + 1)
 						),
 						getRng
 					)
@@ -141,7 +145,7 @@ export function getLandscape(
 					const openHillTiles = [...openTiles].filter(([, { noHill }]) => !noHill)
 					if (openHillTiles.length === 0) break
 					const openTileWeights = openHillTiles.map(
-						([, { centerWeight }]) => centerWeight
+						([, { y, centerWeight }]) => (y > 1 ? centerWeight : 0) // Hills higher than y=1 would be cut off
 					)
 					// console.log(openTileWeights)
 					const [, tile] = randomElementWeighted(openHillTiles, openTileWeights, getRng)

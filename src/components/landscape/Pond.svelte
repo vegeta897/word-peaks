@@ -2,34 +2,27 @@
 	import { bezierEasing } from '$lib/transitions'
 	import type { XY } from '$lib/math'
 
-	export let delay = 0
 	export let tiles: XY[] = []
 	export let newTiles: XY[] = []
-	export let mouse: boolean
+	export let mouseOver: boolean
 	export let mouseX: number
 	export let mouseY: number
 
 	let animateElement: SVGAnimateElement
 
-	$: tileDripIndexes = tiles.length === 0 ? [] : tiles.length > 18 ? [0, 7, 12, 18] : [0]
+	$: tileDripIndexes = newTiles.map((_, i) => i).filter((i) => i % 6 === 0)
 
 	// TODO: When tiles array changes, identify new tiles and put drips in them
 	// Keep old pond path outline until new drips finish
 
+	// TODO: Store pond number in each tile so drips can be ordered properly
+
 	$: tileCenters = tiles.map(([x, y]) => [(x + 0.5) * 1.5, y + 0.5])
 	$: hover =
-		mouse &&
+		mouseOver &&
 		tileCenters.some(([x, y]) => Math.abs(x - mouseX) < 0.9 && Math.abs(y - mouseY) < 0.6)
 
-	export function redraw(/*delay = 0*/) {
-		if (delay) setTimeout(() => animateElement?.beginElement(), delay)
-		else animateElement?.beginElement()
-	}
-
 	let inColor = false
-
-	// TODO: Blue drops fall from above, falling into pond and turn into expanding circles
-	// which then fade out?
 
 	type Dir = 0 | 1 | 2 | 3 // down | right | up | left
 	type Edge = [x1: number, y1: number, x2: number, y2: number, dir: Dir]
@@ -49,7 +42,7 @@
 		}
 	}
 
-	function createPondPath(tiles: [x: number, y: number][]) {
+	function createPondPath(tiles: XY[]) {
 		const segmentMap: Map<string, string> = new Map()
 		const startsMap: Map<string, string> = new Map()
 		for (const [x, y] of tiles) {
@@ -112,13 +105,48 @@
 		return pathData
 	}
 
-	$: pondPath = createPondPath(tiles)
-
-	$: animateElement?.beginElement()
+	let pondPath: string
+	let previousPondPath: string
+	$: if (tiles) {
+		previousPondPath = pondPath
+		pondPath = createPondPath(tiles)
+		if (previousPondPath !== pondPath) animateElement?.beginElement()
+	}
 </script>
 
+<clipPath id="prev_pond_path"> <path d={previousPondPath} /> </clipPath>
 <g on:mouseenter={() => (hover = true)} on:mouseleave={() => (hover = false)}>
-	<clipPath id="pond_path"> <path d={pondPath} /> </clipPath>
+	<g clip-path="url(#prev_pond_path)">
+		<path fill="var(--landscape-color)" d={previousPondPath} />
+		<path
+			style:transform="translateY({hover ? 0 : 0.2}px)"
+			style:transition="transform {800}ms ease-in-out"
+			fill="var(--tertiary-color)"
+			stroke-width="0.2"
+			stroke="var(--landscape-color)"
+			d={previousPondPath}
+		/>
+	</g>
+	<path
+		stroke-width="0.2"
+		stroke="var(--landscape-color)"
+		stroke-linecap="round"
+		fill="none"
+		d={previousPondPath}
+	/>
+	<animate
+		attributeName="opacity"
+		values="1;1;0"
+		begin="pond_draw_animate.begin"
+		dur="{1000 + tileDripIndexes.length * 200}ms"
+		calcMode="spline"
+		fill="freeze"
+		keyTimes="0;0.8;1"
+		keySplines="0.5 0.5 0.5 0.5;{bezierEasing.cubicIn}"
+	/>
+</g>
+<clipPath id="pond_path"> <path d={pondPath} /> </clipPath>
+<g>
 	<g clip-path="url(#pond_path)">
 		{#if inColor}
 			<path
@@ -132,7 +160,7 @@
 			<path fill="var(--landscape-color)" d={pondPath} />
 			<path
 				style:transform="translateY({hover ? 0 : 0.2}px)"
-				style:transition="transform {hover ? 250 : 500}ms ease-out"
+				style:transition="transform {800}ms ease-in-out"
 				fill="var(--tertiary-color)"
 				stroke-width="0.2"
 				stroke="var(--landscape-color)"
@@ -152,7 +180,7 @@
 		id="pond_draw_animate"
 		attributeName="opacity"
 		values="0;0;1"
-		dur="2000ms"
+		dur="{1000 + tileDripIndexes.length * 200}ms"
 		calcMode="spline"
 		fill="freeze"
 		keyTimes="0;0.8;1"
@@ -162,7 +190,7 @@
 </g>
 <g clip-path="url(#pond_path)">
 	{#each tileDripIndexes as tileIndex, t}
-		{@const [x, y] = tiles[tileIndex]}
+		{@const [x, y] = newTiles[tileIndex]}
 		<ellipse fill="var(--after-color)" cx={(x + 0.5) * 1.5} cy={y + 0.5}>
 			<animate
 				attributeName="rx"
@@ -171,7 +199,7 @@
 				fill="freeze"
 				dur="1600ms"
 				keySplines={bezierEasing.cubicOut}
-				begin="pond_draw_animate.begin+{t * 300 + 'ms'}"
+				begin="pond_draw_animate.begin+{t * 200 + 'ms'}"
 			/>
 			<animate
 				attributeName="ry"
@@ -180,7 +208,7 @@
 				fill="freeze"
 				dur="1600ms"
 				keySplines={bezierEasing.cubicOut}
-				begin="pond_draw_animate.begin+{t * 300 + 'ms'}"
+				begin="pond_draw_animate.begin+{t * 200 + 'ms'}"
 			/>
 		</ellipse>
 	{/each}
@@ -188,7 +216,7 @@
 		attributeName="opacity"
 		values="1;1;0"
 		begin="pond_draw_animate.begin"
-		dur="2000ms"
+		dur="{1000 + tileDripIndexes.length * 200}ms"
 		calcMode="spline"
 		fill="freeze"
 		keyTimes="0;0.8;1"
@@ -198,7 +226,7 @@
 {#if inColor}
 	<path stroke-width="0.1" stroke="var(--after-color)" fill="none" d={pondPath} />
 {/if}
-{#each tiles as [x, y], t}
+<!-- {#each tiles as [x, y], t}
 	<rect
 		x={x * 1.5}
 		{y}
@@ -208,4 +236,4 @@
 		stroke={newTiles.some(([nx, ny]) => nx === x && ny === y) ? '#4ff' : '#567de8'}
 		stroke-width="0.1"
 	/>
-{/each}
+{/each} -->
