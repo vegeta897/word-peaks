@@ -6,17 +6,17 @@
 	export let title: string
 
 	let backgroundElement: HTMLDivElement
-	let backgroundClickTarget: HTMLElement
-	const onBackgroundMousedown = (event) => {
+	let backgroundClickTarget: EventTarget
+	const onBackgroundMousedown: svelte.JSX.MouseEventHandler<HTMLDivElement> = (event) => {
 		if (event.target === backgroundElement) backgroundClickTarget = event.target
 	}
-	const onBackgroundMouseup = (event) => {
+	const onBackgroundMouseup: svelte.JSX.MouseEventHandler<HTMLDivElement> = (event) => {
 		if (event.target === backgroundClickTarget) {
 			event.preventDefault()
 			openScreen.set(null)
 		}
 	}
-	const handleKeyDown = ({ key }) => {
+	const handleKeyDown: svelte.JSX.KeyboardEventHandler<Window> = ({ key }) => {
 		if (key === 'Escape') openScreen.set(null)
 	}
 </script>

@@ -9,22 +9,35 @@
 	<p>{$t('main.tutorial.objective')}</p>
 	<p>{$t('main.tutorial.explanation')}</p>
 	<div class="row">
-		<div><Tile tile={{ scored: true, letter: 'p', distance: 0, id: 0 }} /></div>
+		<div>
+			<Tile tile={{ scored: true, letter: 'p', distance: 0, id: 0, polarity: 0 }} />
+		</div>
 		<p>{$t('main.tutorial.correct_tile')}</p>
 	</div>
 	<div class="row">
-		<div><Tile tile={{ scored: true, letter: 'd', distance: -1, id: 0 }} /></div>
+		<div>
+			<Tile tile={{ scored: true, letter: 'd', distance: -1, id: 0, polarity: 0 }} />
+		</div>
 		<p>{$t('main.tutorial.high_tile')}</p>
 	</div>
 	<div class="row">
-		<div><Tile tile={{ scored: true, letter: 'w', distance: 1, id: 0 }} /></div>
+		<div>
+			<Tile tile={{ scored: true, letter: 'w', distance: 1, id: 0, polarity: 0 }} />
+		</div>
 		<p>{$t('main.tutorial.low_tile')}</p>
 	</div>
 	<hr />
 	<div class="row">
 		<div>
 			<Tile
-				tile={{ scored: false, letter: '', distance: 0, id: 0, letterBounds: ['e', 'v'] }}
+				tile={{
+					scored: false,
+					letter: '',
+					distance: 0,
+					id: 0,
+					letterBounds: ['e', 'v'],
+					polarity: 0,
+				}}
 				current={true}
 				showHint={true}
 			/>

@@ -1,6 +1,7 @@
 import i18n from 'sveltekit-i18n'
 import lang from './lang.json'
 import type { Config } from 'sveltekit-i18n'
+import type { Parser } from '@sveltekit-i18n/parser-default'
 
 export const config: Config = {
 	translations: {
@@ -62,4 +63,6 @@ export function getNavigatorLanguage(): string {
 	return 'en'
 }
 
-export const { t, loading, locales, locale, loadTranslations, translations } = new i18n(config)
+export const { t, loading, locales, locale, loadTranslations, translations } = new i18n<
+	Parser.Params<{ answer?: string }>
+>(config)

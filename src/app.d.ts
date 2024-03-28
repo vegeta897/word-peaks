@@ -11,3 +11,8 @@ declare namespace App {
 
 	interface Stuff {}
 }
+
+declare interface Window {
+	wp_start: () => void
+	wp_guess: (guess: string) => void
+}

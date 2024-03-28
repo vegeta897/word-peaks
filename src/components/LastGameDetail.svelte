@@ -19,11 +19,11 @@
 	import { trackEvent } from '$lib/plausible'
 	import { toast } from '@zerodevx/svelte-toast'
 
-	export let lastGameDetail: GameDetail | null
+	export let lastGameDetail: GameDetail
 
-	const { preciseTimes, gameWon } = store
+	const { preciseTimes } = store
 
-	type SpanContainer = { span?: HTMLSpanElement }
+	type SpanContainer = { span: HTMLSpanElement | undefined }
 	const totalTimeElement: SpanContainer = { span: undefined }
 	const guessTimeElements: SpanContainer[] = []
 	const getGuessTimes = () => guessTimeElements.map((e) => e.span!.innerText)
@@ -189,7 +189,7 @@
 							class:before={letter < lastGameDetail.answer[l]}
 							class:after={letter > lastGameDetail.answer[l]}
 							class:pea={isAprilFools && letter === lastGameDetail.answer[l]}
-							on:click={(e) => peaRow && hopPea(e.target)}
+							on:click={(e) => peaRow && hopPea(e.currentTarget)}
 						>
 							{letter.toUpperCase()}
 						</div>

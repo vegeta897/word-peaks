@@ -14,7 +14,7 @@
 	import type { Tile } from '$lib/data-model'
 	import { aprilFools } from '$lib/share'
 
-	export let tile: Tile
+	export let tile: Omit<Tile, 'magnitude'>
 	export let current = false
 	export let showHint = false
 	export let inCurrentRow = false

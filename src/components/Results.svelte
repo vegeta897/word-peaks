@@ -24,9 +24,9 @@
 		lastPlayedDaily === getDayNumber() &&
 		(guessesDaily.length === 6 || guessesDaily[guessesDaily.length - 1] === get(store.answerDaily))
 
-	const nextDailyTime = getDayEnd(lastPlayedDaily)
-	let nextWordReady = nextDailyTime < new Date()
-	setInterval(() => (nextWordReady = nextDailyTime < new Date()), 1000)
+	const nextDailyTime = getDayEnd(lastPlayedDaily).getTime()
+	let nextWordReady = nextDailyTime < Date.now()
+	setInterval(() => (nextWordReady = nextDailyTime < Date.now()), 1000)
 </script>
 
 <Screen
@@ -52,7 +52,7 @@
 	<div class="next-up">
 		<div class="column">
 			<div class="countdown">
-				<Time alwaysShowHours countdown={nextDailyTime} class="time">
+				<Time mode="countdown" alwaysShowHours ms={nextDailyTime} class="time">
 					<div slot="after-countdown" class="daily-text">{$t('main.results.try_today')}</div>
 					<h3 slot="title">{$t('main.results.next_word')}</h3>
 				</Time>
