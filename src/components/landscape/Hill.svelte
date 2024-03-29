@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte'
 	import { bezierEasing } from '$lib/transitions'
+	import { getDistance } from '$lib/math'
 
 	const STROKE_WIDTH = 0.2
 	const STROKE_HALF = STROKE_WIDTH / 2
@@ -19,8 +20,16 @@
 
 	let animateElement: SVGAnimateElement
 
+	let lastTimeout: NodeJS.Timer
 	export function flashColor(x: number, y: number, durationExtension: number) {
-		// see tree
+		const distance = getDistance(x - centerX, y - centerY)
+		setTimeout(async () => {
+			inColor = true
+			const thisTimeout = setTimeout(async () => {
+				if (lastTimeout === thisTimeout) inColor = false
+			}, 400 + durationExtension)
+			lastTimeout = thisTimeout
+		}, distance * 50)
 	}
 
 	let draw = false
@@ -78,20 +87,22 @@
 			/>
 			<!-- <path transform="translate(0 0.2)" fill="#e38f2f" d={hillPath} /> -->
 			<path
+				fill="var(--{inColor ? 'before-color' : 'tertiary-color'})"
 				stroke="var(--{inColor ? 'before-color' : 'landscape-color'})"
 				stroke-width={STROKE_WIDTH}
 				stroke-linecap="round"
-				fill="var(--{inColor ? 'before-color' : 'tertiary-color'})"
+				style:transition="fill 200ms ease, stroke 200ms ease"
 				d={hillBottomPath}
 			/>
 			<path
+				fill="var(--{inColor ? 'before-color' : 'tertiary-color'})"
 				stroke="var(--{inColor ? 'before-color' : 'landscape-color'})"
 				stroke-width={STROKE_WIDTH}
 				stroke-linecap="round"
-				fill="var(--{inColor ? 'before-color' : 'tertiary-color'})"
 				d={hillTopPath}
 				style:transform="translateY({hover ? 0.4 : 0}px)"
-				style:transition="transform {hover ? 75 : 200}ms ease-out"
+				style:transition="transform {hover ? 75 : 200}ms ease-out, fill 200ms ease, stroke
+				200ms ease"
 			/>
 			<animate
 				id="hill_draw_animate_{id}"

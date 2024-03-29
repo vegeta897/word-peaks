@@ -27,7 +27,7 @@
 			inColor = true
 			const thisTimeout = setTimeout(async () => {
 				if (lastTimeout === thisTimeout) inColor = false
-			}, 250 + durationExtension)
+			}, 400 + durationExtension)
 			lastTimeout = thisTimeout
 		}, distance * 50)
 	}

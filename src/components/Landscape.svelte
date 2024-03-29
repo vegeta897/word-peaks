@@ -97,6 +97,7 @@
 			return
 		}
 		if (currentRow === landscape.rowsGenerated) return
+		redraw++ // TODO: Don't redraw & don't animate appearances on resize
 		landscape = getLandscape(
 			landscape,
 			get(store.boardContent),
