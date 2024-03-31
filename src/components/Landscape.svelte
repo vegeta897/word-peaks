@@ -13,6 +13,8 @@
 
 	// TODO: Support high-contrast color mode
 
+	// TODO: Add share landscape image button - https://stackoverflow.com/a/76239811/2612679
+
 	let containerWidth: number
 	let containerHeight: number
 	let svgWidth = 0
@@ -97,7 +99,7 @@
 			return
 		}
 		if (currentRow === landscape.rowsGenerated) return
-		redraw++ // TODO: Don't redraw & don't animate appearances on resize
+		// redraw++ // TODO: Don't redraw & don't animate appearances on resize
 		landscape = getLandscape(
 			landscape,
 			get(store.boardContent),
@@ -110,12 +112,13 @@
 		updateDimensions(containerWidth, containerHeight)
 	store.currentRow.subscribe(() => updateLandscape())
 	let seed = 0
+	type FlashColorHandler = (x: number, y: number, duration: number) => void
 	const featureComponents: {
-		flashColor: (x: number, y: number, durationExtension: number) => void
+		flashColor: FlashColorHandler
 	}[] = []
-
-	let lastFlash = 0
-	let flashDurationExtension = 0
+	let pondComponent: {
+		flashColor: FlashColorHandler
+	}
 
 	function updateMousePosition({
 		offsetX,
@@ -128,15 +131,22 @@
 		mouseY = -0.1 + (offsetY / svgHeight) * (landscape.height + 0.2)
 	}
 
-	const flashColors: svelte.JSX.MouseEventHandler<SVGElement> = (event) => {
+	let lastFlashAt = 0
+	let flashDurationExtra = 0
+
+	const flashColors: svelte.JSX.PointerEventHandler<SVGElement> = (event) => {
+		if (event.pointerType === 'mouse' && event.button !== 0) return
 		updateMousePosition(event)
 		const now = Date.now()
 		// This is brilliant
-		flashDurationExtension = Math.max(0, flashDurationExtension + lastFlash + 250 - now)
-		featureComponents.forEach((f) =>
-			f?.flashColor(mouseX, mouseY, flashDurationExtension)
+		flashDurationExtra = Math.max(
+			0,
+			Math.min(3500, flashDurationExtra + lastFlashAt + 250 - now)
 		)
-		lastFlash = now
+		const duration = 2000 + flashDurationExtra
+		featureComponents.forEach((f) => f?.flashColor(mouseX, mouseY, duration))
+		pondComponent.flashColor(mouseX, mouseY, duration)
+		lastFlashAt = now
 	}
 
 	let mouseOver = false
@@ -167,11 +177,14 @@
 	>
 		{#key `${seed}${redraw}`}
 			<Pond
+				bind:this={pondComponent}
 				tiles={landscape.pondTiles}
 				newTiles={landscape.newPondTiles}
 				{mouseOver}
 				{mouseX}
 				{mouseY}
+				landscapeWidth={landscape.width}
+				landscapeHeight={landscape.height}
 			/>
 			{#each landscape.features as feature, f (feature.id)}
 				{#if feature.type === 'tree'}

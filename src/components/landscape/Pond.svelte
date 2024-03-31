@@ -1,12 +1,15 @@
 <script lang="ts">
 	import { bezierEasing } from '$lib/transitions'
-	import type { XY } from '$lib/math'
+	import { getDistance, type XY } from '$lib/math'
+	import { tick } from 'svelte'
 
 	export let tiles: XY[] = []
 	export let newTiles: XY[] = []
 	export let mouseOver: boolean
 	export let mouseX: number
 	export let mouseY: number
+	export let landscapeWidth: number
+	export let landscapeHeight: number
 
 	let animateElement: SVGAnimateElement
 
@@ -17,12 +20,41 @@
 
 	// TODO: Store pond number in each tile so drips can be ordered properly
 
+	$: maxDistance = getDistance(landscapeWidth, landscapeHeight)
+	$: expandDuration = 200 + maxDistance * 70
+
+	type Ripple = [id: number, ...XY, duration: number, SVGAnimateElement, keyTimes: string]
+	let ripples: Ripple[] = []
+	let rippleID = 0
+	export async function flashColor(x: number, y: number, duration: number) {
+		const fullDuration = duration + 800
+		const expandKeyTime = expandDuration / fullDuration
+		const fadeKeyTime = 1 - 800 / fullDuration
+		const ripple = [
+			++rippleID,
+			x,
+			y,
+			fullDuration,
+			null /* Animate element will bind here */,
+			`0;${expandKeyTime};${fadeKeyTime};1`,
+		] as unknown as Ripple
+		ripples = [...ripples, ripple]
+		await tick()
+		ripple[4]?.beginElement()
+		// console.log(ripples)
+		setTimeout(() => {
+			ripples = ripples.filter((r) => r !== ripple)
+		}, fullDuration)
+	}
+
+	// TODO: Waves
+	// Mouse-over effect: waves are drawn in 2 halves with clip path rectangles,
+	// hover causes them to split/merge in the middle to form/collapse an extra wave
+
 	$: tileCenters = tiles.map(([x, y]) => [(x + 0.5) * 1.5, y + 0.5])
 	$: hover =
 		mouseOver &&
 		tileCenters.some(([x, y]) => Math.abs(x - mouseX) < 0.9 && Math.abs(y - mouseY) < 0.6)
-
-	let inColor = false
 
 	type Dir = 0 | 1 | 2 | 3 // down | right | up | left
 	type Edge = [x1: number, y1: number, x2: number, y2: number, dir: Dir]
@@ -107,11 +139,16 @@
 
 	let pondPath: string
 	let previousPondPath: string
-	$: if (tiles) {
+
+	async function onTiles() {
 		previousPondPath = pondPath
 		pondPath = createPondPath(tiles)
+		await tick()
+		console.log(previousPondPath !== pondPath, animateElement)
 		if (previousPondPath !== pondPath) animateElement?.beginElement()
 	}
+
+	$: if (tiles) onTiles()
 </script>
 
 <clipPath id="prev_pond_path"> <path d={previousPondPath} /> </clipPath>
@@ -148,33 +185,74 @@
 <clipPath id="pond_path"> <path d={pondPath} /> </clipPath>
 <g>
 	<g clip-path="url(#pond_path)">
-		{#if inColor}
-			<path
-				transform="translate(0 0.09)"
-				stroke-width="0.09"
-				stroke="#312236d0"
-				fill="none"
-				d={pondPath}
-			/>
-		{:else}
-			<path fill="var(--landscape-color)" d={pondPath} />
-			<path
-				style:transform="translateY({hover ? 0 : 0.2}px)"
-				style:transition="transform {800}ms ease-in-out"
-				fill="var(--tertiary-color)"
-				stroke-width="0.2"
-				stroke="var(--landscape-color)"
-				d={pondPath}
-			/>
-		{/if}
+		<path fill="var(--landscape-color)" d={pondPath} />
+		<path
+			style:transform="translateY({hover ? 0 : 0.2}px)"
+			style:transition="transform {800}ms ease-in-out"
+			fill="var(--tertiary-color)"
+			stroke-width="0.2"
+			stroke="var(--landscape-color)"
+			d={pondPath}
+		/>
 	</g>
 	<path
 		stroke-width="0.2"
-		stroke={inColor ? 'none' : 'var(--landscape-color)'}
+		stroke="var(--landscape-color)"
 		stroke-linecap="round"
-		fill={inColor ? 'var(--after-color)' : 'none'}
+		fill="none"
 		d={pondPath}
 	/>
+	{#each ripples as ripple (ripple)}
+		<radialGradient
+			id="pond_ripple_gradient_{ripple[0]}"
+			gradientUnits="userSpaceOnUse"
+			gradientTransform="translate({ripple[1]} {ripple[2]}) scale(1.5 1)"
+			cx="0"
+			cy="0"
+			r={maxDistance}
+		>
+			<stop stop-color="var(--after-color)">
+				<animate
+					bind:this={ripple[4]}
+					id="pond_ripple_animate_{ripple[0]}"
+					attributeName="offset"
+					values="0;1;1;1"
+					keyTimes={ripple[5]}
+					dur="{ripple[3]}ms"
+					fill="freeze"
+					begin="indefinite"
+				/>
+			</stop>
+			<stop stop-color="#567de800">
+				<animate
+					attributeName="offset"
+					values="0;1.01;1.01;1.01"
+					keyTimes={ripple[5]}
+					dur="{ripple[3]}ms"
+					fill="freeze"
+					begin="pond_ripple_animate_{ripple[0]}.begin"
+				/>
+			</stop>
+		</radialGradient>
+		<path
+			stroke-width="0.26"
+			stroke-linecap="round"
+			stroke="url('#pond_ripple_gradient_{ripple[0]}')"
+			fill="url('#pond_ripple_gradient_{ripple[0]}')"
+			d={pondPath}
+		>
+			<animate
+				attributeName="opacity"
+				values="1;1;1;0"
+				keyTimes={ripple[5]}
+				calcMode="spline"
+				keySplines="0 0 0 0;0 0 0 0;0.25 0.1 0.25 1"
+				dur="{ripple[3]}ms"
+				fill="freeze"
+				begin="pond_ripple_animate_{ripple[0]}.begin"
+			/>
+		</path>
+	{/each}
 	<animate
 		bind:this={animateElement}
 		id="pond_draw_animate"
@@ -223,9 +301,6 @@
 		keySplines="0.5 0.5 0.5 0.5;{bezierEasing.cubicIn}"
 	/>
 </g>
-{#if inColor}
-	<path stroke-width="0.1" stroke="var(--after-color)" fill="none" d={pondPath} />
-{/if}
 <!-- {#each tiles as [x, y], t}
 	<rect
 		x={x * 1.5}

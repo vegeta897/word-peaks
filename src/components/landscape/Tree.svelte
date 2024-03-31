@@ -21,15 +21,13 @@
 	let animateElement: SVGAnimateElement
 
 	let lastTimeout: NodeJS.Timer
-	export function flashColor(x: number, y: number, durationExtension: number) {
+	export function flashColor(x: number, y: number, duration: number) {
 		const distance = getDistance(x - centerX, y - centerY)
-		setTimeout(async () => {
-			inColor = true
-			const thisTimeout = setTimeout(async () => {
-				if (lastTimeout === thisTimeout) inColor = false
-			}, 400 + durationExtension)
-			lastTimeout = thisTimeout
-		}, distance * 50)
+		setTimeout(() => (inColor = true), distance * 70)
+		const thisTimeout = setTimeout(() => {
+			if (lastTimeout === thisTimeout) inColor = false
+		}, duration)
+		lastTimeout = thisTimeout
 	}
 
 	let inColor = false
@@ -79,7 +77,9 @@
 			stroke-width={STROKE_WIDTH}
 			stroke-linecap="round"
 			y2={-length}
-			style:transition="fill 200ms ease, stroke 200ms ease"
+			style:transition="fill {inColor ? 200 : 1000}ms ease, stroke {inColor
+				? 200
+				: 1000}ms ease"
 		/>
 		<circle
 			cy={-length - radius}
@@ -88,8 +88,10 @@
 			stroke="var(--{inColor ? 'correct-color' : 'landscape-color'})"
 			stroke-width={STROKE_WIDTH}
 			style:transform="translateY({hover ? 0.3 : 0}px)"
-			style:transition="transform {hover ? 50 : 200}ms ease-out, fill 200ms ease, stroke
-			200ms ease"
+			style:transition="transform {hover ? 50 : 200}ms ease-out, fill {inColor
+				? 200
+				: 1000}ms ease, stroke
+			{inColor ? 200 : 1000}ms ease"
 		/>
 		<!-- Change to circle radius? -->
 		<animate
