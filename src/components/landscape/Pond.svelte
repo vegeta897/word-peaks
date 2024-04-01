@@ -11,15 +11,6 @@
 	export let landscapeWidth: number
 	export let landscapeHeight: number
 
-	let animateElement: SVGAnimateElement
-
-	$: tileDripIndexes = newTiles.map((_, i) => i).filter((i) => i % 6 === 0)
-
-	// TODO: When tiles array changes, identify new tiles and put drips in them
-	// Keep old pond path outline until new drips finish
-
-	// TODO: Store pond number in each tile so drips can be ordered properly
-
 	$: maxDistance = getDistance(landscapeWidth, landscapeHeight)
 	$: expandDuration = 200 + maxDistance * 70
 
@@ -27,6 +18,7 @@
 	let ripples: Ripple[] = []
 	let rippleID = 0
 	export async function flashColor(x: number, y: number, duration: number) {
+		// TODO: Ensure durations stay within bounds for smaller landscape sizes
 		const fullDuration = duration + 800
 		const expandKeyTime = expandDuration / fullDuration
 		const fadeKeyTime = 1 - 800 / fullDuration
@@ -139,25 +131,59 @@
 
 	let pondPath: string
 	let previousPondPath: string
+	let tileDrips: XY[]
+	let dripDuration: number
+	let newTileAnimateElement: SVGAnimateElement
 
 	async function onTiles() {
 		previousPondPath = pondPath
 		pondPath = createPondPath(tiles)
-		await tick()
-		console.log(previousPondPath !== pondPath, animateElement)
-		if (previousPondPath !== pondPath) animateElement?.beginElement()
+		if (previousPondPath !== pondPath) {
+			// TODO: Store pond number in each tile so drips can be ordered properly?
+			tileDrips = newTiles
+				.map((_, i) => i)
+				.filter((i) => i % 6 === 0)
+				.map((i) => newTiles[i])
+			dripDuration = 1000 + tileDrips.length * 200
+			await tick()
+			newTileAnimateElement?.beginElement()
+		}
 	}
 
 	$: if (tiles) onTiles()
 </script>
 
+<clipPath id="pond_path"> <path d={pondPath} /> </clipPath>
+<g clip-path="url(#pond_path)">
+	{#each tileDrips as [x, y], t (`${x}:${y}`)}
+		<ellipse fill="var(--after-color)" cx={(x + 0.5) * 1.5} cy={y + 0.5}>
+			<animate
+				attributeName="rx"
+				values="0;6"
+				calcMode="spline"
+				fill="freeze"
+				dur="1600ms"
+				keySplines={bezierEasing.cubicOut}
+				begin="pond_draw_animate.begin+{t * 200 + 'ms'}"
+			/>
+			<animate
+				attributeName="ry"
+				values="0;4"
+				calcMode="spline"
+				fill="freeze"
+				dur="1600ms"
+				keySplines={bezierEasing.cubicOut}
+				begin="pond_draw_animate.begin+{t * 200 + 'ms'}"
+			/>
+		</ellipse>
+	{/each}
+</g>
 <clipPath id="prev_pond_path"> <path d={previousPondPath} /> </clipPath>
-<g on:mouseenter={() => (hover = true)} on:mouseleave={() => (hover = false)}>
+<g>
 	<g clip-path="url(#prev_pond_path)">
 		<path fill="var(--landscape-color)" d={previousPondPath} />
 		<path
-			style:transform="translateY({hover ? 0 : 0.2}px)"
-			style:transition="transform {800}ms ease-in-out"
+			style:transform="translateY(0.2px)"
 			fill="var(--tertiary-color)"
 			stroke-width="0.2"
 			stroke="var(--landscape-color)"
@@ -175,20 +201,16 @@
 		attributeName="opacity"
 		values="1;1;0"
 		begin="pond_draw_animate.begin"
-		dur="{1000 + tileDripIndexes.length * 200}ms"
-		calcMode="spline"
+		dur="{dripDuration}ms"
 		fill="freeze"
-		keyTimes="0;0.8;1"
-		keySplines="0.5 0.5 0.5 0.5;{bezierEasing.cubicIn}"
+		keyTimes="0;1;1"
 	/>
 </g>
-<clipPath id="pond_path"> <path d={pondPath} /> </clipPath>
 <g>
 	<g clip-path="url(#pond_path)">
 		<path fill="var(--landscape-color)" d={pondPath} />
 		<path
-			style:transform="translateY({hover ? 0 : 0.2}px)"
-			style:transition="transform {800}ms ease-in-out"
+			style:transform="translateY(0.2px)"
 			fill="var(--tertiary-color)"
 			stroke-width="0.2"
 			stroke="var(--landscape-color)"
@@ -254,51 +276,16 @@
 		</path>
 	{/each}
 	<animate
-		bind:this={animateElement}
+		bind:this={newTileAnimateElement}
 		id="pond_draw_animate"
 		attributeName="opacity"
 		values="0;0;1"
-		dur="{1000 + tileDripIndexes.length * 200}ms"
+		dur="{dripDuration}ms"
 		calcMode="spline"
 		fill="freeze"
 		keyTimes="0;0.8;1"
 		keySplines="0.5 0.5 0.5 0.5;{bezierEasing.cubicIn}"
 		begin="indefinite"
-	/>
-</g>
-<g clip-path="url(#pond_path)">
-	{#each tileDripIndexes as tileIndex, t}
-		{@const [x, y] = newTiles[tileIndex]}
-		<ellipse fill="var(--after-color)" cx={(x + 0.5) * 1.5} cy={y + 0.5}>
-			<animate
-				attributeName="rx"
-				values="0;6"
-				calcMode="spline"
-				fill="freeze"
-				dur="1600ms"
-				keySplines={bezierEasing.cubicOut}
-				begin="pond_draw_animate.begin+{t * 200 + 'ms'}"
-			/>
-			<animate
-				attributeName="ry"
-				values="0;4"
-				calcMode="spline"
-				fill="freeze"
-				dur="1600ms"
-				keySplines={bezierEasing.cubicOut}
-				begin="pond_draw_animate.begin+{t * 200 + 'ms'}"
-			/>
-		</ellipse>
-	{/each}
-	<animate
-		attributeName="opacity"
-		values="1;1;0"
-		begin="pond_draw_animate.begin"
-		dur="{1000 + tileDripIndexes.length * 200}ms"
-		calcMode="spline"
-		fill="freeze"
-		keyTimes="0;0.8;1"
-		keySplines="0.5 0.5 0.5 0.5;{bezierEasing.cubicIn}"
 	/>
 </g>
 <!-- {#each tiles as [x, y], t}
