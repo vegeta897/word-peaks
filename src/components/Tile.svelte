@@ -91,7 +91,7 @@
 		position: relative;
 		width: var(--tile-size);
 		height: var(--tile-size);
-		margin: 0 2px;
+		margin: 0 calc(var(--tile-margin) / 2);
 		overflow: hidden;
 	}
 

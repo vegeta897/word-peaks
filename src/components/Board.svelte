@@ -131,7 +131,7 @@
 	.container {
 		margin: 0 auto 6px;
 		padding: 0 4px;
-		height: calc(var(--row-count) * (var(--tile-size) + var(--tile-row-margin-bottom)));
+		height: calc(var(--row-count) * (var(--tile-size) + var(--tile-margin)));
 		display: flex;
 		align-items: flex-start;
 		justify-content: center;
@@ -143,13 +143,13 @@
 	}
 
 	:root {
-		--tile-row-margin-bottom: 4px;
+		--tile-margin: 5px;
 		--tile-size: 70px;
 		--tile-font-size: 2.5rem;
 	}
 
 	.tile-row {
-		margin-bottom: var(--tile-row-margin-bottom);
+		margin-bottom: var(--tile-margin);
 		display: flex;
 	}
 
@@ -182,6 +182,7 @@
 	@media (max-width: 720px) {
 		:root {
 			--tile-size: 64px;
+			--tile-margin: 4px;
 		}
 	}
 	@media (max-width: 640px) {
