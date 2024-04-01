@@ -13,6 +13,7 @@
 	export let xJitter: number
 	export let yJitter: number
 	export let size: number
+	export let animate: boolean
 	export let delay = 0
 	export let mouseOver: boolean
 	export let mouseX: number
@@ -45,7 +46,9 @@
 		Math.max(Math.abs(centerX - mouseX), Math.abs(centerY - length - radius - mouseY)) <
 			1.5
 
-	onMount(() => setTimeout(() => animateElement?.beginElement(), delay))
+	onMount(() => {
+		if (animate) setTimeout(() => animateElement?.beginElement(), delay)
+	})
 </script>
 
 <!-- <rect
@@ -58,7 +61,7 @@
 		stroke-width="0.1"
 	/> -->
 <g transform="translate({centerX} {centerY})">
-	<g opacity="0">
+	<g opacity={animate ? 0 : 1}>
 		<line
 			stroke="var(--tertiary-color)"
 			stroke-width={STROKE_WIDTH * 2}

@@ -5,6 +5,7 @@
 
 	export let tiles: XY[] = []
 	export let newTiles: XY[] = []
+	export let animate: boolean
 	export let mouseOver: boolean
 	export let mouseX: number
 	export let mouseY: number
@@ -132,22 +133,22 @@
 
 	let pondPath: string
 	let previousPondPath: string
-	let tileDrips: XY[]
+	let dripTiles: XY[] = []
 	let dripDuration: number
-	let newTileAnimateElement: SVGAnimateElement
+	let pondAnimateElement: SVGAnimateElement
 
 	async function onTiles() {
 		previousPondPath = pondPath
 		pondPath = createPondPath(tiles)
-		if (previousPondPath !== pondPath) {
+		if (animate && previousPondPath !== pondPath) {
 			// TODO: Better method of selecting tiles?
-			tileDrips = newTiles
+			dripTiles = newTiles
 				.map((_, i) => i)
 				.filter((i) => i % 6 === 0)
 				.map((i) => newTiles[i])
-			dripDuration = 1000 + tileDrips.length * 200
+			dripDuration = 750 + dripTiles.length * 240
 			await tick()
-			newTileAnimateElement?.beginElement()
+			pondAnimateElement?.beginElement()
 		}
 	}
 
@@ -156,7 +157,7 @@
 
 <clipPath id="pond_path"> <path d={pondPath} /> </clipPath>
 <g clip-path="url(#pond_path)">
-	{#each tileDrips as [x, y], t (`${x}:${y}`)}
+	{#each dripTiles as [x, y], t (`${x}:${y}`)}
 		<ellipse fill="var(--after-color)" cx={(x + 0.5) * 1.5} cy={y + 0.5}>
 			<animate
 				attributeName="rx"
@@ -165,7 +166,7 @@
 				fill="freeze"
 				dur="1600ms"
 				keySplines={bezierEasing.cubicOut}
-				begin="pond_draw_animate.begin+{t * 200 + 'ms'}"
+				begin="pond_draw_animate.begin+{500 + t * 200 + 'ms'}"
 			/>
 			<animate
 				attributeName="ry"
@@ -174,13 +175,13 @@
 				fill="freeze"
 				dur="1600ms"
 				keySplines={bezierEasing.cubicOut}
-				begin="pond_draw_animate.begin+{t * 200 + 'ms'}"
+				begin="pond_draw_animate.begin+{500 + t * 200 + 'ms'}"
 			/>
 		</ellipse>
 	{/each}
 </g>
 <clipPath id="prev_pond_path"> <path d={previousPondPath} /> </clipPath>
-<g>
+<g opacity="0">
 	<g clip-path="url(#prev_pond_path)">
 		<path fill="var(--landscape-color)" d={previousPondPath} />
 		<path
@@ -198,14 +199,16 @@
 		fill="none"
 		d={previousPondPath}
 	/>
-	<animate
-		attributeName="opacity"
-		values="1;1;0"
-		begin="pond_draw_animate.begin"
-		dur="{dripDuration}ms"
-		fill="freeze"
-		keyTimes="0;1;1"
-	/>
+	{#if animate}
+		<animate
+			attributeName="opacity"
+			values="1;1;0"
+			begin="pond_draw_animate.begin"
+			dur="{500 + dripDuration}ms"
+			fill="freeze"
+			keyTimes="0;1;1"
+		/>
+	{/if}
 </g>
 <g>
 	<g clip-path="url(#pond_path)">
@@ -276,18 +279,21 @@
 			/>
 		</path>
 	{/each}
-	<animate
-		bind:this={newTileAnimateElement}
-		id="pond_draw_animate"
-		attributeName="opacity"
-		values="0;0;1"
-		dur="{dripDuration}ms"
-		calcMode="spline"
-		fill="freeze"
-		keyTimes="0;0.8;1"
-		keySplines="0.5 0.5 0.5 0.5;{bezierEasing.cubicIn}"
-		begin="indefinite"
-	/>
+	{#if animate}
+		<!-- TODO: Use better keyTimes so fade-out begins after drips fill -->
+		<animate
+			bind:this={pondAnimateElement}
+			id="pond_draw_animate"
+			attributeName="opacity"
+			values="0;0;1"
+			dur="{500 + dripDuration}ms"
+			calcMode="spline"
+			fill="freeze"
+			keyTimes="0;0.8;1"
+			keySplines="0.5 0.5 0.5 0.5;{bezierEasing.cubicIn}"
+			begin="indefinite"
+		/>
+	{/if}
 </g>
 <!-- {#each tiles as [x, y]}
 	<rect

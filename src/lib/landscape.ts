@@ -51,10 +51,9 @@ export type Landscape = {
 	newPondTiles: XY[]
 	nextID: number
 	generationTime?: number
-	totalDelay: number
 }
 
-const FEATURE_DELAY = 20
+const FEATURE_DELAY = 50
 
 export function getLandscape(
 	existingLandscape: Landscape,
@@ -67,7 +66,9 @@ export function getLandscape(
 	console.time('getFeatures')
 	const { tileMap, openTiles, pondTiles, newPondTiles, width, height, centerX, centerY } =
 		existingLandscape
-	let { features, rowsGenerated, nextID, totalDelay } = existingLandscape
+	let { features, rowsGenerated, nextID } = existingLandscape
+	// No initial delay if loading a partially/fully completed puzzle
+	let totalDelay = currentRow > 1 && rowsGenerated === 0 ? 0 : 500
 	newPondTiles.length = 0
 	if (rowsGenerated === 0 && currentRow > rowsGenerated) {
 		openTiles.set(xyToGrid([centerX, centerY]), {
@@ -255,7 +256,6 @@ export function getLandscape(
 		centerX,
 		centerY,
 		nextID,
-		totalDelay,
 		generationTime: performance.now() - startTime,
 	}
 }

@@ -19,6 +19,9 @@
 	let containerHeight: number
 	let svgWidth = 0
 	let svgHeight = 0
+	let seed = 0
+	let animate = false
+	let firstDraw = true
 
 	let landscape: Landscape = {
 		width: 0,
@@ -32,7 +35,6 @@
 		pondTiles: [],
 		newPondTiles: [],
 		nextID: 1,
-		totalDelay: 0,
 	}
 
 	function updateDimensions(width: number, height: number) {
@@ -52,6 +54,8 @@
 		// console.log('center', centerGrid)
 		svgWidth = newWidth * tileWidth
 		svgHeight = newHeight * tileHeight
+		animate = false
+		redraw++
 		clearLandscape()
 		updateLandscape()
 	}
@@ -64,7 +68,6 @@
 		landscape.pondTiles.length = 0
 		landscape.newPondTiles.length = 0
 		landscape.nextID = 1
-		landscape.totalDelay = 0
 	}
 
 	function updateLandscape() {
@@ -97,9 +100,11 @@
 			// })
 			// landscape = landscape
 			return
+		} else if (firstDraw || landscape.rowsGenerated > 0) {
+			firstDraw = false
+			animate = true
 		}
 		if (currentRow === landscape.rowsGenerated) return
-		// redraw++ // TODO: Don't redraw & don't animate appearances on resize
 		landscape = getLandscape(
 			landscape,
 			get(store.boardContent),
@@ -108,10 +113,15 @@
 			`${seed}`
 		)
 	}
+
 	$: if (containerWidth && containerHeight)
 		updateDimensions(containerWidth, containerHeight)
-	store.currentRow.subscribe(() => updateLandscape())
-	let seed = 0
+
+	store.currentRow.subscribe((currentRow) => {
+		if (currentRow === 0) firstDraw = true
+		updateLandscape()
+	})
+
 	type FlashColorHandler = (x: number, y: number, duration: number) => void
 	const featureComponents: {
 		flashColor: FlashColorHandler
@@ -180,6 +190,7 @@
 				bind:this={pondComponent}
 				tiles={landscape.pondTiles}
 				newTiles={landscape.newPondTiles}
+				{animate}
 				{mouseOver}
 				{mouseX}
 				{mouseY}
@@ -195,6 +206,7 @@
 						xJitter={feature.xJitter}
 						yJitter={feature.yJitter}
 						size={feature.size}
+						{animate}
 						delay={feature.delay}
 						{mouseOver}
 						{mouseX}
@@ -209,6 +221,7 @@
 						xJitter={feature.xJitter}
 						yJitter={feature.yJitter}
 						size={feature.size}
+						{animate}
 						delay={feature.delay}
 						{mouseOver}
 						{mouseX}

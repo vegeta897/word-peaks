@@ -13,6 +13,7 @@
 	export let xJitter: number
 	export let yJitter: number
 	export let size: number
+	export let animate: boolean
 	export let delay = 0
 	export let mouseOver: boolean
 	export let mouseX: number
@@ -30,7 +31,6 @@
 		lastTimeout = thisTimeout
 	}
 
-	let draw = false
 	let inColor = false
 
 	$: centerX = (x + xJitter + 1.5) * 1.5
@@ -53,12 +53,12 @@
 		-radius * 2 - STROKE_WIDTH
 	} 0`
 
-	onMount(() => setTimeout(() => (draw = true), delay))
-	$: animateElement?.beginElement()
+	onMount(() => {
+		if (animate) setTimeout(() => animateElement?.beginElement(), delay)
+	})
 </script>
 
-{#if draw}
-	<!-- <rect
+<!-- <rect
 		x={x * 1.5}
 		{y}
 		width="4.5"
@@ -67,81 +67,81 @@
 		stroke="#e38f2f"
 		stroke-width="0.1"
 	/> -->
-	<g transform="translate({centerX} {centerY})" height={2.5 + 0.7}>
-		<g>
+<g transform="translate({centerX} {centerY})" height={2.5 + 0.7}>
+	<g opacity={animate ? 0 : 1}>
+		<path
+			fill="none"
+			stroke="var(--tertiary-color)"
+			stroke-width={STROKE_WIDTH * 2}
+			d={hillTopPath}
+			style:transform="translateY({hover ? 0.4 : 0}px)"
+			style:transition="transform {hover ? 75 : 200}ms ease-out"
+		/>
+		<path
+			fill="none"
+			stroke="var(--tertiary-color)"
+			stroke-width={STROKE_WIDTH * 2}
+			d={hillBottomPath}
+		/>
+		<!-- <path transform="translate(0 0.2)" fill="#e38f2f" d={hillPath} /> -->
+		<path
+			fill="var(--{inColor ? 'before-color' : 'tertiary-color'})"
+			stroke="var(--{inColor ? 'before-color' : 'landscape-color'})"
+			stroke-width={STROKE_WIDTH}
+			stroke-linecap="round"
+			style:transition="fill {inColor ? 200 : 1000}ms ease, stroke {inColor
+				? 200
+				: 1000}ms ease"
+			d={hillBottomPath}
+		/>
+		<path
+			fill="var(--{inColor ? 'before-color' : 'tertiary-color'})"
+			stroke="var(--{inColor ? 'before-color' : 'landscape-color'})"
+			stroke-width={STROKE_WIDTH}
+			stroke-linecap="round"
+			d={hillTopPath}
+			style:transform="translateY({hover ? 0.4 : 0}px)"
+			style:transition="transform {hover ? 75 : 200}ms ease-out, fill {inColor
+				? 200
+				: 1000}ms ease, stroke
+			{inColor ? 200 : 1000}ms ease"
+		/>
+		<animate
+			id="hill_draw_animate_{id}"
+			bind:this={animateElement}
+			attributeName="opacity"
+			values="0;0;1;1"
+			keyTimes="0;0.5;0.6;1"
+			begin="indefinite"
+			dur="{DURATION}ms"
+			fill="freeze"
+		/>
+	</g>
+	<clipPath id="hill_clip_{id}"> <path d={hillAnimationClip} /> </clipPath>
+	<g clip-path="url(#hill_clip_{id})">
+		<g
+			style:transform="translateY({hover ? 0.4 : 0}px)"
+			style:transition="transform {hover ? 75 : 200}ms ease-out"
+		>
 			<path
-				fill="none"
-				stroke="var(--tertiary-color)"
-				stroke-width={STROKE_WIDTH * 2}
-				d={hillTopPath}
-				style:transform="translateY({hover ? 0.4 : 0}px)"
-				style:transition="transform {hover ? 75 : 200}ms ease-out"
-			/>
-			<path
-				fill="none"
-				stroke="var(--tertiary-color)"
-				stroke-width={STROKE_WIDTH * 2}
-				d={hillBottomPath}
-			/>
-			<!-- <path transform="translate(0 0.2)" fill="#e38f2f" d={hillPath} /> -->
-			<path
-				fill="var(--{inColor ? 'before-color' : 'tertiary-color'})"
-				stroke="var(--{inColor ? 'before-color' : 'landscape-color'})"
+				d="M-{radius} 1 v-2 a{radius} {radius} 0 0 1 {radius * 2} 0 v2"
+				fill="var(--before-color)"
+				stroke="var(--before-color)"
 				stroke-width={STROKE_WIDTH}
-				stroke-linecap="round"
-				style:transition="fill {inColor ? 200 : 1000}ms ease, stroke {inColor
-					? 200
-					: 1000}ms ease"
-				d={hillBottomPath}
-			/>
-			<path
-				fill="var(--{inColor ? 'before-color' : 'tertiary-color'})"
-				stroke="var(--{inColor ? 'before-color' : 'landscape-color'})"
-				stroke-width={STROKE_WIDTH}
-				stroke-linecap="round"
-				d={hillTopPath}
-				style:transform="translateY({hover ? 0.4 : 0}px)"
-				style:transition="transform {hover ? 75 : 200}ms ease-out, fill {inColor
-					? 200
-					: 1000}ms ease, stroke
-				{inColor ? 200 : 1000}ms ease"
-			/>
-			<animate
-				id="hill_draw_animate_{id}"
-				bind:this={animateElement}
-				attributeName="opacity"
-				values="0;0;1;1"
-				keyTimes="0;0.5;0.6;1"
-				begin="indefinite"
-				dur="{DURATION}ms"
-				fill="freeze"
-			/>
-		</g>
-		<clipPath id="hill_clip_{id}"> <path d={hillAnimationClip} /> </clipPath>
-		<g clip-path="url(#hill_clip_{id})">
-			<g
-				style:transform="translateY({hover ? 0.4 : 0}px)"
-				style:transition="transform {hover ? 75 : 200}ms ease-out"
+				transform="translate(0 3.3)"
 			>
-				<path
-					d="M-{radius} 1 v-2 a{radius} {radius} 0 0 1 {radius * 2} 0 v2"
-					fill="var(--before-color)"
-					stroke="var(--before-color)"
-					stroke-width={STROKE_WIDTH}
-				>
-					<animateTransform
-						attributeName="transform"
-						type="translate"
-						begin="hill_draw_animate_{id}.begin"
-						dur="{DURATION}ms"
-						values="0 3.3;0 0;0 3.3"
-						keyTimes="0;0.6;1"
-						keySplines="{bezierEasing.cubicOut};{bezierEasing.cubicIn}"
-						calcMode="spline"
-						fill="freeze"
-					/>
-				</path>
-			</g>
+				<animateTransform
+					attributeName="transform"
+					type="translate"
+					begin="hill_draw_animate_{id}.begin"
+					dur="{DURATION}ms"
+					values="0 3.3;0 0;0 3.3"
+					keyTimes="0;0.6;1"
+					keySplines="{bezierEasing.cubicOut};{bezierEasing.cubicIn}"
+					calcMode="spline"
+					fill="freeze"
+				/>
+			</path>
 		</g>
 	</g>
-{/if}
+</g>

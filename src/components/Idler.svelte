@@ -4,7 +4,7 @@
 	import { AnimationParts } from '$lib/idle-animations'
 	import type { IdleSchedule } from '$lib/idle-scheduler'
 	import { getSchedule, startAnimation, stopAnimation } from '$lib/idle-scheduler'
-	import { randomInt } from '$lib/math'
+	import { randomInt, sleep } from '$lib/math'
 
 	let mounted = false
 	let letter: string
@@ -54,8 +54,6 @@
 			)
 		}
 	}
-
-	const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 	onMount(async () => {
 		mounted = true

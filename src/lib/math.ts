@@ -40,3 +40,5 @@ export const getNeighbors = (x: number, y: number) =>
 export const getDistance = (x: number, y: number) => Math.sqrt(x ** 2 + y ** 2)
 export const getManhattanDistance = (aX: number, aY: number, bX: number, bY: number) =>
 	Math.abs(bX - aX) + Math.abs(bY - aY)
+
+export const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
