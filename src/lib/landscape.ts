@@ -50,6 +50,7 @@ export type Landscape = {
 	pondTiles: XY[]
 	newPondTiles: XY[]
 	nextID: number
+	totalDelay: number
 	generationTime?: number
 }
 
@@ -256,6 +257,7 @@ export function getLandscape(
 		centerX,
 		centerY,
 		nextID,
+		totalDelay,
 		generationTime: performance.now() - startTime,
 	}
 }

@@ -43,7 +43,6 @@
 			playRandom(wordFromHash)
 		}
 		initGameState()
-		if (get(store.gameFinished)) setTimeout(() => openScreen.set('results'), 1700)
 	}
 
 	function playRandom(word?: string) {

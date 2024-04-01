@@ -9,16 +9,10 @@
 	import { ROWS, WORD_LENGTH } from '$lib/data-model'
 	import { browser } from '$app/env'
 	import { fade } from 'svelte/transition'
+	import { sleep } from '$lib/math'
 
-	const {
-		boardContent,
-		currentRow,
-		currentTile,
-		gameFinished,
-		showAllHints,
-		newUser,
-		guesses,
-	} = store
+	const { boardContent, currentRow, currentTile, gameFinished, showAllHints, guesses } =
+		store
 
 	let idle = false
 	let canAnimate: boolean | null = null
@@ -49,8 +43,17 @@
 		}
 	}
 
+	let landscapeComponent: { getDrawTime: () => number }
+
+	async function onFinish() {
+		await tick() // Let landscape generate
+		await sleep(landscapeComponent?.getDrawTime() || 2000)
+		store.openScreen.set('results')
+	}
+
 	onMount(() => {
-		gameFinished.subscribe(() => {
+		gameFinished.subscribe((finished) => {
+			if (finished) onFinish()
 			waitForIdle()
 		})
 		document.addEventListener('visibilitychange', () => waitForIdle())
@@ -118,13 +121,7 @@
 				</div>
 			{/each}
 		</div>
-		<div
-			class="graph"
-			class:minimized={$newUser && $currentRow === 0}
-			class:invisible={!$newUser && $currentRow === 0}
-		>
-			<Landscape />
-		</div>
+		<div class="graph"><Landscape bind:this={landscapeComponent} /></div>
 	{:else}
 		<div class="loading">loading...</div>
 	{/if}
@@ -163,17 +160,6 @@
 		margin-left: 4px;
 		flex-grow: 1;
 		height: 100%;
-		transition: width 400ms ease-in-out, margin-left 400ms ease-in-out,
-			opacity 200ms ease-out;
-	}
-
-	.graph.minimized {
-		width: 0;
-		margin-left: 0;
-	}
-
-	.graph.invisible {
-		opacity: 0;
 	}
 
 	.loading {

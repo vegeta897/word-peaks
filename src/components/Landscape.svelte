@@ -19,9 +19,10 @@
 	let containerHeight: number
 	let svgWidth = 0
 	let svgHeight = 0
-	let seed = 0
 	let animate = false
 	let firstDraw = true
+	let redraw = 0
+	let seed = 0
 
 	let landscape: Landscape = {
 		width: 0,
@@ -35,6 +36,7 @@
 		pondTiles: [],
 		newPondTiles: [],
 		nextID: 1,
+		totalDelay: 0,
 	}
 
 	function updateDimensions(width: number, height: number) {
@@ -118,7 +120,10 @@
 		updateDimensions(containerWidth, containerHeight)
 
 	store.currentRow.subscribe((currentRow) => {
-		if (currentRow === 0) firstDraw = true
+		if (currentRow === 0) {
+			firstDraw = true
+			redraw++
+		}
 		updateLandscape()
 	})
 
@@ -169,10 +174,11 @@
 		updateMousePosition(event)
 		// console.log(mouseX, mouseY)
 	}
-	function onMouseLeave() {
-		mouseOver = false
+	const onMouseLeave = () => (mouseOver = false)
+
+	export function getDrawTime() {
+		return landscape.totalDelay + 750
 	}
-	let redraw = 0
 </script>
 
 <div bind:clientWidth={containerWidth} bind:clientHeight={containerHeight}>

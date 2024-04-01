@@ -146,7 +146,7 @@
 				.map((_, i) => i)
 				.filter((i) => i % 6 === 0)
 				.map((i) => newTiles[i])
-			dripDuration = 750 + dripTiles.length * 240
+			dripDuration = 1250 + dripTiles.length * 240
 			await tick()
 			pondAnimateElement?.beginElement()
 		}
@@ -204,7 +204,7 @@
 			attributeName="opacity"
 			values="1;1;0"
 			begin="pond_draw_animate.begin"
-			dur="{500 + dripDuration}ms"
+			dur="{dripDuration}ms"
 			fill="freeze"
 			keyTimes="0;1;1"
 		/>
@@ -286,10 +286,10 @@
 			id="pond_draw_animate"
 			attributeName="opacity"
 			values="0;0;1"
-			dur="{500 + dripDuration}ms"
+			dur="{dripDuration}ms"
 			calcMode="spline"
 			fill="freeze"
-			keyTimes="0;0.8;1"
+			keyTimes="0;{1 - 300 / dripDuration};1"
 			keySplines="0.5 0.5 0.5 0.5;{bezierEasing.cubicIn}"
 			begin="indefinite"
 		/>

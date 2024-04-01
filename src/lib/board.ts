@@ -148,9 +148,6 @@ export async function submitRow() {
 	store.updateGuesses((words) => [...words, submittedWord])
 	if (get(store.gameFinished)) {
 		const gameMode = get(store.gameMode)
-		setTimeout(() => {
-			store.openScreen.set('results')
-		}, 1700)
 		const won = get(store.gameWon)
 		trackEvent(won ? 'gameWon' : 'gameLost')
 		if (gameMode === 'daily') trackEvent('dailyFinish')
