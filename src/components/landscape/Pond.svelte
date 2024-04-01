@@ -19,6 +19,7 @@
 	let rippleID = 0
 	export async function flashColor(x: number, y: number, duration: number) {
 		// TODO: Ensure durations stay within bounds for smaller landscape sizes
+		// Same for trees and hills
 		const fullDuration = duration + 800
 		const expandKeyTime = expandDuration / fullDuration
 		const fadeKeyTime = 1 - 800 / fullDuration
@@ -139,7 +140,7 @@
 		previousPondPath = pondPath
 		pondPath = createPondPath(tiles)
 		if (previousPondPath !== pondPath) {
-			// TODO: Store pond number in each tile so drips can be ordered properly?
+			// TODO: Better method of selecting tiles?
 			tileDrips = newTiles
 				.map((_, i) => i)
 				.filter((i) => i % 6 === 0)
@@ -288,14 +289,14 @@
 		begin="indefinite"
 	/>
 </g>
-<!-- {#each tiles as [x, y], t}
+<!-- {#each tiles as [x, y]}
 	<rect
 		x={x * 1.5}
 		{y}
 		width="1.5"
 		height="1"
-		fill={tileDripIndexes.includes(t) ? '#fff4' : '#567de840'}
-		stroke={newTiles.some(([nx, ny]) => nx === x && ny === y) ? '#4ff' : '#567de8'}
+		fill={tileDrips.some(([nx, ny]) => nx === x && ny === y) ? '#fff4' : '#567de830'}
+		stroke={newTiles.some(([nx, ny]) => nx === x && ny === y) ? '#4ff' : '#567de880'}
 		stroke-width="0.1"
 	/>
 {/each} -->

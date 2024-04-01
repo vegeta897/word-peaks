@@ -220,7 +220,7 @@
 		{/key}
 	</svg>
 </div>
-<p style="position: absolute; top: 30px;">
+<p style="position: absolute; top: 30px; font-size: 0.75rem;">
 	seed: {seed} time: {landscape.generationTime?.toFixed(1)}ms
 </p>
 <button

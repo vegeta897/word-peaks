@@ -1,4 +1,4 @@
-import type { Board } from '$lib/data-model'
+import type { Board, Tile } from '$lib/data-model'
 import Rand from 'rand-seed'
 import { fillPond } from './landscape/pond'
 import {
@@ -69,7 +69,6 @@ export function getLandscape(
 		existingLandscape
 	let { features, rowsGenerated, nextID, totalDelay } = existingLandscape
 	newPondTiles.length = 0
-	let seed = seedPrefix + answer
 	if (rowsGenerated === 0 && currentRow > rowsGenerated) {
 		openTiles.set(xyToGrid([centerX, centerY]), {
 			x: centerX,
@@ -79,8 +78,9 @@ export function getLandscape(
 	}
 	while (rowsGenerated < currentRow) {
 		const rowTiles = board[rowsGenerated]
-		const rowWord = rowTiles.map((t) => t.letter).join('')
-		seed += rowWord
+		const rowWord = rowToWord(rowTiles)
+		const seed =
+			seedPrefix + answer + board.slice(0, rowsGenerated).map(rowToWord).join('')
 		const rng = new Rand(seed)
 		const getRng = () => rng.next()
 		const winningRow = rowWord === answer
@@ -128,7 +128,7 @@ export function getLandscape(
 						id: nextID++,
 						x,
 						y,
-						xJitter: randomFloat(-0.3, 0.3, getRng),
+						xJitter: randomFloat(-0.4, 0.4, getRng),
 						yJitter: randomFloat(-0.25, 0.25, getRng),
 						size: getRng(),
 						delay: totalDelay,
@@ -233,7 +233,6 @@ export function getLandscape(
 						getRng,
 						existingLandscape
 					)
-					if (!generatedPond) openTile.noPond = true
 				}
 			}
 		}
@@ -272,3 +271,5 @@ export function getCenterWeight({ centerX, centerY }: Landscape, x: number, y: n
 }
 
 const getFeatureY = (feature: Feature) => feature.y + feature.yJitter
+
+const rowToWord = (row: Tile[]) => row.map((t) => t.letter).join('')

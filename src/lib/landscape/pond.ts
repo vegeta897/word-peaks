@@ -19,7 +19,14 @@ export function fillPond(
 	const newTiles: Map<string, XY> = new Map()
 	const openPondTiles = new Map([[startGrid, { weight: 1, x, y }]])
 	for (let i = 0; i < 6; i++) {
-		if (openPondTiles.size === 0) return false
+		if (openPondTiles.size === 0) {
+			// Mark any open tiles attempted as invalid for ponds
+			newTiles.forEach((xy) => {
+				const openTile = openTiles.get(xyToGrid(xy))
+				if (openTile) openTile.noPond = true
+			})
+			return false
+		}
 		const openGridsArray = [...openPondTiles]
 		const openGridWeights = openGridsArray.map(([, { weight }]) => weight)
 		const [grid, { x, y }] = randomElementWeighted(
