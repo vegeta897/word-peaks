@@ -96,6 +96,7 @@
 		width: calc(100% - 4px);
 		height: calc(100% - 4px);
 		border-radius: 2px;
+		overflow: clip;
 	}
 	.letter-anchor {
 		position: relative;
