@@ -60,7 +60,7 @@
 		stroke="#15a850"
 		stroke-width="0.1"
 	/> -->
-<g transform="translate({centerX} {centerY})">
+<g style:position="relative" transform="translate({centerX} {centerY})">
 	<g opacity={animate ? 0 : 1}>
 		<line
 			stroke="var(--tertiary-color)"
