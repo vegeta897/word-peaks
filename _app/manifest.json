@@ -1,6 +1,6 @@
 {
   ".svelte-kit/runtime/client/start.js": {
-    "file": "start-a6d47726.js",
+    "file": "start-b21897ed.js",
     "src": ".svelte-kit/runtime/client/start.js",
     "isEntry": true,
     "imports": [
@@ -13,7 +13,7 @@
       "src/routes/__layout.svelte",
       ".svelte-kit/runtime/components/error.svelte",
       "src/routes/debug.svelte",
-      "_index-556a5a08.js",
+      "_index-e4c31ab8.js",
       "src/routes/random.svelte"
     ]
   },
@@ -72,13 +72,13 @@
     ]
   },
   "src/routes/index.svelte": {
-    "file": "pages/index.svelte-2e01d24a.js",
+    "file": "pages/index.svelte-28318707.js",
     "src": "src/routes/index.svelte",
     "isEntry": true,
     "imports": [
       "_preload-helper-5828fb0a.js",
       "_index-210a101c.js",
-      "_index-556a5a08.js",
+      "_index-e4c31ab8.js",
       "_data-model-4041d653.js",
       "_index-a929c856.js",
       "_share-0143678e.js",
@@ -137,8 +137,8 @@
       "src/lib/words/dictionary-filtered.json"
     ]
   },
-  "_index-556a5a08.js": {
-    "file": "chunks/index-556a5a08.js",
+  "_index-e4c31ab8.js": {
+    "file": "chunks/index-e4c31ab8.js",
     "isDynamicEntry": true,
     "imports": [
       "_preload-helper-5828fb0a.js",
@@ -198,13 +198,13 @@
     "isDynamicEntry": true
   },
   "src/components/Console.svelte": {
-    "file": "chunks/Console-df0f033e.js",
+    "file": "chunks/Console-2f2a7530.js",
     "src": "src/components/Console.svelte",
     "isDynamicEntry": true,
     "imports": [
       "_index-210a101c.js",
       "_index-a929c856.js",
-      "_index-556a5a08.js",
+      "_index-e4c31ab8.js",
       "_index-0be4f015.js",
       "_data-model-4041d653.js",
       "_preload-helper-5828fb0a.js",
@@ -212,7 +212,7 @@
     ]
   },
   "src/components/Idler.svelte": {
-    "file": "chunks/Idler-4809549d.js",
+    "file": "chunks/Idler-830f66a2.js",
     "src": "src/components/Idler.svelte",
     "isDynamicEntry": true,
     "imports": [
@@ -222,7 +222,7 @@
       "_preload-helper-5828fb0a.js"
     ],
     "css": [
-      "assets/Idler-dc87e64a.css"
+      "assets/Idler-cca23f64.css"
     ]
   },
   "_idle-scheduler-c1c0b5f7.js": {
