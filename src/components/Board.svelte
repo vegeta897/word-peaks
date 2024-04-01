@@ -144,7 +144,8 @@
 
 	:root {
 		--tile-row-margin-bottom: 4px;
-		--tile-size: 54px;
+		--tile-size: 70px;
+		--tile-font-size: 2.5rem;
 	}
 
 	.tile-row {
@@ -178,6 +179,22 @@
 		}
 	}
 
+	@media (max-width: 720px) {
+		:root {
+			--tile-size: 64px;
+		}
+	}
+	@media (max-width: 640px) {
+		:root {
+			--tile-size: 58px;
+			--tile-font-size: 2rem;
+		}
+	}
+	@media (max-width: 560px) {
+		:root {
+			--tile-size: 54px;
+		}
+	}
 	@media (max-width: 480px) {
 		:root {
 			--tile-size: 50px;
@@ -189,6 +206,10 @@
 		}
 	}
 	@media (max-width: 360px) {
+		:root {
+			--tile-size: 42px;
+			--tile-font-size: 1.8rem;
+		}
 		.container {
 			margin-bottom: 4px;
 		}
@@ -200,10 +221,10 @@
 	}
 
 	.dance-tile {
-		font-size: 2rem;
+		font-size: var(--tile-font-size);
+		line-height: var(--tile-font-size);
 		font-weight: 700;
 		color: #5b505e;
-		line-height: 2rem;
 		display: inline-flex;
 		justify-content: center;
 		align-items: center;

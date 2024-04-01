@@ -61,7 +61,7 @@
 	}
 
 	.column {
-		max-width: 550px;
+		max-width: 580px;
 		width: 100%;
 		margin-top: 60px;
 		display: flex;

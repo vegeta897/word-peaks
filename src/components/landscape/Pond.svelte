@@ -20,11 +20,9 @@
 	let ripples: Ripple[] = []
 	let rippleID = 0
 	export async function flashColor(x: number, y: number, duration: number) {
-		// TODO: Ensure durations stay within bounds for smaller landscape sizes
-		// Same for trees and hills
 		const fullDuration = duration + 800
 		const expandKeyTime = expandDuration / fullDuration
-		const fadeKeyTime = 1 - 800 / fullDuration
+		const fadeKeyTime = Math.max(expandKeyTime, 1 - 800 / fullDuration)
 		const ripple = [
 			++rippleID,
 			x,

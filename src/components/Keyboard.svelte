@@ -101,8 +101,8 @@
 		padding: 0;
 		margin-left: 0.125rem;
 		margin-right: 0.125rem;
-		width: 51px;
-		height: 58px;
+		width: 67px;
+		height: 64px;
 		border-radius: 4px;
 		border: 0;
 		font-weight: 700;
@@ -132,9 +132,16 @@
 		fill: #fff;
 	}
 
+	@media (max-width: 640px) {
+		.key-row button {
+			width: 51px;
+			font-size: 1.4em;
+		}
+	}
 	@media (max-width: 480px) {
 		.key-row button {
 			width: 38px;
+			height: 58px;
 			font-size: 1.3em;
 		}
 
@@ -146,14 +153,17 @@
 			max-width: 2em;
 		}
 	}
-
 	@media (max-width: 350px) {
 		.key-row button.wide {
 			font-size: 0.75em;
 		}
 	}
-
-	@media (max-height: 631px) {
+	@media (max-height: 824px) {
+		.key-row button {
+			height: 58px;
+		}
+	}
+	@media (max-height: 670px) {
 		.key-row button {
 			height: 52px;
 		}

@@ -64,7 +64,7 @@
 
 <style>
 	#main {
-		max-width: 558px;
+		max-width: 720px;
 		margin: 0 auto;
 	}
 </style>

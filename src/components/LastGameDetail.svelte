@@ -340,7 +340,7 @@
 		color: #fff;
 		text-shadow: 1px 1px 1px #0003;
 		border: 2px solid var(--correct-color);
-		border-radius: 2px;
+		border-radius: 14%;
 		box-sizing: border-box;
 		background: var(--correct-color);
 		display: flex;
@@ -350,14 +350,14 @@
 	.guess-letter.before {
 		background: var(--before-color);
 		border-color: var(--before-color);
-		border-top-left-radius: 8px;
-		border-top-right-radius: 8px;
+		border-top-left-radius: 35%;
+		border-top-right-radius: 35%;
 	}
 	.guess-letter.after {
 		background: var(--after-color);
 		border-color: var(--after-color);
-		border-bottom-left-radius: 8px;
-		border-bottom-right-radius: 8px;
+		border-bottom-left-radius: 35%;
+		border-bottom-right-radius: 35%;
 	}
 	.guess-letter.pea {
 		border-radius: 100%;

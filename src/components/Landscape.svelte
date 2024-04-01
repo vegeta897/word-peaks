@@ -7,10 +7,6 @@
 	import Hill from './landscape/Hill.svelte'
 	import Pond from './landscape/Pond.svelte'
 
-	// TODO: Remember to test new-player UX
-
-	// TODO: Support high-contrast color mode
-
 	// TODO: Add share landscape image button - https://stackoverflow.com/a/76239811/2612679
 
 	let containerWidth: number
@@ -38,11 +34,8 @@
 
 	function updateDimensions(width: number, height: number) {
 		// console.log(width)
-		// This is a little too aggressive
-		// TODO: Maybe reduce tree count and lake size at smaller widths
-		// TODO: Make hills 2x2 too
-		const tileWidth = width < 120 ? 18 : 24
-		const tileHeight = width < 120 ? 12 : 16
+		const tileWidth = width < 120 ? 18 : width < 130 ? 21 : width < 316 ? 24 : 27
+		const tileHeight = width < 120 ? 12 : width < 130 ? 14 : width < 316 ? 16 : 18
 		const newWidth = Math.floor(width / tileWidth)
 		const newHeight = Math.floor(height / tileHeight)
 		if (newWidth === landscape.width && newHeight === landscape.height) return

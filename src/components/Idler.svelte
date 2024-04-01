@@ -102,10 +102,11 @@
 	}
 	.letter-anchor {
 		position: relative;
-		left: -40px;
-		top: 18px;
+		left: -56px;
+		top: 28px;
 		width: 100%;
 		height: 100%;
+		transform: scale(1.4);
 	}
 	.letter-animation {
 		position: relative;
@@ -122,9 +123,24 @@
 		text-align: center;
 		user-select: none;
 	}
+
+	@media (max-width: 720px) {
+		.letter-anchor {
+			top: 22px;
+			left: -48px;
+			transform: scale(1.2);
+		}
+	}
+	@media (max-width: 640px) {
+		.letter-anchor {
+			top: 18px;
+			left: -43px;
+			transform: scale(1.1);
+		}
+	}
 	@media (max-width: 480px) {
 		.letter-anchor {
-			top: 16px;
+			top: 12px;
 			left: -37px;
 			transform: scale(0.93);
 		}
@@ -134,9 +150,9 @@
 	}
 	@media (max-width: 360px) {
 		.letter-anchor {
-			top: 14px;
-			left: -34px;
-			transform: scale(0.845);
+			top: 10px;
+			left: -32px;
+			transform: scale(0.8);
 		}
 		.letter {
 			top: -7px;

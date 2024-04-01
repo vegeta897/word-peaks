@@ -239,9 +239,9 @@
 	}
 
 	.tile {
-		font-size: 2rem;
+		line-height: var(--tile-font-size);
+		font-size: var(--tile-font-size);
 		font-weight: 700;
-		line-height: 2rem;
 		display: inline-flex;
 		justify-content: center;
 		align-items: center;
