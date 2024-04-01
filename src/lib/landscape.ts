@@ -50,7 +50,8 @@ export type Landscape = {
 	pondTiles: XY[]
 	newPondTiles: XY[]
 	nextID: number
-	totalDelay: number
+	totalDelay?: number
+	mini?: boolean
 	generationTime?: number
 }
 
@@ -67,6 +68,7 @@ export function getLandscape(
 	console.time('getFeatures')
 	const { tileMap, openTiles, pondTiles, newPondTiles, width, height, centerX, centerY } =
 		existingLandscape
+	existingLandscape.mini = width < 8
 	let { features, rowsGenerated, nextID } = existingLandscape
 	// No initial delay if loading a partially/fully completed puzzle
 	let totalDelay = currentRow > 1 && rowsGenerated === 0 ? 0 : 500
@@ -90,7 +92,8 @@ export function getLandscape(
 			// TODO: Seperate these into functions
 			if (tile.polarity === 0) {
 				// trees
-				for (let i = 0; i < 6; i++) {
+				const treeCount = existingLandscape.mini ? 4 : 6
+				for (let i = 0; i < treeCount; i++) {
 					if (openTiles.size === 0) break
 					const openTilesArray = [...openTiles]
 					// const [grid, { x, y }] = randomElement(openTilesArray, getRng)
@@ -130,8 +133,8 @@ export function getLandscape(
 						id: nextID++,
 						x,
 						y,
-						xJitter: randomFloat(-0.4, 0.4, getRng),
-						yJitter: randomFloat(-0.25, 0.25, getRng),
+						xJitter: randomFloat(-0.35, 0.35, getRng),
+						yJitter: randomFloat(-0.22, 0.22, getRng),
 						size: getRng(),
 						delay: totalDelay,
 					}
@@ -152,9 +155,11 @@ export function getLandscape(
 					// console.log(openTileWeights)
 					const [, tile] = randomElementWeighted(openHillTiles, openTileWeights, getRng)
 					const subtileStartIndex = randomInt(0, 5, getRng)
-					for (let i = 0; i < 6; i++) {
-						const subtileIndex = (subtileStartIndex + i) % 6
-						const [stX, stY] = hillSubtiles[subtileIndex]
+					const hillSize = existingLandscape.mini ? 4 : 6
+					const subtiles = existingLandscape.mini ? hillSubtilesMini : hillSubtiles
+					for (let i = 0; i < hillSize; i++) {
+						const subtileIndex = (subtileStartIndex + i) % hillSize
+						const [stX, stY] = subtiles[subtileIndex]
 						const originX = tile.x - stX
 						if (originX < 0 || originX + 2 >= width) continue
 						const originY = tile.y - stY
@@ -162,12 +167,12 @@ export function getLandscape(
 						const openTile = openTiles.get(xyToGrid([originX, originY]))
 						if (openTile?.noHill) continue
 						hillGrids.length = 0
-						for (const [hsX, hsY] of hillSubtiles) {
+						for (const [hsX, hsY] of subtiles) {
 							const hillGrid = xyToGrid([originX + hsX, originY + hsY])
 							if (tileMap.has(hillGrid)) break
 							hillGrids.push(hillGrid)
 						}
-						if (hillGrids.length < 6) continue
+						if (hillGrids.length < hillSize) continue
 						// Valid spot found
 						validXY = [originX, originY]
 						break
@@ -195,13 +200,15 @@ export function getLandscape(
 					tileMap.set(hillGrid, feature)
 					openTiles.delete(hillGrid)
 				}
-				for (const [nxRel, nyRel] of hillNeighbors) {
+				const neighbors = existingLandscape.mini ? hillNeighborsMini : hillNeighbors
+				for (const [nxRel, nyRel] of neighbors) {
 					const nx = x + nxRel
 					const ny = y + nyRel
 					if (nx < 0 || nx >= width || ny < 0 || ny >= height) continue
 					const nGrid = xyToGrid([nx, ny])
 					if (tileMap.has(nGrid)) continue
-					const noHill = nxRel === 0 // No hills directly above or below other hills
+					// No hills directly above or below other hills, unless in mini mode
+					const noHill = !existingLandscape.mini && nxRel === 0
 					const openTile = openTiles.get(nGrid)
 					if (openTile && noHill) {
 						openTile.noHill = noHill
@@ -258,13 +265,17 @@ export function getLandscape(
 		centerY,
 		nextID,
 		totalDelay,
+		mini: existingLandscape.mini,
 		generationTime: performance.now() - startTime,
 	}
 }
 // prettier-ignore
-const hillSubtiles = [[0, 0],[1, 0],[2, 0],[0, 1],[1, 1],[2, 1]]
+const hillSubtiles = [[0, 0],[1, 0],[0, 1],[1, 1],[2, 0],[2, 1]]
+const hillSubtilesMini = hillSubtiles.slice(0, 4)
 // prettier-ignore
 const hillNeighbors = [[0, -1],[1, -1],[2, -1],[-1, 0],[-1, 1],[0, 2],[1, 2],[2, 2],[3, 0],[3, 1]]
+// prettier-ignore
+const hillNeighborsMini = [[0, -1],[1, -1],[-1, 0],[-1, 1],[2, 0],[2, 1],[0, 2],[1, 2]]
 
 export function getCenterWeight({ centerX, centerY }: Landscape, x: number, y: number) {
 	const verticalCenter = 1 - Math.abs(y - centerY) / (centerY + 1)

@@ -11,6 +11,7 @@
 	export let mouseY: number
 	export let landscapeWidth: number
 	export let landscapeHeight: number
+	export let mini = false
 
 	$: maxDistance = getDistance(landscapeWidth, landscapeHeight)
 	$: expandDuration = 200 + maxDistance * 70
@@ -141,12 +142,11 @@
 		previousPondPath = pondPath
 		pondPath = createPondPath(tiles)
 		if (animate && previousPondPath !== pondPath) {
-			// TODO: Better method of selecting tiles?
 			dripTiles = newTiles
 				.map((_, i) => i)
-				.filter((i) => i % 6 === 0)
+				.filter((i) => i % (mini ? 4 : 6) === 0)
 				.map((i) => newTiles[i])
-			dripDuration = 1250 + dripTiles.length * 240
+			dripDuration = 1250 + dripTiles.length * 190
 			await tick()
 			pondAnimateElement?.beginElement()
 		}
@@ -166,7 +166,7 @@
 				fill="freeze"
 				dur="1600ms"
 				keySplines={bezierEasing.cubicOut}
-				begin="pond_draw_animate.begin+{500 + t * 200 + 'ms'}"
+				begin="pond_draw_animate.begin+{500 + t * 150 + 'ms'}"
 			/>
 			<animate
 				attributeName="ry"
@@ -175,7 +175,7 @@
 				fill="freeze"
 				dur="1600ms"
 				keySplines={bezierEasing.cubicOut}
-				begin="pond_draw_animate.begin+{500 + t * 200 + 'ms'}"
+				begin="pond_draw_animate.begin+{500 + t * 150 + 'ms'}"
 			/>
 		</ellipse>
 	{/each}
@@ -249,7 +249,7 @@
 					begin="indefinite"
 				/>
 			</stop>
-			<stop stop-color="#567de800">
+			<stop stop-color="var(--after-color)" stop-opacity="0">
 				<animate
 					attributeName="offset"
 					values="0;1.01;1.01;1.01"
@@ -280,7 +280,6 @@
 		</path>
 	{/each}
 	{#if animate}
-		<!-- TODO: Use better keyTimes so fade-out begins after drips fill -->
 		<animate
 			bind:this={pondAnimateElement}
 			id="pond_draw_animate"

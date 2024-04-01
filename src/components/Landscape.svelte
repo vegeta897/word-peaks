@@ -7,8 +7,6 @@
 	import Hill from './landscape/Hill.svelte'
 	import Pond from './landscape/Pond.svelte'
 
-	// TODO: Add animations on touch and hover
-
 	// TODO: Remember to test new-player UX
 
 	// TODO: Support high-contrast color mode
@@ -36,7 +34,6 @@
 		pondTiles: [],
 		newPondTiles: [],
 		nextID: 1,
-		totalDelay: 0,
 	}
 
 	function updateDimensions(width: number, height: number) {
@@ -44,8 +41,8 @@
 		// This is a little too aggressive
 		// TODO: Maybe reduce tree count and lake size at smaller widths
 		// TODO: Make hills 2x2 too
-		const tileWidth = width < 120 ? 12 : 24
-		const tileHeight = width < 120 ? 8 : 16
+		const tileWidth = width < 120 ? 18 : 24
+		const tileHeight = width < 120 ? 12 : 16
 		const newWidth = Math.floor(width / tileWidth)
 		const newHeight = Math.floor(height / tileHeight)
 		if (newWidth === landscape.width && newHeight === landscape.height) return
@@ -53,7 +50,6 @@
 		landscape.height = newHeight
 		landscape.centerX = Math.floor(newWidth / 2)
 		landscape.centerY = Math.floor(newHeight / 2)
-		// console.log('center', centerGrid)
 		svgWidth = newWidth * tileWidth
 		svgHeight = newHeight * tileHeight
 		animate = false
@@ -177,7 +173,7 @@
 	const onMouseLeave = () => (mouseOver = false)
 
 	export function getDrawTime() {
-		return landscape.totalDelay + 750
+		return (landscape.totalDelay || 0) + 750
 	}
 </script>
 
@@ -202,6 +198,7 @@
 				{mouseY}
 				landscapeWidth={landscape.width}
 				landscapeHeight={landscape.height}
+				mini={landscape.mini}
 			/>
 			{#each landscape.features as feature, f (feature.id)}
 				{#if feature.type === 'tree'}
@@ -227,6 +224,7 @@
 						xJitter={feature.xJitter}
 						yJitter={feature.yJitter}
 						size={feature.size}
+						mini={landscape.mini}
 						{animate}
 						delay={feature.delay}
 						{mouseOver}
