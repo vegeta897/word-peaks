@@ -20,10 +20,22 @@
 	export let mouseY: number
 
 	let animateElement: SVGAnimateElement
+	let animateSkewElement: SVGAnimateTransformElement
 
+	let inColor = false
 	let lastTimeout: NodeJS.Timer
+	let nudgeX = 0
+	let nudgeY = 1
 	export function flashColor(x: number, y: number, duration: number) {
-		const distance = getDistance(x - centerX, y - centerY)
+		const distance = getDistance(x - centerX, y - (centerY - length))
+		const force = 4 - distance
+		if (force > 0) {
+			const xMagnitude = (x - centerX) / distance
+			const yMagnitude = (y - (centerY - length)) / distance
+			nudgeX = xMagnitude * force * 4
+			nudgeY = (yMagnitude * force) / -24
+			animateSkewElement?.beginElement()
+		}
 		setTimeout(() => (inColor = true), distance * 70)
 		const thisTimeout = setTimeout(() => {
 			if (lastTimeout === thisTimeout) inColor = false
@@ -31,7 +43,6 @@
 		lastTimeout = thisTimeout
 	}
 
-	let inColor = false
 	$: duration = BASE_DURATION * (0.8 + size * 0.4)
 
 	$: width = size * 0.2 + 0.9
@@ -62,6 +73,18 @@
 	/> -->
 <g style:position="relative" transform="translate({centerX} {centerY})">
 	<g opacity={animate ? 0 : 1}>
+		<animateTransform
+			id="tree_nudge_animate_{id}"
+			bind:this={animateSkewElement}
+			attributeName="transform"
+			type="skewX"
+			begin="indefinite"
+			values="0;{nudgeX};0"
+			keyTimes="0;0.15;1"
+			calcMode="spline"
+			dur="600ms"
+			keySplines="{bezierEasing.cubicOut};{bezierEasing.cubicIn}"
+		/>
 		<line
 			stroke="var(--tertiary-color)"
 			stroke-width={STROKE_WIDTH * 2}
@@ -74,12 +97,23 @@
 			fill="var(--tertiary-color)"
 			style:transform="translateY({hover ? 0.3 : 0}px)"
 			style:transition="transform {hover ? 50 : 200}ms ease-out"
-		/>
+		>
+			<animate
+				attributeName="cy"
+				type="translate"
+				begin="tree_nudge_animate_{id}.begin"
+				values="{-length - radius};{-length - radius + nudgeY};{-length - radius}"
+				keyTimes="0;0.15;1"
+				calcMode="spline"
+				dur="500ms"
+				keySplines="{bezierEasing.cubicOut};{bezierEasing.cubicIn}"
+			/>
+		</circle>
 		<line
 			stroke="var(--{inColor ? 'correct-color' : 'landscape-color'})"
 			stroke-width={STROKE_WIDTH}
 			stroke-linecap="round"
-			y2={-length}
+			y2={-length - radius}
 			style:transition="fill {inColor ? 200 : 1000}ms ease, stroke {inColor
 				? 200
 				: 1000}ms ease"
@@ -95,8 +129,18 @@
 				? 200
 				: 1000}ms ease, stroke
 			{inColor ? 200 : 1000}ms ease"
-		/>
-		<!-- Change to circle radius? -->
+		>
+			<animate
+				attributeName="cy"
+				type="translate"
+				begin="tree_nudge_animate_{id}.begin"
+				values="{-length - radius};{-length - radius + nudgeY};{-length - radius}"
+				keyTimes="0;0.15;1"
+				calcMode="spline"
+				dur="500ms"
+				keySplines="{bezierEasing.cubicOut};{bezierEasing.cubicIn}"
+			/>
+		</circle>
 		<animate
 			id="animate_tree_{id}"
 			bind:this={animateElement}
