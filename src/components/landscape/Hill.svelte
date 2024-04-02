@@ -29,13 +29,13 @@
 	let nudgeX = 0
 	let nudgeScaleY = 1
 	export function flashColor(x: number, y: number, duration: number) {
-		const distance = getDistance(x - centerX, y - (centerY - 1))
+		const distance = getDistance(x - centerX, y - centerMass)
 		const force = 4 - distance
 		if (force > 0) {
 			const xMagnitude = (x - centerX) / distance
-			const yMagnitude = (y - (centerY - 1)) / distance
+			const yMagnitude = (y - centerMass) / distance
 			nudgeX = xMagnitude * force * 4
-			nudgeScaleY = 1 + (yMagnitude * force) / 16
+			nudgeScaleY = 1 + (yMagnitude * force) / 24
 			animateSkewElement?.beginElement()
 		}
 		setTimeout(async () => (inColor = true), distance * 70)
@@ -48,10 +48,11 @@
 	$: centerX = (x + xJitter + (mini ? 1 : 1.5)) * 1.5
 	$: centerY = y + yJitter + 1
 	$: radius = (mini ? 0.8 : 1.35) + 0.2 * size
+	$: centerMass = centerY - (mini ? 0.7 : 1)
 	$: hover =
 		mouseOver &&
 		Math.abs(centerX - mouseX) < radius + STROKE_HALF &&
-		Math.abs(centerY - 1 - mouseY) < radius + STROKE_HALF
+		Math.abs(centerMass - mouseY) < radius + STROKE_HALF
 
 	$: hillTopPath = `M-${radius} -0.5 v${-(mini ? 0.2 : 0.5)} a${radius} ${radius} 0 0 1 ${
 		radius * 2
@@ -80,6 +81,7 @@
 	stroke="#e38f2f"
 	stroke-width="0.1"
 /> -->
+<!-- Position relative to fix stacking context bug in FF -->
 <g style:position="relative" transform="translate({centerX} {centerY})">
 	<g opacity={animate ? 0 : 1}>
 		<animateTransform
@@ -89,9 +91,9 @@
 			type="skewX"
 			begin="indefinite"
 			values="0;{nudgeX};0"
-			keyTimes="0;0.15;1"
+			keyTimes="0;0.3;1"
 			calcMode="spline"
-			dur="700ms"
+			dur="600ms"
 			keySplines="{bezierEasing.cubicOut};{bezierEasing.cubicIn}"
 		/>
 		<path
@@ -126,9 +128,9 @@
 				type="scale"
 				begin="hill_nudge_animate_{id}.begin"
 				values="1 1;1 {nudgeScaleY};1 1"
-				keyTimes="0;0.15;1"
+				keyTimes="0;0.3;1"
 				calcMode="spline"
-				dur="700ms"
+				dur="600ms"
 				keySplines="{bezierEasing.cubicOut};{bezierEasing.cubicIn}"
 			/>
 		</g>

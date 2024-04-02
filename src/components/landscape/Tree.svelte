@@ -27,13 +27,13 @@
 	let nudgeX = 0
 	let nudgeY = 1
 	export function flashColor(x: number, y: number, duration: number) {
-		const distance = getDistance(x - centerX, y - (centerY - length))
+		const distance = getDistance(x - centerX, y - topCenter)
 		const force = 4 - distance
 		if (force > 0) {
 			const xMagnitude = (x - centerX) / distance
-			const yMagnitude = (y - (centerY - length)) / distance
+			const yMagnitude = (y - topCenter) / distance
 			nudgeX = xMagnitude * force * 4
-			nudgeY = (yMagnitude * force) / -24
+			nudgeY = (yMagnitude * force) / 24
 			animateSkewElement?.beginElement()
 		}
 		setTimeout(() => (inColor = true), distance * 70)
@@ -46,16 +46,20 @@
 	$: duration = BASE_DURATION * (0.8 + size * 0.4)
 
 	$: width = size * 0.2 + 0.9
-	$: length = width / 2
+	$: trunkLength = width / 2
 	$: radius = width / 2
+	$: trunkToTop = trunkLength + radius
 
 	// TODO: Add bounds to prevent drawing off-canvas
 	$: centerX = (x + xJitter + 0.5) * 1.5
 	$: centerY = y + yJitter + 0.5
+	$: topCenter = centerY - trunkToTop + (hover ? 0.3 : 0)
 	$: hover =
 		mouseOver &&
-		Math.max(Math.abs(centerX - mouseX), Math.abs(centerY - length - radius - mouseY)) <
-			1.5
+		Math.max(
+			Math.abs(centerX - mouseX),
+			Math.abs(centerY - trunkLength - radius - mouseY)
+		) < 1.5
 
 	onMount(() => {
 		if (animate) setTimeout(() => animateElement?.beginElement(), delay)
@@ -71,6 +75,7 @@
 		stroke="#15a850"
 		stroke-width="0.1"
 	/> -->
+<!-- Position relative to fix stacking context bug in FF -->
 <g style:position="relative" transform="translate({centerX} {centerY})">
 	<g opacity={animate ? 0 : 1}>
 		<animateTransform
@@ -80,7 +85,7 @@
 			type="skewX"
 			begin="indefinite"
 			values="0;{nudgeX};0"
-			keyTimes="0;0.15;1"
+			keyTimes="0;0.3;1"
 			calcMode="spline"
 			dur="600ms"
 			keySplines="{bezierEasing.cubicOut};{bezierEasing.cubicIn}"
@@ -89,10 +94,10 @@
 			stroke="var(--tertiary-color)"
 			stroke-width={STROKE_WIDTH * 2}
 			stroke-linecap="round"
-			y2={-length}
+			y2={-trunkLength}
 		/>
 		<circle
-			cy={-length - radius}
+			cy={-trunkLength - radius}
 			r={radius + STROKE_HALF}
 			fill="var(--tertiary-color)"
 			style:transform="translateY({hover ? 0.3 : 0}px)"
@@ -102,10 +107,10 @@
 				attributeName="cy"
 				type="translate"
 				begin="tree_nudge_animate_{id}.begin"
-				values="{-length - radius};{-length - radius + nudgeY};{-length - radius}"
-				keyTimes="0;0.15;1"
+				values="{-trunkToTop};{-trunkToTop - nudgeY};{-trunkToTop}"
+				keyTimes="0;0.3;1"
 				calcMode="spline"
-				dur="500ms"
+				dur="600ms"
 				keySplines="{bezierEasing.cubicOut};{bezierEasing.cubicIn}"
 			/>
 		</circle>
@@ -113,34 +118,38 @@
 			stroke="var(--{inColor ? 'correct-color' : 'landscape-color'})"
 			stroke-width={STROKE_WIDTH}
 			stroke-linecap="round"
-			y2={-length - radius}
+			y2={-trunkLength - radius / 2}
 			style:transition="fill {inColor ? 200 : 1000}ms ease, stroke {inColor
 				? 200
 				: 1000}ms ease"
 		/>
-		<circle
-			cy={-length - radius}
-			r={radius - STROKE_HALF}
-			fill="var(--{inColor ? 'correct-color' : 'tertiary-color'})"
-			stroke="var(--{inColor ? 'correct-color' : 'landscape-color'})"
-			stroke-width={STROKE_WIDTH}
+		<g
 			style:transform="translateY({hover ? 0.3 : 0}px)"
-			style:transition="transform {hover ? 50 : 200}ms ease-out, fill {inColor
-				? 200
-				: 1000}ms ease, stroke
-			{inColor ? 200 : 1000}ms ease"
+			style:transition="transform {hover ? 50 : 200}ms ease-out"
 		>
-			<animate
-				attributeName="cy"
-				type="translate"
-				begin="tree_nudge_animate_{id}.begin"
-				values="{-length - radius};{-length - radius + nudgeY};{-length - radius}"
-				keyTimes="0;0.15;1"
-				calcMode="spline"
-				dur="500ms"
-				keySplines="{bezierEasing.cubicOut};{bezierEasing.cubicIn}"
-			/>
-		</circle>
+			<!-- Using a wrapper group to avoid transform/color easing bug in FF -->
+			<circle
+				cy={-trunkToTop}
+				r={radius - STROKE_HALF}
+				fill="var(--{inColor ? 'correct-color' : 'tertiary-color'})"
+				stroke="var(--{inColor ? 'correct-color' : 'landscape-color'})"
+				stroke-width={STROKE_WIDTH}
+				style:transition="fill {inColor ? 200 : 1000}ms ease, stroke {inColor
+					? 200
+					: 1000}ms ease"
+			>
+				<animate
+					attributeName="cy"
+					type="translate"
+					begin="tree_nudge_animate_{id}.begin"
+					values="{-trunkToTop};{-trunkToTop - nudgeY};{-trunkToTop}"
+					keyTimes="0;0.3;1"
+					calcMode="spline"
+					dur="600ms"
+					keySplines="{bezierEasing.cubicOut};{bezierEasing.cubicIn}"
+				/>
+			</circle>
+		</g>
 		<animate
 			id="animate_tree_{id}"
 			bind:this={animateElement}
@@ -153,7 +162,7 @@
 		/>
 	</g>
 	<circle
-		cy={-length - radius}
+		cy={-trunkLength - radius}
 		r="0"
 		fill="var(--correct-color)"
 		style:transform="translateY({hover ? 0.3 : 0}px)"
@@ -179,7 +188,7 @@
 	>
 		<animate
 			attributeName="y2"
-			values="0;{-length - radius};{-length - radius};0"
+			values="0;{-trunkLength - radius};{-trunkLength - radius};0"
 			keyTimes="0;0.2;0.8;1"
 			begin="animate_tree_{id}.begin"
 			dur="{duration}ms"
