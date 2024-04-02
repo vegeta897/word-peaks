@@ -6,6 +6,7 @@
 	import Tree from './landscape/Tree.svelte'
 	import Hill from './landscape/Hill.svelte'
 	import Pond from './landscape/Pond.svelte'
+	import { getDistance } from '$lib/math'
 
 	// TODO: Add share landscape image button - https://stackoverflow.com/a/76239811/2612679
 
@@ -137,6 +138,7 @@
 
 	let lastFlashAt = 0
 	let flashDurationExtra = 0
+	$: landscapeSpan = getDistance(landscape.width + 1, landscape.height + 1)
 
 	const flashColors: svelte.JSX.PointerEventHandler<SVGElement> = (event) => {
 		if (event.pointerType === 'mouse' && event.button !== 0) return
@@ -147,7 +149,7 @@
 			0,
 			Math.min(3500, flashDurationExtra + lastFlashAt + 250 - now)
 		)
-		const duration = 2000 + flashDurationExtra
+		const duration = landscapeSpan * 70 + flashDurationExtra
 		featureComponents.forEach((f) => f?.flashColor(mouseX, mouseY, duration))
 		pondComponent.flashColor(mouseX, mouseY, duration)
 		lastFlashAt = now

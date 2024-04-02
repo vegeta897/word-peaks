@@ -14,7 +14,7 @@
 	export let mini = false
 
 	$: maxDistance = getDistance(landscapeWidth, landscapeHeight)
-	$: expandDuration = 200 + maxDistance * 70
+	$: expandDuration = maxDistance * 70
 
 	type Ripple = [id: number, ...XY, duration: number, SVGAnimateElement, keyTimes: string]
 	let ripples: Ripple[] = []
