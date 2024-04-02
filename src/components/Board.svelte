@@ -140,6 +140,7 @@
 	.board {
 		display: flex;
 		flex-direction: column;
+		margin-right: 4px;
 	}
 
 	:root {
@@ -158,7 +159,6 @@
 	}
 
 	.graph {
-		margin-left: 4px;
 		flex-grow: 1;
 		height: 100%;
 	}
@@ -199,6 +199,7 @@
 	@media (max-width: 480px) {
 		:root {
 			--tile-size: 50px;
+			--tile-margin: 3px;
 		}
 	}
 	@media (max-width: 420px) {
@@ -206,9 +207,10 @@
 			--tile-size: 46px;
 		}
 	}
-	@media (max-width: 360px) {
+	@media (max-width: 375px) {
 		:root {
 			--tile-size: 42px;
+			--tile-margin: 2px;
 			--tile-font-size: 1.8rem;
 		}
 		.container {

@@ -35,8 +35,8 @@
 
 	function updateDimensions(width: number, height: number) {
 		// console.log(width)
-		const tileWidth = width < 120 ? 18 : width < 130 ? 21 : width < 316 ? 24 : 27
-		const tileHeight = width < 120 ? 12 : width < 130 ? 14 : width < 316 ? 16 : 18
+		const tileWidth = width < 130 ? 18 : width < 144 ? 21 : width < 316 ? 24 : 27
+		const tileHeight = width < 130 ? 12 : width < 144 ? 14 : width < 316 ? 16 : 18
 		const newWidth = Math.floor(width / tileWidth)
 		const newHeight = Math.floor(height / tileHeight)
 		if (newWidth === landscape.width && newHeight === landscape.height) return
@@ -107,7 +107,7 @@
 	}
 
 	$: if (containerWidth && containerHeight)
-		updateDimensions(containerWidth, containerHeight)
+		updateDimensions(containerWidth, containerHeight - 10)
 
 	store.currentRow.subscribe((currentRow) => {
 		if (currentRow === 0) {
@@ -168,7 +168,7 @@
 	const onMouseLeave = () => (mouseOver = false)
 
 	export function getDrawTime() {
-		return (landscape.totalDelay || 0) + 750
+		return (landscape.totalDelay || 0) + 1000
 	}
 </script>
 
@@ -177,6 +177,7 @@
 		xmlns="http://www.w3.org/2000/svg"
 		width={svgWidth}
 		height={svgHeight}
+		style:left={Math.floor((containerWidth - svgWidth) / 2)}
 		viewBox="-0.1 -0.1 {landscape.width * 1.5 + 0.2} {landscape.height + 0.2}"
 		on:pointerdown={flashColors}
 		on:pointermove={onPointerMove}
@@ -232,28 +233,27 @@
 		{/key}
 	</svg>
 </div>
-<p style="position: absolute; top: 30px; font-size: 0.75rem;">
+<!-- <p style="position: absolute; top: 30px; font-size: 0.75rem;">
 	seed: {seed} time: {landscape.generationTime?.toFixed(1)}ms
-</p>
-<button
+</p> -->
+
+<!-- <button
 	on:click={() => {
 		seed++
 		clearLandscape()
 		updateLandscape()
 	}}
 	style="position: absolute; top: 50px; right: 10px;">seed</button
->
-
+> -->
 <style>
 	div {
 		height: calc(100% + 8px);
 		margin-top: -8px;
-		overflow: clip;
 	}
 	svg {
 		position: absolute;
-		top: 0;
-		left: 0;
+		top: 8px;
+		overflow: visible;
 		touch-action: manipulation;
 	}
 </style>

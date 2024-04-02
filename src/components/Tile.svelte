@@ -353,18 +353,10 @@
 			gap: 4px;
 		}
 	}
-	@media (max-width: 360px) {
-		.tile-container {
-			margin: 0 1px;
-		}
+	@media (max-width: 375px) {
 		.hint {
 			font-size: 0.45em;
 			gap: 3px;
-		}
-	}
-	@media (max-width: 340px) {
-		.tile-container {
-			margin: 0 2px;
 		}
 	}
 </style>
