@@ -6,10 +6,10 @@
 	import Tree from './landscape/Tree.svelte'
 	import Hill from './landscape/Hill.svelte'
 	import Pond from './landscape/Pond.svelte'
-	import { getDistance } from '$lib/math'
+	import { getDistance, type XY } from '$lib/math'
 	import type { GameMode } from '$lib/data-model'
-
-	// TODO: Add share landscape image button - https://stackoverflow.com/a/76239811/2612679
+	import { tick } from 'svelte'
+	import { bezierEasing } from '$lib/transitions'
 
 	const { landscapeForceColor } = store
 
@@ -39,8 +39,11 @@
 		nextID: 1,
 	}
 
+	// TODO: Aim for ideal tile count (width x height)
+	// Enable mini if below ideal count
+
 	function updateDimensions(width: number, height: number) {
-		// console.log(width)
+		console.log(width)
 		const tileWidth = width < 130 ? 18 : width < 144 ? 21 : width < 316 ? 24 : 27
 		const tileHeight = width < 130 ? 12 : width < 144 ? 14 : width < 316 ? 16 : 18
 		const newWidth = Math.floor(width / tileWidth)
@@ -134,6 +137,9 @@
 
 	let lastFlashAt = 0
 	let flashDurationExtra = 0
+	let lastFlashXY: null | XY = null
+	let lastFlashTimeout: NodeJS.Timeout
+	let flashAnimateElement: SVGAnimateElement
 	$: landscapeSpan = getDistance(landscape.width + 3, landscape.height + 3)
 
 	const flashColors: svelte.JSX.PointerEventHandler<SVGElement> = (event) => {
@@ -145,6 +151,10 @@
 			0,
 			Math.min(3500, flashDurationExtra + lastFlashAt + 250 - now)
 		)
+		lastFlashXY = [mouseX, mouseY]
+		clearTimeout(lastFlashTimeout)
+		lastFlashTimeout = setTimeout(() => (lastFlashXY = null), 200)
+		tick().then(() => flashAnimateElement?.beginElement())
 		const duration = landscapeSpan * 70 + flashDurationExtra
 		featureComponents.forEach((f) => f?.flashColor(mouseX, mouseY, duration))
 		pondComponent.flashColor(mouseX, mouseY, duration)
@@ -231,6 +241,39 @@
 				{/if}
 			{/each}
 		{/key}
+		{#if lastFlashXY}
+			{@const [cx, cy] = lastFlashXY}
+			<ellipse
+				{cx}
+				{cy}
+				style:transform-origin="{cx}px {cy}px"
+				rx="3"
+				ry="2"
+				fill="#fff7"
+			>
+				<animate
+					bind:this={flashAnimateElement}
+					id="landscape_flash_animate"
+					attributeName="opacity"
+					values="1;0"
+					calcMode="spline"
+					keySplines={bezierEasing.circOut}
+					dur="200ms"
+					fill="freeze"
+					begin="indefinite"
+				/>
+				<animateTransform
+					attributeName="transform"
+					type="scale"
+					values="0;0.5"
+					calcMode="spline"
+					keySplines={bezierEasing.circOut}
+					dur="200ms"
+					fill="freeze"
+					begin="landscape_flash_animate.begin"
+				/>
+			</ellipse>
+		{/if}
 	</svg>
 </div>
 
@@ -246,6 +289,7 @@
 	div {
 		height: calc(100% + 8px);
 		margin-top: -8px;
+		position: relative;
 	}
 	svg {
 		position: absolute;
