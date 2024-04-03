@@ -36,38 +36,38 @@
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
-		margin: 1rem auto 0.2rem;
+		margin: 1rem auto 0.25rem;
 	}
 
 	.footer-row {
 		display: flex;
 		flex-wrap: wrap;
 		justify-content: center;
-		margin: 0 4px;
+		margin: 0 0.25rem;
 	}
 
 	.footer-row p {
-		margin: 0 0 0.2rem;
+		margin: 0 0 0.25rem;
 		color: #bbbbbb;
 	}
 
 	.icon-item {
 		display: flex;
 		align-items: center;
-		margin: 0.2rem 0.7rem;
+		margin: 0.25rem 0.75rem;
 	}
 
 	.icon-item .icon {
-		width: 24px;
-		height: 24px;
+		width: 1.5rem;
+		height: 1.5rem;
 		margin-right: 0.5rem;
 	}
 
 	pre {
-		font-size: 1.2em;
+		font-size: 1.25em;
 		background: var(--secondary-color);
-		padding: 0.2em 0.4em;
-		border-radius: 4px;
+		padding: 0.25rem 0.375rem;
+		border-radius: 0.25rem;
 		margin: 0;
 	}
 </style>

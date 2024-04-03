@@ -6,12 +6,15 @@
 	export let tiles: XY[] = []
 	export let newTiles: XY[] = []
 	export let animate: boolean
+	export let delay: number
 	export let mouseOver: boolean
 	export let mouseX: number
 	export let mouseY: number
 	export let landscapeWidth: number
 	export let landscapeHeight: number
 	export let mini = false
+	export let forceColor: boolean
+	export let fillDuration: number
 
 	$: maxDistance = getDistance(landscapeWidth, landscapeHeight)
 	$: expandDuration = maxDistance * 70
@@ -20,6 +23,7 @@
 	let ripples: Ripple[] = []
 	let rippleID = 0
 	export async function flashColor(x: number, y: number, duration: number) {
+		if (forceColor) return
 		const fullDuration = duration + 800
 		const expandKeyTime = expandDuration / fullDuration
 		const fadeKeyTime = Math.max(expandKeyTime, 1 - 800 / fullDuration)
@@ -144,7 +148,7 @@
 				.map((_, i) => i)
 				.filter((i) => i % (mini ? 4 : 6) === 0)
 				.map((i) => newTiles[i])
-			dripDuration = 1250 + dripTiles.length * 190
+			dripDuration = 1600 + Math.min(fillDuration, dripTiles.length * 150)
 			await tick()
 			pondAnimateElement?.beginElement()
 		}
@@ -164,7 +168,7 @@
 				fill="freeze"
 				dur="1600ms"
 				keySplines={bezierEasing.cubicOut}
-				begin="pond_draw_animate.begin+{500 + t * 150 + 'ms'}"
+				begin="pond_draw_animate.begin+{delay + t * 150 + 'ms'}"
 			/>
 			<animate
 				attributeName="ry"
@@ -173,7 +177,7 @@
 				fill="freeze"
 				dur="1600ms"
 				keySplines={bezierEasing.cubicOut}
-				begin="pond_draw_animate.begin+{500 + t * 150 + 'ms'}"
+				begin="pond_draw_animate.begin+{delay + t * 150 + 'ms'}"
 			/>
 		</ellipse>
 	{/each}
@@ -210,20 +214,28 @@
 </g>
 <g>
 	<g clip-path="url(#pond_path)">
-		<path fill="var(--landscape-color)" d={pondPath} />
+		<path
+			fill="var(--{forceColor ? 'after-color' : 'landscape-color'})"
+			d={pondPath}
+			style:transition="fill {forceColor ? 200 : 1000}ms ease"
+		/>
 		<path
 			style:transform="translateY(0.2px)"
-			fill="var(--tertiary-color)"
+			fill="var(--{forceColor ? 'after-color' : 'tertiary-color'})"
 			stroke-width="0.2"
-			stroke="var(--landscape-color)"
+			stroke="var(--{forceColor ? 'after-color' : 'landscape-color'})"
+			style:transition="fill {forceColor ? 200 : 1000}ms ease, stroke {forceColor
+				? 200
+				: 1000}ms ease"
 			d={pondPath}
 		/>
 	</g>
 	<path
 		stroke-width="0.2"
-		stroke="var(--landscape-color)"
+		stroke="var(--{forceColor ? 'after-color' : 'landscape-color'})"
 		stroke-linecap="round"
 		fill="none"
+		style:transition="stroke {forceColor ? 200 : 1000}ms ease"
 		d={pondPath}
 	/>
 	{#each ripples as ripple (ripple)}

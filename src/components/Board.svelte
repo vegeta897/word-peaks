@@ -9,10 +9,21 @@
 	import { ROWS, WORD_LENGTH } from '$lib/data-model'
 	import { browser } from '$app/env'
 	import { fade } from 'svelte/transition'
-	import { sleep } from '$lib/math'
+	import LastGameDetail from './LastGameDetail.svelte'
+	import { cubicOut } from 'svelte/easing'
 
-	const { boardContent, currentRow, currentTile, gameFinished, showAllHints, guesses } =
-		store
+	const {
+		boardContent,
+		currentRow,
+		currentTile,
+		gameFinished,
+		showAllHints,
+		guesses,
+		lastGameDetail,
+		landscapeFullView,
+		showEndView,
+		gameMode,
+	} = store
 
 	let idle = false
 	let canAnimate: boolean | null = null
@@ -31,35 +42,26 @@
 			await new Promise<void>((resolve) => {
 				idleTimeout = setTimeout(() => {
 					resolve()
-				}, (get(gameFinished) ? 20 : 30) * 1000)
+				}, 30 * 1000)
 			})
 			if (thisIdleSessionID !== idleSessionID) return
 			if (canAnimate === null) canAnimate = animationSupported()
 			if (!canAnimate) return
-			trackEvent(get(gameFinished) ? 'idleOnFinish' : 'idleBeforeFinish')
+			trackEvent('idleBeforeFinish')
 			const scheduler = await import('$lib/idle-scheduler')
 			scheduler.initScheduler((ROWS - get(currentRow)) * WORD_LENGTH)
 			idle = true
 		}
 	}
 
-	let landscapeComponent: { getDrawTime: () => number }
-
-	async function onFinish() {
-		await tick() // Let landscape generate
-		await sleep(landscapeComponent?.getDrawTime() || 2000)
-		store.openScreen.set('results')
-	}
+	let transitionDuration = 0
 
 	onMount(() => {
-		gameFinished.subscribe((finished) => {
-			if (finished) onFinish()
-			waitForIdle()
-		})
 		document.addEventListener('visibilitychange', () => waitForIdle())
 		store.openScreen.subscribe(() => waitForIdle())
 		store.boardContent.subscribe(() => waitForIdle())
 		store.currentTile.subscribe(() => waitForIdle())
+		tick().then(() => (transitionDuration = 250))
 	})
 	onDestroy(() => {
 		clearTimeout(idleTimeout!)
@@ -90,44 +92,65 @@
 
 <div class="container" style="--row-count: {ROWS}">
 	{#if browser}
-		<div class="board">
-			{#each $boardContent as boardRow, r}
-				<div class="tile-row">
-					{#each boardRow as tile, t (r + '.' + t)}
-						<Tile
-							{tile}
-							current={r === $currentRow && t === $currentTile}
-							inCurrentRow={!$gameFinished && r === $currentRow}
-							showHint={!$gameFinished && (t === $currentTile || $showAllHints)}
-						>
-							{#if !idle && !$guesses[0] && r === ROWS - 1}
-								<div
-									class="dance-tile"
-									style:opacity={((t < danceClickProgress ? 1 : 0) * danceClickProgress) /
-										5}
-									on:click={() => danceClick(t)}
-									out:fade={{ duration: 500 }}
-								>
-									{'DANCE'[t]}
-								</div>
-							{/if}
-							{#if idle && tile.letter === '' && r > $currentRow}
-								{#await import('$com/Idler.svelte') then module}
-									<svelte:component this={module.default} id={r + ':' + t} />
-								{/await}
-							{/if}
-						</Tile>
-					{/each}
-				</div>
-			{/each}
-		</div>
-		<div class="graph"><Landscape bind:this={landscapeComponent} /></div>
+		{#if !$landscapeFullView}
+			<div class="board">
+				{#if !$gameFinished || !$lastGameDetail || !$showEndView}
+					<div
+						class="tile-row-container"
+						transition:fade|local={{ duration: transitionDuration, easing: cubicOut }}
+					>
+						{#each $boardContent as boardRow, r}
+							<div class="tile-row">
+								{#each boardRow as tile, t (r + '.' + t)}
+									<Tile
+										{tile}
+										current={r === $currentRow && t === $currentTile}
+										inCurrentRow={!$gameFinished && r === $currentRow}
+										showHint={!$gameFinished && (t === $currentTile || $showAllHints)}
+									>
+										{#if !idle && !$guesses[0] && r === ROWS - 1}
+											<div
+												class="dance-tile"
+												style:opacity={((t < danceClickProgress ? 1 : 0) *
+													danceClickProgress) /
+													5}
+												on:click={() => danceClick(t)}
+												out:fade={{ duration: 500 }}
+											>
+												{'DANCE'[t]}
+											</div>
+										{/if}
+										{#if idle && tile.letter === '' && r > $currentRow}
+											{#await import('$com/Idler.svelte') then module}
+												<svelte:component this={module.default} id={r + ':' + t} />
+											{/await}
+										{/if}
+									</Tile>
+								{/each}
+							</div>
+						{/each}
+					</div>
+				{:else}
+					{#key $gameMode}
+						<LastGameDetail lastGameDetail={$lastGameDetail} />
+					{/key}
+				{/if}
+			</div>
+		{/if}
+		<div class="landscape"><Landscape /></div>
 	{:else}
 		<div class="loading">loading...</div>
 	{/if}
 </div>
 
 <style>
+	:root {
+		--tile-margin: 5px;
+		--tile-size: 70px;
+		--tile-font-size: 2.5rem;
+		--board-width: calc(5 * var(--tile-size) + 4 * var(--tile-margin));
+	}
+
 	.container {
 		margin: 0 auto 6px;
 		padding: 0 4px;
@@ -141,12 +164,15 @@
 		display: flex;
 		flex-direction: column;
 		margin-right: 4px;
+		height: 100%;
+		width: var(--board-width);
+		position: relative;
 	}
 
-	:root {
-		--tile-margin: 5px;
-		--tile-size: 70px;
-		--tile-font-size: 2.5rem;
+	.tile-row-container {
+		position: absolute;
+		top: 0;
+		left: 0;
 	}
 
 	.tile-row {
@@ -158,12 +184,15 @@
 		margin-bottom: 0;
 	}
 
-	.graph {
+	.landscape {
 		flex-grow: 1;
 		height: 100%;
 	}
 
 	.loading {
+		display: flex;
+		height: 100%;
+		align-items: center;
 		color: #aaa;
 		font-size: 1.3em;
 		background: linear-gradient(to left, #aaa1, #aaa3 20%, #aaa, #aaa3 80%, #aaa1);
@@ -218,7 +247,7 @@
 		}
 	}
 	@media (max-width: 340px) {
-		.graph {
+		.landscape {
 			display: none;
 		}
 	}

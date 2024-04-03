@@ -18,15 +18,18 @@
 	export let mouseOver: boolean
 	export let mouseX: number
 	export let mouseY: number
+	export let forceColor: boolean
 
 	let animateElement: SVGAnimateElement
 	let animateSkewElement: SVGAnimateTransformElement
 
 	let inColor = false
+	$: inColor = forceColor
 	let lastTimeout: NodeJS.Timer
 	let nudgeX = 0
 	let nudgeY = 1
 	export function flashColor(x: number, y: number, duration: number) {
+		if (forceColor) return
 		const distance = getDistance(x - centerX, y - topCenter)
 		const force = 4 - distance
 		if (force > 0) {
@@ -36,10 +39,11 @@
 			nudgeY = (yMagnitude * force) / 24
 			animateSkewElement?.beginElement()
 		}
-		setTimeout(() => (inColor = true), distance * 70)
+		const flashDelay = distance * 70
+		setTimeout(() => (inColor = true), flashDelay)
 		const thisTimeout = setTimeout(() => {
-			if (lastTimeout === thisTimeout) inColor = false
-		}, duration)
+			if (lastTimeout === thisTimeout) inColor = forceColor
+		}, Math.max(duration, flashDelay))
 		lastTimeout = thisTimeout
 	}
 
@@ -92,13 +96,13 @@
 		/>
 		<line
 			stroke="var(--tertiary-color)"
-			stroke-width={STROKE_WIDTH * 2}
+			stroke-width={STROKE_WIDTH * 2.5}
 			stroke-linecap="round"
 			y2={-trunkLength}
 		/>
 		<circle
 			cy={-trunkLength - radius}
-			r={radius + STROKE_HALF}
+			r={radius + STROKE_HALF * 1.25}
 			fill="var(--tertiary-color)"
 			style:transform="translateY({hover ? 0.3 : 0}px)"
 			style:transition="transform {hover ? 50 : 200}ms ease-out"

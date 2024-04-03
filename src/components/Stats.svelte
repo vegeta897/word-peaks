@@ -6,6 +6,7 @@
 	import { get } from 'svelte/store'
 	import Time from '$com/Time.svelte'
 	import StatBar from '$com/StatBar.svelte'
+	import Screen from './Screen.svelte'
 
 	export let gameMode: GameMode
 
@@ -19,69 +20,71 @@
 	const totalTime = guessTotals.reduce((a, b) => a + b, 0)
 </script>
 
-<section>
-	<div class="stats-container">
-		<div class="stats-item">
-			<strong>{$stats.totalGames}</strong>
-			{$t('main.stats.total_games')}
-		</div>
-		<div class="stats-item">
-			<strong>{Math.round((100 * $stats.wonGames) / ($stats.totalGames || 1))}%</strong>
-			{$t('main.stats.win_rate')}
-		</div>
-		<div class="stats-item">
-			<strong>{$stats.currentStreak}</strong>
-			{$t('main.stats.current_streak')}
-		</div>
-		<div class="stats-item">
-			<strong>{$stats.bestStreak}</strong>
-			{$t('main.stats.best_streak')}
-		</div>
-	</div>
-	<table>
-		<tr>
-			<th /><th>{$t('main.stats.winning_guesses')}</th>
-			<th>{$t('main.stats.average_guess_time')}</th>
-		</tr>
-		{#each { length: ROWS } as _, g}<tr
-				><td>{g + 1}</td><td>
-					<StatBar percent={$stats.distribution[g] / highestDistribution}>
-						{$stats.distribution[g]}
-					</StatBar></td
-				><td>
-					{#if $timeStats.guessTotals[g] / $timeStats.guessCounts[g]}
-						<StatBar
-							percent={$timeStats.guessTotals[g] /
-								$timeStats.guessCounts[g] /
-								highestAvgGuessTime}
-							minWidth="2.7em"
-						>
-							<Time
-								ms={$timeStats.guessTotals[g] / $timeStats.guessCounts[g]}
-								dimming={false}
-							/>
-						</StatBar>{/if}</td
-				></tr
-			>{/each}
-	</table>
-	{#if $timeStats.gameCount}
-		<div class="stats-container" style="margin-top: 1.5rem">
+<Screen title={$t('main.stats.title')}>
+	<section>
+		<div class="stats-container">
 			<div class="stats-item">
-				<strong><Time ms={$timeStats.fastestGame} decimals={2} /></strong>
-				{$t('main.stats.fastest_game')}
+				<strong>{$stats.totalGames}</strong>
+				{$t('main.stats.total_games')}
 			</div>
 			<div class="stats-item">
-				<strong><Time ms={totalTime / $timeStats.gameCount} /></strong>
-				{$t('main.stats.average_game')}
+				<strong>{Math.round((100 * $stats.wonGames) / ($stats.totalGames || 1))}%</strong>
+				{$t('main.stats.win_rate')}
 			</div>
 			<div class="stats-item">
-				<strong><Time ms={totalTime / guessCount} /></strong>
-				{$t('main.stats.average_guess')}
+				<strong>{$stats.currentStreak}</strong>
+				{$t('main.stats.current_streak')}
+			</div>
+			<div class="stats-item">
+				<strong>{$stats.bestStreak}</strong>
+				{$t('main.stats.best_streak')}
 			</div>
 		</div>
-	{/if}
-	{#if gameMode === 'random'}<em>{$t('main.stats.stats_daily')}</em>{/if}
-</section>
+		<table>
+			<tr>
+				<th /><th>{$t('main.stats.winning_guesses')}</th>
+				<th>{$t('main.stats.average_guess_time')}</th>
+			</tr>
+			{#each { length: ROWS } as _, g}<tr
+					><td>{g + 1}</td><td>
+						<StatBar percent={$stats.distribution[g] / highestDistribution}>
+							{$stats.distribution[g]}
+						</StatBar></td
+					><td>
+						{#if $timeStats.guessTotals[g] / $timeStats.guessCounts[g]}
+							<StatBar
+								percent={$timeStats.guessTotals[g] /
+									$timeStats.guessCounts[g] /
+									highestAvgGuessTime}
+								minWidth="2.7em"
+							>
+								<Time
+									ms={$timeStats.guessTotals[g] / $timeStats.guessCounts[g]}
+									dimming={false}
+								/>
+							</StatBar>{/if}</td
+					></tr
+				>{/each}
+		</table>
+		{#if $timeStats.gameCount}
+			<div class="stats-container" style="margin-top: 1.5rem">
+				<div class="stats-item">
+					<strong><Time ms={$timeStats.fastestGame} decimals={2} /></strong>
+					{$t('main.stats.fastest_game')}
+				</div>
+				<div class="stats-item">
+					<strong><Time ms={totalTime / $timeStats.gameCount} /></strong>
+					{$t('main.stats.average_game')}
+				</div>
+				<div class="stats-item">
+					<strong><Time ms={totalTime / guessCount} /></strong>
+					{$t('main.stats.average_guess')}
+				</div>
+			</div>
+		{/if}
+		{#if gameMode === 'random'}<em>{$t('main.stats.stats_daily')}</em>{/if}
+	</section>
+</Screen>
 
 <style>
 	section {

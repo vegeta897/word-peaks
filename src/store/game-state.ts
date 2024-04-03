@@ -107,6 +107,10 @@ export const validLetters: Readable<Set<string>> = derived(
 			: getValidLetters($boardContent, $currentRow, $currentTile)
 )
 
+export const landscapeInput: Writable<null | [GameMode, number]> = writable(null)
+
+export const showEndView: Writable<boolean> = writable(false)
+
 export function initGameState() {
 	guesses.subscribe((guessed) => {
 		boardContent.update(() => {

@@ -2,7 +2,6 @@
 	import { onMount } from 'svelte'
 	import { bezierEasing } from '$lib/transitions'
 	import { getDistance } from '$lib/math'
-	import { cubicIn } from 'svelte/easing'
 
 	const STROKE_WIDTH = 0.2
 	const STROKE_HALF = STROKE_WIDTH / 2
@@ -20,15 +19,18 @@
 	export let mouseOver: boolean
 	export let mouseX: number
 	export let mouseY: number
+	export let forceColor: boolean
 
 	let animateElement: SVGAnimateElement
 	let animateSkewElement: SVGAnimateTransformElement
 
 	let inColor = false
+	$: inColor = forceColor
 	let lastTimeout: NodeJS.Timer
 	let nudgeX = 0
 	let nudgeScaleY = 1
 	export function flashColor(x: number, y: number, duration: number) {
+		if (forceColor) return
 		const distance = getDistance(x - centerX, y - centerMass)
 		const force = 4 - distance
 		if (force > 0) {
@@ -38,10 +40,11 @@
 			nudgeScaleY = 1 + (yMagnitude * force) / 24
 			animateSkewElement?.beginElement()
 		}
-		setTimeout(async () => (inColor = true), distance * 70)
+		const flashDelay = distance * 70
+		setTimeout(async () => (inColor = true), flashDelay)
 		const thisTimeout = setTimeout(async () => {
-			if (lastTimeout === thisTimeout) inColor = false
-		}, duration)
+			if (lastTimeout === thisTimeout) inColor = forceColor
+		}, Math.max(duration, flashDelay))
 		lastTimeout = thisTimeout
 	}
 
@@ -99,14 +102,14 @@
 		<path
 			fill="none"
 			stroke="var(--tertiary-color)"
-			stroke-width={STROKE_WIDTH * 2}
+			stroke-width={STROKE_WIDTH * 2.5}
 			d={hillBottomPath}
 		/>
 		<g>
 			<path
 				fill="none"
 				stroke="var(--tertiary-color)"
-				stroke-width={STROKE_WIDTH * 2}
+				stroke-width={STROKE_WIDTH * 2.5}
 				d={hillTopPath}
 				style:transform="translateY({hover ? (mini ? 0.25 : 0.4) : 0}px)"
 				style:transition="transform {hover ? 75 : 200}ms ease-out"

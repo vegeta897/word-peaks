@@ -1,7 +1,11 @@
+import targetWords from '$lib/words/targets-filtered.json'
+import { get } from 'svelte/store'
+import { resetBoard } from './board'
+import { randomElement } from './math'
+import * as store from '$src/store'
+
 export const ROWS = 6
 export const WORD_LENGTH = 5
-import targetWords from '$lib/words/targets-filtered.json'
-import { randomElement } from './math'
 
 let dictionary: string[] | undefined
 export async function loadDictionary() {
@@ -23,6 +27,57 @@ export type Tile = {
 }
 export type Board = Tile[][]
 export type GameMode = 'daily' | 'random'
+
+export function playDaily() {
+	store.gameMode.set('daily')
+	store.landscapeForceColor.set(false)
+	store.landscapeFullView.set(false)
+	history.pushState('', document.title, window.location.pathname + window.location.search) // Remove # from URL
+	const dayNumber = getDayNumber()
+	const dailyWord = getWordByDay(dayNumber)
+	if (
+		get(store.lastPlayedDaily) === getDayNumber() &&
+		get(store.answerDaily) === dailyWord
+	) {
+		store.showEndView.set(get(store.gameFinished))
+		store.landscapeInput.set(['daily', get(store.guesses).length])
+		return
+	}
+	resetBoard()
+	store.guessesDaily.set([])
+	store.lastPlayedDaily.set(dayNumber)
+	store.answerDaily.set(dailyWord)
+	store.showEndView.set(get(store.gameFinished))
+	store.landscapeInput.set(['daily', 0])
+}
+
+export function playRandom(word?: string) {
+	store.gameMode.set('random')
+	store.landscapeForceColor.set(false)
+	store.landscapeFullView.set(false)
+	const currentAnswer = get(store.answerRandom)
+	const noReset = (!word || word === currentAnswer) && currentAnswer
+	const answer = noReset ? currentAnswer : word || getRandomWord()
+	const hash = encodeWord(answer)
+	history.pushState(
+		'',
+		document.title,
+		window.location.pathname + `#${hash}` + window.location.search
+	)
+	if (noReset) {
+		// Already playing a word
+		store.showEndView.set(get(store.gameFinished))
+		store.landscapeInput.set(['random', get(store.guessesRandom).length])
+		return
+	}
+	// if (currentAnswer === word) return // Already playing this word
+	// window.location.hash = encodeWord(randomWord)
+	resetBoard()
+	store.guessesRandom.set([])
+	store.answerRandom.set(answer)
+	store.showEndView.set(get(store.gameFinished))
+	store.landscapeInput.set(['random', 0])
+}
 
 export function createNewBoard(): Board {
 	const board = []

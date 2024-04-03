@@ -141,10 +141,10 @@ export function drawResults(
 				ctx.fillStyle = highContrast ? '#64ba2e' : '#15a850'
 			} else if (tile.distance > 0) {
 				ctx.fillStyle = '#567de8'
-				bottomRadius = 28
+				bottomRadius = 31
 			} else {
 				ctx.fillStyle = highContrast ? '#da3f8b' : '#e38f2f'
-				topRadius = 28
+				topRadius = 31
 			}
 			const x = 8 + t * 100
 			const y = 8 + r * 100

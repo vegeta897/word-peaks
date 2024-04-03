@@ -10,6 +10,7 @@
 	import { OptionsIconPathData } from '$lib/icons'
 	import { browser } from '$app/env'
 	import { aprilFools } from '$lib/share'
+	import { playDaily, playRandom } from '$lib/data-model'
 
 	$: isAprilFools = $lastPlayedDaily && aprilFools()
 	$: peaColor =
@@ -18,18 +19,36 @@
 
 <header class:high-contrast={$highContrast}>
 	<div class="heading-container">
-		<h1>Word <span class:pea={peaColor}>{isAprilFools ? 'Peas' : 'Peaks'}</span></h1>
-		{#if browser}<div class="game-mode" class:large={$gameMode === 'random'}>
+		<h1>
+			Word <span class:pea={peaColor}>{isAprilFools ? 'Peas' : 'Peaks'}</span>
+			{#if browser}
+				<small class="game-mode" class:large={$gameMode === 'random'}>
+					{$gameMode === 'daily' ? `#${$lastPlayedDaily + 1}` : '∞'}
+				</small>
+			{/if}
+		</h1>
+		{#if browser}
+			<!-- <div class="game-mode" class:large={$gameMode === 'random'}>
 				{$gameMode === 'daily' ? `#${$lastPlayedDaily + 1}` : '∞'}
-			</div>{/if}
+			</div>
+			<div>Daily / Random</div> -->
+			<div class="game-mode-buttons">
+				<button on:click={playDaily} disabled={$gameMode === 'daily'}>
+					{$t('main.summary.daily')}
+				</button>
+				<button on:click={() => playRandom()} disabled={$gameMode !== 'daily'}>
+					{$t('main.summary.random')}
+				</button>
+			</div>
+		{/if}
 	</div>
-	<div class="buttons" style:visibility={browser ? 'visible' : 'hidden'}>
+	<div class="menu-buttons" style:visibility={browser ? 'visible' : 'hidden'}>
 		<button
 			title={$t('main.tutorial.title')}
 			class="test"
 			on:click={() => openScreen.set('tutorial')}><span>?</span></button
 		>
-		<button title={$t('main.stats.title')} on:click={() => openScreen.set('results')}>
+		<button title={$t('main.stats.title')} on:click={() => openScreen.set('stats')}>
 			<svg viewBox="0 0 9 9" xmlns="http://www.w3.org/2000/svg" width="20" height="20">
 				<g transform="rotate(180 4.5 4.5)">
 					<rect id="gr1" x="0" y="0" height="8" width="2" />
@@ -53,24 +72,76 @@
 <style>
 	header {
 		transition: width 400ms ease-in-out;
-		margin: 10px auto;
-		padding: 0 8px;
+		margin: 0.75rem auto 1rem;
+		padding: 0 0.5rem;
 		box-sizing: border-box;
 		display: flex;
-		align-items: center;
+		align-items: flex-start;
 		justify-content: space-between;
 	}
 
 	.heading-container {
 		display: flex;
-		flex-wrap: wrap;
+		flex-direction: column;
 		align-items: baseline;
-		column-gap: 8px;
 	}
 
 	h1 {
-		text-align: left;
 		margin: 0;
+	}
+
+	.game-mode {
+		margin-left: 0.25rem;
+		color: #888;
+		font-size: 0.875em;
+	}
+
+	.game-mode.large {
+		font-size: 1.5em;
+		line-height: 0.5em;
+		position: relative;
+		top: 0.25rem;
+	}
+
+	.game-mode-buttons {
+		display: flex;
+		margin-top: 0.25rem;
+	}
+
+	.game-mode-buttons button {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		height: 1.875rem;
+		background-color: #ffffff0a;
+		border: 0;
+		border-radius: 0.25rem;
+		padding: 0 0.875rem;
+		font-weight: 700;
+		font-size: 1em;
+		color: #888a;
+		transition: background-color 120ms ease-out;
+	}
+
+	.game-mode-buttons button:first-child {
+		border-top-right-radius: 0;
+		border-bottom-right-radius: 0;
+	}
+
+	.game-mode-buttons button:last-child {
+		border-top-left-radius: 0;
+		border-bottom-left-radius: 0;
+	}
+
+	.game-mode-buttons button:disabled {
+		color: var(--text-color);
+		background-color: var(--secondary-color);
+		cursor: default;
+	}
+
+	.game-mode-buttons button:not(:disabled):hover {
+		color: var(--text-color);
+		background-color: var(--secondary-color);
 	}
 
 	.pea {
@@ -78,25 +149,14 @@
 		transition: color 2s ease-in;
 	}
 
-	.game-mode {
-		color: #888;
-		font-size: 1em;
-	}
-
-	.game-mode.large {
-		font-size: 1.5em;
-		line-height: 0.5em;
-	}
-
-	.buttons {
+	.menu-buttons {
 		display: flex;
 	}
 
-	header button {
+	.menu-buttons button {
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		text-transform: uppercase;
 		padding: 0;
 		width: 45px;
 		height: 45px;
@@ -111,23 +171,23 @@
 		font-family: var(--font-list);
 	}
 
-	header button:hover {
+	.menu-buttons button:hover {
 		color: var(--text-color);
 		background-color: var(--secondary-color);
 	}
 
-	header button svg {
+	.menu-buttons button svg {
 		fill: #888;
 	}
-	header button:hover svg {
+	.menu-buttons button:hover svg {
 		fill: var(--text-color);
 	}
 
-	header button.test span {
+	.menu-buttons button.test span {
 		transition: font-size 150ms ease-in-out, transform 200ms ease-in-out 150ms;
 	}
 
-	header button.test:hover span {
+	.menu-buttons button.test:hover span {
 		transform: scale(0.8);
 		font-size: 150%;
 	}
@@ -137,18 +197,18 @@
 		transition: transform 300ms ease-in-out;
 	}
 
-	header button:hover svg #gr1 {
+	.menu-buttons button:hover svg #gr1 {
 		transform: scaleY(0.25);
 	}
 
-	header button:hover svg #gr3 {
+	.menu-buttons button:hover svg #gr3 {
 		transform: scaleY(4);
 	}
 
-	header button.hover-spin svg {
+	.menu-buttons button.hover-spin svg {
 		transition: transform 400ms ease-in-out;
 	}
-	header button.hover-spin:hover svg {
+	.menu-buttons button.hover-spin:hover svg {
 		transform: rotate(120deg);
 	}
 
@@ -157,11 +217,8 @@
 	}
 
 	@media (max-width: 390px) {
-		header {
-			margin: 6px auto;
-		}
-		header button {
-			margin-left: 8px;
+		.menu-buttons button {
+			margin-left: 0.5rem;
 		}
 		h1 {
 			font-size: 1.4em;

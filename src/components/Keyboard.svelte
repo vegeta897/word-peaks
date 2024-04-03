@@ -85,13 +85,16 @@
 		user-select: none;
 		padding: 0 4px;
 		touch-action: manipulation;
+		height: 100%;
 		/*max-width: 520px;*/
 	}
 
 	.key-row {
 		display: flex;
 		justify-content: center;
-		margin-bottom: 4px;
+		padding: 2px 0;
+		box-sizing: border-box;
+		height: calc(100% / 3);
 	}
 	.key-row button {
 		display: flex;
@@ -102,7 +105,7 @@
 		margin-left: 0.125rem;
 		margin-right: 0.125rem;
 		width: 67px;
-		height: 64px;
+		height: 100%;
 		border-radius: 4px;
 		border: 0;
 		font-weight: 700;
@@ -141,7 +144,6 @@
 	@media (max-width: 480px) {
 		.key-row button {
 			width: 38px;
-			height: 58px;
 			font-size: 1.3em;
 		}
 
@@ -156,16 +158,6 @@
 	@media (max-width: 350px) {
 		.key-row button.wide {
 			font-size: 0.75em;
-		}
-	}
-	@media (max-height: 824px) {
-		.key-row button {
-			height: 58px;
-		}
-	}
-	@media (max-height: 670px) {
-		.key-row button {
-			height: 52px;
 		}
 	}
 </style>

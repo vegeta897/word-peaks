@@ -7,15 +7,21 @@
 	import Hill from './landscape/Hill.svelte'
 	import Pond from './landscape/Pond.svelte'
 	import { getDistance } from '$lib/math'
+	import type { GameMode } from '$lib/data-model'
 
 	// TODO: Add share landscape image button - https://stackoverflow.com/a/76239811/2612679
 
+	const { landscapeForceColor } = store
+
+	let svgElement: SVGElement
 	let containerWidth: number
 	let containerHeight: number
 	let svgWidth = 0
 	let svgHeight = 0
 	let animate = false
 	let firstDraw = true
+	let gameMode: null | GameMode = null
+	let currentRow = -1
 	let redraw = 0
 	let seed = 0
 
@@ -65,32 +71,9 @@
 	function updateLandscape() {
 		// Loop through un-drawn rows as needed (e.g. loading a completed puzzle)
 		// Preserve already-drawn feature rows if metrics haven't changed
-		if (!landscape.width) return
-		// console.log('container', containerWidth, 'x', containerHeight)
-		const currentRow = get(store.currentRow)
+		if (gameMode === null || !landscape.width) return
 		if (currentRow === 0) {
 			if (landscape.rowsGenerated > 0) clearLandscape()
-			// landscape.features.push({
-			// 	type: 'pond',
-			// 	id: 1,
-			// 	tiles: [
-			// 		[1, 1],
-			// 		[2, 1],
-			// 		[3, 1],
-			// 		[2, 2],
-			// 		[2, 3],
-			// 		[3, 3],
-			// 		[4, 3],
-			// 		[4, 2],
-			// 		[4, 1],
-			// 		[6, 3],
-			// 		[6, 2],
-			// 		[6, 1],
-			// 	],
-			// 	mergedTiles: [],
-			// 	delay: 100,
-			// })
-			// landscape = landscape
 			return
 		} else if (firstDraw || landscape.rowsGenerated > 0) {
 			firstDraw = false
@@ -109,12 +92,25 @@
 	$: if (containerWidth && containerHeight)
 		updateDimensions(containerWidth, containerHeight - 10)
 
-	store.currentRow.subscribe((currentRow) => {
-		if (currentRow === 0) {
+	store.landscapeInput.subscribe((input) => {
+		if (input === null) return
+		const [newGameMode, newCurrentRow] = input
+		if (newCurrentRow === 0 || gameMode !== newGameMode) {
+			clearLandscape()
 			firstDraw = true
 			redraw++
 		}
+		gameMode = newGameMode
+		currentRow = newCurrentRow
 		updateLandscape()
+	})
+	store.landscapeRedraw.subscribe((doRedraw) => {
+		if (!doRedraw) return
+		firstDraw = true
+		redraw++
+		clearLandscape()
+		updateLandscape()
+		store.landscapeRedraw.set(false)
 	})
 
 	type FlashColorHandler = (x: number, y: number, duration: number) => void
@@ -138,7 +134,7 @@
 
 	let lastFlashAt = 0
 	let flashDurationExtra = 0
-	$: landscapeSpan = getDistance(landscape.width + 1, landscape.height + 1)
+	$: landscapeSpan = getDistance(landscape.width + 3, landscape.height + 3)
 
 	const flashColors: svelte.JSX.PointerEventHandler<SVGElement> = (event) => {
 		if (event.pointerType === 'mouse' && event.button !== 0) return
@@ -167,9 +163,7 @@
 	}
 	const onMouseLeave = () => (mouseOver = false)
 
-	export function getDrawTime() {
-		return (landscape.totalDelay || 0) + 1000
-	}
+	$: if (svgElement) store.landscapeSVG.set(svgElement)
 </script>
 
 <div bind:clientWidth={containerWidth} bind:clientHeight={containerHeight}>
@@ -177,11 +171,12 @@
 		xmlns="http://www.w3.org/2000/svg"
 		width={svgWidth}
 		height={svgHeight}
-		style:left={Math.floor((containerWidth - svgWidth) / 2)}
+		style:left="{Math.floor((containerWidth - svgWidth) / 2)}px"
 		viewBox="-0.1 -0.1 {landscape.width * 1.5 + 0.2} {landscape.height + 0.2}"
 		on:pointerdown={flashColors}
 		on:pointermove={onPointerMove}
 		on:mouseleave={onMouseLeave}
+		bind:this={svgElement}
 	>
 		{#key `${seed}${redraw}`}
 			<Pond
@@ -189,12 +184,15 @@
 				tiles={landscape.pondTiles}
 				newTiles={landscape.newPondTiles}
 				{animate}
+				delay={landscape.pondDelay || 0}
 				{mouseOver}
 				{mouseX}
 				{mouseY}
 				landscapeWidth={landscape.width}
 				landscapeHeight={landscape.height}
 				mini={landscape.mini}
+				forceColor={$landscapeForceColor}
+				fillDuration={landscape.totalDelay || 0}
 			/>
 			{#each landscape.features as feature, f (feature.id)}
 				{#if feature.type === 'tree'}
@@ -210,6 +208,7 @@
 						{mouseOver}
 						{mouseX}
 						{mouseY}
+						forceColor={$landscapeForceColor}
 						bind:this={featureComponents[f]}
 					/>
 				{:else}
@@ -226,6 +225,7 @@
 						{mouseOver}
 						{mouseX}
 						{mouseY}
+						forceColor={$landscapeForceColor}
 						bind:this={featureComponents[f]}
 					/>
 				{/if}
@@ -233,9 +233,6 @@
 		{/key}
 	</svg>
 </div>
-<!-- <p style="position: absolute; top: 30px; font-size: 0.75rem;">
-	seed: {seed} time: {landscape.generationTime?.toFixed(1)}ms
-</p> -->
 
 <!-- <button
 	on:click={() => {

@@ -9,7 +9,7 @@ import type { KeyboardLayout } from '$lib/data-model'
 export const storeVersion: Writable<number> = storageWritable('wp-version', 0)
 export const storedLocale: Writable<string> = storageWritable('wp-locale', '')
 
-export const openScreen: Writable<null | 'options' | 'tutorial' | 'results'> =
+export const openScreen: Writable<null | 'options' | 'tutorial' | 'stats'> =
 	writable(null)
 
 export const highContrast: Writable<boolean> = storageWritable('wp-highContrast', false)
@@ -48,5 +48,13 @@ export const lastGameDetail: Readable<GameDetail | null> = derived(
 	([$gameMode, $lastDailyDetail, $lastRandomDetail]) =>
 		$gameMode === 'daily' ? $lastDailyDetail : $lastRandomDetail
 )
+
+export const guessTimeStrings: Writable<string[]> = writable([])
+export const totalGuessTimeString: Writable<string> = writable()
+
+export const landscapeFullView: Writable<boolean> = writable(false)
+export const landscapeForceColor: Writable<boolean> = writable(false)
+export const landscapeRedraw: Writable<boolean> = writable(false)
+export const landscapeSVG: Writable<SVGElement | null> = writable(null)
 
 export const newUser: Writable<boolean> = writable(false)

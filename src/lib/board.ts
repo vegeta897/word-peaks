@@ -27,10 +27,7 @@ export function resetBoard() {
 }
 
 export function typeLetter(letter: string) {
-	if (get(store.gameFinished)) {
-		store.openScreen.set('results')
-		return
-	}
+	if (get(store.gameFinished)) return
 	loadDictionary().catch((_) => {
 		showError(get(t)('main.messages.need_reload'), () => {}, 8000)
 	})
@@ -66,10 +63,7 @@ export function typeLetter(letter: string) {
 }
 
 export function undoLetter(moveCaratBack = true) {
-	if (get(store.gameFinished)) {
-		store.openScreen.set('results')
-		return
-	}
+	if (get(store.gameFinished)) return
 	store.boardContent.update((content) => {
 		let tile = content[get(store.currentRow)][get(store.currentTile)]
 		if (moveCaratBack && get(store.currentTile) > 0 && !tile?.letter) {
@@ -87,10 +81,7 @@ export function undoLetter(moveCaratBack = true) {
 }
 
 export function moveCarat(dir: number) {
-	if (get(store.gameFinished)) {
-		store.openScreen.set('results')
-		return
-	}
+	if (get(store.gameFinished)) return
 	const moveTo = get(store.currentTile) + dir
 	if (moveTo < 0 || moveTo >= WORD_LENGTH) return
 	store.currentTile.update((ct) => ct + dir)
@@ -99,10 +90,7 @@ export function moveCarat(dir: number) {
 let submitting = false
 export async function submitRow() {
 	if (submitting) return
-	if (get(store.gameFinished)) {
-		store.openScreen.set('results')
-		return
-	}
+	if (get(store.gameFinished)) return
 	submitting = true
 	const rowNumber = get(store.currentRow)
 	if (!hasEnoughLetters(get(store.boardContent), rowNumber)) {
@@ -146,8 +134,9 @@ export async function submitRow() {
 	trackEvent('submitGuess')
 	recordGuessTime(rowNumber + 1)
 	store.updateGuesses((words) => [...words, submittedWord])
+	const gameMode = get(store.gameMode)
+	store.landscapeInput.set([gameMode, rowNumber + 1])
 	if (get(store.gameFinished)) {
-		const gameMode = get(store.gameMode)
 		const won = get(store.gameWon)
 		trackEvent(won ? 'gameWon' : 'gameLost')
 		if (gameMode === 'daily') trackEvent('dailyFinish')
@@ -156,6 +145,8 @@ export async function submitRow() {
 		store[
 			gameMode === 'daily' ? 'lastPlayedDailyWasHard' : 'lastPlayedRandomWasHard'
 		].set(get(store.hardMode))
+		// Show end screen after waiting for tiles to flip
+		setTimeout(() => store.showEndView.set(true), 6 * 150 + 250)
 		finishGame(won)
 	} else {
 		store.currentTile.set(0)

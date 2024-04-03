@@ -50,12 +50,12 @@ export type Landscape = {
 	pondTiles: XY[]
 	newPondTiles: XY[]
 	nextID: number
+	pondDelay?: number
 	totalDelay?: number
 	mini?: boolean
-	generationTime?: number
 }
 
-const FEATURE_DELAY = 50
+const FEATURE_DELAY = 30
 
 export function getLandscape(
 	existingLandscape: Landscape,
@@ -64,14 +64,15 @@ export function getLandscape(
 	currentRow: number,
 	seedPrefix = ''
 ): Landscape {
-	const startTime = performance.now()
 	console.time('getFeatures')
 	const { tileMap, openTiles, pondTiles, newPondTiles, width, height, centerX, centerY } =
 		existingLandscape
 	existingLandscape.mini = width < 8
+	const hillSize = existingLandscape.mini ? 4 : 6
 	let { features, rowsGenerated, nextID } = existingLandscape
 	// No initial delay if loading a partially/fully completed puzzle
 	let totalDelay = currentRow > 1 && rowsGenerated === 0 ? 0 : 500
+	let pondDelay = -1
 	newPondTiles.length = 0
 	if (rowsGenerated === 0 && currentRow > rowsGenerated) {
 		openTiles.set(xyToGrid([centerX, centerY]), {
@@ -155,7 +156,6 @@ export function getLandscape(
 					// console.log(openTileWeights)
 					const [, tile] = randomElementWeighted(openHillTiles, openTileWeights, getRng)
 					const subtileStartIndex = randomInt(0, 5, getRng)
-					const hillSize = existingLandscape.mini ? 4 : 6
 					const subtiles = existingLandscape.mini ? hillSubtilesMini : hillSubtiles
 					for (let i = 0; i < hillSize; i++) {
 						const subtileIndex = (subtileStartIndex + i) % hillSize
@@ -195,7 +195,7 @@ export function getLandscape(
 					delay: totalDelay,
 				}
 				features.push(feature)
-				totalDelay += FEATURE_DELAY
+				totalDelay += FEATURE_DELAY * hillSize
 				for (const hillGrid of hillGrids) {
 					tileMap.set(hillGrid, feature)
 					openTiles.delete(hillGrid)
@@ -243,6 +243,10 @@ export function getLandscape(
 						existingLandscape
 					)
 				}
+				if (generatedPond && pondDelay < 0) {
+					pondDelay = totalDelay
+					totalDelay += FEATURE_DELAY * (existingLandscape.mini ? 6 : 4)
+				}
 			}
 		}
 		rowsGenerated++
@@ -264,9 +268,9 @@ export function getLandscape(
 		centerX,
 		centerY,
 		nextID,
+		pondDelay,
 		totalDelay,
 		mini: existingLandscape.mini,
-		generationTime: performance.now() - startTime,
 	}
 }
 // prettier-ignore
