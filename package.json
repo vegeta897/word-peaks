@@ -20,7 +20,7 @@
 		"@zerodevx/svelte-toast": "^0.6.3",
 		"prettier": "^2.5.1",
 		"prettier-plugin-svelte": "^2.5.0",
-		"svelte": "^3.48.0",
+		"svelte": "^3.59.1",
 		"svelte-check": "^2.7.0",
 		"svelte-local-storage-store": "^0.2.6",
 		"svelte-preprocess": "^4.10.6",
