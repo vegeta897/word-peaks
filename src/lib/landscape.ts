@@ -64,7 +64,6 @@ export function getLandscape(
 	currentRow: number,
 	seedPrefix = ''
 ): Landscape {
-	console.time('getFeatures')
 	const { tileMap, openTiles, pondTiles, newPondTiles, width, height, centerX, centerY } =
 		existingLandscape
 	existingLandscape.mini = width < 8
@@ -97,7 +96,6 @@ export function getLandscape(
 				for (let i = 0; i < treeCount; i++) {
 					if (openTiles.size === 0) break
 					const openTilesArray = [...openTiles]
-					// const [grid, { x, y }] = randomElement(openTilesArray, getRng)
 					const [grid, { x, y }] = randomElementWeighted(
 						openTilesArray,
 						openTilesArray.map(([, { y, centerWeight, nearTrees }]) =>
@@ -110,8 +108,6 @@ export function getLandscape(
 						),
 						getRng
 					)
-					// const [grid, { x, y }] = randomElement([...openTiles], getRng)
-					// console.log(grid)
 					openTiles.delete(grid)
 					getNeighbors(x, y).forEach(([nx, ny]) => {
 						if (nx < 0 || nx >= width || ny < 0 || ny >= height) return
@@ -153,7 +149,6 @@ export function getLandscape(
 					const openTileWeights = openHillTiles.map(
 						([, { y, centerWeight }]) => (y > 1 ? centerWeight : 0) // Hills higher than y=1 would be cut off
 					)
-					// console.log(openTileWeights)
 					const [, tile] = randomElementWeighted(openHillTiles, openTileWeights, getRng)
 					const subtileStartIndex = randomInt(0, 5, getRng)
 					const subtiles = existingLandscape.mini ? hillSubtilesMini : hillSubtiles
@@ -227,7 +222,6 @@ export function getLandscape(
 				while (!generatedPond) {
 					const openTilesArray = [...openTiles].filter(([, { noPond }]) => !noPond)
 					if (openTilesArray.length === 0) break
-					// const [grid, { x, y }] = randomElement(openTilesArray, getRng)
 					const [startGrid, openTile] = randomElementWeighted(
 						openTilesArray,
 						openTilesArray.map(
@@ -253,9 +247,6 @@ export function getLandscape(
 	}
 	// Sort features for proper overlapping
 	features.sort((a, b) => getFeatureY(a) - getFeatureY(b))
-	console.timeEnd('getFeatures')
-	// console.log(features)
-	// console.log(openTiles)
 	return {
 		features,
 		tileMap,

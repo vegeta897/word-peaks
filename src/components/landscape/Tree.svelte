@@ -109,7 +109,6 @@
 		>
 			<animate
 				attributeName="cy"
-				type="translate"
 				begin="tree_nudge_animate_{id}.begin"
 				values="{-trunkToTop};{-trunkToTop - nudgeY};{-trunkToTop}"
 				keyTimes="0;0.3;1"
@@ -144,7 +143,6 @@
 			>
 				<animate
 					attributeName="cy"
-					type="translate"
 					begin="tree_nudge_animate_{id}.begin"
 					values="{-trunkToTop};{-trunkToTop - nudgeY};{-trunkToTop}"
 					keyTimes="0;0.3;1"
