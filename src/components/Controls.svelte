@@ -39,17 +39,17 @@
 		left: 0;
 	}
 
-	@media (min-width: 721px) and (max-height: 725px) {
+	@media (min-width: 721px) and (max-height: 730px) {
 		section {
 			height: 168px;
 		}
 	}
-	@media (min-width: 721px) and (max-height: 705px) {
+	@media (min-width: 721px) and (max-height: 710px) {
 		section {
 			height: 156px;
 		}
 	}
-	@media (min-width: 721px) and (max-height: 690px) {
+	@media (min-width: 721px) and (max-height: 695px) {
 		section {
 			height: 150px;
 		}
