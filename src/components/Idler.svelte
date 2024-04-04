@@ -16,12 +16,12 @@
 	let letterRotate: HTMLDivElement
 	let letterScale: HTMLDivElement
 
-	const animationParts: Map<AnimationPart, () => HTMLDivElement> = new Map([
-		['translateX', () => letterTranslateX],
-		['translateY', () => letterTranslateY],
-		['rotate', () => letterRotate],
-		['scale', () => letterScale],
-	])
+	const animationParts: Record<AnimationPart, () => HTMLDivElement> = {
+		translateX: () => letterTranslateX,
+		translateY: () => letterTranslateY,
+		rotate: () => letterRotate,
+		scale: () => letterScale,
+	}
 
 	const performAnimation = async (
 		animation: MultipartAnimation,
@@ -31,7 +31,7 @@
 	): Promise<void> => {
 		await Promise.all(
 			AnimationParts.map(async (part) => {
-				const element = animationParts.get(part)!()
+				const element = animationParts[part]()
 				if (element && animation[part]) {
 					await element.animate(animation[part]!, {
 						duration: animation.duration,
@@ -82,7 +82,7 @@
 				<div class="letter-animation" bind:this={letterRotate}>
 					<div class="letter-animation" bind:this={letterScale}>
 						<div class="letter">
-							{letter || ''}
+							{'W' || letter || ''}
 						</div>
 					</div>
 				</div>
@@ -98,24 +98,20 @@
 		top: 2px;
 		width: calc(100% - 4px);
 		height: calc(100% - 4px);
-		border-radius: 6px;
+		border-radius: 11%;
 	}
 	.letter-anchor {
-		position: relative;
-		left: -56px;
-		top: 28px;
+		transform: scale(1.25) translate(-40px, 20px);
 		width: 100%;
 		height: 100%;
-		transform: scale(1.4);
 	}
 	.letter-animation {
-		position: relative;
 		width: 100%;
 		height: 100%;
 	}
 	.letter {
 		position: relative;
-		top: -3px;
+		top: 3px;
 		text-transform: uppercase;
 		font-weight: 700;
 		color: #5b505e;
@@ -126,36 +122,52 @@
 
 	@media (max-width: 720px) {
 		.letter-anchor {
-			top: 22px;
-			left: -48px;
-			transform: scale(1.2);
+			transform: scale(1.25) translate(-40px, 18px);
+		}
+		.letter {
+			top: 0;
 		}
 	}
 	@media (max-width: 640px) {
 		.letter-anchor {
-			top: 18px;
-			left: -43px;
-			transform: scale(1.1);
+			transform: translate(-40px, 20px);
+		}
+		.letter {
+			top: -3px;
+		}
+	}
+	@media (max-width: 560px) {
+		.letter-anchor {
+			transform: translate(-40px, 16px);
 		}
 	}
 	@media (max-width: 480px) {
-		.letter-anchor {
-			top: 12px;
-			left: -37px;
-			transform: scale(0.93);
-		}
 		.letter {
 			top: -6px;
 		}
 	}
-	@media (max-width: 360px) {
+	@media (max-width: 430px) {
 		.letter-anchor {
-			top: 10px;
-			left: -32px;
-			transform: scale(0.8);
+			transform: translate(-40px, 14px);
 		}
 		.letter {
 			top: -7px;
+		}
+	}
+	@media (max-width: 390px) {
+		.letter-anchor {
+			transform: scale(0.95) translate(-40px, 13px);
+		}
+		.letter {
+			top: -9px;
+		}
+	}
+	@media (max-width: 375px) {
+		.letter-anchor {
+			transform: scale(0.9) translate(-40px, 14px);
+		}
+		.letter {
+			top: -10px;
 		}
 	}
 </style>
