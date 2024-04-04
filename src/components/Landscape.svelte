@@ -151,7 +151,6 @@
 	let lastFlashAt = 0
 	let flashDurationExtra = 0
 	let lastFlashXY: null | XY = null
-	let lastFlashTimeout: NodeJS.Timeout
 	let flashAnimateElement: SVGAnimateElement
 	$: landscapeSpan = getDistance(landscape.width + 3, landscape.height + 3)
 
@@ -165,8 +164,6 @@
 			Math.min(3500, flashDurationExtra + lastFlashAt + 250 - now)
 		)
 		lastFlashXY = [mouseX, mouseY]
-		clearTimeout(lastFlashTimeout)
-		lastFlashTimeout = setTimeout(() => (lastFlashXY = null), 200)
 		tick().then(() => flashAnimateElement?.beginElement())
 		const duration = landscapeSpan * 70 + flashDurationExtra
 		featureComponents.forEach((f) => f?.flashColor(mouseX, mouseY, duration))
@@ -261,8 +258,8 @@
 				{cx}
 				{cy}
 				style:transform-origin="{cx}px {cy}px"
-				rx="3"
-				ry="2"
+				rx="1.5"
+				ry="1"
 				fill="#fff7"
 			>
 				<animate
@@ -272,17 +269,17 @@
 					values="1;0"
 					calcMode="spline"
 					keySplines={bezierEasing.circOut}
-					dur="200ms"
+					dur="250ms"
 					fill="freeze"
 					begin="indefinite"
 				/>
 				<animateTransform
 					attributeName="transform"
 					type="scale"
-					values="0;0.5"
+					values="0;1"
 					calcMode="spline"
 					keySplines={bezierEasing.circOut}
-					dur="200ms"
+					dur="250ms"
 					fill="freeze"
 					begin="landscape_flash_animate.begin"
 				/>
