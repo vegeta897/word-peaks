@@ -77,8 +77,8 @@ export async function shareImage(
 	const shareData = {
 		files: filesArray,
 	}
-	// Fail silently, image will appear in modal to copy
-	await navigator.share(shareData)
+	// Fail silently, image will appear to copy
+	if (navigator.share) await navigator.share(shareData)
 }
 
 export function drawResults(

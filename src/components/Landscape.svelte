@@ -91,6 +91,7 @@
 			currentRow,
 			`${seed}`
 		)
+		store.landscape.set(landscape)
 		hide = false
 	}
 

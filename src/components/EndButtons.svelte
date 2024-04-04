@@ -114,6 +114,25 @@
 		}
 	}
 
+	async function onLandscapeShare() {
+		console.log('sharing landscape image')
+		const landscapeShare = await import('$lib/landscape/share')
+		landscapeShare.drawLandscapeToCanvas(canvas, get(store.landscape), {
+			color: get(store.landscapeForceColor),
+			highContrast: get(store.highContrast),
+		})
+		imageShared = true
+		trackEvent('landscapeShare')
+		const lastGameDetail = get(store.lastGameDetail)!
+		await shareImage(
+			canvas,
+			lastGameDetail.mode === 'random'
+				? { hash: lastGameDetail.hash || undefined }
+				: { day: lastGameDetail.dayNumber }
+		)
+		canvas.scrollIntoView({ block: 'center' })
+	}
+
 	const nextDailyTime = getDayEnd(get(store.lastPlayedDaily)).getTime()
 	let nextWordReady = nextDailyTime < Date.now()
 	const nextWordInterval = setInterval(
@@ -166,9 +185,6 @@
 					{:else}
 						<div class="countdown">
 							<Time mode="countdown" alwaysShowHours ms={nextDailyTime} class="time">
-								<!-- <div slot="after-countdown" class="daily-text">
-								{$t('main.results.try_today')}
-							</div> -->
 								<h3 slot="title">{$t('main.results.next_word')}</h3>
 							</Time>
 						</div>
@@ -201,14 +217,15 @@
 			>
 				🖌️
 			</button>
-			<!-- TODO: Change this to share button -->
-			<!-- Use canvas to redraw landscape -->
-			<!-- Respect forceColor, get landscape object from store -->
-			<a
-				on:auxclick={() => trackEvent('promoLinkFollow')}
-				on:click={() => trackEvent('promoLinkFollow')}
-				href="https://buymeacoffee.com/vegeta897">☕</a
-			>
+			<button on:click={onLandscapeShare}>📷</button>
+			<div class="promo">
+				<a
+					on:auxclick={() => trackEvent('promoLinkFollow')}
+					on:click={() => trackEvent('promoLinkFollow')}
+					href="https://buymeacoffee.com/vegeta897"
+					>Buy me a <span class="hide-on-small-screens">coffee </span>☕</a
+				>
+			</div>
 		</div>
 	{/if}
 	<div class="image-share" style:display={imageShared && !shareMenu ? 'flex' : 'none'}>
@@ -285,15 +302,13 @@
 		box-sizing: border-box;
 	}
 
-	.landscape-controls button,
-	.landscape-controls a {
+	.landscape-controls button {
 		background: var(--primary-color);
 		font-size: 2em;
 		transition: opacity 300ms ease-out;
 	}
 
-	.landscape-controls button:hover,
-	.landscape-controls a:hover {
+	.landscape-controls button:hover {
 		background: var(--secondary-color);
 		text-decoration: none;
 	}
@@ -306,8 +321,14 @@
 		background: var(--cta-color);
 	}
 
-	button,
-	a {
+	.landscape-controls .promo {
+		grid-column: 1 / span 2;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+
+	button {
 		display: flex;
 		justify-content: center;
 		align-items: center;
@@ -351,6 +372,7 @@
 	}
 
 	.image-share {
+		width: 100%;
 		margin-top: 4.5rem;
 		padding: 1rem;
 		display: flex;
@@ -371,7 +393,7 @@
 		margin-top: 1rem;
 	}
 
-	@media (max-width: 420px) {
+	@media (max-width: 430px) {
 		button {
 			font-size: 1.25em;
 		}
@@ -385,9 +407,11 @@
 			margin: 0 0.75rem;
 			font-size: 0.75em;
 		}
-		.landscape-controls button,
-		.landscape-controls a {
+		.landscape-controls button {
 			font-size: 1.5em;
+		}
+		.hide-on-small-screens {
+			display: none;
 		}
 	}
 

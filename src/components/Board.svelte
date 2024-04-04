@@ -231,9 +231,9 @@
 			--tile-margin: 3px;
 		}
 	}
-	@media (max-width: 420px) {
+	@media (max-width: 430px) {
 		:root {
-			--tile-size: 46px;
+			--tile-size: 48px;
 		}
 	}
 	@media (max-width: 375px) {
