@@ -96,23 +96,16 @@ function getPathSegment(
 	offsetX = 0,
 	offsetY = 0
 ) {
-	if (prevMidX === midX || prevMidY === midY) {
-		return `L${midX * scaleX + offsetX} ${midY * scaleY + offsetY}`
-	} else {
-		return `Q${x * scaleX + offsetX} ${y * scaleY + offsetY} ${midX * scaleX + offsetX} ${
-			midY * scaleY + offsetY
-		}`
-	}
+	const toX = midX * scaleX + offsetX
+	const toY = midY * scaleY + offsetY
+	if (prevMidX === midX || prevMidY === midY) return `L${toX} ${toY}`
+	return `Q${x * scaleX + offsetX} ${y * scaleY + offsetY} ${toX} ${toY}`
 }
 
 type Dir = 0 | 1 | 2 | 3 // down | right | up | left
 type Edge = [x1: number, y1: number, x2: number, y2: number, dir: Dir]
-const EDGES: Edge[] = [
-	[0, 0, 0, 1, 0],
-	[0, 1, 1, 1, 1],
-	[1, 1, 1, 0, 2],
-	[1, 0, 0, 0, 3],
-]
+// prettier-ignore
+const EDGES: Edge[] = [[0, 0, 0, 1, 0],[0, 1, 1, 1, 1],[1, 1, 1, 0, 2],[1, 0, 0, 0, 3]]
 const nextDirOffets = [1, 3, 0]
 
 export function createPondPath(
