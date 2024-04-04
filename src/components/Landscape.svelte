@@ -7,21 +7,20 @@
 	import Hill from './landscape/Hill.svelte'
 	import Pond from './landscape/Pond.svelte'
 	import { getDistance, type XY } from '$lib/math'
-	import type { GameMode } from '$lib/data-model'
 	import { tick } from 'svelte'
 	import { bezierEasing } from '$lib/transitions'
 
 	const { landscapeForceColor } = store
 
+	let initializing = true
 	let svgElement: SVGElement
 	let containerWidth: number
 	let containerHeight: number
 	let svgWidth = 0
 	let svgHeight = 0
+	let hide = false
 	let animate = false
 	let firstDraw = true
-	let gameMode: null | GameMode = null
-	let currentRow = -1
 	let redraw = 0
 	let seed = 0
 
@@ -75,7 +74,8 @@
 	function updateLandscape() {
 		// Loop through un-drawn rows as needed (e.g. loading a completed puzzle)
 		// Preserve already-drawn feature rows if metrics haven't changed
-		if (gameMode === null || !landscape.width) return
+		if (initializing || !landscape.width) return
+		const currentRow = get(store.currentRow)
 		if (currentRow === 0) {
 			if (landscape.rowsGenerated > 0) clearLandscape()
 			return
@@ -91,21 +91,25 @@
 			currentRow,
 			`${seed}`
 		)
+		hide = false
 	}
 
 	$: if (containerWidth && containerHeight)
 		updateDimensions(containerWidth, containerHeight - 10)
 
-	store.landscapeInput.subscribe((input) => {
-		if (input === null) return
-		const [newGameMode, newCurrentRow] = input
-		if (newCurrentRow === 0 || gameMode !== newGameMode) {
-			clearLandscape()
-			firstDraw = true
-			redraw++
-		}
-		gameMode = newGameMode
-		currentRow = newCurrentRow
+	store.landscapeNewGame.subscribe((newGame) => {
+		if (!newGame) return
+		initializing = false
+		store.landscapeNewGame.set(false)
+		firstDraw = true
+		redraw++
+		clearLandscape()
+		// Skip update if landscapeFullView is true, because it is about to change
+		if (!get(store.landscapeFullView)) updateLandscape()
+	})
+	store.landscapeNewRow.subscribe((newRow) => {
+		if (!newRow) return
+		store.landscapeNewRow.set(false)
 		updateLandscape()
 	})
 	store.landscapeRedraw.subscribe((doRedraw) => {
@@ -116,6 +120,8 @@
 		updateLandscape()
 		store.landscapeRedraw.set(false)
 	})
+	// Hide landscape until it updates to avoid flashing on FF
+	store.landscapeFullView.subscribe(() => (hide = true))
 
 	type FlashColorHandler = (x: number, y: number, duration: number) => void
 	const featureComponents: {
@@ -179,6 +185,7 @@
 
 <div bind:clientWidth={containerWidth} bind:clientHeight={containerHeight}>
 	<svg
+		style:display={hide ? 'none' : 'block'}
 		xmlns="http://www.w3.org/2000/svg"
 		width={svgWidth}
 		height={svgHeight}

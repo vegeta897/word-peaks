@@ -30,53 +30,43 @@ export type GameMode = 'daily' | 'random'
 
 export function playDaily() {
 	store.gameMode.set('daily')
-	store.landscapeForceColor.set(false)
-	store.landscapeFullView.set(false)
 	history.pushState('', document.title, window.location.pathname + window.location.search) // Remove # from URL
 	const dayNumber = getDayNumber()
 	const dailyWord = getWordByDay(dayNumber)
-	if (
-		get(store.lastPlayedDaily) === getDayNumber() &&
-		get(store.answerDaily) === dailyWord
-	) {
-		store.showEndView.set(get(store.gameFinished))
-		store.landscapeInput.set(['daily', get(store.guesses).length])
-		return
+	const newGame =
+		get(store.lastPlayedDaily) !== getDayNumber() || get(store.answerDaily) !== dailyWord
+	if (newGame) {
+		resetBoard()
+		store.guessesDaily.set([])
+		store.lastPlayedDaily.set(dayNumber)
+		store.answerDaily.set(dailyWord)
 	}
-	resetBoard()
-	store.guessesDaily.set([])
-	store.lastPlayedDaily.set(dayNumber)
-	store.answerDaily.set(dailyWord)
 	store.showEndView.set(get(store.gameFinished))
-	store.landscapeInput.set(['daily', 0])
+	store.landscapeNewGame.set(true)
+	store.landscapeFullView.set(false)
+	store.landscapeForceColor.set(false)
 }
 
 export function playRandom(word?: string) {
 	store.gameMode.set('random')
-	store.landscapeForceColor.set(false)
-	store.landscapeFullView.set(false)
 	const currentAnswer = get(store.answerRandom)
-	const noReset = (!word || word === currentAnswer) && currentAnswer
-	const answer = noReset ? currentAnswer : word || getRandomWord()
+	const newGame = (word && word !== currentAnswer) || !currentAnswer
+	const answer = newGame ? word || getRandomWord() : currentAnswer
 	const hash = encodeWord(answer)
 	history.pushState(
 		'',
 		document.title,
 		window.location.pathname + `#${hash}` + window.location.search
 	)
-	if (noReset) {
-		// Already playing a word
-		store.showEndView.set(get(store.gameFinished))
-		store.landscapeInput.set(['random', get(store.guessesRandom).length])
-		return
+	if (newGame) {
+		resetBoard()
+		store.guessesRandom.set([])
+		store.answerRandom.set(answer)
 	}
-	// if (currentAnswer === word) return // Already playing this word
-	// window.location.hash = encodeWord(randomWord)
-	resetBoard()
-	store.guessesRandom.set([])
-	store.answerRandom.set(answer)
 	store.showEndView.set(get(store.gameFinished))
-	store.landscapeInput.set(['random', 0])
+	store.landscapeNewGame.set(true)
+	store.landscapeFullView.set(false)
+	store.landscapeForceColor.set(false)
 }
 
 export function createNewBoard(): Board {

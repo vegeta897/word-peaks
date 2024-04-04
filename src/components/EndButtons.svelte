@@ -201,6 +201,9 @@
 			>
 				🖌️
 			</button>
+			<!-- TODO: Change this to share button -->
+			<!-- Use canvas to redraw landscape -->
+			<!-- Respect forceColor, get landscape object from store -->
 			<a
 				on:auxclick={() => trackEvent('promoLinkFollow')}
 				on:click={() => trackEvent('promoLinkFollow')}

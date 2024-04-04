@@ -135,7 +135,7 @@ export async function submitRow() {
 	recordGuessTime(rowNumber + 1)
 	store.updateGuesses((words) => [...words, submittedWord])
 	const gameMode = get(store.gameMode)
-	store.landscapeInput.set([gameMode, rowNumber + 1])
+	store.landscapeNewRow.set(true)
 	if (get(store.gameFinished)) {
 		const won = get(store.gameWon)
 		trackEvent(won ? 'gameWon' : 'gameLost')

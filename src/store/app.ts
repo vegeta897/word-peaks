@@ -49,9 +49,12 @@ export const lastGameDetail: Readable<GameDetail | null> = derived(
 		$gameMode === 'daily' ? $lastDailyDetail : $lastRandomDetail
 )
 
+export const showEndView: Writable<boolean> = writable(false)
 export const guessTimeStrings: Writable<string[]> = writable([])
 export const totalGuessTimeString: Writable<string> = writable()
 
+export const landscapeNewGame: Writable<boolean> = writable(false)
+export const landscapeNewRow: Writable<boolean> = writable(false)
 export const landscapeFullView: Writable<boolean> = writable(false)
 export const landscapeForceColor: Writable<boolean> = writable(false)
 export const landscapeRedraw: Writable<boolean> = writable(false)
