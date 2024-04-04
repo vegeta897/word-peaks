@@ -32,14 +32,6 @@
 		flex-direction: column;
 	}
 
-	div {
-		margin-bottom: 1rem;
-	}
-
-	input {
-		margin-right: 0.5rem;
-	}
-
 	textarea {
 		margin-top: 8px;
 		box-sizing: border-box;

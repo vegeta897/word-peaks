@@ -60,18 +60,6 @@
 	<Tutorial />
 {:else if $openScreen === 'stats'}
 	<Stats gameMode={$gameMode} />
-	<!-- <Results
-		playDaily={() => {
-			openScreen.set(null)
-			gameMode.set('daily')
-			playDaily()
-		}}
-		playRandom={() => {
-			openScreen.set(null)
-			gameMode.set('random')
-			playRandom()
-		}}
-	/> -->
 {/if}
 
 <style>

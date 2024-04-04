@@ -21,12 +21,7 @@
 	currentRow.subscribe(() => (animate = !tile.scored))
 
 	const tileFlipDelay = 150
-
-	const typeAnimation = {
-		duration: 100,
-		from: 'bottom',
-		easing: quadOut,
-	}
+	const typeAnimation = { duration: 100, from: 'bottom', easing: quadOut }
 </script>
 
 <div

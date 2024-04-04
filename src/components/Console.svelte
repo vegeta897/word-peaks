@@ -10,13 +10,6 @@
 	import { get } from 'svelte/store'
 	import { submitRow, typeLetter, undoLetter } from '$lib/board'
 
-	declare global {
-		interface Window {
-			wp_start: () => void
-			wp_guess: (guess: string) => void
-		}
-	}
-
 	function printBoard() {
 		const board = get(boardContent)
 		console.log(

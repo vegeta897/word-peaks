@@ -15,21 +15,24 @@
 
 	const { storedLocale, keyboardLayout, highContrast, showAllHints } = store
 
+	let _keyboardLayoutOptions = [...keyboardLayoutOptions]
+
 	async function onLanguageChange(language: string) {
 		storedLocale.set(language)
 		await loadTranslations(language)
-		keyboardLayoutOptions.find((o) => o.value === 'alphabetic').label = get(t)(
+		_keyboardLayoutOptions.find((o) => o.value === 'alphabetic')!.label = get(t)(
 			'main.options.alphabetic'
 		)
+		_keyboardLayoutOptions = _keyboardLayoutOptions
 	}
 
-	const hardModeToggle: Writable<boolean> = new writable(false)
+	const hardModeToggle: Writable<boolean> = writable(false)
 	function toggleHardMode() {
 		try {
 			store.changeHardMode(!get(hardModeToggle))
 		} catch (err) {
 			toast.pop()
-			toast.push(err, { theme: { '--toastBackground': 'var(--error-color)' } })
+			toast.push(err as string, { theme: { '--toastBackground': 'var(--error-color)' } })
 		}
 	}
 
@@ -73,6 +76,9 @@
 		hardModeToggle.set(get(store.hardMode))
 	})
 	onMount(() => onLanguageChange(get(storedLocale)))
+
+	$: keyboard = _keyboardLayoutOptions.find((o) => o.value === $keyboardLayout)!
+	$: language = languages.find((o) => o.value === $storedLocale)!
 </script>
 
 <Screen title={$t('main.options.title')}>
@@ -82,10 +88,7 @@
 				<div class="label">{$t('main.options.language')}</div>
 				<Select
 					items={languages}
-					value={{
-						label: languages.find((o) => o.value === $storedLocale).label,
-						value: $storedLocale,
-					}}
+					value={{ label: language.label, value: $storedLocale }}
 					on:select={({ detail: { value } }) => onLanguageChange(value)}
 					isClearable={false}
 					isSearchable={false}
@@ -99,10 +102,7 @@
 			<div class="label">{$t('main.options.keyboard_layout')}</div>
 			<Select
 				items={keyboardLayoutOptions}
-				value={{
-					label: keyboardLayoutOptions.find((o) => o.value === $keyboardLayout).label,
-					value: $keyboardLayout,
-				}}
+				value={{ label: keyboard.label, value: $keyboardLayout }}
 				on:select={({ detail: { value } }) => keyboardLayout.set(value)}
 				isClearable={false}
 				isSearchable={false}
