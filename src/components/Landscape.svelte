@@ -37,13 +37,13 @@
 		pondTiles: [],
 		newPondTiles: [],
 		nextID: 1,
+		totalDelay: 0,
 	}
-
-	// TODO: Aim for ideal tile count (width x height)
-	// Enable mini if below ideal count
 
 	function updateDimensions(width: number, height: number) {
 		console.log(width)
+		// TODO: Aim for ideal tile count (width x height)
+		// Enable mini if below ideal count
 		const tileWidth = width < 130 ? 18 : width < 144 ? 21 : width < 316 ? 24 : 27
 		const tileHeight = width < 130 ? 12 : width < 144 ? 14 : width < 316 ? 16 : 18
 		const newWidth = Math.floor(width / tileWidth)
@@ -51,6 +51,7 @@
 		if (newWidth === landscape.width && newHeight === landscape.height) return
 		landscape.width = newWidth
 		landscape.height = newHeight
+		landscape.mini = landscape.width < 8 // TODO: Change to total tile count (width x height)
 		landscape.centerX = Math.floor(newWidth / 2)
 		landscape.centerY = Math.floor(newHeight / 2)
 		svgWidth = newWidth * tileWidth
