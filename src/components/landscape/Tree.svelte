@@ -49,7 +49,7 @@
 
 	$: duration = BASE_DURATION * (0.8 + size * 0.4)
 
-	$: width = 0.9 + size * 0.2
+	$: width = 0.85 + size * 0.25
 	$: trunkLength = width / 2
 	$: radius = width / 2
 	$: trunkToTop = trunkLength + radius

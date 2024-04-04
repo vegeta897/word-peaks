@@ -110,9 +110,9 @@
 	}
 
 	async function onLandscapeShare() {
-		const landscapeShare = await import('$lib/landscape/share')
+		const landscapeCanvas = await import('$lib/landscape/canvas')
 		const color = get(store.landscapeForceColor)
-		landscapeShare.drawLandscapeToCanvas(canvas, get(store.landscape), {
+		landscapeCanvas.drawLandscapeToCanvas(canvas, get(store.landscape), {
 			color,
 			highContrast: get(store.highContrast),
 		})

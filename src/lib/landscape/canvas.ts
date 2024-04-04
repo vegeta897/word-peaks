@@ -66,7 +66,7 @@ export function drawLandscapeToCanvas(
 		if (feature.type === 'tree') {
 			const centerX = (0.5 + feature.x + feature.xJitter + 0.5) * TILE_WIDTH
 			const centerY = (1.5 + feature.y + feature.yJitter + 0.5) * TILE_HEIGHT
-			const radius = ((0.9 + feature.size * 0.2) * TILE_HEIGHT) / 2
+			const radius = ((0.85 + feature.size * 0.25) * TILE_HEIGHT) / 2
 			ctx.lineWidth = thickLineWidth
 			ctx.strokeStyle = bgColor
 			ctx.beginPath()

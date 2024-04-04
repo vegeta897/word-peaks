@@ -51,7 +51,7 @@ export function createTrees(
 			x,
 			y,
 			xJitter: randomFloat(-0.35, 0.35, getRng),
-			yJitter: randomFloat(-0.22, 0.22, getRng),
+			yJitter: randomFloat(-0.25, 0.15, getRng),
 			size: getRng(),
 			delay: landscape.totalDelay,
 		}
