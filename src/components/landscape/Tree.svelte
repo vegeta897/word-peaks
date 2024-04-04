@@ -60,10 +60,8 @@
 	$: topCenter = centerY - trunkToTop + (hover ? 0.3 : 0)
 	$: hover =
 		mouseOver &&
-		Math.max(
-			Math.abs(centerX - mouseX),
-			Math.abs(centerY - trunkLength - radius - mouseY)
-		) < 1.5
+		Math.abs(centerX - mouseX) < radius * 1.5 &&
+		Math.abs(centerY - trunkLength - radius - mouseY) < radius * 1.5
 
 	onMount(() => {
 		if (animate) setTimeout(() => animateElement?.beginElement(), delay)
