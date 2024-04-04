@@ -62,21 +62,16 @@ export function copyImage(canvas: HTMLCanvasElement): void {
 }
 
 // https://benkaiser.dev/sharing-images-using-the-web-share-api/
-export async function shareImage(
-	canvas: HTMLCanvasElement,
-	{ hash, day }: { hash?: string; day?: number }
-): Promise<void> {
+export async function shareImage(canvas: HTMLCanvasElement, name: string): Promise<void> {
 	const imageUrl = canvas.toDataURL()
 	const imageBlob = await (await fetch(imageUrl)).blob()
 	const filesArray = [
-		new File([imageBlob], `word-peaks-${hash || day}.png`, {
+		new File([imageBlob], `word-peaks-${name}.png`, {
 			type: imageBlob.type,
 			lastModified: new Date().getTime(),
 		}),
 	]
-	const shareData = {
-		files: filesArray,
-	}
+	const shareData = { files: filesArray }
 	// Fail silently, image will appear to copy
 	if (navigator.share) await navigator.share(shareData)
 }

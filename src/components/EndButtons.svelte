@@ -81,10 +81,10 @@
 		)
 	}
 
-	async function onShareImage() {
+	async function onBoardImageShare() {
 		shareMenu = false
 		imageShared = true
-		const lastGameDetail = get(store.lastGameDetail)!
+		const { hash, dayNumber } = get(store.lastGameDetail)!
 		drawResults(canvas, {
 			highContrast: get(store.highContrast),
 			boardContent: get(store.boardContent),
@@ -93,15 +93,10 @@
 			guessTimes: get(store.shareTimes) ? get(store.guessTimeStrings) : undefined,
 			totalTime: get(store.shareTimes) ? get(store.totalGuessTimeString) : undefined,
 			showURL: get(store.shareURL),
-			hash: lastGameDetail.hash || undefined,
+			hash: hash || undefined,
 		})
 		trackEvent('resultShare')
-		await shareImage(
-			canvas,
-			lastGameDetail.mode === 'random'
-				? { hash: lastGameDetail.hash || undefined }
-				: { day: lastGameDetail.dayNumber }
-		)
+		await shareImage(canvas, `${hash || dayNumber}`)
 		canvas.scrollIntoView({ block: 'center' })
 	}
 
@@ -115,21 +110,16 @@
 	}
 
 	async function onLandscapeShare() {
-		console.log('sharing landscape image')
 		const landscapeShare = await import('$lib/landscape/share')
+		const color = get(store.landscapeForceColor)
 		landscapeShare.drawLandscapeToCanvas(canvas, get(store.landscape), {
-			color: get(store.landscapeForceColor),
+			color,
 			highContrast: get(store.highContrast),
 		})
 		imageShared = true
 		trackEvent('landscapeShare')
-		const lastGameDetail = get(store.lastGameDetail)!
-		await shareImage(
-			canvas,
-			lastGameDetail.mode === 'random'
-				? { hash: lastGameDetail.hash || undefined }
-				: { day: lastGameDetail.dayNumber }
-		)
+		const { hash, dayNumber } = get(store.lastGameDetail)!
+		await shareImage(canvas, `${hash || dayNumber}-landscape${color ? '-color' : ''}`)
 		canvas.scrollIntoView({ block: 'center' })
 	}
 
@@ -157,7 +147,7 @@
 		{#if shareMenu}
 			<div class="share-buttons">
 				<button on:click={shareText}>{$t('main.results.text')}</button>
-				<button on:click={onShareImage}>{$t('main.results.image')}</button>
+				<button on:click={onBoardImageShare}>{$t('main.results.image')}</button>
 			</div>
 			<div class="share-options">
 				{#each toggleOptions as toggleOption}
