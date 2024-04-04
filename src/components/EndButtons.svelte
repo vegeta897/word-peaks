@@ -200,14 +200,17 @@
 	{#if !shareMenu}
 		<div class="landscape-controls">
 			<button
+				title="Full view"
 				class:cta-bg={$landscapeFullView}
-				on:click={() => landscapeFullView.set(!$landscapeFullView)}>🖼️</button
+				on:click={() => landscapeFullView.set(!$landscapeFullView)}>🏞️</button
 			>
 			<button
+				title="Color"
 				class:cta-bg={$landscapeForceColor}
 				on:click={() => landscapeForceColor.set(!$landscapeForceColor)}>🎨</button
 			>
 			<button
+				title="Redraw"
 				disabled={landscapeRedrawCooldown}
 				on:click={() => {
 					landscapeRedrawCooldown = true
@@ -217,7 +220,7 @@
 			>
 				🖌️
 			</button>
-			<button on:click={onLandscapeShare}>📷</button>
+			<button title={$t('main.results.share')} on:click={onLandscapeShare}>📸</button>
 			<div class="promo">
 				<a
 					on:auxclick={() => trackEvent('promoLinkFollow')}

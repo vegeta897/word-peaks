@@ -45,15 +45,15 @@
 	<div class="menu-buttons" style:visibility={browser ? 'visible' : 'hidden'}>
 		<button
 			title={$t('main.tutorial.title')}
-			class="test"
+			class="bulge"
 			on:click={() => openScreen.set('tutorial')}><span>?</span></button
 		>
 		<button title={$t('main.stats.title')} on:click={() => openScreen.set('stats')}>
 			<svg viewBox="0 0 9 9" xmlns="http://www.w3.org/2000/svg" width="20" height="20">
 				<g transform="rotate(180 4.5 4.5)">
-					<rect id="gr1" x="0" y="0" height="8" width="2" />
-					<rect id="gr2" x="3" y="0" height="5" width="2" />
-					<rect id="gr3" x="6" y="0" height="2" width="2" />
+					<rect id="graph_bar_1" x="0" y="0" height="8" width="2" />
+					<rect x="3" y="0" height="5" width="2" />
+					<rect id="graph_bar_3" x="6" y="0" height="2" width="2" />
 				</g>
 			</svg>
 		</button>
@@ -183,25 +183,25 @@
 		fill: var(--text-color);
 	}
 
-	.menu-buttons button.test span {
+	.menu-buttons button.bulge span {
 		transition: font-size 150ms ease-in-out, transform 200ms ease-in-out 150ms;
 	}
 
-	.menu-buttons button.test:hover span {
+	.menu-buttons button.bulge:hover span {
 		transform: scale(0.8);
 		font-size: 150%;
 	}
 
-	#gr1,
-	#gr3 {
+	#graph_bar_1,
+	#graph_bar_3 {
 		transition: transform 300ms ease-in-out;
 	}
 
-	.menu-buttons button:hover svg #gr1 {
+	.menu-buttons button:hover svg #graph_bar_1 {
 		transform: scaleY(0.25);
 	}
 
-	.menu-buttons button:hover svg #gr3 {
+	.menu-buttons button:hover svg #graph_bar_3 {
 		transform: scaleY(4);
 	}
 
