@@ -73,7 +73,7 @@ export function drawLandscapeToCanvas(
 			ctx.moveTo(centerX, centerY)
 			ctx.lineTo(centerX, centerY - radius)
 			ctx.stroke()
-			ctx.arc(centerX, centerY - radius * 2, radius + TILE_HEIGHT * 0.125, 0, TAU)
+			ctx.arc(centerX, centerY - radius * 2, radius + TILE_HEIGHT * 0.15, 0, TAU)
 			ctx.fillStyle = bgColor
 			ctx.fill()
 			ctx.strokeStyle = treeStrokeColor

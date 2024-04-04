@@ -100,7 +100,7 @@
 		/>
 		<circle
 			cy={-trunkLength - radius}
-			r={radius + STROKE_HALF * 1.25}
+			r={radius + STROKE_HALF * 1.5}
 			fill="var(--tertiary-color)"
 			style:transform="translateY({hover ? 0.3 : 0}px)"
 			style:transition="transform {hover ? 50 : 200}ms ease-out"
