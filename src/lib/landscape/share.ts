@@ -94,21 +94,14 @@ export function drawLandscapeToCanvas(
 				(0.5 + feature.x + feature.xJitter + (landscape.mini ? 1 : 1.5)) * TILE_WIDTH
 			const centerY = (1.5 + feature.y + feature.yJitter + 1) * TILE_HEIGHT
 			const radius = ((landscape.mini ? 0.8 : 1.35) + 0.2 * feature.size) * TILE_HEIGHT
+			const hilltopY =
+				centerY - TILE_HEIGHT / 2 - (landscape.mini ? 0.2 : 0.5) * TILE_HEIGHT
 			ctx.lineWidth = thickLineWidth
 			ctx.strokeStyle = bgColor
 			ctx.beginPath()
 			ctx.moveTo(centerX - radius, centerY)
-			ctx.lineTo(
-				centerX - radius,
-				centerY - TILE_HEIGHT / 2 - (landscape.mini ? 0.2 : 0.5) * TILE_HEIGHT
-			)
-			ctx.arc(
-				centerX,
-				centerY - TILE_HEIGHT / 2 - (landscape.mini ? 0.2 : 0.5) * TILE_HEIGHT,
-				radius,
-				Math.PI,
-				0
-			)
+			ctx.lineTo(centerX - radius, hilltopY)
+			ctx.arc(centerX, hilltopY, radius, Math.PI, 0)
 			ctx.lineTo(centerX + radius, centerY)
 			ctx.ellipse(centerX, centerY, radius, radius / 3, 0, 0, Math.PI)
 			ctx.stroke()
