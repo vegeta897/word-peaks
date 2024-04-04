@@ -77,13 +77,15 @@
 
 <div class="frame">
 	<div class="letter-anchor">
-		<div class="letter-animation" bind:this={letterTranslateX}>
+		<div
+			class="letter-animation"
+			style:transform="translateX(-42px)"
+			bind:this={letterTranslateX}
+		>
 			<div class="letter-animation" bind:this={letterTranslateY}>
 				<div class="letter-animation" bind:this={letterRotate}>
 					<div class="letter-animation" bind:this={letterScale}>
-						<div class="letter">
-							{'W' || letter || ''}
-						</div>
+						<div class="letter">{letter || ''}</div>
 					</div>
 				</div>
 			</div>
@@ -101,7 +103,7 @@
 		border-radius: 11%;
 	}
 	.letter-anchor {
-		transform: scale(1.25) translate(-40px, 20px);
+		transform: scale(1.25) translateY(20px);
 		width: 100%;
 		height: 100%;
 	}
@@ -122,7 +124,7 @@
 
 	@media (max-width: 720px) {
 		.letter-anchor {
-			transform: scale(1.25) translate(-40px, 18px);
+			transform: scale(1.25) translateY(18px);
 		}
 		.letter {
 			top: 0;
@@ -130,7 +132,7 @@
 	}
 	@media (max-width: 640px) {
 		.letter-anchor {
-			transform: translate(-40px, 20px);
+			transform: translateY(20px);
 		}
 		.letter {
 			top: -3px;
@@ -138,7 +140,7 @@
 	}
 	@media (max-width: 560px) {
 		.letter-anchor {
-			transform: translate(-40px, 16px);
+			transform: translateY(16px);
 		}
 	}
 	@media (max-width: 480px) {
@@ -148,7 +150,7 @@
 	}
 	@media (max-width: 430px) {
 		.letter-anchor {
-			transform: translate(-40px, 14px);
+			transform: translateY(14px);
 		}
 		.letter {
 			top: -7px;
@@ -156,7 +158,7 @@
 	}
 	@media (max-width: 390px) {
 		.letter-anchor {
-			transform: scale(0.95) translate(-40px, 13px);
+			transform: scale(0.95) translateY(13px);
 		}
 		.letter {
 			top: -9px;
@@ -164,7 +166,7 @@
 	}
 	@media (max-width: 375px) {
 		.letter-anchor {
-			transform: scale(0.9) translate(-40px, 14px);
+			transform: scale(0.9) translateY(14px);
 		}
 		.letter {
 			top: -10px;
