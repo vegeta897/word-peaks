@@ -236,6 +236,12 @@
 			--tile-size: 48px;
 		}
 	}
+	@media (max-width: 390px) {
+		:root {
+			--tile-size: 44px;
+			--tile-font-size: 1.9rem;
+		}
+	}
 	@media (max-width: 375px) {
 		:root {
 			--tile-size: 42px;
