@@ -97,7 +97,7 @@
 	}
 
 	.game-mode.large {
-		font-size: 1.5em;
+		font-size: 1.25em;
 		line-height: 0.5em;
 		position: relative;
 		top: 0.25rem;
