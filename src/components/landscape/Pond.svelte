@@ -131,7 +131,7 @@
 		/>
 	{/if}
 </g>
-<g>
+<g opacity={animate ? 0 : 1}>
 	<g clip-path="url(#pond_path)">
 		<path
 			fill="var(--{forceColor ? 'after-color' : 'landscape-color'})"
