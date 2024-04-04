@@ -39,22 +39,27 @@
 		totalDelay: 0,
 	}
 
+	const IDEAL_TILE_COUNT = 250
+	const IDEAL_TILE_COUNT_MINI = 170
+
 	function updateDimensions(width: number, height: number) {
-		console.log(width)
-		// TODO: Aim for ideal tile count (width x height)
-		// Enable mini if below ideal count
-		const tileWidth = width < 130 ? 18 : width < 144 ? 21 : width < 316 ? 24 : 27
-		const tileHeight = width < 130 ? 12 : width < 144 ? 14 : width < 316 ? 16 : 18
+		const ratio = height / (width / 1.5)
+		let tileHeight = height / Math.sqrt(IDEAL_TILE_COUNT * ratio) // Yay math
+		landscape.mini = false
+		if (tileHeight < 12) {
+			tileHeight = height / Math.sqrt(IDEAL_TILE_COUNT_MINI * ratio)
+			landscape.mini = true
+		}
+		const tileWidth = tileHeight * 1.5
 		const newWidth = Math.floor(width / tileWidth)
 		const newHeight = Math.floor(height / tileHeight)
 		if (newWidth === landscape.width && newHeight === landscape.height) return
 		landscape.width = newWidth
 		landscape.height = newHeight
-		landscape.mini = landscape.width < 8 // TODO: Change to total tile count (width x height)
 		landscape.centerX = Math.floor(newWidth / 2)
 		landscape.centerY = Math.floor(newHeight / 2)
-		svgWidth = newWidth * tileWidth
-		svgHeight = newHeight * tileHeight
+		svgWidth = Math.ceil(newWidth * tileWidth)
+		svgHeight = Math.ceil(newHeight * tileHeight)
 		animate = false
 		redraw++
 		clearLandscape()
