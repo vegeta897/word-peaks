@@ -8,26 +8,20 @@ const WHITE = '#dddddd'
 
 export function drawLandscapeToCanvas(
 	canvas: HTMLCanvasElement,
-	landscape: Landscape,
+	{ width, height, features, pondTiles, mini }: Landscape,
 	{ color, highContrast }: { color: boolean; highContrast: boolean }
 ) {
 	if (!canvas) return
 	const bgColor = highContrast ? '#161a25' : '#312236'
-	canvas.width = (landscape.width + 1) * TILE_WIDTH
-	canvas.height = (landscape.height + 2) * TILE_HEIGHT
+	canvas.width = (width + 1) * TILE_WIDTH
+	canvas.height = (height + 2) * TILE_HEIGHT
 	canvas.style.maxWidth = `min(100%, ${Math.round(canvas.width / 2)}px)`
 	canvas.style.maxHeight = `${Math.round(canvas.height / 2)}px`
 	const ctx = canvas.getContext('2d')!
 	ctx.fillStyle = bgColor
 	ctx.fillRect(0, 0, canvas.width, canvas.height)
 	const pondPath = new Path2D(
-		createPondPath(
-			landscape.pondTiles,
-			TILE_WIDTH,
-			TILE_HEIGHT,
-			TILE_WIDTH / 2,
-			TILE_HEIGHT * 1.5
-		)
+		createPondPath(pondTiles, TILE_WIDTH, TILE_HEIGHT, TILE_WIDTH / 2, TILE_HEIGHT * 1.5)
 	)
 	const pondColor = color ? '#567de8' : WHITE
 	ctx.fillStyle = pondColor
@@ -38,7 +32,7 @@ export function drawLandscapeToCanvas(
 		ctx.clip(pondPath)
 		const shiftedPondPath = new Path2D(
 			createPondPath(
-				landscape.pondTiles,
+				pondTiles,
 				TILE_WIDTH,
 				TILE_HEIGHT,
 				TILE_WIDTH / 2,
@@ -62,11 +56,11 @@ export function drawLandscapeToCanvas(
 	const hillColor = highContrast ? '#da3f8b' : '#e38f2f'
 	const hillStrokeColor = color ? hillColor : WHITE
 	const hillFillColor = color ? hillColor : bgColor
-	for (const feature of landscape.features) {
-		if (feature.type === 'tree') {
-			const centerX = (0.5 + feature.x + feature.xJitter + 0.5) * TILE_WIDTH
-			const centerY = (1.5 + feature.y + feature.yJitter + 0.5) * TILE_HEIGHT
-			const radius = ((0.85 + feature.size * 0.25) * TILE_HEIGHT) / 2
+	for (const { type, x, y, xJitter, yJitter, size } of features) {
+		if (type === 'tree') {
+			const centerX = (0.5 + x + xJitter + 0.5) * TILE_WIDTH
+			const centerY = (1.5 + y + yJitter + 0.5) * TILE_HEIGHT
+			const radius = ((0.85 + size * 0.25) * TILE_HEIGHT) / 2
 			ctx.lineWidth = thickLineWidth
 			ctx.strokeStyle = bgColor
 			ctx.beginPath()
@@ -90,12 +84,10 @@ export function drawLandscapeToCanvas(
 				ctx.fill()
 			}
 		} else {
-			const centerX =
-				(0.5 + feature.x + feature.xJitter + (landscape.mini ? 1 : 1.5)) * TILE_WIDTH
-			const centerY = (1.5 + feature.y + feature.yJitter + 1) * TILE_HEIGHT
-			const radius = ((landscape.mini ? 0.8 : 1.35) + 0.2 * feature.size) * TILE_HEIGHT
-			const hilltopY =
-				centerY - TILE_HEIGHT / 2 - (landscape.mini ? 0.2 : 0.5) * TILE_HEIGHT
+			const centerX = (0.5 + x + xJitter + (mini ? 1 : 1.5)) * TILE_WIDTH
+			const centerY = (1.5 + y + yJitter + 1) * TILE_HEIGHT
+			const radius = ((mini ? 0.8 : 1.35) + 0.2 * size) * TILE_HEIGHT
+			const hilltopY = centerY - TILE_HEIGHT / 2 - (mini ? 0.2 : 0.5) * TILE_HEIGHT
 			ctx.lineWidth = thickLineWidth
 			ctx.strokeStyle = bgColor
 			ctx.beginPath()
