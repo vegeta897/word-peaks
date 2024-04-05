@@ -44,10 +44,6 @@
 		}, fullDuration)
 	}
 
-	// TODO: Waves
-	// Mouse-over effect: waves are drawn in 2 halves with clip path rectangles,
-	// hover causes them to split/merge in the middle to form/collapse an extra wave
-
 	$: tileCenters = tiles.map(([x, y]) => [(x + 0.5) * 1.5, y + 0.5])
 	$: hover =
 		mouseOver &&
@@ -223,14 +219,3 @@
 		/>
 	{/if}
 </g>
-<!-- {#each tiles as [x, y]}
-	<rect
-		x={x * 1.5}
-		{y}
-		width="1.5"
-		height="1"
-		fill={tileDrips.some(([nx, ny]) => nx === x && ny === y) ? '#fff4' : '#567de830'}
-		stroke={newTiles.some(([nx, ny]) => nx === x && ny === y) ? '#4ff' : '#567de880'}
-		stroke-width="0.1"
-	/>
-{/each} -->

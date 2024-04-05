@@ -75,15 +75,6 @@
 	})
 </script>
 
-<!-- <rect
-	x={x * 1.5}
-	{y}
-	width={mini ? 3 : 4.5}
-	height="2"
-	fill="#e38f2f40"
-	stroke="#e38f2f"
-	stroke-width="0.1"
-/> -->
 <!-- Position relative to fix stacking context bug in FF -->
 <g style:position="relative" transform="translate({centerX} {centerY})">
 	<g opacity={animate ? 0 : 1}>
