@@ -28,14 +28,6 @@ export const fade = (node: HTMLElement, opts: any): AnimationConfig => ({
 	},
 })
 
-// Change an "InOut" easing to "OutIn" (which weighs toward 0.5)
-export const flipInOutEasing =
-	(easingFunction: (x: number) => number) =>
-	(x: number): number => {
-		if (x < 0.5) return easingFunction(x + 0.5) - 0.5
-		return easingFunction(x - 0.5) + 0.5
-	}
-
 export const bezierEasing = {
 	cubicIn: '0.32, 0, 0.67, 0',
 	cubicOut: '0.33, 1, 0.68, 1',

@@ -11,8 +11,9 @@
 		currentRow,
 	} from '$src/store'
 	import type { Tile } from '$lib/data-model'
+	import { aprilFools } from '$lib/share'
 
-	export let tile: Tile
+	export let tile: Omit<Tile, 'magnitude'>
 	export let current = false
 	export let showHint = false
 	export let inCurrentRow = false
@@ -43,8 +44,10 @@
 	on:click={() => inCurrentRow && currentTile.set(tile.id)}
 >
 	{#if tile.scored}
-		<div class="tile-background" />
-		<div class="tile scored filled">{tile.letter}</div>
+		<div class="tile-clip">
+			<div class="tile-background" />
+			<div class="tile scored filled">{tile.letter}</div>
+		</div>
 	{:else}
 		<div
 			class="tile"
@@ -77,11 +80,17 @@
 		width: var(--tile-size);
 		height: var(--tile-size);
 		margin: 0 calc(var(--tile-margin) / 2);
-		overflow: hidden;
 	}
 
 	.tile-container.correct {
 		overflow: visible;
+	}
+
+	.tile-clip {
+		overflow: hidden;
+		position: absolute;
+		width: 100%;
+		height: 100%;
 	}
 
 	.tile-container.animate.correct::after {

@@ -11,6 +11,8 @@
 	import { fade } from 'svelte/transition'
 	import LastGameDetail from './LastGameDetail.svelte'
 	import { cubicOut } from 'svelte/easing'
+	import { aprilFools } from '$lib/share'
+	import Leak from './Leak.svelte'
 
 	const {
 		boardContent,
@@ -23,6 +25,7 @@
 		landscapeFullView,
 		showEndView,
 		gameMode,
+		lastPlayedDaily,
 	} = store
 
 	let idle = false
@@ -88,6 +91,8 @@
 			danceClickProgress = 0
 		}
 	}
+
+	$: isAprilFools = $lastPlayedDaily && aprilFools()
 </script>
 
 <div class="container" style="--row-count: {ROWS}">
@@ -124,6 +129,9 @@
 											{#await import('$com/Idler.svelte') then module}
 												<svelte:component this={module.default} id={r + ':' + t} />
 											{/await}
+										{/if}
+										{#if isAprilFools && r === $currentRow - 1 && tile.distance > 0}
+											<Leak rowID={r} tileID={t} />
 										{/if}
 									</Tile>
 								{/each}

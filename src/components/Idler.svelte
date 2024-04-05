@@ -101,6 +101,7 @@
 		width: calc(100% - 4px);
 		height: calc(100% - 4px);
 		border-radius: 11%;
+		overflow: clip;
 	}
 	.letter-anchor {
 		transform: scale(1.25) translateY(20px);

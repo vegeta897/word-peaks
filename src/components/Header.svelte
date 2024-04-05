@@ -13,14 +13,14 @@
 	import { playDaily, playRandom } from '$lib/data-model'
 
 	$: isAprilFools = $lastPlayedDaily && aprilFools()
-	$: peaColor =
-		isAprilFools && $boardContent.some((r) => r.some((t) => t.scored && t.distance === 0))
+	$: leakActive =
+		isAprilFools && $boardContent.some((r) => r.some((t) => t.scored && t.distance > 0))
 </script>
 
 <header class:high-contrast={$highContrast}>
 	<div class="heading-container">
 		<h1>
-			Word <span class:pea={peaColor}>{isAprilFools ? 'Peas' : 'Peaks'}</span>
+			Word <span class:leak={leakActive}>{isAprilFools ? 'Leaks' : 'Peaks'}</span>
 			{#if browser}
 				<small class="game-mode" class:large={$gameMode === 'random'}>
 					{$gameMode === 'daily' ? `#${$lastPlayedDaily + 1}` : '∞'}
@@ -28,10 +28,6 @@
 			{/if}
 		</h1>
 		{#if browser}
-			<!-- <div class="game-mode" class:large={$gameMode === 'random'}>
-				{$gameMode === 'daily' ? `#${$lastPlayedDaily + 1}` : '∞'}
-			</div>
-			<div>Daily / Random</div> -->
 			<div class="game-mode-buttons">
 				<button on:click={playDaily} disabled={$gameMode === 'daily'}>
 					{$t('main.summary.daily')}
@@ -144,8 +140,8 @@
 		background-color: var(--secondary-color);
 	}
 
-	.pea {
-		color: var(--correct-color);
+	.leak {
+		color: var(--after-color);
 		transition: color 2s ease-in;
 	}
 
@@ -219,6 +215,9 @@
 	@media (max-width: 390px) {
 		.menu-buttons button {
 			margin-left: 0.5rem;
+		}
+		header button {
+			margin-left: 8px;
 		}
 		h1 {
 			font-size: 1.4em;

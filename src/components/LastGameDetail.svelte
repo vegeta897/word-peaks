@@ -101,8 +101,8 @@
 	}
 
 	.guess-letter {
-		width: 30px;
-		height: 30px;
+		width: 34px;
+		height: 34px;
 		margin: 0 0.25rem 0.25rem 0;
 		font-size: 1.5em;
 		font-weight: 700;
@@ -168,6 +168,14 @@
 		font-weight: 700;
 		font-size: 0.8em;
 		margin-top: 2px;
+	}
+
+	@media (max-width: 720px) {
+		.guess-letter {
+			width: 30px;
+			height: 30px;
+			font-size: 1.5em;
+		}
 	}
 
 	@media (max-width: 560px) {
