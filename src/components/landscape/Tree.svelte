@@ -29,7 +29,6 @@
 	let nudgeX = 0
 	let nudgeY = 1
 	export function flashColor(x: number, y: number, duration: number) {
-		if (forceColor) return
 		const distance = getDistance(x - centerX, y - topCenter)
 		const force = 4 - distance
 		if (force > 0) {
@@ -39,6 +38,7 @@
 			nudgeY = (yMagnitude * force) / 24
 			animateSkewElement?.beginElement()
 		}
+		if (forceColor) return
 		const flashDelay = distance * 70
 		setTimeout(() => (inColor = true), flashDelay)
 		const thisTimeout = setTimeout(() => {
