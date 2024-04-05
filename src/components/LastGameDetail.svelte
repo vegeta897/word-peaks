@@ -20,30 +20,32 @@
 </script>
 
 <section transition:fade|local={{ duration: 250, easing: cubicOut }}>
-	<div class="time-stats">
+	<table class="guess-table">
 		{#each lastGameDetail.guesses as guess, g}
-			<div class="guess-row">
-				<div class="guess-word">
-					{#each guess as letter, l}
-						<div
-							class="guess-letter"
-							class:before={letter < lastGameDetail.answer[l]}
-							class:after={letter > lastGameDetail.answer[l]}
-						>
-							{letter.toUpperCase()}
-						</div>
-					{/each}
-				</div>
-				<div class="time-value">
+			<tr class="guess-row">
+				<td class="guess-column">
+					<div class="guess-word">
+						{#each guess as letter, l}
+							<div
+								class="guess-letter"
+								class:before={letter < lastGameDetail.answer[l]}
+								class:after={letter > lastGameDetail.answer[l]}
+							>
+								{letter.toUpperCase()}
+							</div>
+						{/each}
+					</div>
+				</td>
+				<td class="time-value">
 					<Time
 						bind:timeString={guessTimeStrings[g]}
 						ms={lastGameDetail.guessTimes[g + 1] - lastGameDetail.guessTimes[g]}
 						decimals={$preciseTimes ? 2 : 0}
 					/>
-				</div>
-			</div>
+				</td>
+			</tr>
 		{/each}
-	</div>
+	</table>
 	<h2>
 		{gameWon ? `${$t('main.results.win')} 🎉` : `${$t('main.results.lose')} ☹️`}
 	</h2>
@@ -86,29 +88,22 @@
 		box-sizing: border-box;
 	}
 
-	.time-stats {
-		margin: 0.5rem 0.375rem;
-		text-align: right;
-		display: flex;
-		flex-direction: column;
+	.guess-table {
+		border-spacing: 0;
 	}
 
-	.guess-row {
-		padding: 2px 0;
-		display: flex;
-		position: relative;
+	.guess-table td {
+		padding: 0;
 	}
 
 	.guess-word {
 		display: flex;
-		width: 190px;
-		position: relative;
 	}
 
 	.guess-letter {
 		width: 30px;
 		height: 30px;
-		margin-right: 4px;
+		margin: 0 0.25rem 0.25rem 0;
 		font-size: 1.5em;
 		font-weight: 700;
 		color: #fff;
@@ -134,17 +129,15 @@
 		border-bottom-right-radius: 35%;
 	}
 
-	.time-value {
-		width: 96px;
+	.guess-table .time-value {
+		padding-left: 1rem;
 		font-size: 1.5em;
-		display: flex;
-		justify-content: flex-end;
-		align-items: center;
+		text-align: right;
 	}
 
 	h2 {
 		font-size: 1.5em;
-		margin: 0 0 0.75rem;
+		margin: 0.5rem 0 0.75rem;
 	}
 
 	.info {
@@ -187,25 +180,22 @@
 			font-size: 1.3em;
 		}
 		.time-value {
-			width: 56px;
 			font-size: 1.1em;
 		}
 	}
 
-	@media (max-width: 430px) {
+	@media (max-width: 480px) {
 		section {
 			padding: 0;
-		}
-		.guess-word {
-			width: 170px;
 		}
 		.guess-letter {
 			width: 24px;
 			height: 24px;
 			font-size: 1.2em;
+			margin: 0 0.1875rem 0.1875rem 0;
 		}
-		.time-value {
-			width: 40px;
+		.guess-table .time-value {
+			padding-left: 0.5rem;
 			font-size: 1em;
 		}
 		.info-item {
@@ -214,12 +204,9 @@
 	}
 
 	@media (max-width: 360px) {
-		.time-stats {
-			margin: 0.25rem 0.375rem;
-		}
 		h2 {
 			font-size: 1.25em;
-			margin: 0 0 0.5rem;
+			margin: 0.25rem 0 0.5rem;
 		}
 		.info-item {
 			font-size: 0.8em;
