@@ -137,7 +137,9 @@
 				{/if}
 			</div>
 		{/if}
-		<div class="landscape"><Landscape /></div>
+		<div class="landscape" style:padding-top={$landscapeFullView ? '20px' : 0}>
+			<Landscape />
+		</div>
 	{:else}
 		<div class="loading">loading...</div>
 	{/if}
@@ -187,6 +189,7 @@
 	.landscape {
 		flex-grow: 1;
 		height: 100%;
+		box-sizing: border-box;
 	}
 
 	.loading {

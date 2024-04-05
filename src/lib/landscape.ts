@@ -48,8 +48,7 @@ export function getLandscape(
 	landscape: Landscape,
 	board: Board,
 	answer: string,
-	currentRow: number,
-	seedPrefix = ''
+	currentRow: number
 ): Landscape {
 	// No initial delay if loading a partially/fully completed puzzle
 	landscape.totalDelay = currentRow > 1 && landscape.rowsGenerated === 0 ? 0 : 500
@@ -64,10 +63,7 @@ export function getLandscape(
 	while (landscape.rowsGenerated < currentRow) {
 		const rowTiles = board[landscape.rowsGenerated]
 		const rowWord = rowToWord(rowTiles)
-		const seed =
-			seedPrefix +
-			answer +
-			board.slice(0, landscape.rowsGenerated).map(rowToWord).join('')
+		const seed = answer + board.slice(0, landscape.rowsGenerated).map(rowToWord).join('')
 		const rng = new Rand(seed)
 		const getRng = () => rng.next()
 		const winningRow = rowWord === answer

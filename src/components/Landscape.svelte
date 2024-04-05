@@ -22,7 +22,6 @@
 	let animate = false
 	let firstDraw = true
 	let redraw = 0
-	let seed = 0
 
 	let landscape: Landscape = {
 		width: 0,
@@ -39,7 +38,7 @@
 		totalDelay: 0,
 	}
 
-	const IDEAL_TILE_COUNT = 250
+	const IDEAL_TILE_COUNT = 240
 	const IDEAL_TILE_COUNT_MINI = 170
 
 	function updateDimensions(width: number, height: number) {
@@ -93,15 +92,14 @@
 			landscape,
 			get(store.boardContent),
 			get(store.answer),
-			currentRow,
-			`${seed}`
+			currentRow
 		)
 		store.landscape.set(landscape)
 		hide = false
 	}
 
 	$: if (containerWidth && containerHeight)
-		updateDimensions(containerWidth, containerHeight - 10)
+		updateDimensions(containerWidth, containerHeight)
 
 	store.landscapeNewGame.subscribe((newGame) => {
 		if (!newGame) return
@@ -199,7 +197,7 @@
 		on:mouseleave={onMouseLeave}
 		bind:this={svgElement}
 	>
-		{#key `${seed}${redraw}`}
+		{#key redraw}
 			<Pond
 				bind:this={pondComponent}
 				tiles={landscape.pondTiles}
@@ -288,23 +286,14 @@
 	</svg>
 </div>
 
-<!-- <button
-	on:click={() => {
-		seed++
-		clearLandscape()
-		updateLandscape()
-	}}
-	style="position: absolute; top: 50px; right: 10px;">seed</button
-> -->
 <style>
 	div {
-		height: calc(100% + 8px);
-		margin-top: -8px;
+		height: 100%;
 		position: relative;
 	}
 	svg {
 		position: absolute;
-		top: 8px;
+		bottom: 0;
 		overflow: visible;
 		touch-action: manipulation;
 	}
