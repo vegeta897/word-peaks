@@ -11,8 +11,6 @@
 	let spanElement: HTMLSpanElement
 	$: timeString = spanElement?.innerText
 
-	// TODO: Decimals option
-
 	const padZero = (value: number) => value.toString().padStart(2, '0')
 	const MINUTE = 60 * 1000
 	const HOUR = MINUTE * 60

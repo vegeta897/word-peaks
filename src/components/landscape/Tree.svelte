@@ -54,7 +54,6 @@
 	$: radius = width / 2
 	$: trunkToTop = trunkLength + radius
 
-	// TODO: Add bounds to prevent drawing off-canvas
 	$: centerX = (x + xJitter + 0.5) * 1.5
 	$: centerY = y + yJitter + 0.5
 	$: topCenter = centerY - trunkToTop + (hover ? 0.3 : 0)
