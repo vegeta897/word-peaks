@@ -204,9 +204,6 @@
 				newTiles={landscape.newPondTiles}
 				{animate}
 				delay={landscape.pondDelay || 0}
-				{mouseOver}
-				{mouseX}
-				{mouseY}
 				landscapeWidth={landscape.width}
 				landscapeHeight={landscape.height}
 				mini={landscape.mini}

@@ -8,9 +8,6 @@
 	export let newTiles: XY[] = []
 	export let animate: boolean
 	export let delay: number
-	export let mouseOver: boolean
-	export let mouseX: number
-	export let mouseY: number
 	export let landscapeWidth: number
 	export let landscapeHeight: number
 	export let mini = false
@@ -44,11 +41,6 @@
 		}, fullDuration)
 	}
 
-	$: tileCenters = tiles.map(([x, y]) => [(x + 0.5) * 1.5, y + 0.5])
-	$: hover =
-		mouseOver &&
-		tileCenters.some(([x, y]) => Math.abs(x - mouseX) < 0.9 && Math.abs(y - mouseY) < 0.6)
-
 	let pondPath: string
 	let previousPondPath: string
 	let dripTiles: XY[] = []
@@ -63,6 +55,7 @@
 				.map((_, i) => i)
 				.filter((i) => i % (mini ? 4 : 6) === 0)
 				.map((i) => newTiles[i])
+			// Animations don't work right when new tiles arrive too quickly, but oh well
 			dripDuration = 1600 + Math.min(fillDuration, dripTiles.length * 150)
 			await tick()
 			pondAnimateElement?.beginElement()
