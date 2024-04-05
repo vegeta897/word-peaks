@@ -53,10 +53,10 @@
 		if (animate && previousPondPath !== pondPath) {
 			dripTiles = newTiles
 				.map((_, i) => i)
-				.filter((i) => i % (mini ? 4 : 6) === 0)
+				.filter((i) => i % (mini ? 2 : 3) === 0)
 				.map((i) => newTiles[i])
 			// Animations don't work right when new tiles arrive too quickly, but oh well
-			dripDuration = 1600 + Math.min(fillDuration, dripTiles.length * 150)
+			dripDuration = 1600 + Math.min(fillDuration, dripTiles.length * 100)
 			await tick()
 			pondAnimateElement?.beginElement()
 		}
@@ -71,21 +71,21 @@
 		<ellipse fill="var(--after-color)" cx={(x + 0.5) * 1.5} cy={y + 0.5}>
 			<animate
 				attributeName="rx"
-				values="0;6"
+				values="0;{mini ? 3 : 6}"
 				calcMode="spline"
 				fill="freeze"
 				dur="1600ms"
 				keySplines={bezierEasing.cubicOut}
-				begin="pond_draw_animate.begin+{delay + t * 150 + 'ms'}"
+				begin="pond_draw_animate.begin+{delay + t * 100 + 'ms'}"
 			/>
 			<animate
 				attributeName="ry"
-				values="0;4"
+				values="0;{mini ? 2 : 4}"
 				calcMode="spline"
 				fill="freeze"
 				dur="1600ms"
 				keySplines={bezierEasing.cubicOut}
-				begin="pond_draw_animate.begin+{delay + t * 150 + 'ms'}"
+				begin="pond_draw_animate.begin+{delay + t * 100 + 'ms'}"
 			/>
 		</ellipse>
 	{/each}
