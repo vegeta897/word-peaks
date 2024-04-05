@@ -353,15 +353,16 @@
 	.share-options {
 		max-width: 220px;
 		flex-grow: 1;
-		margin: 0 1rem;
+		margin: 0 auto;
+		padding: 0 0.25rem 0 0.5rem;
 	}
 
 	.label {
 		order: -1;
-		flex-grow: 1.5;
+		flex-grow: 1;
 		font-size: 1.2em;
-		margin: 0.5rem 0;
-		padding: 0.4rem 0.8rem 0.4rem 0;
+		margin: 0.875rem 0;
+		padding-right: 0.625rem;
 	}
 
 	.image-share {
@@ -397,7 +398,6 @@
 			width: 50%;
 		}
 		.share-options {
-			margin: 0 0.75rem;
 			font-size: 0.75em;
 		}
 		.landscape-controls button {
