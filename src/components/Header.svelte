@@ -24,6 +24,7 @@
 			{#if browser}
 				<small class="game-mode" class:large={$gameMode === 'random'}>
 					{$gameMode === 'daily' ? `#${$lastPlayedDaily + 1}` : '∞'}
+					<!-- TODO: Replace infinity symbol with SVG icon -->
 				</small>
 			{/if}
 		</h1>
@@ -215,9 +216,6 @@
 	@media (max-width: 390px) {
 		.menu-buttons button {
 			margin-left: 0.5rem;
-		}
-		header button {
-			margin-left: 8px;
 		}
 		h1 {
 			font-size: 1.4em;
