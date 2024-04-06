@@ -12,7 +12,6 @@
 	export let landscapeHeight: number
 	export let mini = false
 	export let forceColor: boolean
-	export let fillDuration: number
 
 	$: maxDistance = getDistance(landscapeWidth, landscapeHeight)
 	$: expandDuration = maxDistance * 70
@@ -44,19 +43,23 @@
 	let pondPath: string
 	let previousPondPath: string
 	let dripTiles: XY[] = []
+	let dripsID = 0
+	let dripDelay: number
 	let dripDuration: number
 	let pondAnimateElement: SVGAnimateElement
 
 	async function onTiles() {
 		previousPondPath = pondPath
 		pondPath = createPondPath(tiles)
-		if (animate && previousPondPath !== pondPath) {
+		if (animate && previousPondPath !== pondPath && newTiles.length > 0) {
+			dripsID++
 			dripTiles = newTiles
 				.map((_, i) => i)
 				.filter((i) => i % (mini ? 2 : 3) === 0)
 				.map((i) => newTiles[i])
-			// Animations don't work right when new tiles arrive too quickly, but oh well
-			dripDuration = 1600 + Math.min(fillDuration, dripTiles.length * 100)
+			const delayCount = dripTiles.length - 1
+			dripDelay = Math.round(Math.min(1500, delayCount * 100) / dripTiles.length)
+			dripDuration = delay + 1000 + delayCount * dripDelay
 			await tick()
 			pondAnimateElement?.beginElement()
 		}
@@ -67,28 +70,30 @@
 
 <clipPath id="pond_path"> <path d={pondPath} /> </clipPath>
 <g clip-path="url(#pond_path)">
-	{#each dripTiles as [x, y], t (`${x}:${y}`)}
-		<ellipse fill="var(--after-color)" cx={(x + 0.5) * 1.5} cy={y + 0.5}>
-			<animate
-				attributeName="rx"
-				values="0;{mini ? 3 : 6}"
-				calcMode="spline"
-				fill="freeze"
-				dur="1600ms"
-				keySplines={bezierEasing.cubicOut}
-				begin="pond_draw_animate.begin+{delay + t * 100 + 'ms'}"
-			/>
-			<animate
-				attributeName="ry"
-				values="0;{mini ? 2 : 4}"
-				calcMode="spline"
-				fill="freeze"
-				dur="1600ms"
-				keySplines={bezierEasing.cubicOut}
-				begin="pond_draw_animate.begin+{delay + t * 100 + 'ms'}"
-			/>
-		</ellipse>
-	{/each}
+	{#key dripsID}
+		{#each dripTiles as [x, y], t}
+			<ellipse fill="var(--after-color)" cx={(x + 0.5) * 1.5} cy={y + 0.5}>
+				<animate
+					attributeName="rx"
+					values="0;{mini ? 3 : 6}"
+					calcMode="spline"
+					fill="freeze"
+					dur="1500ms"
+					keySplines={bezierEasing.cubicOut}
+					begin="pond_draw_animate_{dripsID}.begin+{delay + t * dripDelay + 'ms'}"
+				/>
+				<animate
+					attributeName="ry"
+					values="0;{mini ? 2 : 4}"
+					calcMode="spline"
+					fill="freeze"
+					dur="1500ms"
+					keySplines={bezierEasing.cubicOut}
+					begin="pond_draw_animate_{dripsID}.begin+{delay + t * dripDelay + 'ms'}"
+				/>
+			</ellipse>
+		{/each}
+	{/key}
 </g>
 <clipPath id="prev_pond_path"> <path d={previousPondPath} /> </clipPath>
 <g opacity="0">
@@ -113,7 +118,7 @@
 		<animate
 			attributeName="opacity"
 			values="1;1;0"
-			begin="pond_draw_animate.begin"
+			begin="pond_draw_animate_{dripsID}.begin"
 			dur="{dripDuration}ms"
 			fill="freeze"
 			keyTimes="0;1;1"
@@ -197,18 +202,20 @@
 			/>
 		</path>
 	{/each}
-	{#if animate}
-		<animate
-			bind:this={pondAnimateElement}
-			id="pond_draw_animate"
-			attributeName="opacity"
-			values="0;0;1"
-			dur="{dripDuration}ms"
-			calcMode="spline"
-			fill="freeze"
-			keyTimes="0;{1 - 300 / dripDuration};1"
-			keySplines="0.5 0.5 0.5 0.5;{bezierEasing.cubicIn}"
-			begin="indefinite"
-		/>
+	{#if animate && pondPath}
+		{#key dripsID}
+			<animate
+				bind:this={pondAnimateElement}
+				id="pond_draw_animate_{dripsID}"
+				attributeName="opacity"
+				values="0;0;1"
+				dur="{dripDuration}ms"
+				calcMode="spline"
+				fill="freeze"
+				keyTimes="0;{1 - 300 / dripDuration};1"
+				keySplines="0.5 0.5 0.5 0.5;{bezierEasing.cubicIn}"
+				begin="indefinite"
+			/>
+		{/key}
 	{/if}
 </g>

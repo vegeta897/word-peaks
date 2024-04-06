@@ -73,6 +73,7 @@
 		landscape.pondTiles.length = 0
 		landscape.newPondTiles.length = 0
 		landscape.nextID = 1
+		landscape.pondDelay = undefined
 	}
 
 	function updateLandscape() {
@@ -208,7 +209,6 @@
 				landscapeHeight={landscape.height}
 				mini={landscape.mini}
 				forceColor={$landscapeForceColor}
-				fillDuration={landscape.totalDelay || 0}
 			/>
 			{#each landscape.features as feature, f (feature.id)}
 				{#if feature.type === 'tree'}
