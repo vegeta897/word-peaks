@@ -16,14 +16,17 @@ import type { SvelteToastOptions } from '@zerodevx/svelte-toast'
 import { recordGuessTime, finishGame } from '$lib/stats'
 
 export function resetBoard() {
-	toast.pop()
 	store.boardContent.set(createNewBoard())
+	store[get(store.gameMode) === 'daily' ? 'guessTimesDaily' : 'guessTimesRandom'].set([])
+}
+
+export function resetGuess() {
+	toast.pop()
 	store.currentTile.set(0)
 	store.invalidWord.set(false)
 	store.invalidWordPreview.set(false)
 	store.invalidHardModeGuess.set(false)
 	store.notEnoughLetters.set(false)
-	store[get(store.gameMode) === 'daily' ? 'guessTimesDaily' : 'guessTimesRandom'].set([])
 }
 
 export function typeLetter(letter: string) {

@@ -1,6 +1,6 @@
 import targetWords from '$lib/words/targets-filtered.json'
 import { get } from 'svelte/store'
-import { resetBoard } from './board'
+import { resetBoard, resetGuess } from './board'
 import { randomElement } from './math'
 import * as store from '$src/store'
 
@@ -41,6 +41,7 @@ export function playDaily() {
 		store.lastPlayedDaily.set(dayNumber)
 		store.answerDaily.set(dailyWord)
 	}
+	resetGuess()
 	store.showEndView.set(get(store.gameFinished))
 	store.landscapeNewGame.set(true)
 	store.landscapeFullView.set(false)
@@ -63,6 +64,7 @@ export function playRandom(word?: string) {
 		store.guessesRandom.set([])
 		store.answerRandom.set(answer)
 	}
+	resetGuess()
 	store.showEndView.set(get(store.gameFinished))
 	store.landscapeNewGame.set(true)
 	store.landscapeFullView.set(false)
