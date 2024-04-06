@@ -96,7 +96,7 @@
 	{/key}
 </g>
 <clipPath id="prev_pond_path"> <path d={previousPondPath} /> </clipPath>
-<g opacity="0">
+<g opacity={animate ? 1 : 0}>
 	<g clip-path="url(#prev_pond_path)">
 		<path fill="var(--landscape-color)" d={previousPondPath} />
 		<path
