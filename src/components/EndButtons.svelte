@@ -27,8 +27,8 @@
 
 	export let gameMode: GameMode
 
-	let shareMenu: boolean
-	let imageShared: boolean
+	let showScoreShareMenu: boolean
+	let showImageShare: boolean
 	let canvas: HTMLCanvasElement
 	let shareTitleText: string
 	let landscapeRedrawCooldown = false
@@ -53,8 +53,8 @@
 	]
 
 	function shareText() {
-		shareMenu = false
-		imageShared = false
+		showScoreShareMenu = false
+		showImageShare = false
 		trackEvent('resultShare')
 		const emojiGridParams: Parameters<typeof getEmojiGrid>[0] = {
 			guesses: get(store.guesses),
@@ -82,8 +82,7 @@
 	}
 
 	async function onBoardImageShare() {
-		shareMenu = false
-		imageShared = true
+		showScoreShareMenu = false
 		const { hash, dayNumber } = get(store.lastGameDetail)!
 		drawResults(canvas, {
 			highContrast: get(store.highContrast),
@@ -95,6 +94,7 @@
 			showURL: get(store.shareURL),
 			hash: hash || undefined,
 		})
+		showImageShare = true
 		trackEvent('resultShare')
 		await shareImage(canvas, `${hash || dayNumber}`)
 		canvas.scrollIntoView({ block: 'center' })
@@ -103,6 +103,7 @@
 	function onCopyImage() {
 		try {
 			copyImage(canvas)
+			showImageShare = false
 			successToast(get(t)('main.messages.image_copied'))
 		} catch (e) {
 			errorToast()
@@ -116,7 +117,7 @@
 			color,
 			highContrast: get(store.highContrast),
 		})
-		imageShared = true
+		showImageShare = true
 		trackEvent('landscapeShare')
 		const { hash, dayNumber } = get(store.lastGameDetail)!
 		await shareImage(canvas, `${hash || dayNumber}-landscape${color ? '-color' : ''}`)
@@ -142,9 +143,10 @@
 	})
 </script>
 
+<svelte:window on:keydown={({ key }) => key === 'Escape' && (showImageShare = false)} />
 <div class="container">
-	<div class="actions" class:full-width={shareMenu}>
-		{#if shareMenu}
+	<div class="actions" class:full-width={showScoreShareMenu}>
+		{#if showScoreShareMenu}
 			<div class="share-buttons">
 				<button on:click={shareText}>{$t('main.results.text')}</button>
 				<button on:click={onBoardImageShare}>{$t('main.results.image')}</button>
@@ -166,7 +168,9 @@
 			</div>
 		{:else}
 			<div class="action-items">
-				<button on:click={() => (shareMenu = true)}>{$t('main.results.share')}</button>
+				<button on:click={() => (showScoreShareMenu = true)}
+					>{$t('main.results.share')}</button
+				>
 				{#if gameMode === 'daily'}
 					{#if nextWordReady}
 						<button class="play-button" on:click={playDaily}
@@ -187,7 +191,7 @@
 			</div>
 		{/if}
 	</div>
-	{#if !shareMenu}
+	{#if !showScoreShareMenu}
 		<div class="landscape-controls">
 			<button
 				title="Full view"
@@ -221,9 +225,17 @@
 			</div>
 		</div>
 	{/if}
-	<div class="image-share" style:display={imageShared && !shareMenu ? 'flex' : 'none'}>
-		<canvas bind:this={canvas} />
-		<button on:click={onCopyImage}>{$t('main.results.copy_image')}</button>
+	<!-- svelte-ignore a11y-click-events-have-key-events -->
+	<div
+		class="modal-backdrop"
+		role="dialog"
+		on:click|self={() => (showImageShare = false)}
+		style:display={showImageShare ? 'flex' : 'none'}
+	>
+		<div class="image-share">
+			<canvas bind:this={canvas} />
+			<button on:click={onCopyImage}>{$t('main.results.copy_image')}</button>
+		</div>
 	</div>
 </div>
 
@@ -365,20 +377,26 @@
 		padding-right: 0.625rem;
 	}
 
-	.image-share {
-		width: 100%;
-		margin-top: 4.5rem;
+	.modal-backdrop {
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
 		padding: 1rem;
-		display: flex;
-		flex-direction: column;
+		background: #1129;
+		justify-content: center;
 		align-items: center;
 	}
 
-	.image-share canvas {
-		padding: 0.25rem;
-		border: 1px solid var(--primary-color);
-		border-radius: 0.5rem;
-		box-shadow: 0 0 0.5rem var(--primary-color);
+	.image-share {
+		padding: 1.5rem;
+		border-radius: 1rem;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		background: var(--tertiary-color);
+		pointer-events: auto;
 	}
 
 	.image-share button {
