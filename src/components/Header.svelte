@@ -23,8 +23,18 @@
 			Word <span class:leak={leakActive}>{isAprilFools ? 'Leaks' : 'Peaks'}</span>
 			{#if browser}
 				<small class="game-mode" class:large={$gameMode === 'random'}>
-					{$gameMode === 'daily' ? `#${$lastPlayedDaily + 1}` : '∞'}
-					<!-- TODO: Replace infinity symbol with SVG icon -->
+					{#if $gameMode === 'daily'}
+						#{$lastPlayedDaily + 1}
+					{:else}
+						<svg viewBox="0 0 6 4" width="36px">
+							<path
+								stroke="#888"
+								fill="none"
+								d="M2.29 1.29 l1.41 1.41 a1 1 0 1 0 0 -1.41 l-1.41 1.41 a1 1 0 1 1 0 -1.41"
+								stroke-width="0.5"
+							/>
+						</svg>
+					{/if}
 				</small>
 			{/if}
 		</h1>
