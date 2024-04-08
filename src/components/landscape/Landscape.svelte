@@ -95,7 +95,6 @@
 			get(store.answer),
 			currentRow
 		)
-		console.log(landscape.features)
 		store.landscape.set(landscape)
 		hide = false
 	}
@@ -179,7 +178,6 @@
 		if (event.pointerType === 'touch') return
 		mouseOver = true
 		updateMousePosition(event)
-		// console.log(mouseX, mouseY)
 	}
 	const onMouseLeave = () => (mouseOver = false)
 

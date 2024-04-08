@@ -16,27 +16,27 @@
 	$: maxDistance = getDistance(landscapeWidth, landscapeHeight)
 	$: expandDuration = maxDistance * 70
 
-	type Ripple = [id: number, ...XY, duration: number, SVGAnimateElement, keyTimes: string]
-	let ripples: Ripple[] = []
-	let rippleID = 0
+	type Flood = [id: number, ...XY, duration: number, SVGAnimateElement, keyTimes: string]
+	let floods: Flood[] = []
+	let floodID = 0
 	export async function flashColor(x: number, y: number, duration: number) {
 		if (forceColor) return
 		const fullDuration = duration + 800
 		const expandKeyTime = expandDuration / fullDuration
 		const fadeKeyTime = Math.max(expandKeyTime, 1 - 800 / fullDuration)
-		const ripple = [
-			++rippleID,
+		const flood = [
+			++floodID,
 			x,
 			y,
 			fullDuration,
 			null /* Animate element will bind here */,
 			`0;${expandKeyTime};${fadeKeyTime};1`,
-		] as unknown as Ripple
-		ripples = [...ripples, ripple]
+		] as unknown as Flood
+		floods = [...floods, flood]
 		await tick()
-		ripple[4]?.beginElement()
+		flood[4]?.beginElement()
 		setTimeout(() => {
-			ripples = ripples.filter((r) => r !== ripple)
+			floods = floods.filter((r) => r !== flood)
 		}, fullDuration)
 	}
 
@@ -151,23 +151,23 @@
 		style:transition="stroke {forceColor ? 200 : 1000}ms ease"
 		d={pondPath}
 	/>
-	{#each ripples as ripple (ripple)}
+	{#each floods as flood (flood)}
 		<radialGradient
-			id="pond_ripple_gradient_{ripple[0]}"
+			id="pond_flood_gradient_{flood[0]}"
 			gradientUnits="userSpaceOnUse"
-			gradientTransform="translate({ripple[1]} {ripple[2]}) scale(1.5 1)"
+			gradientTransform="translate({flood[1]} {flood[2]}) scale(1.5 1)"
 			cx="0"
 			cy="0"
 			r={maxDistance}
 		>
 			<stop stop-color="var(--after-color)">
 				<animate
-					bind:this={ripple[4]}
-					id="pond_ripple_animate_{ripple[0]}"
+					bind:this={flood[4]}
+					id="pond_flood_animate_{flood[0]}"
 					attributeName="offset"
 					values="0;1;1;1"
-					keyTimes={ripple[5]}
-					dur="{ripple[3]}ms"
+					keyTimes={flood[5]}
+					dur="{flood[3]}ms"
 					fill="freeze"
 					begin="indefinite"
 				/>
@@ -176,29 +176,29 @@
 				<animate
 					attributeName="offset"
 					values="0;1.01;1.01;1.01"
-					keyTimes={ripple[5]}
-					dur="{ripple[3]}ms"
+					keyTimes={flood[5]}
+					dur="{flood[3]}ms"
 					fill="freeze"
-					begin="pond_ripple_animate_{ripple[0]}.begin"
+					begin="pond_flood_animate_{flood[0]}.begin"
 				/>
 			</stop>
 		</radialGradient>
 		<path
 			stroke-width="0.26"
 			stroke-linecap="round"
-			stroke="url('#pond_ripple_gradient_{ripple[0]}')"
-			fill="url('#pond_ripple_gradient_{ripple[0]}')"
+			stroke="url('#pond_flood_gradient_{flood[0]}')"
+			fill="url('#pond_flood_gradient_{flood[0]}')"
 			d={pondPath}
 		>
 			<animate
 				attributeName="opacity"
 				values="1;1;1;0"
-				keyTimes={ripple[5]}
+				keyTimes={flood[5]}
 				calcMode="spline"
 				keySplines="0 0 0 0;0 0 0 0;0.25 0.1 0.25 1"
-				dur="{ripple[3]}ms"
+				dur="{flood[3]}ms"
 				fill="freeze"
-				begin="pond_ripple_animate_{ripple[0]}.begin"
+				begin="pond_flood_animate_{flood[0]}.begin"
 			/>
 		</path>
 	{/each}
