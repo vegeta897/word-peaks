@@ -12,6 +12,14 @@
 	import { aprilFools } from '$lib/share'
 	import { getRandomWord, playDaily, playRandom } from '$lib/data-model'
 	import { fly } from 'svelte/transition'
+	import { toast } from '@zerodevx/svelte-toast'
+
+	const toastTheme = { theme: { '--toastBackground': 'var(--cta-color)' } }
+	const newRandomWord: svelte.JSX.MouseEventHandler<HTMLButtonElement> = (event) => {
+		playRandom(getRandomWord())
+		event.currentTarget.blur()
+		toast.push('Answer randomized!', toastTheme)
+	}
 
 	$: isAprilFools = $lastPlayedDaily && aprilFools()
 	$: leakActive =
@@ -50,7 +58,7 @@
 				{#if $gameMode !== 'daily'}
 					<button
 						transition:fly={{ x: -10, duration: 150 }}
-						on:click={() => playRandom(getRandomWord())}
+						on:click={newRandomWord}
 						class="new-random"
 						title="New word"
 					>
@@ -77,9 +85,9 @@
 		<button title={$t('main.stats.title')} on:click={() => openScreen.set('stats')}>
 			<svg viewBox="0 0 9 9" xmlns="http://www.w3.org/2000/svg" width="20" height="20">
 				<g transform="rotate(180 4.5 4.5)">
-					<rect id="graph_bar_1" x="0" y="0" height="8" width="2" />
-					<rect x="3" y="0" height="5" width="2" />
-					<rect id="graph_bar_3" x="6" y="0" height="2" width="2" />
+					<rect fill="currentColor" id="graph_bar_1" x="0" y="0" height="8" width="2" />
+					<rect fill="currentColor" x="3" y="0" height="5" width="2" />
+					<rect fill="currentColor" id="graph_bar_3" x="6" y="0" height="2" width="2" />
 				</g>
 			</svg>
 		</button>
@@ -89,7 +97,7 @@
 			on:click={() => openScreen.set('options')}
 		>
 			<svg viewBox="0 0 76 76" xmlns="http://www.w3.org/2000/svg" width="20" height="20">
-				<path d={OptionsIconPathData} />
+				<path fill="currentColor" d={OptionsIconPathData} />
 			</svg>
 		</button>
 	</div>
@@ -165,9 +173,11 @@
 		cursor: default;
 	}
 
-	.game-mode-buttons button:not(:disabled):hover {
-		color: var(--text-color);
-		background-color: var(--secondary-color);
+	@media (hover: hover) {
+		.game-mode-buttons button:not(:disabled):hover {
+			color: var(--text-color);
+			background-color: var(--secondary-color);
+		}
 	}
 
 	.game-mode-buttons button.new-random {
@@ -201,25 +211,20 @@
 		font-family: var(--font-list);
 	}
 
-	.menu-buttons button:hover {
-		color: var(--text-color);
-		background-color: var(--secondary-color);
-	}
-
-	.menu-buttons button svg {
-		fill: #888;
-	}
-	.menu-buttons button:hover svg {
-		fill: var(--text-color);
-	}
-
 	.menu-buttons button.bulge span {
 		transition: font-size 150ms ease-in-out, transform 200ms ease-in-out 150ms;
 	}
 
-	.menu-buttons button.bulge:hover span {
-		transform: scale(0.8);
-		font-size: 150%;
+	@media (hover: hover) {
+		.menu-buttons button:hover {
+			color: var(--text-color);
+			background-color: var(--secondary-color);
+		}
+
+		.menu-buttons button.bulge:hover span {
+			transform: scale(0.8);
+			font-size: 150%;
+		}
 	}
 
 	#graph_bar_1,
