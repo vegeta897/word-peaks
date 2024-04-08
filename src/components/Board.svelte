@@ -22,7 +22,7 @@
 		showAllHints,
 		guesses,
 		lastGameDetail,
-		landscapeFullView,
+		landscapeWideView,
 		showEndView,
 		gameMode,
 		lastPlayedDaily,
@@ -97,7 +97,7 @@
 
 <div class="container" style="--row-count: {ROWS}">
 	{#if browser}
-		{#if !$landscapeFullView}
+		{#if !$landscapeWideView}
 			<div class="board">
 				{#if !$gameFinished || !$lastGameDetail || !$showEndView}
 					<div
@@ -146,7 +146,7 @@
 				{/if}
 			</div>
 		{/if}
-		<div class="landscape" style:padding-top={$landscapeFullView ? '20px' : 0}>
+		<div class="landscape" style:padding-top={$landscapeWideView ? '20px' : 0}>
 			<Landscape />
 		</div>
 	{:else}

@@ -22,8 +22,9 @@
 		playRandom,
 		type GameMode,
 	} from '$lib/data-model'
+	import Icon from './landscape/Icon.svelte'
 
-	const { landscapeFullView, landscapeForceColor, landscapeRedraw } = store
+	const { landscapeWideView, landscapeForceColor, landscapeRedraw } = store
 
 	export let gameMode: GameMode
 
@@ -194,15 +195,19 @@
 	{#if !showScoreShareMenu}
 		<div class="landscape-controls">
 			<button
-				title="Full view"
-				class:cta-bg={$landscapeFullView}
-				on:click={() => landscapeFullView.set(!$landscapeFullView)}>🏞️</button
+				title="Wide view"
+				class:cta-bg={$landscapeWideView}
+				on:click={() => landscapeWideView.set(!$landscapeWideView)}
 			>
+				<Icon icon="wide" active={$landscapeWideView} />
+			</button>
 			<button
 				title="Color"
 				class:cta-bg={$landscapeForceColor}
-				on:click={() => landscapeForceColor.set(!$landscapeForceColor)}>🎨</button
+				on:click={() => landscapeForceColor.set(!$landscapeForceColor)}
 			>
+				<Icon icon="color" active={$landscapeForceColor} />
+			</button>
 			<button
 				title="Redraw"
 				disabled={landscapeRedrawCooldown}
@@ -212,9 +217,11 @@
 					landscapeRedraw.set(true)
 				}}
 			>
-				🖌️
+				<Icon icon="redraw" />
 			</button>
-			<button title={$t('main.results.share')} on:click={onLandscapeShare}>📸</button>
+			<button title={$t('main.results.share')} on:click={onLandscapeShare}>
+				<Icon icon="photo" />
+			</button>
 			<div class="promo">
 				<a
 					on:auxclick={() => trackEvent('promoLinkFollow')}
@@ -235,6 +242,21 @@
 		<div class="image-share">
 			<canvas bind:this={canvas} />
 			<button on:click={onCopyImage}>{$t('main.results.copy_image')}</button>
+			<button
+				title="Close"
+				class="close-button"
+				on:click={() => (showImageShare = false)}
+			>
+				<svg viewBox="0 0 4 4" xmlns="http://www.w3.org/2000/svg" width="32px">
+					<path
+						stroke="currentColor"
+						fill="none"
+						d="M1.2 1.2 l1.6 1.6 M1.2 2.8 l1.6 -1.6"
+						stroke-width="0.5"
+						stroke-linecap="round"
+					/>
+				</svg>
+			</button>
 		</div>
 	</div>
 </div>
@@ -309,8 +331,8 @@
 
 	.landscape-controls button {
 		background: var(--primary-color);
-		font-size: 2em;
 		transition: opacity 300ms ease-out;
+		padding: 0.5rem 0;
 	}
 
 	.landscape-controls button:hover {
@@ -397,12 +419,28 @@
 		align-items: center;
 		background: var(--tertiary-color);
 		pointer-events: auto;
+		position: relative;
 	}
 
 	.image-share button {
 		height: 3rem;
 		padding: 0 1rem;
 		margin-top: 1rem;
+	}
+
+	.image-share button.close-button {
+		width: 2.75rem;
+		height: 2.75rem;
+		padding: 0;
+		position: absolute;
+		top: -0.5rem;
+		right: 0.5rem;
+		background: var(--primary-color);
+		border-radius: 100%;
+	}
+
+	.image-share button.close-button:hover {
+		background: var(--secondary-color);
 	}
 
 	@media (max-width: 430px) {
@@ -418,8 +456,8 @@
 		.share-options {
 			font-size: 0.75em;
 		}
-		.landscape-controls button {
-			font-size: 1.5em;
+		.landscape-controls {
+			gap: 0.375rem;
 		}
 		.hide-on-small-screens {
 			display: none;

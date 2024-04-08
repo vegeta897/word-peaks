@@ -149,7 +149,10 @@ export async function submitRow() {
 			gameMode === 'daily' ? 'lastPlayedDailyWasHard' : 'lastPlayedRandomWasHard'
 		].set(get(store.hardMode))
 		// Show end screen after waiting for tiles to flip
-		setTimeout(() => store.showEndView.set(true), 6 * 150 + 250)
+		setTimeout(() => {
+			store.showEndView.set(true)
+			if (won) store.landscapeForceColor.set(true)
+		}, 6 * 150 + 250)
 		finishGame(won)
 	} else {
 		store.currentTile.set(0)

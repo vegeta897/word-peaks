@@ -109,8 +109,8 @@
 		firstDraw = true
 		redraw++
 		clearLandscape()
-		// Skip update if landscapeFullView is true, because it is about to change
-		if (!get(store.landscapeFullView)) updateLandscape()
+		// Skip update if landscapeWideView is true, because it is about to change
+		if (!get(store.landscapeWideView)) updateLandscape()
 	})
 	store.landscapeNewRow.subscribe((newRow) => {
 		if (!newRow) return
@@ -126,7 +126,7 @@
 		store.landscapeRedraw.set(false)
 	})
 	// Hide landscape until it updates to avoid flashing on FF
-	store.landscapeFullView.subscribe(() => (hide = true))
+	store.landscapeWideView.subscribe(() => (hide = true))
 
 	type FlashColorHandler = (x: number, y: number, duration: number) => void
 	const featureComponents: {
