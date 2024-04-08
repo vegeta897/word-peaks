@@ -54,11 +54,11 @@
 						class="new-random"
 						title="New word"
 					>
-						<svg viewBox="0 0 6 6" xmlns="http://www.w3.org/2000/svg" width="18px">
+						<svg viewBox="0 0 7 7" xmlns="http://www.w3.org/2000/svg" width="21px">
 							<path
 								stroke="currentColor"
 								fill="none"
-								d="M3 1 v4 M1 3 h4"
+								d="M3.5 1.5 v4 M1.5 3.5 h4"
 								stroke-width="1"
 								stroke-linecap="round"
 							/>
@@ -171,7 +171,7 @@
 	}
 
 	.game-mode-buttons button.new-random {
-		padding: 0 0.375rem;
+		padding: 0 0.25rem;
 	}
 
 	.leak {
