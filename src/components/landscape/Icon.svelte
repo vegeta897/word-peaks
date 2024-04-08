@@ -6,10 +6,10 @@
 <svg
 	xmlns="http://www.w3.org/2000/svg"
 	viewBox={icon === 'wide' ? '0 13 100 74' : '0 0 100 100'}
-	width={icon === 'wide' ? '48px' : '36px'}
+	width={icon === 'wide' ? '3rem' : '2.25rem'}
 	class={icon}
 	class:active
-	height="36px"
+	height="2.25rem"
 >
 	{#if icon === 'color'}
 		<g id="landscape_icon_color_1">
@@ -200,7 +200,7 @@
 			/>
 			<path
 				d="M55 16 h-5 v68 h5"
-				stroke-width={active ? 4.8 : 5}
+				stroke-width={active ? 4.5 : 5}
 				stroke="var(--landscape-color)"
 				stroke-linecap="round"
 				stroke-linejoin="round"
