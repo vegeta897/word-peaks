@@ -21,6 +21,7 @@
 	export let mouseY: number
 	export let forceColor: boolean
 
+	let willAnimate = true
 	let animateElement: SVGAnimateElement
 	let animateSkewElement: SVGAnimateTransformElement
 
@@ -71,13 +72,14 @@
 	$: popTranslate = mini ? 2.5 : 3.3
 
 	onMount(() => {
+		willAnimate = animate
 		if (animate) setTimeout(() => animateElement?.beginElement(), delay)
 	})
 </script>
 
 <!-- Position relative to fix stacking context bug in FF -->
 <g style:position="relative" transform="translate({centerX} {centerY})">
-	<g opacity={animate ? 0 : 1}>
+	<g opacity={willAnimate ? 0 : 1}>
 		<animateTransform
 			id="hill_nudge_animate_{id}"
 			bind:this={animateSkewElement}
