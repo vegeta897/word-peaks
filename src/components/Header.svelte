@@ -252,11 +252,14 @@
 	}
 
 	@media (max-width: 390px) {
+		.game-mode-buttons button {
+			padding: 0 0.5rem;
+		}
 		.menu-buttons button {
 			margin-left: 0.5rem;
 		}
 		h1 {
-			font-size: 1.4em;
+			font-size: 1.375em;
 		}
 	}
 </style>
