@@ -1,11 +1,11 @@
 <script lang="ts">
 	import * as store from '$src/store'
 	import { get } from 'svelte/store'
-	import type { Landscape } from '$lib/landscape'
-	import { getLandscape } from '$lib/landscape'
-	import Tree from './landscape/Tree.svelte'
-	import Hill from './landscape/Hill.svelte'
-	import Pond from './landscape/Pond.svelte'
+	import type { Landscape } from '$lib/landscape/landscape'
+	import { getLandscape } from '$lib/landscape/landscape'
+	import Tree from './Tree.svelte'
+	import Hill from './Hill.svelte'
+	import Pond from './Pond.svelte'
 	import { getDistance, type XY } from '$lib/math'
 	import { tick } from 'svelte'
 	import { bezierEasing } from '$lib/transitions'
@@ -95,6 +95,7 @@
 			get(store.answer),
 			currentRow
 		)
+		console.log(landscape.features)
 		store.landscape.set(landscape)
 		hide = false
 	}

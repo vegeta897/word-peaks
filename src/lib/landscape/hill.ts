@@ -3,7 +3,7 @@ import {
 	type Landscape,
 	type Feature,
 	LANDSCAPE_FEATURE_DELAY,
-} from '$lib/landscape'
+} from '$lib/landscape/landscape'
 import {
 	type XY,
 	randomElementWeighted,

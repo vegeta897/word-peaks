@@ -1,9 +1,9 @@
 import type { Board, Tile } from '$lib/data-model'
 import Rand from 'rand-seed'
-import { createPond } from './landscape/pond'
-import { type XY, xyToGrid } from './math'
-import { createHill } from './landscape/hill'
-import { createTrees } from './landscape/tree'
+import { createPond } from './pond'
+import { type XY, xyToGrid } from '../math'
+import { createHill } from './hill'
+import { createTrees } from './tree'
 
 export type Feature = {
 	id: number

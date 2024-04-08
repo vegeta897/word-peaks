@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onDestroy, onMount, tick } from 'svelte'
-	import Landscape from '$com/Landscape.svelte'
+	import Landscape from '$src/components/landscape/Landscape.svelte'
 	import * as store from '$src/store'
 	import Tile from '$com/Tile.svelte'
 	import { get } from 'svelte/store'
@@ -114,6 +114,7 @@
 										showHint={!$gameFinished && (t === $currentTile || $showAllHints)}
 									>
 										{#if !idle && !$guesses[0] && r === ROWS - 1}
+											<!-- svelte-ignore a11y-click-events-have-key-events -->
 											<div
 												class="dance-tile"
 												style:opacity={((t < danceClickProgress ? 1 : 0) *

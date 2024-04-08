@@ -3,7 +3,7 @@ import {
 	getCenterWeight,
 	type Landscape,
 	type Feature,
-} from '$lib/landscape'
+} from '$lib/landscape/landscape'
 import { randomElementWeighted, getNeighbors, xyToGrid, randomFloat } from '$lib/math'
 
 export function createTrees(

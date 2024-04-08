@@ -1,4 +1,4 @@
-import type { Landscape } from '$lib/landscape'
+import type { Landscape } from '$lib/landscape/landscape'
 import { createPondPath } from './pond'
 
 const TILE_WIDTH = 48

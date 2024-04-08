@@ -1,4 +1,8 @@
-import { getCenterWeight, LANDSCAPE_FEATURE_DELAY, type Landscape } from '$lib/landscape'
+import {
+	getCenterWeight,
+	LANDSCAPE_FEATURE_DELAY,
+	type Landscape,
+} from '$lib/landscape/landscape'
 import {
 	randomElementWeighted,
 	getNeighbors,
