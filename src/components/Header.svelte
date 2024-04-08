@@ -10,7 +10,8 @@
 	import { OptionsIconPathData } from '$lib/icons'
 	import { browser } from '$app/env'
 	import { aprilFools } from '$lib/share'
-	import { playDaily, playRandom } from '$lib/data-model'
+	import { getRandomWord, playDaily, playRandom } from '$lib/data-model'
+	import { fly } from 'svelte/transition'
 
 	$: isAprilFools = $lastPlayedDaily && aprilFools()
 	$: leakActive =
@@ -26,7 +27,7 @@
 					{#if $gameMode === 'daily'}
 						#{$lastPlayedDaily + 1}
 					{:else}
-						<svg viewBox="0 0 6 4" width="36px">
+						<svg viewBox="0 0 6 4" xmlns="http://www.w3.org/2000/svg" width="36px">
 							<path
 								stroke="#888"
 								fill="none"
@@ -46,6 +47,24 @@
 				<button on:click={() => playRandom()} disabled={$gameMode !== 'daily'}>
 					{$t('main.summary.random')}
 				</button>
+				{#if $gameMode !== 'daily'}
+					<button
+						transition:fly={{ x: -10, duration: 150 }}
+						on:click={() => playRandom(getRandomWord())}
+						class="new-random"
+						title="New word"
+					>
+						<svg viewBox="0 0 6 6" xmlns="http://www.w3.org/2000/svg" width="18px">
+							<path
+								stroke="currentColor"
+								fill="none"
+								d="M3 1 v4 M1 3 h4"
+								stroke-width="1"
+								stroke-linecap="round"
+							/>
+						</svg>
+					</button>
+				{/if}
 			</div>
 		{/if}
 	</div>
@@ -130,14 +149,14 @@
 		transition: background-color 120ms ease-out;
 	}
 
-	.game-mode-buttons button:first-child {
-		border-top-right-radius: 0;
-		border-bottom-right-radius: 0;
-	}
-
-	.game-mode-buttons button:last-child {
+	.game-mode-buttons button:not(:first-child) {
 		border-top-left-radius: 0;
 		border-bottom-left-radius: 0;
+	}
+
+	.game-mode-buttons button:not(:last-child) {
+		border-top-right-radius: 0;
+		border-bottom-right-radius: 0;
 	}
 
 	.game-mode-buttons button:disabled {
@@ -149,6 +168,10 @@
 	.game-mode-buttons button:not(:disabled):hover {
 		color: var(--text-color);
 		background-color: var(--secondary-color);
+	}
+
+	.game-mode-buttons button.new-random {
+		padding: 0 0.375rem;
 	}
 
 	.leak {
