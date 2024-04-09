@@ -50,8 +50,7 @@
 				stroke-width="16"
 				stroke-linecap="round"
 				stroke-linejoin="round"
-				d="M{50 + (Math.SQRT2 / 2) * 42} {50 +
-					(Math.SQRT2 / 2) * 42} a42 42 0 0 1 {-Math.SQRT2 * 42} 0"
+				d="M79.698 79.698 a42 42 0 0 1 -59.397 0"
 			/>
 		</g>
 		<g id="landscape_icon_redraw_2">
@@ -61,8 +60,7 @@
 				stroke-width="40"
 				stroke-linecap="round"
 				stroke-linejoin="round"
-				d="M{50 - (Math.SQRT2 / 2) * 42} {50 +
-					(Math.SQRT2 / 2) * 42} a42 42 0 0 1 {Math.SQRT2 * 42} {-Math.SQRT2 * 42}"
+				d="M20.302 79.698 a42 42 0 0 1 59.397 -59.397"
 			/>
 			<path
 				fill="none"
@@ -70,8 +68,7 @@
 				stroke-width="16"
 				stroke-linecap="round"
 				stroke-linejoin="round"
-				d="M{50 - (Math.SQRT2 / 2) * 42} {50 +
-					(Math.SQRT2 / 2) * 42} a42 42 0 0 1 {Math.SQRT2 * 42} {-Math.SQRT2 * 42}"
+				d="M20.302 79.698 a42 42 0 0 1 59.397 -59.397"
 			/>
 		</g>
 		<g id="landscape_icon_redraw_3">
@@ -80,8 +77,7 @@
 				stroke="var(--icon-bg-color)"
 				stroke-width="40"
 				stroke-linecap="round"
-				d="M{50 - (Math.SQRT2 / 2) * 42} {50 -
-					(Math.SQRT2 / 2) * 42} a42 42 0 0 1 {Math.SQRT2 * 42} 0 l12 12"
+				d="M20.302 20.302 a42 42 0 0 1 59.397 0 l12 12"
 			/>
 			<path
 				fill="none"
@@ -89,8 +85,7 @@
 				stroke-width="16"
 				stroke-linecap="round"
 				stroke-linejoin="round"
-				d="M{50 - (Math.SQRT2 / 2) * 42} {50 -
-					(Math.SQRT2 / 2) * 42} a42 42 0 0 1 {Math.SQRT2 * 42} 0 l12 12 V8"
+				d="M20.302 20.302 a42 42 0 0 1 59.397 0 l12 12 V8"
 			/>
 		</g>
 	{:else if icon === 'photo'}
