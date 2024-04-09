@@ -6,6 +6,8 @@
 	const storeProps = Object.entries(store)
 		.filter(
 			([propName, propValue]) =>
+				typeof propValue !== 'number' &&
+				typeof propValue !== 'string' &&
 				typeof propValue !== 'function' &&
 				'update' in propValue &&
 				propName !== 'boardContent'
