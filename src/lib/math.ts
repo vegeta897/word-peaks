@@ -26,19 +26,16 @@ export function randomElementWeighted<T>(arr: T[], weights: number[], rng = Math
 }
 
 export const xyToGrid = ([x, y]: XY) => `${x}:${y}`
-export const gridToXY = (grid: string) => grid.split(':').map((v) => +v)
 
 // prettier-ignore
 const neighbors = [[-1, 0],[1, 0],[0, -1],[0, 1]]
 export function getNeighborGrids(grid: string) {
-	const [x, y] = gridToXY(grid)
+	const [x, y] = grid.split(':').map((v) => +v)
 	return neighbors.map(([nx, ny]) => xyToGrid([x + nx, y + ny]))
 }
 export const getNeighbors = (x: number, y: number) =>
 	neighbors.map(([nx, ny]) => [x + nx, y + ny])
 
 export const getDistance = (x: number, y: number) => Math.sqrt(x ** 2 + y ** 2)
-export const getManhattanDistance = (aX: number, aY: number, bX: number, bY: number) =>
-	Math.abs(bX - aX) + Math.abs(bY - aY)
 
 export const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
