@@ -6,6 +6,7 @@
 		gameMode,
 		lastPlayedDaily,
 		boardContent,
+		gameFinished,
 	} from '$src/store'
 	import { OptionsIconPathData } from '$lib/icons'
 	import { browser } from '$app/env'
@@ -13,12 +14,14 @@
 	import { getRandomWord, playDaily, playRandom } from '$lib/data-model'
 	import { fly } from 'svelte/transition'
 	import { toast } from '@zerodevx/svelte-toast'
+	import { get } from 'svelte/store'
 
 	const toastTheme = { theme: { '--toastBackground': 'var(--cta-color)' } }
 	const newRandomWord: svelte.JSX.MouseEventHandler<HTMLButtonElement> = (event) => {
+		const gameInProgress = !get(gameFinished)
 		playRandom(getRandomWord())
 		event.currentTarget.blur()
-		toast.push('Answer randomized!', toastTheme)
+		if (gameInProgress) toast.push('Answer randomized!', toastTheme)
 	}
 
 	$: isAprilFools = $lastPlayedDaily && aprilFools()
