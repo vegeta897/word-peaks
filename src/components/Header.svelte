@@ -31,16 +31,16 @@
 		<h1>
 			Word <span class:leak={leakActive}>{isAprilFools ? 'Leaks' : 'Peaks'}</span>
 			{#if browser}
-				<small class="game-mode" class:large={$gameMode === 'random'}>
+				<small class="game-mode">
 					{#if $gameMode === 'daily'}
 						#{$lastPlayedDaily + 1}
 					{:else}
-						<svg viewBox="0 0 6 4" xmlns="http://www.w3.org/2000/svg" width="36px">
+						<svg viewBox="0 0 6 3" xmlns="http://www.w3.org/2000/svg" width="32px">
 							<title>{$t('main.summary.random')}</title>
 							<path
 								stroke="#888"
 								fill="none"
-								d="M2.29 1.29 l1.41 1.41 a1 1 0 1 0 0 -1.41 l-1.41 1.41 a1 1 0 1 1 0 -1.41"
+								d="M2.29 0.79 l1.41 1.41 a1 1 0 1 0 0 -1.41 l-1.41 1.41 a1 1 0 1 1 0 -1.41"
 								stroke-width="0.5"
 							/>
 						</svg>
@@ -129,13 +129,6 @@
 		margin-left: 0.25rem;
 		color: #888;
 		font-size: 0.875em;
-	}
-
-	.game-mode.large {
-		font-size: 1.25em;
-		line-height: 0.5em;
-		position: relative;
-		top: 0.25rem;
 	}
 
 	.game-mode-buttons {
