@@ -10,7 +10,7 @@
 	import { tick } from 'svelte'
 	import { bezierEasing } from '$lib/transitions'
 
-	const { landscapeForceColor } = store
+	const { landscapeForceColor, animateLandscape } = store
 
 	let initializing = true
 	let svgElement: SVGElement
@@ -84,9 +84,14 @@
 		if (currentRow === 0) {
 			if (landscape.rowsGenerated > 0) clearLandscape()
 			return
-		} else if (firstDraw || landscape.rowsGenerated > 0) {
+		}
+		if (firstDraw || landscape.rowsGenerated > 0) {
 			firstDraw = false
+			animate = get(animateLandscape)
+		}
+		if (get(store.landscapeRedraw)) {
 			animate = true
+			store.landscapeRedraw.set(false)
 		}
 		if (currentRow === landscape.rowsGenerated) return
 		landscape = getLandscape(
@@ -123,7 +128,6 @@
 		redraw++
 		clearLandscape()
 		updateLandscape()
-		store.landscapeRedraw.set(false)
 	})
 	// Hide landscape until it updates to avoid flashing on FF
 	store.landscapeWideView.subscribe(() => (hide = true))

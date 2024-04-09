@@ -61,6 +61,11 @@
 			click: toggle(store.dyslexicFont),
 		},
 		{
+			bind: store.animateLandscape,
+			label: 'Animated landscape',
+			click: toggle(store.animateLandscape),
+		},
+		{
 			bind: store.allowDancing,
 			label: 'main.options.allow_dancing_letters',
 			click: toggle(store.allowDancing),

@@ -26,6 +26,7 @@ export function validateLocalStorage() {
 	if (![true, false].includes(get(app.swapEnterBackspace)))
 		app.swapEnterBackspace.set(false)
 	if (![true, false].includes(get(app.dyslexicFont))) app.dyslexicFont.set(false)
+	if (![true, false].includes(get(app.animateLandscape))) app.animateLandscape.set(true)
 	if (![true, false].includes(get(app.allowDancing))) app.allowDancing.set(true)
 	if (![true, false].includes(get(app.shareURL))) app.shareURL.set(true)
 	if (![true, false].includes(get(app.shareTimes))) app.shareTimes.set(false)

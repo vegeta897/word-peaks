@@ -25,6 +25,10 @@ export const keyboardLayout: Writable<KeyboardLayout> = storageWritable(
 )
 export const dyslexicFont: Writable<boolean> = storageWritable('wp-dyslexicFont', false)
 export const allowDancing: Writable<boolean> = storageWritable('wp-allowDancing', true)
+export const animateLandscape: Writable<boolean> = storageWritable(
+	'wp-animateLandscape',
+	true
+)
 export const shareURL: Writable<boolean> = storageWritable('wp-shareURL', true)
 export const shareTimes: Writable<boolean> = storageWritable('wp-shareTimes', false)
 export const preciseTimes: Writable<boolean> = storageWritable('wp-preciseTimes', false)
