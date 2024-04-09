@@ -7,6 +7,7 @@
 	import Time from '$com/Time.svelte'
 	import StatBar from '$com/StatBar.svelte'
 	import Screen from './Screen.svelte'
+	import { base } from '$app/paths'
 
 	export let gameMode: GameMode
 
@@ -83,14 +84,17 @@
 			</div>
 		{/if}
 		{#if gameMode === 'random'}<em>{$t('main.stats.stats_daily')}</em>{/if}
+		<div class="import-export">
+			<span class="new-tag">New</span> <a href="{base}/stats">Stats Import/Export</a>
+		</div>
 	</section>
 </Screen>
 
 <style>
 	section {
 		display: flex;
-		justify-content: center;
-		flex-wrap: wrap;
+		flex-direction: column;
+		align-items: center;
 	}
 
 	.stats-container {
@@ -150,6 +154,17 @@
 
 	em {
 		margin-top: 1rem;
+	}
+
+	.import-export {
+		margin-top: 1.5rem;
+	}
+
+	.new-tag {
+		background: var(--accent-color);
+		border-radius: 0.375rem;
+		padding: 0.25rem 0.5rem;
+		font-weight: 700;
 	}
 
 	@media (max-width: 480px) {
