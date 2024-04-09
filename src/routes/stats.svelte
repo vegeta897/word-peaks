@@ -190,7 +190,7 @@
 		<textarea id="export_text" name="export_text" rows="4" value={exportText} readonly />
 		<button style:align-self="flex-start" on:click={onCopyClick}>Copy</button>
 	{/if}
-	<a style:margin-top="3rem" style:text-align="center" href="../">Back</a>
+	<a style:margin-top="3rem" style:text-align="center" href="{base}/">Back</a>
 </section>
 
 <style>
