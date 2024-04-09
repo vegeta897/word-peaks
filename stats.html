@@ -34,6 +34,7 @@
 		<meta http-equiv="content-security-policy" content=""><!-- HEAD_svelte-y6fi8_START --><!-- HEAD_svelte-y6fi8_END -->
 	<link rel="stylesheet" href="/word-peaks/_app/assets/pages/__layout.svelte-f86d9105.css">
 	<link rel="stylesheet" href="/word-peaks/_app/assets/index-81b27de8.css">
+	<link rel="stylesheet" href="/word-peaks/_app/assets/pages/stats.svelte-9ee38c33.css">
 	<link rel="modulepreload" href="/word-peaks/_app/start-80aef8a4.js">
 	<link rel="modulepreload" href="/word-peaks/_app/chunks/index-d85b3eb2.js">
 	<link rel="modulepreload" href="/word-peaks/_app/chunks/preload-helper-911a8840.js">
@@ -43,7 +44,7 @@
 	<link rel="modulepreload" href="/word-peaks/_app/chunks/index-72671f7b.js">
 	<link rel="modulepreload" href="/word-peaks/_app/chunks/index-3d261b09.js">
 	<link rel="modulepreload" href="/word-peaks/_app/chunks/share-c70f1021.js">
-	<link rel="modulepreload" href="/word-peaks/_app/pages/random.svelte-9d54fec4.js">
+	<link rel="modulepreload" href="/word-peaks/_app/pages/stats.svelte-149d2467.js">
 	<link rel="modulepreload" href="/word-peaks/_app/chunks/navigation-0e6511d1.js">
 	</head>
 	<body>
@@ -53,14 +54,23 @@
 
 
 <div id="main" class="svelte-dyju3k"><ul class="_toastContainer svelte-7xr3c1"></ul>
+	<section class="svelte-18ehvcx"><h1>Word Peaks</h1>
+	<p class="svelte-18ehvcx" style="margin-bottom: 1.5rem;">Back up and restore your Word Peaks stats</p>
+	<div class="mode-buttons svelte-18ehvcx"><button class="svelte-18ehvcx">Import Stats
+		</button>
+		<button class="svelte-18ehvcx">Export Stats
+		</button></div>
 	
+	
+	<a href="//word-peaks" style="margin-top: 3rem; text-align: center;">Back</a>
+</section>
 </div>
 
 
-		<script type="module" data-hydrate="6z1d26">
+		<script type="module" data-hydrate="iurfvh">
 		import { start } from "/word-peaks/_app/start-80aef8a4.js";
 		start({
-			target: document.querySelector('[data-hydrate="6z1d26"]').parentNode,
+			target: document.querySelector('[data-hydrate="iurfvh"]').parentNode,
 			paths: {"base":"/word-peaks","assets":"/word-peaks"},
 			session: {},
 			route: true,
@@ -71,10 +81,10 @@
 				error: null,
 				nodes: [
 					import("/word-peaks/_app/pages/__layout.svelte-b13eae6e.js"),
-						import("/word-peaks/_app/pages/random.svelte-9d54fec4.js")
+						import("/word-peaks/_app/pages/stats.svelte-149d2467.js")
 				],
 				params: {},
-				routeId: "random"
+				routeId: "stats"
 			}
 		});
 	</script></div>
