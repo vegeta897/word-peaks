@@ -23,13 +23,15 @@ export function validateLocalStorage() {
 	// Options
 	if (![true, false].includes(get(app.highContrast))) app.highContrast.set(false)
 	if (![true, false].includes(get(app.showAllHints))) app.showAllHints.set(false)
-	if (![true, false].includes(get(app.swapEnterBackspace))) app.swapEnterBackspace.set(false)
+	if (![true, false].includes(get(app.swapEnterBackspace)))
+		app.swapEnterBackspace.set(false)
 	if (![true, false].includes(get(app.dyslexicFont))) app.dyslexicFont.set(false)
 	if (![true, false].includes(get(app.allowDancing))) app.allowDancing.set(true)
 	if (![true, false].includes(get(app.shareURL))) app.shareURL.set(true)
 	if (![true, false].includes(get(app.shareTimes))) app.shareTimes.set(false)
 	if (![true, false].includes(get(app.preciseTimes))) app.preciseTimes.set(false)
-	if (!keyboardLayoutNames.includes(get(app.keyboardLayout))) app.keyboardLayout.set('qwerty')
+	if (!keyboardLayoutNames.includes(get(app.keyboardLayout)))
+		app.keyboardLayout.set('qwerty')
 
 	// Stats
 	const stats = get(app.stats)
@@ -44,8 +46,14 @@ export function validateLocalStorage() {
 	const timeStats = get(app.timeStats)
 	if (!(timeStats.gameCount >= 0)) timeStats.gameCount = 0
 	if (!(timeStats.fastestGame >= 0)) timeStats.fastestGame = 0
-	timeStats.guessTotals = validateArrayStat(timeStats.guessTotals, newTimeStats().guessTotals)
-	timeStats.guessCounts = validateArrayStat(timeStats.guessCounts, newTimeStats().guessCounts)
+	timeStats.guessTotals = validateArrayStat(
+		timeStats.guessTotals,
+		newTimeStats().guessTotals
+	)
+	timeStats.guessCounts = validateArrayStat(
+		timeStats.guessCounts,
+		newTimeStats().guessCounts
+	)
 	app.timeStats.set(timeStats)
 
 	// Last game details
@@ -101,7 +109,10 @@ export function validateLocalStorage() {
 				get(guesses).some(isValidAnswer)
 			)
 				throw 'invalid guess(es)'
-			if (!Array.isArray(get(guessTimes)) || get(guessTimes).length !== get(guesses).length + 1)
+			if (
+				!Array.isArray(get(guessTimes)) ||
+				get(guessTimes).length !== get(guesses).length + 1
+			)
 				throw 'invalid guessTimes array'
 			const now = new Date().getTime()
 			for (let t = 0; t < get(guessTimes).length; t++) {

@@ -1,9 +1,28 @@
 <script lang="ts">
 	import { t } from '$lib/translations'
-	import { openScreen, highContrast, gameMode, lastPlayedDaily, boardContent } from '$src/store'
+	import {
+		openScreen,
+		highContrast,
+		gameMode,
+		lastPlayedDaily,
+		boardContent,
+		gameFinished,
+	} from '$src/store'
 	import { OptionsIconPathData } from '$lib/icons'
 	import { browser } from '$app/env'
 	import { aprilFools } from '$lib/share'
+	import { getRandomWord, playDaily, playRandom } from '$lib/data-model'
+	import { fly } from 'svelte/transition'
+	import { toast } from '@zerodevx/svelte-toast'
+	import { get } from 'svelte/store'
+
+	const toastTheme = { theme: { '--toastBackground': 'var(--cta-color)' } }
+	const newRandomWord: svelte.JSX.MouseEventHandler<HTMLButtonElement> = (event) => {
+		const gameInProgress = !get(gameFinished)
+		playRandom(getRandomWord())
+		event.currentTarget.blur()
+		if (gameInProgress) toast.push('Answer randomized!', toastTheme)
+	}
 
 	$: isAprilFools = $lastPlayedDaily && aprilFools()
 	$: leakActive =
@@ -12,23 +31,67 @@
 
 <header class:high-contrast={$highContrast}>
 	<div class="heading-container">
-		<h1>Word <span class:leak={leakActive}>{isAprilFools ? 'Leaks' : 'Peaks'}</span></h1>
-		{#if browser}<div class="game-mode" class:large={$gameMode === 'random'}>
-				{$gameMode === 'daily' ? `#${$lastPlayedDaily + 1}` : '∞'}
-			</div>{/if}
+		<h1>
+			Word <span class:leak={leakActive}>{isAprilFools ? 'Leaks' : 'Peaks'}</span>
+			{#if browser}
+				<small class="game-mode">
+					{#if $gameMode === 'daily'}
+						#{$lastPlayedDaily + 1}
+					{:else}
+						<svg viewBox="0 0 6 3" xmlns="http://www.w3.org/2000/svg" width="32px">
+							<title>{$t('main.summary.random')}</title>
+							<path
+								stroke="#888"
+								fill="none"
+								d="M2.29 0.79 l1.41 1.41 a1 1 0 1 0 0 -1.41 l-1.41 1.41 a1 1 0 1 1 0 -1.41"
+								stroke-width="0.5"
+							/>
+						</svg>
+					{/if}
+				</small>
+			{/if}
+		</h1>
+		{#if browser}
+			<div class="game-mode-buttons">
+				<button on:click={playDaily} disabled={$gameMode === 'daily'}>
+					{$t('main.summary.daily')}
+				</button>
+				<button on:click={() => playRandom()} disabled={$gameMode !== 'daily'}>
+					{$t('main.summary.random')}
+				</button>
+				{#if $gameMode !== 'daily'}
+					<button
+						transition:fly={{ x: -10, duration: 150 }}
+						on:click={newRandomWord}
+						class="new-random"
+						title="New word"
+					>
+						<svg viewBox="0 0 7 7" xmlns="http://www.w3.org/2000/svg" width="21px">
+							<path
+								stroke="currentColor"
+								fill="none"
+								d="M3.5 1.5 v4 M1.5 3.5 h4"
+								stroke-width="1"
+								stroke-linecap="round"
+							/>
+						</svg>
+					</button>
+				{/if}
+			</div>
+		{/if}
 	</div>
-	<div class="buttons" style:visibility={browser ? 'visible' : 'hidden'}>
+	<div class="menu-buttons" style:visibility={browser ? 'visible' : 'hidden'}>
 		<button
 			title={$t('main.tutorial.title')}
-			class="test"
+			class="bulge"
 			on:click={() => openScreen.set('tutorial')}><span>?</span></button
 		>
-		<button title={$t('main.stats.title')} on:click={() => openScreen.set('results')}>
+		<button title={$t('main.stats.title')} on:click={() => openScreen.set('stats')}>
 			<svg viewBox="0 0 9 9" xmlns="http://www.w3.org/2000/svg" width="20" height="20">
 				<g transform="rotate(180 4.5 4.5)">
-					<rect id="gr1" x="0" y="0" height="8" width="2" />
-					<rect id="gr2" x="3" y="0" height="5" width="2" />
-					<rect id="gr3" x="6" y="0" height="2" width="2" />
+					<rect fill="currentColor" id="graph_bar_1" x="0" y="0" height="8" width="2" />
+					<rect fill="currentColor" x="3" y="0" height="5" width="2" />
+					<rect fill="currentColor" id="graph_bar_3" x="6" y="0" height="2" width="2" />
 				</g>
 			</svg>
 		</button>
@@ -38,7 +101,7 @@
 			on:click={() => openScreen.set('options')}
 		>
 			<svg viewBox="0 0 76 76" xmlns="http://www.w3.org/2000/svg" width="20" height="20">
-				<path d={OptionsIconPathData} />
+				<path fill="currentColor" d={OptionsIconPathData} />
 			</svg>
 		</button>
 	</div>
@@ -47,24 +110,75 @@
 <style>
 	header {
 		transition: width 400ms ease-in-out;
-		margin: 10px auto;
-		padding: 0 8px;
+		margin: 0.75rem auto 1rem;
+		padding: 0 0.5rem;
 		box-sizing: border-box;
 		display: flex;
-		align-items: center;
+		align-items: flex-start;
 		justify-content: space-between;
 	}
 
 	.heading-container {
 		display: flex;
-		flex-wrap: wrap;
+		flex-direction: column;
 		align-items: baseline;
-		column-gap: 8px;
 	}
 
 	h1 {
-		text-align: left;
 		margin: 0;
+	}
+
+	.game-mode {
+		margin-left: 0.25rem;
+		color: #888;
+		font-size: 0.875em;
+	}
+
+	.game-mode-buttons {
+		display: flex;
+		margin-top: 0.25rem;
+	}
+
+	.game-mode-buttons button {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		height: 1.875rem;
+		background-color: #ffffff0a;
+		border: 0;
+		border-radius: 0.25rem;
+		padding: 0 0.875rem;
+		font-weight: 700;
+		font-size: 1em;
+		color: #888a;
+		transition: background-color 120ms ease-out;
+	}
+
+	.game-mode-buttons button:not(:first-child) {
+		border-top-left-radius: 0;
+		border-bottom-left-radius: 0;
+	}
+
+	.game-mode-buttons button:not(:last-child) {
+		border-top-right-radius: 0;
+		border-bottom-right-radius: 0;
+	}
+
+	.game-mode-buttons button:disabled {
+		color: var(--text-color);
+		background-color: var(--secondary-color);
+		cursor: default;
+	}
+
+	@media (hover: hover) {
+		.game-mode-buttons button:not(:disabled):hover {
+			color: var(--text-color);
+			background-color: var(--secondary-color);
+		}
+	}
+
+	.game-mode-buttons button.new-random {
+		padding: 0 0.25rem;
 	}
 
 	.leak {
@@ -72,25 +186,14 @@
 		transition: color 2s ease-in;
 	}
 
-	.game-mode {
-		color: #888;
-		font-size: 1em;
-	}
-
-	.game-mode.large {
-		font-size: 1.5em;
-		line-height: 0.5em;
-	}
-
-	.buttons {
+	.menu-buttons {
 		display: flex;
 	}
 
-	header button {
+	.menu-buttons button {
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		text-transform: uppercase;
 		padding: 0;
 		width: 45px;
 		height: 45px;
@@ -105,44 +208,39 @@
 		font-family: var(--font-list);
 	}
 
-	header button:hover {
-		color: var(--text-color);
-		background-color: var(--secondary-color);
-	}
-
-	header button svg {
-		fill: #888;
-	}
-	header button:hover svg {
-		fill: var(--text-color);
-	}
-
-	header button.test span {
+	.menu-buttons button.bulge span {
 		transition: font-size 150ms ease-in-out, transform 200ms ease-in-out 150ms;
 	}
 
-	header button.test:hover span {
-		transform: scale(0.8);
-		font-size: 150%;
+	@media (hover: hover) {
+		.menu-buttons button:hover {
+			color: var(--text-color);
+			background-color: var(--secondary-color);
+		}
+
+		.menu-buttons button.bulge:hover span {
+			transform: scale(0.8);
+			font-size: 150%;
+		}
 	}
 
-	#gr1,
-	#gr3 {
+	#graph_bar_1,
+	#graph_bar_3 {
 		transition: transform 300ms ease-in-out;
 	}
 
-	header button:hover svg #gr1 {
+	.menu-buttons button:hover svg #graph_bar_1 {
 		transform: scaleY(0.25);
 	}
 
-	header button:hover svg #gr3 {
+	.menu-buttons button:hover svg #graph_bar_3 {
 		transform: scaleY(4);
 	}
 
-	header button.hover-spin svg {
+	.menu-buttons button.hover-spin svg {
 		transition: transform 400ms ease-in-out;
 	}
-	header button.hover-spin:hover svg {
+	.menu-buttons button.hover-spin:hover svg {
 		transform: rotate(120deg);
 	}
 
@@ -151,14 +249,14 @@
 	}
 
 	@media (max-width: 390px) {
-		header {
-			margin: 6px auto;
+		.game-mode-buttons button {
+			padding: 0 0.5rem;
 		}
-		header button {
-			margin-left: 8px;
+		.menu-buttons button {
+			margin-left: 0.5rem;
 		}
 		h1 {
-			font-size: 1.4em;
+			font-size: 1.375em;
 		}
 	}
 </style>

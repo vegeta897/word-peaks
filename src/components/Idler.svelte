@@ -4,6 +4,7 @@
 	import { AnimationParts } from '$lib/idle-animations'
 	import type { IdleSchedule } from '$lib/idle-scheduler'
 	import { getSchedule, startAnimation, stopAnimation } from '$lib/idle-scheduler'
+	import { randomInt, sleep } from '$lib/math'
 
 	let mounted = false
 	let letter: string
@@ -15,12 +16,12 @@
 	let letterRotate: HTMLDivElement
 	let letterScale: HTMLDivElement
 
-	const animationParts: Map<AnimationPart, () => HTMLDivElement> = new Map([
-		['translateX', () => letterTranslateX],
-		['translateY', () => letterTranslateY],
-		['rotate', () => letterRotate],
-		['scale', () => letterScale],
-	])
+	const animationParts: Record<AnimationPart, () => HTMLDivElement> = {
+		translateX: () => letterTranslateX,
+		translateY: () => letterTranslateY,
+		rotate: () => letterRotate,
+		scale: () => letterScale,
+	}
 
 	const performAnimation = async (
 		animation: MultipartAnimation,
@@ -30,7 +31,7 @@
 	): Promise<void> => {
 		await Promise.all(
 			AnimationParts.map(async (part) => {
-				const element = animationParts.get(part)!()
+				const element = animationParts[part]()
 				if (element && animation[part]) {
 					await element.animate(animation[part]!, {
 						duration: animation.duration,
@@ -46,15 +47,17 @@
 	const animate = async ({ animations }: IdleSchedule) => {
 		for (const animation of animations) {
 			if (!mounted) break
-			await performAnimation(animation.animation, animation.endDelay || 0, animation.iterations)
+			await performAnimation(
+				animation.animation,
+				animation.endDelay || 0,
+				animation.iterations
+			)
 		}
 	}
 
-	const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
-
 	onMount(async () => {
 		mounted = true
-		await sleep(Math.random() * 100) // Ensures random first idler
+		await sleep(randomInt(1, 100)) // Ensures random first idler
 		while (mounted) {
 			const schedule = getSchedule(id)
 			if ('wait' in schedule) {
@@ -74,13 +77,15 @@
 
 <div class="frame">
 	<div class="letter-anchor">
-		<div class="letter-animation" bind:this={letterTranslateX}>
+		<div
+			class="letter-animation"
+			style:transform="translateX(-42px)"
+			bind:this={letterTranslateX}
+		>
 			<div class="letter-animation" bind:this={letterTranslateY}>
 				<div class="letter-animation" bind:this={letterRotate}>
 					<div class="letter-animation" bind:this={letterScale}>
-						<div class="letter">
-							{letter || ''}
-						</div>
+						<div class="letter">{letter || ''}</div>
 					</div>
 				</div>
 			</div>
@@ -95,24 +100,21 @@
 		top: 2px;
 		width: calc(100% - 4px);
 		height: calc(100% - 4px);
-		border-radius: 2px;
+		border-radius: 11%;
 		overflow: clip;
 	}
 	.letter-anchor {
-		position: relative;
-		left: -40px;
-		top: 18px;
+		transform: scale(1.25) translateY(20px);
 		width: 100%;
 		height: 100%;
 	}
 	.letter-animation {
-		position: relative;
 		width: 100%;
 		height: 100%;
 	}
 	.letter {
 		position: relative;
-		top: -3px;
+		top: 3px;
 		text-transform: uppercase;
 		font-weight: 700;
 		color: #5b505e;
@@ -120,24 +122,55 @@
 		text-align: center;
 		user-select: none;
 	}
-	@media (max-width: 480px) {
+
+	@media (max-width: 720px) {
 		.letter-anchor {
-			top: 16px;
-			left: -37px;
-			transform: scale(0.93);
+			transform: scale(1.25) translateY(18px);
 		}
+		.letter {
+			top: 0;
+		}
+	}
+	@media (max-width: 640px) {
+		.letter-anchor {
+			transform: translateY(20px);
+		}
+		.letter {
+			top: -3px;
+		}
+	}
+	@media (max-width: 560px) {
+		.letter-anchor {
+			transform: translateY(16px);
+		}
+	}
+	@media (max-width: 480px) {
 		.letter {
 			top: -6px;
 		}
 	}
-	@media (max-width: 360px) {
+	@media (max-width: 430px) {
 		.letter-anchor {
-			top: 14px;
-			left: -34px;
-			transform: scale(0.845);
+			transform: translateY(14px);
 		}
 		.letter {
 			top: -7px;
+		}
+	}
+	@media (max-width: 390px) {
+		.letter-anchor {
+			transform: scale(0.95) translateY(13px);
+		}
+		.letter {
+			top: -9px;
+		}
+	}
+	@media (max-width: 375px) {
+		.letter-anchor {
+			transform: scale(0.9) translateY(14px);
+		}
+		.letter {
+			top: -10px;
 		}
 	}
 </style>

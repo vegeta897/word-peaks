@@ -4,11 +4,12 @@
 	export let mode: 'static' | 'countdown' = 'static'
 	export let ms: number
 	export let alwaysShowHours: boolean = false
-	export let bindContainer: { span: HTMLSpanElement | undefined } = { span: undefined }
 	export let dimming: boolean = true
 	export let decimals = 0
+	export let timeString: string = ''
 
-	// TODO: Decimals option
+	let spanElement: HTMLSpanElement
+	$: timeString = spanElement?.innerText
 
 	const padZero = (value: number) => value.toString().padStart(2, '0')
 	const MINUTE = 60 * 1000
@@ -39,7 +40,7 @@
 
 {#if !countdown || msTotal > 0}
 	<slot name="title" />
-	<span bind:this={bindContainer.span} class={$$props.class}>
+	<span bind:this={spanElement} class={$$props.class}>
 		<span class:fade={dimming && hours === 0}>{showHours ? hours : ''}</span><span
 			class:fade={dimming && minutes === 0 && hours === 0}
 			>{showHours ? ':' + padZero(minutes) : minutes}</span

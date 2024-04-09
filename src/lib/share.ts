@@ -63,23 +63,18 @@ export function copyImage(canvas: HTMLCanvasElement): void {
 }
 
 // https://benkaiser.dev/sharing-images-using-the-web-share-api/
-export async function shareImage(
-	canvas: HTMLCanvasElement,
-	{ hash, day }: { hash?: string; day?: number }
-): Promise<void> {
+export async function shareImage(canvas: HTMLCanvasElement, name: string): Promise<void> {
 	const imageUrl = canvas.toDataURL()
 	const imageBlob = await (await fetch(imageUrl)).blob()
 	const filesArray = [
-		new File([imageBlob], `word-peaks-${hash || day}.png`, {
+		new File([imageBlob], `word-peaks-${name}.png`, {
 			type: imageBlob.type,
 			lastModified: new Date().getTime(),
 		}),
 	]
-	const shareData = {
-		files: filesArray,
-	}
-	// Fail silently, image will appear in modal to copy
-	await navigator.share(shareData)
+	const shareData = { files: filesArray }
+	// Fail silently, image will appear to copy
+	if (navigator.share) await navigator.share(shareData)
 }
 
 export function drawResults(
@@ -132,19 +127,20 @@ export function drawResults(
 	ctx.font = '50px Arial'
 	ctx.textAlign = 'right'
 	ctx.textBaseline = 'middle'
+	const isAprilFools = aprilFools()
 	boardContent.forEach((row, r) => {
 		if (r >= guesses.length) return
 		row.forEach((tile, t) => {
-			let topRadius = 10
-			let bottomRadius = 10
+			let topRadius = 12
+			let bottomRadius = 12
 			if (tile.distance === 0) {
 				ctx.fillStyle = highContrast ? '#64ba2e' : '#15a850'
 			} else if (tile.distance > 0) {
 				ctx.fillStyle = '#567de8'
-				bottomRadius = 28
+				bottomRadius = 31
 			} else {
 				ctx.fillStyle = highContrast ? '#da3f8b' : '#e38f2f'
-				topRadius = 28
+				topRadius = 31
 			}
 			const x = 8 + t * 100
 			const y = 8 + r * 100
@@ -172,10 +168,12 @@ export function drawResults(
 }
 
 const longestStringLength = (strArr: string[]) =>
-	strArr.reduce((prev, curr) => (prev === null || prev.length < curr.length ? curr : prev)).length
+	strArr.reduce((prev, curr) =>
+		prev === null || prev.length < curr.length ? curr : prev
+	).length
 
 export const aprilFools = () => {
-	if (dev) return true
+	// if (dev) return true
 	const today = new Date()
 	return today.getMonth() === 3 && today.getDate() === 1
 }

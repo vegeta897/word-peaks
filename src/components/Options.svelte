@@ -20,8 +20,9 @@
 	async function onLanguageChange(language: string) {
 		storedLocale.set(language)
 		await loadTranslations(language)
-		_keyboardLayoutOptions.find((o) => o.value === 'alphabetic')!.label =
-			get(t)('main.options.alphabetic')
+		_keyboardLayoutOptions.find((o) => o.value === 'alphabetic')!.label = get(t)(
+			'main.options.alphabetic'
+		)
 		_keyboardLayoutOptions = _keyboardLayoutOptions
 	}
 
@@ -39,8 +40,16 @@
 
 	const toggleOptions = [
 		{ bind: hardModeToggle, label: 'main.options.hard_mode', click: toggleHardMode },
-		{ bind: highContrast, label: 'main.options.high_contrast_mode', click: toggle(highContrast) },
-		{ bind: showAllHints, label: 'main.options.show_all_hints', click: toggle(showAllHints) },
+		{
+			bind: highContrast,
+			label: 'main.options.high_contrast_mode',
+			click: toggle(highContrast),
+		},
+		{
+			bind: showAllHints,
+			label: 'main.options.show_all_hints',
+			click: toggle(showAllHints),
+		},
 		{
 			bind: store.swapEnterBackspace,
 			label: 'main.options.swap_enter_backspace',
@@ -92,7 +101,7 @@
 		<div class="select-container">
 			<div class="label">{$t('main.options.keyboard_layout')}</div>
 			<Select
-				items={_keyboardLayoutOptions}
+				items={keyboardLayoutOptions}
 				value={{ label: keyboard.label, value: $keyboardLayout }}
 				on:select={({ detail: { value } }) => keyboardLayout.set(value)}
 				isClearable={false}

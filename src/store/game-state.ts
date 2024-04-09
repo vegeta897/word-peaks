@@ -67,21 +67,31 @@ export function updateGuesses(fn: Updater<string[]>): void {
 	;(get(gameMode) === 'daily' ? guessesDaily : guessesRandom).update(fn)
 }
 
-export const guessTimesDaily: Writable<number[]> = storageWritable('wp-guessTimesDaily', [])
-export const guessTimesRandom: Writable<number[]> = storageWritable('wp-guessTimesRandom', [])
+export const guessTimesDaily: Writable<number[]> = storageWritable(
+	'wp-guessTimesDaily',
+	[]
+)
+export const guessTimesRandom: Writable<number[]> = storageWritable(
+	'wp-guessTimesRandom',
+	[]
+)
 export const guessTimes: Readable<number[]> = derived(
 	[gameMode, guessTimesDaily, guessTimesRandom],
 	([$gameMode, $guessTimesDaily, $guessTimesRandom]) =>
 		$gameMode === 'daily' ? $guessTimesDaily : $guessTimesRandom
 )
 
-export const currentRow: Readable<number> = derived(guesses, ($guesses) => $guesses.length)
+export const currentRow: Readable<number> = derived(
+	guesses,
+	($guesses) => $guesses.length
+)
 
 export const currentTile: Writable<number> = writable(0)
 
 export const gameWon: Readable<boolean> = derived(
 	[answer, guesses],
-	([$answer, $guesses]) => $guesses.length > 0 && $guesses[$guesses.length - 1] === $answer
+	([$answer, $guesses]) =>
+		$guesses.length > 0 && $guesses[$guesses.length - 1] === $answer
 )
 
 export const gameFinished: Readable<boolean> = derived(
@@ -106,11 +116,13 @@ export function initGameState() {
 				if (r < guessed.length) {
 					const guessedWord = guessed[r]
 					newBoardContent[r] = [...guessedWord].map((letter, l) =>
-						scoreTile(letter, get(answer), r, l, newBoardContent)
+						scoreTile(letter, get(answer), l)
 					)
 				} else if (r > 0 && r === guessed.length) {
 					newBoardContent[r].forEach((tile, t) => {
-						tile.letterBounds = getValidLetterBounds(getValidLetters(newBoardContent, r, t))
+						tile.letterBounds = getValidLetterBounds(
+							getValidLetters(newBoardContent, r, t)
+						)
 					})
 				}
 			}

@@ -1,6 +1,11 @@
 <script lang="ts">
 	import { alphabet, keyboardLayoutOptions } from '$lib/data-model'
-	import { validLetters, swapEnterBackspace, keyboardLayout, openScreen } from '$src/store'
+	import {
+		validLetters,
+		swapEnterBackspace,
+		keyboardLayout,
+		openScreen,
+	} from '$src/store'
 	import { t } from '$lib/translations'
 	import { moveCarat, submitRow, typeLetter, undoLetter } from '$lib/board'
 	import { get } from 'svelte/store'
@@ -35,7 +40,12 @@
 			{#if r === keyboard.wideKeysRow}
 				{#if $swapEnterBackspace}
 					<button on:click={() => undoLetter()} class="wide"
-						><svg viewBox="0 0 21 11" xmlns="http://www.w3.org/2000/svg" width="42" height="22">
+						><svg
+							viewBox="0 0 21 11"
+							xmlns="http://www.w3.org/2000/svg"
+							width="42"
+							height="22"
+						>
 							<line x1="7" x2="21" y1="5" y2="5" />
 							<polygon points="3,5 7,2 7,8" />
 							<line x1="1" x2="1" y1="0.5" y2="9.5" />
@@ -56,7 +66,12 @@
 					<button on:click={submitRow} class="wide">{$t('main.keyboard.enter')}</button>
 				{:else}
 					<button on:click={() => undoLetter()} class="wide">
-						<svg viewBox="0 0 21 11" xmlns="http://www.w3.org/2000/svg" width="42" height="22">
+						<svg
+							viewBox="0 0 21 11"
+							xmlns="http://www.w3.org/2000/svg"
+							width="42"
+							height="22"
+						>
 							<line x1="7" x2="21" y1="5" y2="5" />
 							<polygon points="3,5 7,2 7,8" />
 							<line x1="1" x2="1" y1="0.5" y2="9.5" />
@@ -72,12 +87,16 @@
 		user-select: none;
 		padding: 0 4px;
 		touch-action: manipulation;
+		height: 100%;
+		/*max-width: 520px;*/
 	}
 
 	.key-row {
 		display: flex;
 		justify-content: center;
-		margin-bottom: 4px;
+		padding: 2px 0;
+		box-sizing: border-box;
+		height: calc(100% / 3);
 	}
 	.key-row button {
 		display: flex;
@@ -87,8 +106,8 @@
 		padding: 0;
 		margin-left: 0.125rem;
 		margin-right: 0.125rem;
-		width: 48px;
-		height: 58px;
+		width: 67px;
+		height: 100%;
 		border-radius: 4px;
 		border: 0;
 		font-weight: 700;
@@ -118,6 +137,12 @@
 		fill: #fff;
 	}
 
+	@media (max-width: 640px) {
+		.key-row button {
+			width: 51px;
+			font-size: 1.4em;
+		}
+	}
 	@media (max-width: 480px) {
 		.key-row button {
 			width: 38px;
@@ -132,10 +157,9 @@
 			max-width: 2em;
 		}
 	}
-
-	@media (max-height: 631px) {
-		.key-row button {
-			height: 52px;
+	@media (max-width: 350px) {
+		.key-row button.wide {
+			font-size: 0.75em;
 		}
 	}
 </style>

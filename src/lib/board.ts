@@ -16,21 +16,21 @@ import type { SvelteToastOptions } from '@zerodevx/svelte-toast'
 import { recordGuessTime, finishGame } from '$lib/stats'
 
 export function resetBoard() {
-	toast.pop()
 	store.boardContent.set(createNewBoard())
+	store[get(store.gameMode) === 'daily' ? 'guessTimesDaily' : 'guessTimesRandom'].set([])
+}
+
+export function resetGuess() {
+	toast.pop()
 	store.currentTile.set(0)
 	store.invalidWord.set(false)
 	store.invalidWordPreview.set(false)
 	store.invalidHardModeGuess.set(false)
 	store.notEnoughLetters.set(false)
-	store[get(store.gameMode) === 'daily' ? 'guessTimesDaily' : 'guessTimesRandom'].set([])
 }
 
 export function typeLetter(letter: string) {
-	if (get(store.gameFinished)) {
-		store.openScreen.set('results')
-		return
-	}
+	if (get(store.gameFinished)) return
 	loadDictionary().catch((_) => {
 		showError(get(t)('main.messages.need_reload'), () => {}, 8000)
 	})
@@ -66,10 +66,7 @@ export function typeLetter(letter: string) {
 }
 
 export function undoLetter(moveCaratBack = true) {
-	if (get(store.gameFinished)) {
-		store.openScreen.set('results')
-		return
-	}
+	if (get(store.gameFinished)) return
 	store.boardContent.update((content) => {
 		let tile = content[get(store.currentRow)][get(store.currentTile)]
 		if (moveCaratBack && get(store.currentTile) > 0 && !tile?.letter) {
@@ -87,10 +84,7 @@ export function undoLetter(moveCaratBack = true) {
 }
 
 export function moveCarat(dir: number) {
-	if (get(store.gameFinished)) {
-		store.openScreen.set('results')
-		return
-	}
+	if (get(store.gameFinished)) return
 	const moveTo = get(store.currentTile) + dir
 	if (moveTo < 0 || moveTo >= WORD_LENGTH) return
 	store.currentTile.update((ct) => ct + dir)
@@ -99,15 +93,14 @@ export function moveCarat(dir: number) {
 let submitting = false
 export async function submitRow() {
 	if (submitting) return
-	if (get(store.gameFinished)) {
-		store.openScreen.set('results')
-		return
-	}
+	if (get(store.gameFinished)) return
 	submitting = true
 	const rowNumber = get(store.currentRow)
 	if (!hasEnoughLetters(get(store.boardContent), rowNumber)) {
 		store.notEnoughLetters.set(true)
-		showError(get(t)('main.messages.not_enough_letters'), () => store.notEnoughLetters.set(false))
+		showError(get(t)('main.messages.not_enough_letters'), () =>
+			store.notEnoughLetters.set(false)
+		)
 		submitting = false
 		return
 	}
@@ -144,19 +137,22 @@ export async function submitRow() {
 	trackEvent('submitGuess')
 	recordGuessTime(rowNumber + 1)
 	store.updateGuesses((words) => [...words, submittedWord])
+	const gameMode = get(store.gameMode)
+	store.landscapeNewRow.set(true)
 	if (get(store.gameFinished)) {
-		const gameMode = get(store.gameMode)
-		setTimeout(() => {
-			store.openScreen.set('results')
-		}, 1700)
 		const won = get(store.gameWon)
 		trackEvent(won ? 'gameWon' : 'gameLost')
 		if (gameMode === 'daily') trackEvent('dailyFinish')
 		if (get(store.newUser)) trackEvent('firstFinish')
 		store.newUser.set(false)
-		store[gameMode === 'daily' ? 'lastPlayedDailyWasHard' : 'lastPlayedRandomWasHard'].set(
-			get(store.hardMode)
-		)
+		store[
+			gameMode === 'daily' ? 'lastPlayedDailyWasHard' : 'lastPlayedRandomWasHard'
+		].set(get(store.hardMode))
+		// Show end screen after waiting for tiles to flip
+		setTimeout(() => {
+			store.showEndView.set(true)
+			if (won) store.landscapeForceColor.set(true)
+		}, 6 * 150 + 250)
 		finishGame(won)
 	} else {
 		store.currentTile.set(0)

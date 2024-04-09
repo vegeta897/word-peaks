@@ -9,7 +9,6 @@
 		currentTile,
 		gameFinished,
 		currentRow,
-		lastPlayedDaily,
 	} from '$src/store'
 	import type { Tile } from '$lib/data-model'
 	import { aprilFools } from '$lib/share'
@@ -20,19 +19,10 @@
 	export let inCurrentRow = false
 
 	let animate = !tile.scored
-	currentRow.subscribe(() => {
-		animate = !tile.scored
-	})
+	currentRow.subscribe(() => (animate = !tile.scored))
 
 	const tileFlipDelay = 150
-
-	const typeAnimation = {
-		duration: 100,
-		from: 'bottom',
-		easing: quadOut,
-	}
-
-	$: isAprilFools = $lastPlayedDaily && aprilFools()
+	const typeAnimation = { duration: 100, from: 'bottom', easing: quadOut }
 </script>
 
 <div
@@ -68,10 +58,7 @@
 			class:finished={$gameFinished}
 			class:clickable={inCurrentRow}
 			class:invalid={$invalidWordPreview && inCurrentRow}
-			out:fade|local={{
-				delay: tile.id * tileFlipDelay + 300,
-				duration: tile.polarity === 0 && isAprilFools ? 100 : 0,
-			}}
+			out:fade|local={{ delay: tile.id * tileFlipDelay + 300, duration: 0 }}
 		>
 			{#if tile.letter}<div in:fly={typeAnimation}>{tile.letter}</div>{/if}
 			{#if tile.letterBounds && !tile.letter && showHint}
@@ -90,28 +77,13 @@
 <style>
 	.tile-container {
 		position: relative;
-		width: 57px;
-		height: 57px;
-		margin: 0 3px;
+		width: var(--tile-size);
+		height: var(--tile-size);
+		margin: 0 calc(var(--tile-margin) / 2);
 	}
 
 	.tile-container.correct {
 		overflow: visible;
-	}
-
-	.tile-container.animate.correct::after {
-		content: '';
-		display: block;
-		opacity: 0;
-		width: 100%;
-		height: 100%;
-		border-radius: 4px;
-		animation-fill-mode: backwards;
-		animation-name: glow;
-		animation-duration: 0.8s;
-		animation-timing-function: ease-in;
-		animation-delay: var(--tile-animation-delay);
-		box-shadow: 0 0 10px var(--correct-color);
 	}
 
 	.tile-clip {
@@ -121,10 +93,25 @@
 		height: 100%;
 	}
 
+	.tile-container.animate.correct::after {
+		content: '';
+		display: block;
+		opacity: 0;
+		width: 100%;
+		height: 100%;
+		border-radius: 14%;
+		animation-fill-mode: backwards;
+		animation-name: glow;
+		animation-duration: 0.8s;
+		animation-timing-function: ease-in;
+		animation-delay: var(--tile-animation-delay);
+		box-shadow: 0 0 10px var(--correct-color);
+	}
+
 	.tile-background {
 		width: 100%;
 		height: 100%;
-		border-radius: 4px;
+		border-radius: 14%;
 		position: absolute;
 		animation-delay: var(--tile-animation-delay);
 		top: 0;
@@ -143,8 +130,8 @@
 	}
 
 	.before .tile-background {
-		border-top-left-radius: 20px;
-		border-top-right-radius: 20px;
+		border-top-left-radius: 35%;
+		border-top-right-radius: 35%;
 		background: var(--before-color);
 	}
 
@@ -156,8 +143,8 @@
 	}
 
 	.after .tile-background {
-		border-bottom-left-radius: 20px;
-		border-bottom-right-radius: 20px;
+		border-bottom-left-radius: 35%;
+		border-bottom-right-radius: 35%;
 		background: var(--after-color);
 	}
 
@@ -188,31 +175,31 @@
 
 	@keyframes bulge-lower {
 		40% {
-			border-bottom-left-radius: 30px;
-			border-bottom-right-radius: 30px;
+			border-bottom-left-radius: 50%;
+			border-bottom-right-radius: 50%;
 		}
 		60% {
-			border-bottom-left-radius: 4px;
-			border-bottom-right-radius: 4px;
+			border-bottom-left-radius: 14%;
+			border-bottom-right-radius: 14%;
 		}
 		100% {
-			border-bottom-left-radius: 20px;
-			border-bottom-right-radius: 20px;
+			border-bottom-left-radius: 35%;
+			border-bottom-right-radius: 35%;
 		}
 	}
 
 	@keyframes bulge-upper {
 		40% {
-			border-top-left-radius: 30px;
-			border-top-right-radius: 30px;
+			border-top-left-radius: 50%;
+			border-top-right-radius: 50%;
 		}
 		60% {
-			border-top-left-radius: 4px;
-			border-top-right-radius: 4px;
+			border-top-left-radius: 14%;
+			border-top-right-radius: 14%;
 		}
 		100% {
-			border-top-left-radius: 20px;
-			border-top-right-radius: 20px;
+			border-top-left-radius: 35%;
+			border-top-right-radius: 35%;
 		}
 	}
 
@@ -238,9 +225,9 @@
 	}
 
 	.tile {
-		font-size: 2rem;
+		line-height: var(--tile-font-size);
+		font-size: var(--tile-font-size);
 		font-weight: 700;
-		line-height: 2rem;
 		display: inline-flex;
 		justify-content: center;
 		align-items: center;
@@ -248,7 +235,7 @@
 		box-sizing: border-box;
 		border: 2px solid #5b505e;
 		position: absolute;
-		border-radius: 4px;
+		border-radius: 14%;
 		width: 100%;
 		height: 100%;
 		color: #fff;
@@ -347,21 +334,12 @@
 	}
 
 	@media (max-width: 480px) {
-		.tile-container {
-			width: 53px;
-			height: 53px;
-		}
 		.hint {
 			font-size: 0.48em;
 			gap: 4px;
 		}
 	}
-	@media (max-width: 360px) {
-		.tile-container {
-			width: 48px;
-			height: 48px;
-			margin: 0 2px;
-		}
+	@media (max-width: 375px) {
 		.hint {
 			font-size: 0.45em;
 			gap: 3px;

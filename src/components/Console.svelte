@@ -1,5 +1,12 @@
 <script lang="ts">
-	import { boardContent, currentRow, guesses, gameFinished, gameWon, answer } from '$src/store'
+	import {
+		boardContent,
+		currentRow,
+		guesses,
+		gameFinished,
+		gameWon,
+		answer,
+	} from '$src/store'
 	import { get } from 'svelte/store'
 	import { submitRow, typeLetter, undoLetter } from '$lib/board'
 
@@ -26,10 +33,12 @@
 								tileColor = '#15a850'
 							} else if (tile.distance < 0) {
 								tileColor = '#e38f2f'
-								borderCorners = 'border-top-left-radius: 8px; border-top-right-radius: 8px;'
+								borderCorners =
+									'border-top-left-radius: 8px; border-top-right-radius: 8px;'
 							} else {
 								tileColor = '#567de8'
-								borderCorners = 'border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;'
+								borderCorners =
+									'border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;'
 							}
 							borderColor = '#0000;'
 						}

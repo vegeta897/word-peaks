@@ -1,6 +1,11 @@
+import targetWords from '$lib/words/targets-filtered.json'
+import { get } from 'svelte/store'
+import { resetBoard, resetGuess } from './board'
+import { randomElement } from './math'
+import * as store from '$src/store'
+
 export const ROWS = 6
 export const WORD_LENGTH = 5
-import targetWords from '$lib/words/targets-filtered.json'
 
 let dictionary: string[] | undefined
 export async function loadDictionary() {
@@ -17,12 +22,54 @@ export type Tile = {
 	letter: string
 	scored: boolean
 	distance: number
-	magnitude: number
 	polarity: -1 | 0 | 1
 	letterBounds?: [string, string]
 }
 export type Board = Tile[][]
 export type GameMode = 'daily' | 'random'
+
+export function playDaily() {
+	store.gameMode.set('daily')
+	history.pushState('', document.title, window.location.pathname + window.location.search) // Remove # from URL
+	const dayNumber = getDayNumber()
+	const dailyWord = getWordByDay(dayNumber)
+	const newGame =
+		get(store.lastPlayedDaily) !== getDayNumber() || get(store.answerDaily) !== dailyWord
+	if (newGame) {
+		resetBoard()
+		store.guessesDaily.set([])
+		store.lastPlayedDaily.set(dayNumber)
+		store.answerDaily.set(dailyWord)
+	}
+	resetGuess()
+	store.showEndView.set(get(store.gameFinished))
+	store.landscapeNewGame.set(true)
+	store.landscapeWideView.set(false)
+	store.landscapeForceColor.set(false)
+}
+
+export function playRandom(word?: string) {
+	store.gameMode.set('random')
+	const currentAnswer = get(store.answerRandom)
+	const newGame = (word && word !== currentAnswer) || !currentAnswer
+	const answer = newGame ? word || getRandomWord() : currentAnswer
+	const hash = encodeWord(answer)
+	history.pushState(
+		'',
+		document.title,
+		window.location.pathname + `#${hash}` + window.location.search
+	)
+	if (newGame) {
+		resetBoard()
+		store.guessesRandom.set([])
+		store.answerRandom.set(answer)
+	}
+	resetGuess()
+	store.showEndView.set(get(store.gameFinished))
+	store.landscapeNewGame.set(true)
+	store.landscapeWideView.set(false)
+	store.landscapeForceColor.set(false)
+}
 
 export function createNewBoard(): Board {
 	const board = []
@@ -30,50 +77,23 @@ export function createNewBoard(): Board {
 		const row: Tile[] = []
 		board[i] = row
 		for (let j = 0; j < WORD_LENGTH; j++) {
-			row.push({ id: j, letter: '', scored: false, distance: 0, magnitude: 0, polarity: 0 })
+			row.push({ id: j, letter: '', scored: false, distance: 0, polarity: 0 })
 		}
 	}
 	return board
 }
 
-export function scoreTile(
-	letter: string,
-	answer: string,
-	row: number,
-	tile: number,
-	boardContent: Tile[][]
-): Tile {
+export function scoreTile(letter: string, answer: string, tile: number): Tile {
 	const distance = alphabet.indexOf(letter) - alphabet.indexOf(answer[tile])
 	const polarity = distance === 0 ? 0 : distance > 0 ? 1 : -1
-	let magnitude = 0
-	if (row === 0) {
-		magnitude = ROWS
-	} else {
-		const prevTile = boardContent[row - 1][tile]
-		if (prevTile.polarity !== polarity) {
-			magnitude = ROWS
-		} else if (Math.abs(distance) > Math.abs(prevTile.distance)) {
-			magnitude = prevTile.magnitude + 1
-		} else if (Math.abs(distance) < Math.abs(prevTile.distance)) {
-			magnitude = prevTile.magnitude - 1
-		}
-		const alreadyGuessed = boardContent.find((guess, g) => g < row && guess[tile].letter === letter)
-		if (alreadyGuessed) {
-			magnitude = alreadyGuessed[tile].magnitude
-		}
-	}
-	if (distance === 0) magnitude = 0
-	return {
-		id: tile,
-		scored: true,
-		distance,
-		magnitude,
-		polarity,
-		letter,
-	}
+	return { id: tile, scored: true, distance, polarity, letter }
 }
 
-export function getValidLetters(boardContent: Board, row: number, tile: number): Set<string> {
+export function getValidLetters(
+	boardContent: Board,
+	row: number,
+	tile: number
+): Set<string> {
 	if (tile === WORD_LENGTH) return new Set()
 	const valid: Set<string> = new Set(alphabet)
 	alphabet.forEach((letter) => {
@@ -129,13 +149,7 @@ export const getDayEnd = (day: number): Date => {
 	return dayEnd
 }
 
-export function pickRandom<T>(arr: T[]): T {
-	return arr[Math.floor(Math.random() * arr.length)]
-}
-
-export function getRandomWord(): string {
-	return pickRandom(targetWords)
-}
+export const getRandomWord = (): string => randomElement(targetWords)
 
 export function encodeWord(word: string): string {
 	let sum = 0

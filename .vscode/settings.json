@@ -5,7 +5,7 @@
 	"prettier.endOfLine": "lf",
 	"editor.formatOnSave": true,
 	"editor.defaultFormatter": "esbenp.prettier-vscode",
-	"editor.rulers": [100],
+	"editor.rulers": [90],
 	"editor.tabSize": 2,
 	"editor.renderWhitespace": "trailing",
 	"[svelte]": {

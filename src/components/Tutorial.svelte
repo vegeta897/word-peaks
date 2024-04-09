@@ -47,7 +47,9 @@
 	{#if $newUser}
 		<hr />
 		<div class="center">
-			<button on:click={() => openScreen.set(null)}>{$t('main.results.play_daily')}</button>
+			<button on:click={() => openScreen.set(null)}
+				>{$t('main.results.play_daily')}</button
+			>
 		</div>
 	{/if}
 </Screen>

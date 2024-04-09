@@ -12,6 +12,7 @@ type EventName =
 	| 'dailyFinish'
 	| 'promoLinkFollow'
 	| 'danceClick'
+	| 'landscapeShare'
 
 const plausible = browser
 	? Plausible({

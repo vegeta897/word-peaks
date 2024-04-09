@@ -3,7 +3,7 @@ import { lastPlayedDaily, storeVersion } from './app'
 import { answerDaily, guessesDaily } from './game-state'
 import { validateLocalStorage } from './validation'
 
-const VERSION = 1
+export const STORE_VERSION = 1
 
 // Store version migration
 const loadedStoreVersion = get(storeVersion)
@@ -14,7 +14,7 @@ if (!loadedStoreVersion || loadedStoreVersion < 1) {
 	guessesDaily.set([])
 }
 // else if (loadedStoreVersion < 2) ...
-storeVersion.set(VERSION)
+storeVersion.set(STORE_VERSION)
 
 validateLocalStorage()
 

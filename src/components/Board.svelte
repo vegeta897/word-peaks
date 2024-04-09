@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onDestroy, onMount, tick } from 'svelte'
-	import Peaks from '$com/Peaks.svelte'
+	import Landscape from '$src/components/landscape/Landscape.svelte'
 	import * as store from '$src/store'
 	import Tile from '$com/Tile.svelte'
 	import { get } from 'svelte/store'
@@ -9,6 +9,8 @@
 	import { ROWS, WORD_LENGTH } from '$lib/data-model'
 	import { browser } from '$app/env'
 	import { fade } from 'svelte/transition'
+	import LastGameDetail from './LastGameDetail.svelte'
+	import { cubicOut } from 'svelte/easing'
 	import { aprilFools } from '$lib/share'
 	import Leak from './Leak.svelte'
 
@@ -18,8 +20,11 @@
 		currentTile,
 		gameFinished,
 		showAllHints,
-		newUser,
 		guesses,
+		lastGameDetail,
+		landscapeWideView,
+		showEndView,
+		gameMode,
 		lastPlayedDaily,
 	} = store
 
@@ -40,28 +45,26 @@
 			await new Promise<void>((resolve) => {
 				idleTimeout = setTimeout(() => {
 					resolve()
-				}, (get(gameFinished) ? 20 : 30) * 1000)
+				}, 30 * 1000)
 			})
 			if (thisIdleSessionID !== idleSessionID) return
 			if (canAnimate === null) canAnimate = animationSupported()
 			if (!canAnimate) return
-			trackEvent(get(gameFinished) ? 'idleOnFinish' : 'idleBeforeFinish')
+			trackEvent('idleBeforeFinish')
 			const scheduler = await import('$lib/idle-scheduler')
 			scheduler.initScheduler((ROWS - get(currentRow)) * WORD_LENGTH)
 			idle = true
 		}
 	}
 
-	$: isAprilFools = $lastPlayedDaily && aprilFools()
+	let transitionDuration = 0
 
 	onMount(() => {
-		gameFinished.subscribe(() => {
-			waitForIdle()
-		})
 		document.addEventListener('visibilitychange', () => waitForIdle())
 		store.openScreen.subscribe(() => waitForIdle())
 		store.boardContent.subscribe(() => waitForIdle())
 		store.currentTile.subscribe(() => waitForIdle())
+		tick().then(() => (transitionDuration = 250))
 	})
 	onDestroy(() => {
 		clearTimeout(idleTimeout!)
@@ -88,49 +91,63 @@
 			danceClickProgress = 0
 		}
 	}
+
+	$: isAprilFools = $lastPlayedDaily && aprilFools()
 </script>
 
-<div class="container">
+<div class="container" style="--row-count: {ROWS}">
 	{#if browser}
-		<div class="board">
-			{#each $boardContent as boardRow, r}
-				<div class="tile-row">
-					{#each boardRow as tile, t (r + '.' + t)}
-						<Tile
-							{tile}
-							current={r === $currentRow && t === $currentTile}
-							inCurrentRow={!$gameFinished && r === $currentRow}
-							showHint={!$gameFinished && (t === $currentTile || $showAllHints)}
-						>
-							{#if !idle && !$guesses[0] && r === ROWS - 1}
-								<div
-									class="dance-tile"
-									style:opacity={((t < danceClickProgress ? 1 : 0) * danceClickProgress) / 5}
-									on:click={() => danceClick(t)}
-									out:fade={{ duration: 500 }}
-								>
-									{'DANCE'[t]}
-								</div>
-							{/if}
-							{#if idle && tile.letter === '' && r > $currentRow}
-								{#await import('$com/Idler.svelte') then module}
-									<svelte:component this={module.default} id={r + ':' + t} />
-								{/await}
-							{/if}
-							{#if isAprilFools && r === $currentRow - 1 && tile.distance > 0}
-								<Leak rowID={r} tileID={t} />
-							{/if}
-						</Tile>
-					{/each}
-				</div>
-			{/each}
-		</div>
-		<div
-			class="graph"
-			class:minimized={$newUser && $currentRow === 0}
-			class:invisible={!$newUser && $currentRow === 0}
-		>
-			<Peaks />
+		{#if !$landscapeWideView}
+			<div class="board">
+				{#if !$gameFinished || !$lastGameDetail || !$showEndView}
+					<div
+						class="tile-row-container"
+						transition:fade|local={{ duration: transitionDuration, easing: cubicOut }}
+					>
+						{#each $boardContent as boardRow, r}
+							<div class="tile-row">
+								{#each boardRow as tile, t (r + '.' + t)}
+									<Tile
+										{tile}
+										current={r === $currentRow && t === $currentTile}
+										inCurrentRow={!$gameFinished && r === $currentRow}
+										showHint={!$gameFinished && (t === $currentTile || $showAllHints)}
+									>
+										{#if !idle && !$guesses[0] && r === ROWS - 1}
+											<!-- svelte-ignore a11y-click-events-have-key-events -->
+											<div
+												class="dance-tile"
+												style:opacity={((t < danceClickProgress ? 1 : 0) *
+													danceClickProgress) /
+													5}
+												on:click={() => danceClick(t)}
+												out:fade={{ duration: 500 }}
+											>
+												{'DANCE'[t]}
+											</div>
+										{/if}
+										{#if idle && tile.letter === '' && r > $currentRow}
+											{#await import('$com/Idler.svelte') then module}
+												<svelte:component this={module.default} id={r + ':' + t} />
+											{/await}
+										{/if}
+										{#if isAprilFools && r === $currentRow - 1 && tile.distance > 0}
+											<Leak rowID={r} tileID={t} />
+										{/if}
+									</Tile>
+								{/each}
+							</div>
+						{/each}
+					</div>
+				{:else}
+					{#key $gameMode}
+						<LastGameDetail lastGameDetail={$lastGameDetail} />
+					{/key}
+				{/if}
+			</div>
+		{/if}
+		<div class="landscape" style:padding-top={$landscapeWideView ? '20px' : 0}>
+			<Landscape />
 		</div>
 	{:else}
 		<div class="loading">loading...</div>
@@ -138,22 +155,39 @@
 </div>
 
 <style>
+	:root {
+		--tile-margin: 5px;
+		--tile-size: 70px;
+		--tile-font-size: 2.5rem;
+		--board-width: calc(5 * var(--tile-size) + 4 * var(--tile-margin));
+	}
+
 	.container {
-		margin: 0 auto 12px;
+		margin: 0 auto 6px;
 		padding: 0 4px;
-		height: 372px;
+		height: calc(var(--row-count) * (var(--tile-size) + var(--tile-margin)));
 		display: flex;
-		align-items: center;
+		align-items: flex-start;
 		justify-content: center;
 	}
 
 	.board {
 		display: flex;
 		flex-direction: column;
+		margin-right: 4px;
+		height: 100%;
+		width: var(--board-width);
+		position: relative;
+	}
+
+	.tile-row-container {
+		position: absolute;
+		top: 0;
+		left: 0;
 	}
 
 	.tile-row {
-		margin-bottom: 6px;
+		margin-bottom: var(--tile-margin);
 		display: flex;
 	}
 
@@ -161,23 +195,16 @@
 		margin-bottom: 0;
 	}
 
-	.graph {
-		margin-left: 4px;
-		width: 204px;
+	.landscape {
+		flex-grow: 1;
 		height: 100%;
-		transition: width 400ms ease-in-out, margin-left 400ms ease-in-out, opacity 200ms ease-out;
-	}
-
-	.graph.minimized {
-		width: 0;
-		margin-left: 0;
-	}
-
-	.graph.invisible {
-		opacity: 0;
+		box-sizing: border-box;
 	}
 
 	.loading {
+		display: flex;
+		height: 100%;
+		align-items: center;
 		color: #aaa;
 		font-size: 1.3em;
 		background: linear-gradient(to left, #aaa1, #aaa3 20%, #aaa, #aaa3 80%, #aaa1);
@@ -193,28 +220,61 @@
 		}
 	}
 
-	@media (max-width: 480px) {
-		.container {
-			height: 348px;
-		}
-		.graph {
-			width: 118px;
+	@media (max-width: 720px) {
+		:root {
+			--tile-size: 64px;
+			--tile-margin: 4px;
 		}
 	}
-	@media (max-width: 360px) {
-		.container {
-			height: 308px;
+	@media (max-width: 640px) {
+		:root {
+			--tile-size: 58px;
+			--tile-font-size: 2rem;
 		}
-		.tile-row {
+	}
+	@media (max-width: 560px) {
+		:root {
+			--tile-size: 54px;
+		}
+	}
+	@media (max-width: 480px) {
+		:root {
+			--tile-size: 50px;
+			--tile-margin: 3px;
+		}
+	}
+	@media (max-width: 430px) {
+		:root {
+			--tile-size: 48px;
+		}
+	}
+	@media (max-width: 390px) {
+		:root {
+			--tile-size: 44px;
+			--tile-font-size: 1.9rem;
+		}
+	}
+	@media (max-width: 375px) {
+		:root {
+			--tile-size: 42px;
+			--tile-margin: 2px;
+			--tile-font-size: 1.8rem;
+		}
+		.container {
 			margin-bottom: 4px;
+		}
+	}
+	@media (max-width: 340px) {
+		.landscape {
+			display: none;
 		}
 	}
 
 	.dance-tile {
-		font-size: 2rem;
+		font-size: var(--tile-font-size);
+		line-height: var(--tile-font-size);
 		font-weight: 700;
 		color: #5b505e;
-		line-height: 2rem;
 		display: inline-flex;
 		justify-content: center;
 		align-items: center;
