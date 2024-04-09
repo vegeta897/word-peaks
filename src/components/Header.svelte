@@ -36,6 +36,7 @@
 						#{$lastPlayedDaily + 1}
 					{:else}
 						<svg viewBox="0 0 6 4" xmlns="http://www.w3.org/2000/svg" width="36px">
+							<title>{$t('main.summary.random')}</title>
 							<path
 								stroke="#888"
 								fill="none"
