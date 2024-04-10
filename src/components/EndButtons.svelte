@@ -31,6 +31,7 @@
 	let showScoreShareMenu: boolean
 	let showImageShare: boolean
 	let canvas: HTMLCanvasElement
+	let canvasBlob: Blob
 	let shareTitleText: string
 	let landscapeRedrawCooldown = false
 
@@ -95,20 +96,13 @@
 			showURL: get(store.shareURL),
 			hash: hash || undefined,
 		})
+		canvas.toBlob((blob) => {
+			canvasBlob = blob!
+			shareImage(canvasBlob, `${hash || dayNumber}`)
+		})
 		showImageShare = true
 		trackEvent('resultShare')
-		await shareImage(canvas, `${hash || dayNumber}`)
 		canvas.scrollIntoView({ block: 'center' })
-	}
-
-	function onCopyImage() {
-		try {
-			copyImage(canvas)
-			showImageShare = false
-			successToast(get(t)('main.messages.image_copied'))
-		} catch (e) {
-			errorToast()
-		}
 	}
 
 	async function onLandscapeShare() {
@@ -118,11 +112,24 @@
 			color,
 			highContrast: get(store.highContrast),
 		})
+		canvas.toBlob((blob) => {
+			canvasBlob = blob!
+			shareImage(canvasBlob, `${hash || dayNumber}-landscape${color ? '-color' : ''}`)
+		})
 		showImageShare = true
 		trackEvent('landscapeShare')
 		const { hash, dayNumber } = get(store.lastGameDetail)!
-		await shareImage(canvas, `${hash || dayNumber}-landscape${color ? '-color' : ''}`)
 		canvas.scrollIntoView({ block: 'center' })
+	}
+
+	function onCopyImage() {
+		try {
+			copyImage(canvasBlob)
+			showImageShare = false
+			successToast(get(t)('main.messages.image_copied'))
+		} catch (e) {
+			errorToast()
+		}
 	}
 
 	const nextDailyTime = getDayEnd(get(store.lastPlayedDaily)).getTime()
