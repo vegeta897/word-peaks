@@ -55,11 +55,8 @@ export function copyText(text: string): Promise<void> {
 	return navigator.clipboard.writeText(text)
 }
 
-export function copyImage(canvas: HTMLCanvasElement): void {
-	canvas.toBlob(async (blob) => {
-		let data = [new ClipboardItem({ [blob!.type]: blob! })]
-		await navigator.clipboard.write(data)
-	})
+export async function copyImage(blob: Blob): Promise<void> {
+	await navigator.clipboard.write([new ClipboardItem({ [blob!.type]: blob! })])
 }
 
 // https://benkaiser.dev/sharing-images-using-the-web-share-api/
