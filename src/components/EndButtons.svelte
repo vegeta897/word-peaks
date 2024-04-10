@@ -83,9 +83,6 @@
 		)
 	}
 
-	// TODO: Share menu doesn't pop up on android firefox
-	// TODO: Copy image doesn't work on phones
-
 	async function onBoardImageShare() {
 		showScoreShareMenu = false
 		const { hash, dayNumber } = get(store.lastGameDetail)!
@@ -99,10 +96,12 @@
 			showURL: get(store.shareURL),
 			hash: hash || undefined,
 		})
-		canvas.toBlob((blob) => (canvasBlob = blob!))
+		canvas.toBlob((blob) => {
+			canvasBlob = blob!
+			shareImage(canvasBlob, `${hash || dayNumber}`)
+		})
 		showImageShare = true
 		trackEvent('resultShare')
-		await shareImage(canvas, `${hash || dayNumber}`)
 		canvas.scrollIntoView({ block: 'center' })
 	}
 
@@ -113,11 +112,13 @@
 			color,
 			highContrast: get(store.highContrast),
 		})
-		canvas.toBlob((blob) => (canvasBlob = blob!))
+		canvas.toBlob((blob) => {
+			canvasBlob = blob!
+			shareImage(canvasBlob, `${hash || dayNumber}-landscape${color ? '-color' : ''}`)
+		})
 		showImageShare = true
 		trackEvent('landscapeShare')
 		const { hash, dayNumber } = get(store.lastGameDetail)!
-		await shareImage(canvas, `${hash || dayNumber}-landscape${color ? '-color' : ''}`)
 		canvas.scrollIntoView({ block: 'center' })
 	}
 

@@ -60,12 +60,10 @@ export async function copyImage(blob: Blob): Promise<void> {
 }
 
 // https://benkaiser.dev/sharing-images-using-the-web-share-api/
-export async function shareImage(canvas: HTMLCanvasElement, name: string): Promise<void> {
-	const imageUrl = canvas.toDataURL()
-	const imageBlob = await (await fetch(imageUrl)).blob()
+export async function shareImage(blob: Blob, name: string): Promise<void> {
 	const filesArray = [
-		new File([imageBlob], `word-peaks-${name}.png`, {
-			type: imageBlob.type,
+		new File([blob], `word-peaks-${name}.png`, {
+			type: blob.type,
 			lastModified: new Date().getTime(),
 		}),
 	]
