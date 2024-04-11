@@ -51,7 +51,7 @@
 		"average_guess": "Ortalama Tahmin",
 		"stats_daily": "İstatistiklere sadece günlük oyunlar dahildir",
 		"import_export": "İstatistikleri İçeri/Dışarı al",
-		"back_up_and_restore_your_stats": "Back up and restore your Word Peaks stats",
+		"back_up_and_restore_your_stats": "Word Peaks istatistiklerini yedekle ya da geri al",
 		"import_stats": "İstatistikleri İçeri Al",
 		"export_stats": "İstatistikleri Dışarı Al",
 		"import_info_1": "<strong>Uyarı:</strong> İstatistikleri içeri almak bu tarayıcıdakı mevcut istatistiklerinizin üstüne yazacaktır.",
@@ -59,7 +59,7 @@
 		"import_info_3": "<strong>Not:</strong> Sadece istatistikler kopyalandı, ayarlar değil (zorluk, klavye düzeni vs.)",
 		"paste_your_stats": "İstatistiklerinizi buraya yapıştırın",
 		"ready_to_import": "İçe aktarmaya hazır!",
-		"import": "Import",
+		"import": "İçe aktar",
 		"invalid_stats": "İstatistikler hatalı, doğru kopyaladığınıza emin olun",
 		"export_instructions": "Tam metni buradan kopyalayın ya da Kopyala tuşuna basın",
 		"copy": "Kopyala"
