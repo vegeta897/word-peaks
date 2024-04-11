@@ -179,7 +179,9 @@
 			{$t('main.stats.export_instructions')}:
 		</label>
 		<textarea id="export_text" name="export_text" rows="4" value={exportText} readonly />
-		<button style:align-self="flex-start" on:click={onCopyClick}>Copy</button>
+		<button style:align-self="flex-start" on:click={onCopyClick}>
+			{$t('main.stats.copy')}
+		</button>
 	{/if}
 	<a style:margin-top="3rem" style:text-align="center" href="{base}/">
 		{$t('main.other.back')}

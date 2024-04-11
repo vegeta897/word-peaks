@@ -60,7 +60,8 @@
 		"paste_your_stats": "Paste your stats in this box",
 		"ready_to_import": "Ready to import!",
 		"invalid_stats": "Invalid stats, check that you copied it correctly",
-		"export_instructions": "Copy the full text from this box, or click the Copy button"
+		"export_instructions": "Copy the full text from this box, or click the Copy button",
+		"copy": "Copy"
 	},
 	"summary": {
 		"title": "Zusammenfassung",

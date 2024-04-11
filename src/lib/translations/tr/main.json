@@ -60,7 +60,8 @@
 		"paste_your_stats": "İstatistiklerinizi buraya yapıştırın",
 		"ready_to_import": "İçe aktarmaya hazır!",
 		"invalid_stats": "İstatistikler hatalı, doğru kopyaladığınıza emin olun",
-		"export_instructions": "Tam metni buradan kopyalayın ya da Kopyala tuşuna basın"
+		"export_instructions": "Tam metni buradan kopyalayın ya da Kopyala tuşuna basın",
+		"copy": "Kopyala"
 	},
 	"summary": {
 		"title": "Özet",
