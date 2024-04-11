@@ -1,6 +1,6 @@
 {
   ".svelte-kit/runtime/client/start.js": {
-    "file": "start-a35f421b.js",
+    "file": "start-ab8c6b5f.js",
     "src": ".svelte-kit/runtime/client/start.js",
     "isEntry": true,
     "imports": [
@@ -13,7 +13,7 @@
       "src/routes/__layout.svelte",
       ".svelte-kit/runtime/components/error.svelte",
       "src/routes/debug.svelte",
-      "_index-dd12ac4b.js",
+      "_index-daff99ed.js",
       "src/routes/no-landscape.svelte",
       "src/routes/random.svelte",
       "src/routes/stats.svelte"
@@ -59,14 +59,14 @@
     ]
   },
   "src/routes/no-landscape.svelte": {
-    "file": "pages/no-landscape.svelte-13037135.js",
+    "file": "pages/no-landscape.svelte-e8ee45ab.js",
     "src": "src/routes/no-landscape.svelte",
     "isEntry": true,
     "isDynamicEntry": true,
     "imports": [
       "_index-d85b3eb2.js",
       "_index-cde1884d.js",
-      "_index-dd12ac4b.js",
+      "_index-daff99ed.js",
       "_preload-helper-911a8840.js",
       "_index-3d261b09.js",
       "_share-b8f54de5.js",
@@ -106,13 +106,13 @@
     ]
   },
   "src/routes/index.svelte": {
-    "file": "pages/index.svelte-1f9a68f5.js",
+    "file": "pages/index.svelte-c13888d9.js",
     "src": "src/routes/index.svelte",
     "isEntry": true,
     "imports": [
       "_preload-helper-911a8840.js",
       "_index-d85b3eb2.js",
-      "_index-dd12ac4b.js",
+      "_index-daff99ed.js",
       "_index-cde1884d.js",
       "_index-3d261b09.js",
       "_share-b8f54de5.js",
@@ -166,8 +166,8 @@
       "_index-d85b3eb2.js"
     ]
   },
-  "_index-dd12ac4b.js": {
-    "file": "chunks/index-dd12ac4b.js",
+  "_index-daff99ed.js": {
+    "file": "chunks/index-daff99ed.js",
     "isDynamicEntry": true,
     "imports": [
       "_preload-helper-911a8840.js",
@@ -184,7 +184,7 @@
       "src/components/Console.svelte"
     ],
     "css": [
-      "assets/index-8f58d9a5.css"
+      "assets/index-ff645dd5.css"
     ]
   },
   "_navigation-0e6511d1.js": {
@@ -265,11 +265,11 @@
     ]
   },
   "src/lib/landscape/canvas.ts": {
-    "file": "chunks/canvas-af2d22b1.js",
+    "file": "chunks/canvas-1f144de3.js",
     "src": "src/lib/landscape/canvas.ts",
     "isDynamicEntry": true,
     "imports": [
-      "_index-dd12ac4b.js",
+      "_index-daff99ed.js",
       "_preload-helper-911a8840.js",
       "_index-d85b3eb2.js",
       "_index-cde1884d.js",
