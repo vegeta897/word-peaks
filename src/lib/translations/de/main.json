@@ -59,6 +59,7 @@
 		"import_info_3": "<strong>Note:</strong> Only \"stats\" are imported, not your options (hard mode, keyboard layout, etc)",
 		"paste_your_stats": "Paste your stats in this box",
 		"ready_to_import": "Ready to import!",
+		"import": "Import",
 		"invalid_stats": "Invalid stats, check that you copied it correctly",
 		"export_instructions": "Copy the full text from this box, or click the Copy button",
 		"copy": "Copy"

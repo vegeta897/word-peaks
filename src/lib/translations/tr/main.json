@@ -59,6 +59,7 @@
 		"import_info_3": "<strong>Not:</strong> Sadece istatistikler kopyalandı, ayarlar değil (zorluk, klavye düzeni vs.)",
 		"paste_your_stats": "İstatistiklerinizi buraya yapıştırın",
 		"ready_to_import": "İçe aktarmaya hazır!",
+		"import": "Import",
 		"invalid_stats": "İstatistikler hatalı, doğru kopyaladığınıza emin olun",
 		"export_instructions": "Tam metni buradan kopyalayın ya da Kopyala tuşuna basın",
 		"copy": "Kopyala"

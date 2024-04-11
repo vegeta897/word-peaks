@@ -171,8 +171,10 @@
 		<button
 			class="import-button"
 			on:click={() => importStats(importText)}
-			disabled={!importTextIsValid}>Import</button
+			disabled={!importTextIsValid}
 		>
+			{$t('main.stats.import')}
+		</button>
 	{/if}
 	{#if mode === 'export'}
 		<label for="export_text">
