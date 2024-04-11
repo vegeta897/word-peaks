@@ -12,6 +12,7 @@ export const config: Config = {
 		pt: { lang },
 		tr: { lang },
 		de: { lang },
+		pl: { lang },
 	},
 	loaders: [
 		{
@@ -49,6 +50,11 @@ export const config: Config = {
 			key: 'main',
 			loader: async () => (await import('./de/main.json')).default,
 		},
+		{
+			locale: 'pl',
+			key: 'main',
+			loader: async () => (await import('./pl/main.json')).default,
+		},
 	],
 }
 
@@ -60,6 +66,7 @@ export function getNavigatorLanguage(): string {
 	if (navigator.language.startsWith('pt')) return 'pt'
 	if (navigator.language.startsWith('tr')) return 'tr'
 	if (navigator.language.startsWith('de')) return 'de'
+	if (navigator.language.startsWith('pl')) return 'pl'
 	return 'en'
 }
 

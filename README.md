@@ -36,6 +36,7 @@ The word list for the game itself will remain in English. If you want to play wi
 - **Brazilian Portuguese**: Gabrielle Nunes, riccimurilo
 - **Turkish**: [Anıl Kuşaksız](https://github.com/anilkusaksiz)
 - **German**: [Lars](https://github.com/larswmh), Marie Leukart
+- **Polish**: [mineTomek](https://github.com/mineTomek)
 
 ### Assets
 
