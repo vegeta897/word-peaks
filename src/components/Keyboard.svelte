@@ -90,7 +90,6 @@
 		padding: 0 4px;
 		touch-action: manipulation;
 		height: 100%;
-		/*max-width: 520px;*/
 	}
 
 	.key-row {
@@ -106,11 +105,11 @@
 		align-items: center;
 		text-transform: uppercase;
 		padding: 0;
-		margin-left: 0.125rem;
-		margin-right: 0.125rem;
-		width: 67px;
+		--key-margin: 0.125rem;
+		margin: 0 var(--key-margin);
+		width: calc((100% - var(--key-margin) * 20) / 10);
 		height: 100%;
-		border-radius: 4px;
+		border-radius: 0.25rem;
 		border: 0;
 		font-weight: 700;
 		font-size: 1.4em;
@@ -141,13 +140,11 @@
 
 	@media (max-width: 640px) {
 		.key-row button {
-			width: 51px;
 			font-size: 1.4em;
 		}
 	}
 	@media (max-width: 480px) {
 		.key-row button {
-			width: 38px;
 			font-size: 1.3em;
 		}
 
