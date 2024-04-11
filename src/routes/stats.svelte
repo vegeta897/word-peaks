@@ -7,7 +7,7 @@
 	import { get } from 'svelte/store'
 	import type { GameDetail, Stats, TimeStats } from '$lib/stats'
 	import { STORE_VERSION } from '$src/store'
-	import { WORD_LENGTH } from '$lib/data-model'
+	import { WORD_LENGTH } from '$lib/constants'
 	import { onMount } from 'svelte'
 	import { goto } from '$app/navigation'
 
@@ -52,7 +52,7 @@
 					throw 'invalid-daily-detail'
 			}
 		} catch (e) {
-			console.error(e)
+			console.warn(e)
 			return false
 		}
 		return true
@@ -156,7 +156,7 @@
 		<div class="info">
 			<p>{@html $t('main.stats.import_info_1')}</p>
 			<p>{$t('main.stats.import_info_2')}</p>
-			<p>{$t('main.stats.import_info_3')}</p>
+			<p>{@html $t('main.stats.import_info_3')}</p>
 		</div>
 		<label for="import_text">
 			{#if !importText}

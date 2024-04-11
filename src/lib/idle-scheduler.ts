@@ -1,4 +1,4 @@
-import { alphabet } from '$lib/data-model'
+import { alphabet } from '$lib/constants'
 import type { MultipartAnimation } from '$lib/idle-animations'
 import {
 	dance,

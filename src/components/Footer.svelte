@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { t } from '$lib/translations'
-	import { DiscordIconPathData, TwitterIconPathData } from '$lib/icons'
+	import { DiscordIconPathData, TwitterIconPathData } from '$lib/constants'
 </script>
 
 <footer>

@@ -1,7 +1,8 @@
-import { encodeWord, ROWS } from '$lib/data-model'
+import { encodeWord } from '$lib/data-model'
 import type { GameMode } from '$lib/data-model'
 import * as store from '$src/store'
 import { get } from 'svelte/store'
+import { ROWS } from './constants'
 
 export type Stats = {
 	currentStreak: number

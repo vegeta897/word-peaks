@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { alphabet, keyboardLayoutOptions } from '$lib/data-model'
+	import { alphabet, keyboardLayoutOptions } from '$lib/constants'
 	import {
 		validLetters,
 		swapEnterBackspace,
@@ -10,6 +10,8 @@
 	import { moveCarat, submitRow, typeLetter, undoLetter } from '$lib/board'
 	import { get } from 'svelte/store'
 	import { browser } from '$app/env'
+
+	// TODO: Make all key rows fill width of screen
 
 	function handleKeydown({ key, ctrlKey, target, repeat }: KeyboardEvent) {
 		if (ctrlKey || repeat || get(openScreen) !== null) return

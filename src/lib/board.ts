@@ -7,13 +7,13 @@ import {
 	hasEnoughLetters,
 	isValidWord,
 	loadDictionary,
-	WORD_LENGTH,
 } from '$lib/data-model'
 import { t } from '$lib/translations'
 import { trackEvent } from '$lib/plausible'
 import { toast } from '@zerodevx/svelte-toast'
 import type { SvelteToastOptions } from '@zerodevx/svelte-toast'
 import { recordGuessTime, finishGame } from '$lib/stats'
+import { WORD_LENGTH } from './constants'
 
 export function resetBoard() {
 	store.boardContent.set(createNewBoard())

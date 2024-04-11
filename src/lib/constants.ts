@@ -1,3 +1,85 @@
+export const ROWS = 6
+export const WORD_LENGTH = 5
+
+export const alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('')
+
+export const keyboardLayoutNames = [
+	'alphabetic',
+	'qwerty',
+	'azerty',
+	'qwertz',
+	'dvorak',
+	'colemak',
+] as const
+export type KeyboardLayout = typeof keyboardLayoutNames[number]
+export const keyboardLayoutOptions: {
+	value: KeyboardLayout
+	label: string
+	layout: [string[], string[], string[]]
+	wideKeysRow: 0 | 1 | 2
+}[] = [
+	{
+		value: 'alphabetic',
+		label: 'Alphabetic',
+		layout: [
+			['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j'],
+			['k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't'],
+			['u', 'v', 'w', 'x', 'y', 'z'],
+		],
+		wideKeysRow: 2,
+	},
+	{
+		value: 'qwerty',
+		label: 'QWERTY',
+		layout: [
+			['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
+			['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'],
+			['z', 'x', 'c', 'v', 'b', 'n', 'm'],
+		],
+		wideKeysRow: 2,
+	},
+	{
+		value: 'azerty',
+		label: 'AZERTY',
+		layout: [
+			['a', 'z', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
+			['q', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm'],
+			['z', 'x', 'c', 'v', 'b', 'n'],
+		],
+		wideKeysRow: 2,
+	},
+	{
+		value: 'qwertz',
+		label: 'QWERTZ',
+		layout: [
+			['q', 'w', 'e', 'r', 't', 'z', 'u', 'i', 'o', 'p'],
+			['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'],
+			['y', 'x', 'c', 'v', 'b', 'n', 'm'],
+		],
+		wideKeysRow: 2,
+	},
+	{
+		value: 'dvorak',
+		label: 'Dvorak',
+		layout: [
+			['p', 'y', 'f', 'g', 'c', 'r', 'l'],
+			['a', 'o', 'e', 'u', 'i', 'd', 'h', 't', 'n', 's'],
+			['q', 'j', 'k', 'x', 'b', 'm', 'w', 'v', 'z'],
+		],
+		wideKeysRow: 0,
+	},
+	{
+		value: 'colemak',
+		label: 'Colemak',
+		layout: [
+			['q', 'w', 'f', 'p', 'g', 'j', 'l', 'u', 'y'],
+			['a', 'r', 's', 't', 'd', 'h', 'n', 'e', 'i', 'o'],
+			['z', 'x', 'c', 'v', 'b', 'k', 'm'],
+		],
+		wideKeysRow: 2,
+	},
+]
+
 export const OptionsIconPathData =
 	'M32.34 0c-3 0-4.83 2.59-5.41 5.67l-.82 4.26a30.24 30.24 0 0 0-6.64 3.84l-4.09-1.42c-2.68-.93-6.12-.75-7.62 1.85l-5.41 9.38c-1.5 2.59-.16 5.46 2.2 7.52l3.27 2.84a30.24 30.24 0 0 0-.26 3.85 30.24 30.24 0 0 0 .26 3.82l-3.28 2.84c-2.15 1.85-3.7 4.92-2.2 7.52l5.41 9.37c1.5 2.6 4.65 2.88 7.61 1.86l4.07-1.41a30.24 30.24 0 0 0 6.68 3.87l.82 4.26c.53 2.79 2.41 5.67 5.41 5.67h10.82c3 0 4.82-2.59 5.42-5.67l.81-4.22a30.24 30.24 0 0 0 6.74-3.88l4.07 1.4c2.85.99 6.11.75 7.61-1.85L73.23 52c1.5-2.6.17-5.48-2.21-7.53l-3.25-2.81a30.24 30.24 0 0 0 .26-3.87 30.24 30.24 0 0 0-.25-3.91l3.23-2.81c2.28-1.98 3.7-4.93 2.2-7.52l-5.41-9.38c-1.5-2.6-4.66-2.88-7.62-1.85l-4.07 1.42a30.24 30.24 0 0 0-6.72-3.87l-.81-4.2C48 2.71 46.16 0 43.16 0H32.34zm5.45 20.98a16.82 16.82 0 1 1 0 33.64 16.82 16.82 0 1 1 0-33.64z'
 

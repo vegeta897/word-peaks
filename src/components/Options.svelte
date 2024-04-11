@@ -6,7 +6,7 @@
 	import { get, writable } from 'svelte/store'
 	import { toast } from '@zerodevx/svelte-toast'
 	import { beforeUpdate, onMount } from 'svelte'
-	import { keyboardLayoutOptions } from '$lib/data-model'
+	import { keyboardLayoutOptions } from '$lib/constants'
 	import { loadTranslations, t } from '$lib/translations'
 	import lang from '$lib/translations/lang.json'
 	import Screen from '$com/Screen.svelte'

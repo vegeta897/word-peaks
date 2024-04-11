@@ -2,7 +2,7 @@
 	import { t } from '$lib/translations'
 	import { stats, timeStats } from '$src/store'
 	import type { GameMode } from '$lib/data-model'
-	import { ROWS } from '$lib/data-model'
+	import { ROWS } from '$lib/constants'
 	import { get } from 'svelte/store'
 	import Time from '$com/Time.svelte'
 	import StatBar from '$com/StatBar.svelte'

@@ -8,7 +8,7 @@
 		boardContent,
 		gameFinished,
 	} from '$src/store'
-	import { OptionsIconPathData } from '$lib/icons'
+	import { OptionsIconPathData } from '$lib/constants'
 	import { browser } from '$app/env'
 	import { aprilFools } from '$lib/share'
 	import { getRandomWord, playDaily, playRandom } from '$lib/data-model'

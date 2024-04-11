@@ -2,9 +2,9 @@ import { get } from 'svelte/store'
 import * as app from '$src/store/app'
 import type { GameMode } from '$lib/data-model'
 import type { GameDetail } from '$lib/stats'
-import { keyboardLayoutNames, ROWS, WORD_LENGTH } from '$lib/data-model'
 import { newStats, newTimeStats } from '$lib/stats'
 import * as game from '$src/store/game-state'
+import { WORD_LENGTH, ROWS, keyboardLayoutNames } from '$lib/constants'
 
 const isValidAnswer = (value: any) =>
 	!value ||

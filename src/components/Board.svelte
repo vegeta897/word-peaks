@@ -6,7 +6,7 @@
 	import { get } from 'svelte/store'
 	import { trackEvent } from '$lib/plausible'
 	import { animationSupported } from '$lib/transitions'
-	import { ROWS, WORD_LENGTH } from '$lib/data-model'
+	import { ROWS, WORD_LENGTH } from '$lib/constants'
 	import { browser } from '$app/env'
 	import { fade } from 'svelte/transition'
 	import LastGameDetail from './LastGameDetail.svelte'

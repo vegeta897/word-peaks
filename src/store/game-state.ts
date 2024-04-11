@@ -5,10 +5,10 @@ import {
 	createNewBoard,
 	getValidLetterBounds,
 	getValidLetters,
-	ROWS,
 	scoreTile,
 } from '$lib/data-model'
 import { writable as storageWritable } from 'svelte-local-storage-store'
+import { ROWS } from '$lib/constants'
 
 export const answerDaily: Writable<string> = storageWritable('wp-answer', '')
 export const answerRandom: Writable<string> = storageWritable('wp-answerRandom', '')

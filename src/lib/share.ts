@@ -1,6 +1,6 @@
 import type { Board, GameMode } from '$lib/data-model'
 import { toast } from '@zerodevx/svelte-toast'
-import { dev } from '$app/env'
+// import { dev } from '$app/env'
 
 export function getShareTitle({
 	gameWon,
