@@ -26,6 +26,7 @@
 		showEndView,
 		gameMode,
 		lastPlayedDaily,
+		landscapeHide,
 	} = store
 
 	let idle = false
@@ -146,9 +147,11 @@
 				{/if}
 			</div>
 		{/if}
-		<div class="landscape" style:padding-top={$landscapeWideView ? '20px' : 0}>
-			<Landscape />
-		</div>
+		{#if !$landscapeHide}
+			<div class="landscape" style:padding-top={$landscapeWideView ? '20px' : 0}>
+				<Landscape />
+			</div>
+		{/if}
 	{:else}
 		<div class="loading">loading...</div>
 	{/if}

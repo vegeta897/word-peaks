@@ -24,7 +24,7 @@
 	} from '$lib/data-model'
 	import Icon from './landscape/Icon.svelte'
 
-	const { landscapeWideView, landscapeForceColor, landscapeRedraw } = store
+	const { landscapeWideView, landscapeForceColor, landscapeRedraw, landscapeHide } = store
 
 	export let gameMode: GameMode
 
@@ -199,7 +199,7 @@
 			</div>
 		{/if}
 	</div>
-	{#if !showScoreShareMenu}
+	{#if !showScoreShareMenu && !$landscapeHide}
 		<div class="landscape-controls">
 			<button
 				title={$t('main.other.wide_view')}
@@ -273,7 +273,7 @@
 <style>
 	.container {
 		display: flex;
-		flex-wrap: wrap;
+		justify-content: center;
 		gap: 0.5rem;
 		width: 100%;
 		height: 100%;

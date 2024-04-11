@@ -65,5 +65,6 @@ export const landscapeWideView: Writable<boolean> = writable(false)
 export const landscapeForceColor: Writable<boolean> = writable(false)
 export const landscapeRedraw: Writable<boolean> = writable(false)
 export const landscapeSVG: Writable<SVGElement | null> = writable(null)
+export const landscapeHide: Writable<boolean> = writable(false)
 
 export const newUser: Writable<boolean> = writable(false)
