@@ -6,7 +6,7 @@
 		"correct_tile": "Doğru harf",
 		"high_tile": "Harf alfabede daha öncesinde",
 		"low_tile": "Harf alfabede daha sonrasında",
-		"letter_range": "Yazılabilir harflerin aralığı siz yazdıkça klavyede ve kutucuklarda görüntülenir"
+		"letter_range": "Mümkün olan harflerin aralığı siz yazdıkça klavyede ve kutucuklarda görüntülenir"
 	},
 	"messages": {
 		"not_enough_letters": "Yeterli harf yok",
@@ -15,12 +15,12 @@
 		"could_not_do": "Üzgünüm, bunu yapamam!",
 		"score_copied": "Skor kopyalandı!",
 		"image_copied": "Resim kopyalandı!",
-		"stats_copied": "Stats copied!",
-		"need_reload": "Güncelleme gerekli, lütfen sayfayı yeniden yükleyin",
+		"stats_copied": "İstatistikler kopyalandı!",
+		"need_reload": "Güncelleme gerekiyor, lütfen sayfayı yenileyin",
 		"new": "Yeni",
-		"new_best": "Yeni en iyi!",
-		"stats_imported": "Stats successfully imported!",
-		"answer_randomized": "Answer randomized!"
+		"new_best": "Yeni rekor!",
+		"stats_imported": "İstatistikler başarıyla içeri alındı!",
+		"answer_randomized": "Cevaplar rastgele hale getirildi!"
 	},
 	"keyboard": {
 		"enter": "Enter"
@@ -32,7 +32,7 @@
 		"try_today": "Bugünün kelimesini dene!",
 		"next_word": "Sonraki kelime",
 		"play_daily": "Günlük oyunu oyna",
-		"play_random": "Rastgele oyun oyna",
+		"play_random": "Rastgele oyunu oyna",
 		"share": "Paylaş",
 		"text": "Metin",
 		"image": "Resim",
@@ -50,16 +50,16 @@
 		"average_game": "Ortalama Oyun",
 		"average_guess": "Ortalama Tahmin",
 		"stats_daily": "İstatistiklere sadece günlük oyunlar dahildir",
-		"import_export": "Stats Import/Export",
-		"import_stats": "Import Stats",
-		"export_stats": "Export Stats",
-		"import_info_1": "<strong>Warning:</strong> Importing will OVERWRITE your existing stats on this device or browser.",
-		"import_info_2": "If you have existing stats on this device that you want to keep, export them first.",
-		"import_info_3": "<strong>Note:</strong> Only \"stats\" are imported, not your options (hard mode, keyboard layout, etc)",
-		"paste_your_stats": "Paste your stats in this box",
-		"ready_to_import": "Ready to import!",
-		"invalid_stats": "Invalid stats, check that you copied it correctly",
-		"export_instructions": "Copy the full text from this box, or click the Copy button"
+		"import_export": "İstatistikleri İçeri/Dışarı al",
+		"import_stats": "İstatistikleri İçeri Al",
+		"export_stats": "İstatistikleri Dışarı Al",
+		"import_info_1": "<strong>Uyarı:</strong> İstatistikleri içeri almak bu tarayıcıdakı mevcut istatistiklerinizin üstüne yazacaktır.",
+		"import_info_2": "Eğer bu cihazda tutmak istediğiniz mevcut istatistikleriniz varsa önce onları dışa aktarın.",
+		"import_info_3": "<strong>Not:</strong> Sadece istatistikler kopyalandı, ayarlar değil (zorluk, klavye düzeni vs.)",
+		"paste_your_stats": "İstatistiklerinizi buraya yapıştırın",
+		"ready_to_import": "İçe aktarmaya hazır!",
+		"invalid_stats": "İstatistikler hatalı, doğru kopyaladığınıza emin olun",
+		"export_instructions": "Tam metni buradan kopyalayın ya da Kopyala tuşuna basın"
 	},
 	"summary": {
 		"title": "Özet",
@@ -71,19 +71,19 @@
 	"options": {
 		"title": "Ayarlar",
 		"language": "Dil",
-		"help_translate": "<a href=\"https://crowdin.com/project/wordle-peaks\">Crowdin'de</a> veya <a href=\"https://github.com/vegeta897/word-peaks#translate\">Github'da</a> tercüme ekleyip veya düzeltebilirsin",
+		"help_translate": "<a href=\"https://crowdin.com/project/wordle-peaks\">Crowdin'de</a> veya <a href=\"https://github.com/vegeta897/wordle-peaks#translate\">Github'da</a> tercüme ekle veya düzelt",
 		"keyboard_layout": "Klavye düzeni",
 		"hard_mode": "Zor mod",
 		"high_contrast_mode": "Yüksek kontrast modu",
 		"show_all_hints": "Tüm ipuçlarını sırada göster",
 		"swap_enter_backspace": "Enter ve Backspace tuşlarının yerini değiştir",
 		"alphabetic": "Alfabetik",
-		"animated_landscape": "Animated landscape",
 		"use_dyslexic_font": "OpenDyslexic yazı tipi",
-		"allow_dancing_letters": "Dans eden harflere izin ver",
+		"animated_landscape": "Hareketli arkaplan",
+		"allow_dancing_letters": "Dans eden harfleri göster",
 		"include_link": "Adresi ekle",
 		"include_times": "Süreyi ekle",
-		"show_precise_times": "Kesin zamanları göster"
+		"show_precise_times": "Hassas süreleri göster"
 	},
 	"footer": {
 		"credits": "<a href=\"https://github.com/vegeta897/word-peaks\">açık kaynak</a> kodlu bir proje",
@@ -91,10 +91,10 @@
 		"donate_short": "bir ☕ ısmarla"
 	},
 	"other": {
-		"new_word": "New word",
-		"wide_view": "Wide view",
-		"color": "Color",
-		"redraw": "Redraw",
-		"back": "Back"
+		"new_word": "Yeni kelime",
+		"wide_view": "Geniş görünüm",
+		"color": "Renk",
+		"redraw": "Yeniden dağıt",
+		"back": "Geri"
 	}
 }
