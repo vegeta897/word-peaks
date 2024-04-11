@@ -15,9 +15,12 @@
 		"could_not_do": "Das ist leider nicht möglich!",
 		"score_copied": "Ergebnis kopiert!",
 		"image_copied": "Bild kopiert!",
+		"stats_copied": "Stats copied!",
 		"need_reload": "Aktualisierung erforderlich, bitte laden Sie die Seite neu",
 		"new": "Neu",
-		"new_best": "Neuer Rekord!"
+		"new_best": "Neuer Rekord!",
+		"stats_imported": "Stats successfully imported!",
+		"answer_randomized": "Answer randomized!"
 	},
 	"keyboard": {
 		"enter": "Eingabe"
@@ -46,7 +49,17 @@
 		"fastest_game": "Schnellstes Spiel",
 		"average_game": "Durchschnittliches Spiel",
 		"average_guess": "Durchschnittliche Schätzung",
-		"stats_daily": "Statistik zählt nur tägliche Spiele"
+		"stats_daily": "Statistik zählt nur tägliche Spiele",
+		"import_export": "Stats Import/Export",
+		"import_stats": "Import Stats",
+		"export_stats": "Export Stats",
+		"import_info_1": "<strong>Warning:</strong> Importing will OVERWRITE your existing stats on this device or browser.",
+		"import_info_2": "If you have existing stats on this device that you want to keep, export them first.",
+		"import_info_3": "<strong>Note:</strong> Only \"stats\" are imported, not your options (hard mode, keyboard layout, etc)",
+		"paste_your_stats": "Paste your stats in this box",
+		"ready_to_import": "Ready to import!",
+		"invalid_stats": "Invalid stats, check that you copied it correctly",
+		"export_instructions": "Copy the full text from this box, or click the Copy button"
 	},
 	"summary": {
 		"title": "Zusammenfassung",
@@ -66,6 +79,7 @@
 		"swap_enter_backspace": "Enter/Backspace-Tasten tauschen",
 		"alphabetic": "Alphabetisch",
 		"use_dyslexic_font": "OpenDyslexic Schriftart",
+		"animated_landscape": "Animated landscape",
 		"allow_dancing_letters": "Erlaube Tanzbuchstaben",
 		"include_link": "Link einbeziehen",
 		"include_times": "Zeiten einbeziehen",
@@ -73,6 +87,14 @@
 	},
 	"footer": {
 		"credits": "ein <a href=\"https://github.com/vegeta897/word-peaks\">Open Source</a> Projekt",
-		"donate": "☕ <a href=\"https://buymeacoffee.com/vegeta897\">Kaufe mir einen Kaffee</a>, wenn du mich unterstützen möchtest"
+		"donate": "Kaufe mir einen Kaffee ☕",
+		"donate_short": "Kaufe mir einen ☕"
+	},
+	"other": {
+		"new_word": "New word",
+		"wide_view": "Wide view",
+		"color": "Color",
+		"redraw": "Redraw",
+		"back": "Back"
 	}
 }

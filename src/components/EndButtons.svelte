@@ -202,21 +202,21 @@
 	{#if !showScoreShareMenu}
 		<div class="landscape-controls">
 			<button
-				title="Wide view"
+				title={$t('main.other.wide_view')}
 				class:cta-bg={$landscapeWideView}
 				on:click={() => landscapeWideView.set(!$landscapeWideView)}
 			>
 				<Icon icon="wide" active={$landscapeWideView} />
 			</button>
 			<button
-				title="Color"
+				title={$t('main.other.color')}
 				class:cta-bg={$landscapeForceColor}
 				on:click={() => landscapeForceColor.set(!$landscapeForceColor)}
 			>
 				<Icon icon="color" active={$landscapeForceColor} />
 			</button>
 			<button
-				title="Redraw"
+				title={$t('main.other.redraw')}
 				disabled={landscapeRedrawCooldown}
 				on:click={() => {
 					landscapeRedrawCooldown = true
@@ -234,8 +234,10 @@
 					on:auxclick={() => trackEvent('promoLinkFollow')}
 					on:click={() => trackEvent('promoLinkFollow')}
 					href="https://buymeacoffee.com/vegeta897"
-					>Buy me a <span class="hide-on-small-screens">coffee </span>☕</a
 				>
+					<span class="hide-on-small-screens">{$t('main.footer.donate')}</span>
+					<span class="hide-on-big-screens">{$t('main.footer.donate_short')}</span>
+				</a>
 			</div>
 		</div>
 	{/if}
@@ -450,6 +452,10 @@
 		background: var(--secondary-color);
 	}
 
+	.hide-on-big-screens {
+		display: none;
+	}
+
 	@media (max-width: 430px) {
 		button {
 			font-size: 1.25em;
@@ -468,6 +474,9 @@
 		}
 		.hide-on-small-screens {
 			display: none;
+		}
+		.hide-on-big-screens {
+			display: initial;
 		}
 	}
 

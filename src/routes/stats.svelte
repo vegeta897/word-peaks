@@ -112,7 +112,7 @@
 				deserializeFromPropList(dailyDetail, gameDetailProps) as GameDetail
 			)
 		}
-		toast.push('Stats successfully imported!', toastTheme)
+		toast.push(get(t)('main.messages.stats_imported'), toastTheme)
 		goto(`${base}/`)
 	}
 </script>
@@ -125,7 +125,7 @@
 	let exportText = ''
 
 	function onCopyClick() {
-		toast.push('Stats copied!', toastTheme)
+		toast.push(get(t)('main.messages.stats_copied'), toastTheme)
 		copyText(exportText).then(
 			() => toast.push('Stats copied!', toastTheme),
 			() => toast.push(get(t)('main.messages.could_not_do'), toastTheme)
@@ -143,37 +143,28 @@
 			class:active={mode === 'import'}
 			on:click={() => (mode = mode === 'import' ? null : 'import')}
 		>
-			Import Stats
+			{$t('main.stats.import_stats')}
 		</button>
 		<button
 			class:active={mode === 'export'}
 			on:click={() => (mode = mode === 'export' ? null : 'export')}
 		>
-			Export Stats
+			{$t('main.stats.export_stats')}
 		</button>
 	</div>
 	{#if mode === 'import'}
 		<div class="info">
-			<p>
-				<strong>Warning:</strong> Importing will OVERWRITE your existing stats on this device
-				or browser.
-			</p>
-			<p>
-				If you have existing stats on this device that you want to keep, export them
-				first.
-			</p>
-			<p>
-				<strong>Note:</strong> Only "stats" are imported, not your options (hard mode, keyboard
-				layout, etc)
-			</p>
+			<p>{@html $t('main.stats.import_info_1')}</p>
+			<p>{$t('main.stats.import_info_2')}</p>
+			<p>{$t('main.stats.import_info_3')}</p>
 		</div>
 		<label for="import_text">
 			{#if !importText}
-				Paste your stats in this box
+				{$t('main.stats.paste_your_stats')}
 			{:else if importTextIsValid}
-				✅ Ready to import!
+				✅ {$t('main.stats.ready_to_import')}
 			{:else}
-				❌ Invalid stats, check that you copied it correctly
+				❌ {$t('main.stats.invalid_stats')}
 			{/if}
 		</label>
 		<textarea id="import_text" name="import_text" rows="4" bind:value={importText} />
@@ -185,12 +176,14 @@
 	{/if}
 	{#if mode === 'export'}
 		<label for="export_text">
-			Copy the full text from this box, or click the Copy button:
+			{$t('main.stats.export_instructions')}:
 		</label>
 		<textarea id="export_text" name="export_text" rows="4" value={exportText} readonly />
 		<button style:align-self="flex-start" on:click={onCopyClick}>Copy</button>
 	{/if}
-	<a style:margin-top="3rem" style:text-align="center" href="{base}/">Back</a>
+	<a style:margin-top="3rem" style:text-align="center" href="{base}/">
+		{$t('main.other.back')}
+	</a>
 </section>
 
 <style>

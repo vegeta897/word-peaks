@@ -21,7 +21,7 @@
 		const gameInProgress = !get(gameFinished)
 		playRandom(getRandomWord())
 		event.currentTarget.blur()
-		if (gameInProgress) toast.push('Answer randomized!', toastTheme)
+		if (gameInProgress) toast.push(get(t)('main.messages.answer_randomized'), toastTheme)
 	}
 
 	$: isAprilFools = $lastPlayedDaily && aprilFools()
@@ -64,7 +64,7 @@
 						transition:fly={{ x: -10, duration: 150 }}
 						on:click={newRandomWord}
 						class="new-random"
-						title="New word"
+						title={$t('main.other.new_word')}
 					>
 						<svg viewBox="0 0 7 7" xmlns="http://www.w3.org/2000/svg" width="21px">
 							<path

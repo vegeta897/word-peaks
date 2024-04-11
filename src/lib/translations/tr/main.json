@@ -15,9 +15,12 @@
 		"could_not_do": "Üzgünüm, bunu yapamam!",
 		"score_copied": "Skor kopyalandı!",
 		"image_copied": "Resim kopyalandı!",
+		"stats_copied": "Stats copied!",
 		"need_reload": "Güncelleme gerekli, lütfen sayfayı yeniden yükleyin",
 		"new": "Yeni",
-		"new_best": "Yeni en iyi!"
+		"new_best": "Yeni en iyi!",
+		"stats_imported": "Stats successfully imported!",
+		"answer_randomized": "Answer randomized!"
 	},
 	"keyboard": {
 		"enter": "Enter"
@@ -46,7 +49,17 @@
 		"fastest_game": "En Hızlı Oyun",
 		"average_game": "Ortalama Oyun",
 		"average_guess": "Ortalama Tahmin",
-		"stats_daily": "İstatistiklere sadece günlük oyunlar dahildir"
+		"stats_daily": "İstatistiklere sadece günlük oyunlar dahildir",
+		"import_export": "Stats Import/Export",
+		"import_stats": "Import Stats",
+		"export_stats": "Export Stats",
+		"import_info_1": "<strong>Warning:</strong> Importing will OVERWRITE your existing stats on this device or browser.",
+		"import_info_2": "If you have existing stats on this device that you want to keep, export them first.",
+		"import_info_3": "<strong>Note:</strong> Only \"stats\" are imported, not your options (hard mode, keyboard layout, etc)",
+		"paste_your_stats": "Paste your stats in this box",
+		"ready_to_import": "Ready to import!",
+		"invalid_stats": "Invalid stats, check that you copied it correctly",
+		"export_instructions": "Copy the full text from this box, or click the Copy button"
 	},
 	"summary": {
 		"title": "Özet",
@@ -65,6 +78,7 @@
 		"show_all_hints": "Tüm ipuçlarını sırada göster",
 		"swap_enter_backspace": "Enter ve Backspace tuşlarının yerini değiştir",
 		"alphabetic": "Alfabetik",
+		"animated_landscape": "Animated landscape",
 		"use_dyslexic_font": "OpenDyslexic yazı tipi",
 		"allow_dancing_letters": "Dans eden harflere izin ver",
 		"include_link": "Adresi ekle",
@@ -73,6 +87,14 @@
 	},
 	"footer": {
 		"credits": "<a href=\"https://github.com/vegeta897/word-peaks\">açık kaynak</a> kodlu bir proje",
-		"donate": "☕ bana destek olmak istersen <a href=\"https://buymeacoffee.com/vegeta897\">bir kahve ısmarla</a>"
+		"donate": "bir kahve ısmarla ☕",
+		"donate_short": "bir ☕ ısmarla"
+	},
+	"other": {
+		"new_word": "New word",
+		"wide_view": "Wide view",
+		"color": "Color",
+		"redraw": "Redraw",
+		"back": "Back"
 	}
 }

@@ -62,7 +62,7 @@
 		},
 		{
 			bind: store.animateLandscape,
-			label: 'Animated landscape',
+			label: 'main.options.animated_landscape',
 			click: toggle(store.animateLandscape),
 		},
 		{

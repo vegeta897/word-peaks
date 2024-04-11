@@ -15,9 +15,12 @@
 		"could_not_do": "Sorry, couldn't do that!",
 		"score_copied": "Score copied!",
 		"image_copied": "Image copied!",
+		"stats_copied": "Stats copied!",
 		"need_reload": "Update needed, please reload the page",
 		"new": "New",
-		"new_best": "New best!"
+		"new_best": "New best!",
+		"stats_imported": "Stats successfully imported!",
+		"answer_randomized": "Answer randomized!"
 	},
 	"keyboard": {
 		"enter": "Enter"
@@ -46,7 +49,17 @@
 		"fastest_game": "Fastest Game",
 		"average_game": "Average Game",
 		"average_guess": "Average Guess",
-		"stats_daily": "Stats only count daily games"
+		"stats_daily": "Stats only count daily games",
+		"import_export": "Stats Import/Export",
+		"import_stats": "Import Stats",
+		"export_stats": "Export Stats",
+		"import_info_1": "<strong>Warning:</strong> Importing will OVERWRITE your existing stats on this device or browser.",
+		"import_info_2": "If you have existing stats on this device that you want to keep, export them first.",
+		"import_info_3": "<strong>Note:</strong> Only \"stats\" are imported, not your options (hard mode, keyboard layout, etc)",
+		"paste_your_stats": "Paste your stats in this box",
+		"ready_to_import": "Ready to import!",
+		"invalid_stats": "Invalid stats, check that you copied it correctly",
+		"export_instructions": "Copy the full text from this box, or click the Copy button"
 	},
 	"summary": {
 		"title": "Summary",
@@ -66,6 +79,7 @@
 		"swap_enter_backspace": "Swap Enter/Backspace keys",
 		"alphabetic": "Alphabetic",
 		"use_dyslexic_font": "OpenDyslexic font",
+		"animated_landscape": "Animated landscape",
 		"allow_dancing_letters": "Allow dancing letters",
 		"include_link": "Include link",
 		"include_times": "Include times",
@@ -73,6 +87,14 @@
 	},
 	"footer": {
 		"credits": "an <a href=\"https://github.com/vegeta897/word-peaks\">open source</a> project",
-		"donate": "☕ <a href=\"https://buymeacoffee.com/vegeta897\">buy me a coffee</a> if you'd like to support me"
+		"donate": "Buy me a coffee ☕",
+		"donate_short": "Buy me a ☕"
+	},
+	"other": {
+		"new_word": "New word",
+		"wide_view": "Wide view",
+		"color": "Color",
+		"redraw": "Redraw",
+		"back": "Back"
 	}
 }

@@ -15,9 +15,12 @@
 		"could_not_do": "Desculpe, não é possível fazer isso!",
 		"score_copied": "Pontuação copiada!",
 		"image_copied": "Imagem copiada!",
+		"stats_copied": "Stats copied!",
 		"need_reload": "Atualização necessária, recarregue a página",
 		"new": "Novo",
-		"new_best": "Novo melhor!"
+		"new_best": "Novo melhor!",
+		"stats_imported": "Stats successfully imported!",
+		"answer_randomized": "Answer randomized!"
 	},
 	"keyboard": {
 		"enter": "Enter"
@@ -46,7 +49,17 @@
 		"fastest_game": "Jogo mais rápido",
 		"average_game": "Jogo médio",
 		"average_guess": "Estimativa média",
-		"stats_daily": "Estatísticas só consideram os jogos diários"
+		"stats_daily": "Estatísticas só consideram os jogos diários",
+		"import_export": "Stats Import/Export",
+		"import_stats": "Import Stats",
+		"export_stats": "Export Stats",
+		"import_info_1": "<strong>Warning:</strong> Importing will OVERWRITE your existing stats on this device or browser.",
+		"import_info_2": "If you have existing stats on this device that you want to keep, export them first.",
+		"import_info_3": "<strong>Note:</strong> Only \"stats\" are imported, not your options (hard mode, keyboard layout, etc)",
+		"paste_your_stats": "Paste your stats in this box",
+		"ready_to_import": "Ready to import!",
+		"invalid_stats": "Invalid stats, check that you copied it correctly",
+		"export_instructions": "Copy the full text from this box, or click the Copy button"
 	},
 	"summary": {
 		"title": "Resumo",
@@ -66,6 +79,7 @@
 		"swap_enter_backspace": "Trocar a posição das teclas Enter/Apagar",
 		"alphabetic": "Alfabético",
 		"use_dyslexic_font": "Fonte OpenDyslexic",
+		"animated_landscape": "Animated landscape",
 		"allow_dancing_letters": "Permitir letras dançantes",
 		"include_link": "Incluir link",
 		"include_times": "Incluir tempos",
@@ -73,6 +87,14 @@
 	},
 	"footer": {
 		"credits": "um projeto <a href=\"https://github.com/vegeta897/word-peaks\">open source</a>",
-		"donate": "☕ <a href=\"https://buymeacoffee.com/vegeta897\">me pague um café</a> se você gostaria de me apoiar"
+		"donate": "me pague um café ☕",
+		"donate_short": "me pague um ☕"
+	},
+	"other": {
+		"new_word": "New word",
+		"wide_view": "Wide view",
+		"color": "Color",
+		"redraw": "Redraw",
+		"back": "Back"
 	}
 }
