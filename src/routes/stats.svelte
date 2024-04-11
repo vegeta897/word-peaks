@@ -137,7 +137,7 @@
 
 <section>
 	<h1>Word Peaks</h1>
-	<p style:margin-bottom="1.5rem">Back up and restore your Word Peaks stats</p>
+	<p style:margin-bottom="1.5rem">{$t('main.stats.back_up_and_restore_your_stats')}</p>
 	<div class="mode-buttons">
 		<button
 			class:active={mode === 'import'}

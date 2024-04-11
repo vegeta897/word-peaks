@@ -51,6 +51,7 @@
 		"average_guess": "Estimation moyenne",
 		"stats_daily": "Les statistiques ne comptent que les jeux quotidiens",
 		"import_export": "Stats Import/Export",
+		"back_up_and_restore_your_stats": "Back up and restore your Word Peaks stats",
 		"import_stats": "Import Stats",
 		"export_stats": "Export Stats",
 		"import_info_1": "<strong>Warning:</strong> Importing will OVERWRITE your existing stats on this device or browser.",
