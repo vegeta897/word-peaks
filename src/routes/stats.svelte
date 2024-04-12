@@ -10,6 +10,7 @@
 	import { WORD_LENGTH } from '$lib/constants'
 	import { onMount } from 'svelte'
 	import { goto } from '$app/navigation'
+	import { trackEvent } from '$lib/plausible'
 
 	const toastTheme = { theme: { '--toastBackground': 'var(--cta-color)' } }
 	const isNumber = (maybeNumber: unknown) =>
@@ -112,6 +113,7 @@
 				deserializeFromPropList(dailyDetail, gameDetailProps) as GameDetail
 			)
 		}
+		trackEvent('statsImported')
 		toast.push(get(t)('main.messages.stats_imported'), toastTheme)
 		goto(`${base}/`)
 	}
