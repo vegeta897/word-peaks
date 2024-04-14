@@ -1,6 +1,6 @@
 {
   ".svelte-kit/runtime/client/start.js": {
-    "file": "start-8c11f1da.js",
+    "file": "start-986cc858.js",
     "src": ".svelte-kit/runtime/client/start.js",
     "isEntry": true,
     "imports": [
@@ -13,23 +13,23 @@
       "src/routes/__layout.svelte",
       ".svelte-kit/runtime/components/error.svelte",
       "src/routes/debug.svelte",
-      "_index-bdcc66c2.js",
+      "_index-ed269b57.js",
       "src/routes/no-landscape.svelte",
       "src/routes/random.svelte",
       "src/routes/stats.svelte"
     ]
   },
   "src/routes/__layout.svelte": {
-    "file": "pages/__layout.svelte-2a5461ae.js",
+    "file": "pages/__layout.svelte-a6be3acf.js",
     "src": "src/routes/__layout.svelte",
     "isEntry": true,
     "isDynamicEntry": true,
     "imports": [
       "_index-d85b3eb2.js",
-      "_index-e265d4b3.js",
+      "_index-b3788181.js",
       "_index-3d261b09.js",
       "_preload-helper-911a8840.js",
-      "_share-a4faf34f.js"
+      "_share-cca7621e.js"
     ],
     "css": [
       "assets/pages/__layout.svelte-f86d9105.css"
@@ -45,13 +45,13 @@
     ]
   },
   "src/routes/debug.svelte": {
-    "file": "pages/debug.svelte-a0af56c6.js",
+    "file": "pages/debug.svelte-8fe169a7.js",
     "src": "src/routes/debug.svelte",
     "isEntry": true,
     "isDynamicEntry": true,
     "imports": [
       "_index-d85b3eb2.js",
-      "_index-e265d4b3.js",
+      "_index-b3788181.js",
       "_preload-helper-911a8840.js"
     ],
     "css": [
@@ -59,22 +59,25 @@
     ]
   },
   "src/routes/no-landscape.svelte": {
-    "file": "pages/no-landscape.svelte-e478100f.js",
+    "file": "pages/no-landscape.svelte-f092accc.js",
     "src": "src/routes/no-landscape.svelte",
     "isEntry": true,
     "isDynamicEntry": true,
     "imports": [
       "_index-d85b3eb2.js",
-      "_index-e265d4b3.js",
-      "_index-bdcc66c2.js",
+      "_paths-396f020f.js",
+      "_index-b3788181.js",
+      "_index-ed269b57.js",
       "_preload-helper-911a8840.js",
       "_index-3d261b09.js",
-      "_share-a4faf34f.js",
-      "_paths-396f020f.js"
+      "_share-cca7621e.js"
+    ],
+    "css": [
+      "assets/pages/no-landscape.svelte-494a552e.css"
     ]
   },
   "src/routes/random.svelte": {
-    "file": "pages/random.svelte-37bd0268.js",
+    "file": "pages/random.svelte-a75361c8.js",
     "src": "src/routes/random.svelte",
     "isEntry": true,
     "isDynamicEntry": true,
@@ -82,21 +85,21 @@
       "_index-d85b3eb2.js",
       "_navigation-0e6511d1.js",
       "_paths-396f020f.js",
-      "_index-e265d4b3.js",
+      "_index-b3788181.js",
       "_singletons-d1fb5791.js",
       "_preload-helper-911a8840.js"
     ]
   },
   "src/routes/stats.svelte": {
-    "file": "pages/stats.svelte-547e9420.js",
+    "file": "pages/stats.svelte-9d495707.js",
     "src": "src/routes/stats.svelte",
     "isEntry": true,
     "isDynamicEntry": true,
     "imports": [
       "_index-d85b3eb2.js",
-      "_index-e265d4b3.js",
+      "_index-b3788181.js",
       "_navigation-0e6511d1.js",
-      "_share-a4faf34f.js",
+      "_share-cca7621e.js",
       "_paths-396f020f.js",
       "_preload-helper-911a8840.js",
       "_singletons-d1fb5791.js"
@@ -106,16 +109,16 @@
     ]
   },
   "src/routes/index.svelte": {
-    "file": "pages/index.svelte-238b6742.js",
+    "file": "pages/index.svelte-8cb370b3.js",
     "src": "src/routes/index.svelte",
     "isEntry": true,
     "imports": [
       "_preload-helper-911a8840.js",
       "_index-d85b3eb2.js",
-      "_index-bdcc66c2.js",
-      "_index-e265d4b3.js",
+      "_index-ed269b57.js",
+      "_index-b3788181.js",
       "_index-3d261b09.js",
-      "_share-a4faf34f.js",
+      "_share-cca7621e.js",
       "_paths-396f020f.js"
     ]
   },
@@ -134,8 +137,8 @@
   "_singletons-d1fb5791.js": {
     "file": "chunks/singletons-d1fb5791.js"
   },
-  "_index-e265d4b3.js": {
-    "file": "chunks/index-e265d4b3.js",
+  "_index-b3788181.js": {
+    "file": "chunks/index-b3788181.js",
     "imports": [
       "_index-d85b3eb2.js",
       "_preload-helper-911a8840.js"
@@ -155,10 +158,10 @@
       "assets/index-81b27de8.css"
     ]
   },
-  "_share-a4faf34f.js": {
-    "file": "chunks/share-a4faf34f.js",
+  "_share-cca7621e.js": {
+    "file": "chunks/share-cca7621e.js",
     "imports": [
-      "_index-e265d4b3.js"
+      "_index-b3788181.js"
     ]
   },
   "_index-3d261b09.js": {
@@ -167,20 +170,20 @@
       "_index-d85b3eb2.js"
     ]
   },
-  "_index-bdcc66c2.js": {
-    "file": "chunks/index-bdcc66c2.js",
+  "_index-ed269b57.js": {
+    "file": "chunks/index-ed269b57.js",
     "isDynamicEntry": true,
     "imports": [
       "_preload-helper-911a8840.js",
       "_index-d85b3eb2.js",
-      "_index-e265d4b3.js",
+      "_index-b3788181.js",
       "_index-3d261b09.js",
-      "_share-a4faf34f.js",
+      "_share-cca7621e.js",
       "_paths-396f020f.js"
     ],
     "dynamicImports": [
       "src/components/Idler.svelte",
-      "_idle-scheduler-7827355c.js",
+      "_idle-scheduler-6d6f0482.js",
       "src/lib/landscape/canvas.ts",
       "src/components/Console.svelte"
     ],
@@ -195,42 +198,42 @@
     ]
   },
   "src/lib/translations/en/main.json": {
-    "file": "chunks/main-60dd1deb.js",
+    "file": "chunks/main-d508f9c8.js",
     "src": "src/lib/translations/en/main.json",
     "isDynamicEntry": true
   },
   "src/lib/translations/fr/main.json": {
-    "file": "chunks/main-89899406.js",
+    "file": "chunks/main-acc74425.js",
     "src": "src/lib/translations/fr/main.json",
     "isDynamicEntry": true
   },
   "src/lib/translations/nl/main.json": {
-    "file": "chunks/main-5f9e2f01.js",
+    "file": "chunks/main-f1ff12a2.js",
     "src": "src/lib/translations/nl/main.json",
     "isDynamicEntry": true
   },
   "src/lib/translations/es/main.json": {
-    "file": "chunks/main-c5216d8d.js",
+    "file": "chunks/main-1767e32f.js",
     "src": "src/lib/translations/es/main.json",
     "isDynamicEntry": true
   },
   "src/lib/translations/pt/main.json": {
-    "file": "chunks/main-9f1a8d8e.js",
+    "file": "chunks/main-6cdc0240.js",
     "src": "src/lib/translations/pt/main.json",
     "isDynamicEntry": true
   },
   "src/lib/translations/tr/main.json": {
-    "file": "chunks/main-7c4de339.js",
+    "file": "chunks/main-461bfb34.js",
     "src": "src/lib/translations/tr/main.json",
     "isDynamicEntry": true
   },
   "src/lib/translations/de/main.json": {
-    "file": "chunks/main-dc6d030b.js",
+    "file": "chunks/main-582a63fc.js",
     "src": "src/lib/translations/de/main.json",
     "isDynamicEntry": true
   },
   "src/lib/translations/pl/main.json": {
-    "file": "chunks/main-520e5fd3.js",
+    "file": "chunks/main-76532331.js",
     "src": "src/lib/translations/pl/main.json",
     "isDynamicEntry": true
   },
@@ -240,47 +243,47 @@
     "isDynamicEntry": true
   },
   "src/components/Console.svelte": {
-    "file": "chunks/Console-968a50d9.js",
+    "file": "chunks/Console-d283a460.js",
     "src": "src/components/Console.svelte",
     "isDynamicEntry": true,
     "imports": [
       "_index-d85b3eb2.js",
-      "_index-e265d4b3.js",
+      "_index-b3788181.js",
       "_preload-helper-911a8840.js"
     ]
   },
   "src/components/Idler.svelte": {
-    "file": "chunks/Idler-a8b0064d.js",
+    "file": "chunks/Idler-b905cdc4.js",
     "src": "src/components/Idler.svelte",
     "isDynamicEntry": true,
     "imports": [
       "_index-d85b3eb2.js",
-      "_idle-scheduler-7827355c.js",
-      "_index-e265d4b3.js",
+      "_idle-scheduler-6d6f0482.js",
+      "_index-b3788181.js",
       "_preload-helper-911a8840.js"
     ],
     "css": [
       "assets/Idler-8eb7dc94.css"
     ]
   },
-  "_idle-scheduler-7827355c.js": {
-    "file": "chunks/idle-scheduler-7827355c.js",
+  "_idle-scheduler-6d6f0482.js": {
+    "file": "chunks/idle-scheduler-6d6f0482.js",
     "isDynamicEntry": true,
     "imports": [
-      "_index-e265d4b3.js"
+      "_index-b3788181.js"
     ]
   },
   "src/lib/landscape/canvas.ts": {
-    "file": "chunks/canvas-c366186f.js",
+    "file": "chunks/canvas-3a4bbc16.js",
     "src": "src/lib/landscape/canvas.ts",
     "isDynamicEntry": true,
     "imports": [
-      "_index-bdcc66c2.js",
+      "_index-ed269b57.js",
       "_preload-helper-911a8840.js",
       "_index-d85b3eb2.js",
-      "_index-e265d4b3.js",
+      "_index-b3788181.js",
       "_index-3d261b09.js",
-      "_share-a4faf34f.js",
+      "_share-cca7621e.js",
       "_paths-396f020f.js"
     ]
   }
