@@ -25,10 +25,7 @@ export const keyboardLayout: Writable<KeyboardLayout> = storageWritable(
 )
 export const dyslexicFont: Writable<boolean> = storageWritable('wp-dyslexicFont', false)
 export const allowDancing: Writable<boolean> = storageWritable('wp-allowDancing', true)
-export const animateLandscape: Writable<boolean> = storageWritable(
-	'wp-animateLandscape',
-	true
-)
+export const hideLandscape: Writable<boolean> = storageWritable('wp-hideLandscape', false)
 export const shareURL: Writable<boolean> = storageWritable('wp-shareURL', true)
 export const shareTimes: Writable<boolean> = storageWritable('wp-shareTimes', false)
 export const preciseTimes: Writable<boolean> = storageWritable('wp-preciseTimes', false)
@@ -65,6 +62,5 @@ export const landscapeWideView: Writable<boolean> = writable(false)
 export const landscapeForceColor: Writable<boolean> = writable(false)
 export const landscapeRedraw: Writable<boolean> = writable(false)
 export const landscapeSVG: Writable<SVGElement | null> = writable(null)
-export const landscapeHide: Writable<boolean> = writable(false)
 
 export const newUser: Writable<boolean> = writable(false)

@@ -61,9 +61,9 @@
 			click: toggle(store.dyslexicFont),
 		},
 		{
-			bind: store.animateLandscape,
-			label: 'main.options.animated_landscape',
-			click: toggle(store.animateLandscape),
+			bind: store.hideLandscape,
+			label: 'main.options.hide_landscape',
+			click: toggle(store.hideLandscape),
 		},
 		{
 			bind: store.allowDancing,
