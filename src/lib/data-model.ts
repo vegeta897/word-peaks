@@ -40,10 +40,11 @@ export function playDaily() {
 		store.answerDaily.set(dailyWord)
 	}
 	resetGuess()
-	store.showEndView.set(get(store.gameFinished))
+	const gameFinished = get(store.gameFinished)
+	store.showEndView.set(gameFinished)
+	store.landscapeForceColor.set(gameFinished)
 	store.landscapeNewGame.set(true)
 	store.landscapeWideView.set(false)
-	store.landscapeForceColor.set(false)
 }
 
 export function playRandom(word?: string) {
@@ -63,10 +64,11 @@ export function playRandom(word?: string) {
 		store.answerRandom.set(answer)
 	}
 	resetGuess()
-	store.showEndView.set(get(store.gameFinished))
+	const gameFinished = get(store.gameFinished)
+	store.showEndView.set(gameFinished)
+	store.landscapeForceColor.set(gameFinished)
 	store.landscapeNewGame.set(true)
 	store.landscapeWideView.set(false)
-	store.landscapeForceColor.set(false)
 }
 
 export function createNewBoard(): Board {
