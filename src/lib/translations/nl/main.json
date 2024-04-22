@@ -15,11 +15,11 @@
 		"could_not_do": "Sorry, kon dat niet doen!",
 		"score_copied": "Score gekopieerd!",
 		"image_copied": "Afbeelding gekopieerd!",
-		"stats_copied": "Stats copied!",
+		"stats_copied": "Statistieken gekopieerd!",
 		"need_reload": "Update nodig, vernieuw de pagina",
 		"new": "Nieuw",
 		"new_best": "Nieuw Record!",
-		"stats_imported": "Stats successfully imported!",
+		"stats_imported": "Statistieken succesvol geïmporteerd!",
 		"answer_randomized": "Answer randomized!"
 	},
 	"keyboard": {
@@ -50,19 +50,19 @@
 		"average_game": "Gemiddeld spel",
 		"average_guess": "Gemiddelde gok",
 		"stats_daily": "Statistieken gaan alleen over dagelijkse spellen",
-		"import_export": "Stats Import/Export",
-		"back_up_and_restore_your_stats": "Back up and restore your Word Peaks stats",
-		"import_stats": "Import Stats",
-		"export_stats": "Export Stats",
+		"import_export": "Statistieken Importeren/Exporteren",
+		"back_up_and_restore_your_stats": "Maak een back-up en herstel je Word Peaks statistieken",
+		"import_stats": "Statistieken importeren",
+		"export_stats": "Statistieken exporteren",
 		"import_info_1": "<strong>Warning:</strong> Importing will OVERWRITE your existing stats on this device or browser.",
 		"import_info_2": "If you have existing stats on this device that you want to keep, export them first.",
 		"import_info_3": "<strong>Note:</strong> Only \"stats\" are imported, not your options (hard mode, keyboard layout, etc)",
-		"paste_your_stats": "Paste your stats in this box",
-		"ready_to_import": "Ready to import!",
-		"import": "Import",
-		"invalid_stats": "Invalid stats, check that you copied it correctly",
-		"export_instructions": "Copy the full text from this box, or click the Copy button",
-		"copy": "Copy"
+		"paste_your_stats": "Plak je statistieken in dit vak",
+		"ready_to_import": "Klaar om te importeren!",
+		"import": "Importeren",
+		"invalid_stats": "Ongeldige statistieken, controleer of u het correct heeft gekopieerd",
+		"export_instructions": "Kopieer de volledige tekst uit dit vak of klik op de knop Kopiëren",
+		"copy": "Kopiëren"
 	},
 	"summary": {
 		"title": "Overzicht",
@@ -90,14 +90,14 @@
 	},
 	"footer": {
 		"credits": "een <a href=\"https://github.com/vegeta897/word-peaks\">open source</a> project",
-		"donate": "koop me een koffie ☕",
-		"donate_short": "koop me een ☕"
+		"donate": "Koop een koffie ☕",
+		"donate_short": "Koop een ☕"
 	},
 	"other": {
-		"new_word": "New word",
-		"wide_view": "Wide view",
-		"color": "Color",
+		"new_word": "Nieuw woord",
+		"wide_view": "Brede weergave",
+		"color": "Kleur",
 		"redraw": "Redraw",
-		"back": "Back"
+		"back": "Terug"
 	}
 }
