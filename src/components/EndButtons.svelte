@@ -23,8 +23,14 @@
 		type GameMode,
 	} from '$lib/data-model'
 	import Icon from './landscape/Icon.svelte'
-
-	const { landscapeWideView, landscapeForceColor, landscapeRedraw, hideLandscape } = store
+	import { landscapeFunModes } from '$lib/landscape/landscape'
+	const {
+		landscapeWideView,
+		landscapeForceColor,
+		landscapeRedraw,
+		hideLandscape,
+		landscapeFunMode,
+	} = store
 
 	export let gameMode: GameMode
 
@@ -153,58 +159,73 @@
 
 <svelte:window on:keydown={({ key }) => key === 'Escape' && (showImageShare = false)} />
 <div class="container">
-	<div class="actions" class:full-width={showScoreShareMenu}>
-		{#if showScoreShareMenu}
-			<div class="share-buttons">
-				<button on:click={shareText}>{$t('main.results.text')}</button>
-				<button on:click={onBoardImageShare}>{$t('main.results.image')}</button>
-			</div>
-			<div class="share-options">
-				{#each toggleOptions as toggleOption}
-					<Toggle
-						toggled={get(toggleOption.bind)}
-						on:click={toggleOption.click}
-						hideLabel
-						label={$t(toggleOption.label)}
-						style="transform: scale(1.2); touch-action: manipulation; flex-basis: 2.5rem;"
-						toggledColor="var(--accent-color)"
-						untoggledColor="#695d6e"
-					>
-						<div class="label">{$t(toggleOption.label)}</div>
-					</Toggle>
-				{/each}
-			</div>
-		{:else}
-			<div class="action-items">
-				<button on:click={() => (showScoreShareMenu = true)}
-					>{$t('main.results.share')}</button
-				>
-				{#if gameMode === 'daily'}
-					{#if nextWordReady}
-						<button class="play-button" on:click={playDaily}
-							>{$t('main.results.play_daily')}</button
+	{#if !$landscapeWideView}
+		<div class="actions" class:full-width={showScoreShareMenu}>
+			{#if showScoreShareMenu}
+				<div class="share-buttons">
+					<button on:click={shareText}>{$t('main.results.text')}</button>
+					<button on:click={onBoardImageShare}>{$t('main.results.image')}</button>
+				</div>
+				<div class="share-options">
+					{#each toggleOptions as toggleOption}
+						<Toggle
+							toggled={get(toggleOption.bind)}
+							on:click={toggleOption.click}
+							hideLabel
+							label={$t(toggleOption.label)}
+							style="transform: scale(1.2); touch-action: manipulation; flex-basis: 2.5rem;"
+							toggledColor="var(--accent-color)"
+							untoggledColor="#695d6e"
 						>
-					{:else}
-						<div class="countdown">
-							<Time mode="countdown" alwaysShowHours ms={nextDailyTime} class="time">
-								<h3 slot="title">{$t('main.results.next_word')}</h3>
-							</Time>
-						</div>
-					{/if}
-				{:else}
-					<button class="play-button" on:click={() => playRandom(getRandomWord())}
-						>{$t('main.results.play_random')}</button
+							<div class="label">{$t(toggleOption.label)}</div>
+						</Toggle>
+					{/each}
+				</div>
+			{:else}
+				<div class="action-items">
+					<button on:click={() => (showScoreShareMenu = true)}
+						>{$t('main.results.share')}</button
 					>
-				{/if}
-			</div>
-		{/if}
-	</div>
+					{#if gameMode === 'daily'}
+						{#if nextWordReady}
+							<button class="play-button" on:click={playDaily}
+								>{$t('main.results.play_daily')}</button
+							>
+						{:else}
+							<div class="countdown">
+								<Time mode="countdown" alwaysShowHours ms={nextDailyTime} class="time">
+									<h3 slot="title">{$t('main.results.next_word')}</h3>
+								</Time>
+							</div>
+						{/if}
+					{:else}
+						<button class="play-button" on:click={() => playRandom(getRandomWord())}
+							>{$t('main.results.play_random')}</button
+						>
+					{/if}
+				</div>
+			{/if}
+		</div>
+	{:else}
+		<div class="landscape-fun">
+			{#each landscapeFunModes as mode}
+				<button
+					class:cta-bg={$landscapeFunMode === mode}
+					on:click={() => landscapeFunMode.set($landscapeFunMode === mode ? null : mode)}
+					>{mode}</button
+				>
+			{/each}
+		</div>
+	{/if}
 	{#if !showScoreShareMenu && !$hideLandscape}
 		<div class="landscape-controls">
 			<button
 				title={$t('main.other.wide_view')}
 				class:cta-bg={$landscapeWideView}
-				on:click={() => landscapeWideView.set(!$landscapeWideView)}
+				on:click={() => {
+					landscapeWideView.set(!$landscapeWideView)
+					landscapeFunMode.set(null)
+				}}
 			>
 				<Icon icon="wide" active={$landscapeWideView} />
 			</button>
@@ -335,7 +356,6 @@
 		display: grid;
 		grid-template-columns: 1fr 1fr;
 		gap: 0.5rem;
-		box-sizing: border-box;
 	}
 
 	.landscape-controls button {
@@ -346,15 +366,10 @@
 
 	.landscape-controls button:hover {
 		background: var(--secondary-color);
-		text-decoration: none;
 	}
 
 	.landscape-controls button:disabled {
 		opacity: 0.5;
-	}
-
-	.landscape-controls button.cta-bg {
-		background: var(--cta-color);
 	}
 
 	.landscape-controls .promo {
@@ -362,6 +377,22 @@
 		display: flex;
 		justify-content: center;
 		align-items: center;
+	}
+
+	.landscape-fun {
+		width: calc(var(--board-width) - 0.5rem);
+		display: grid;
+		grid-template-columns: 1fr 1fr 1fr;
+		gap: 0.5rem;
+		height: 8.25rem;
+	}
+
+	.landscape-fun button {
+		background: var(--primary-color);
+	}
+
+	.landscape-fun button:hover {
+		background: var(--secondary-color);
 	}
 
 	button {
@@ -383,6 +414,11 @@
 	button:focus {
 		outline: 1px solid #fff;
 		outline-offset: 2px;
+	}
+
+	button.cta-bg,
+	button.cta-bg:hover {
+		background: var(--cta-color);
 	}
 
 	.share-buttons {
@@ -469,8 +505,12 @@
 		.share-options {
 			font-size: 0.75em;
 		}
-		.landscape-controls {
+		.landscape-controls,
+		.landscape-fun {
 			gap: 0.375rem;
+		}
+		.landscape-fun {
+			height: 8.25rem;
 		}
 		.hide-on-small-screens {
 			display: none;

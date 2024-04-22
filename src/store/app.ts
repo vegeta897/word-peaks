@@ -5,7 +5,7 @@ import type { Stats, GameDetail, TimeStats } from '$lib/stats'
 import { newStats, newTimeStats } from '$lib/stats'
 import { gameMode } from '$src/store/game-state'
 import type { KeyboardLayout } from '$lib/constants'
-import type { Landscape } from '$lib/landscape/landscape'
+import type { Landscape, LandscapeFunMode } from '$lib/landscape/landscape'
 
 export const storeVersion: Writable<number> = storageWritable('wp-version', 0)
 export const storedLocale: Writable<string> = storageWritable('wp-locale', '')
@@ -62,5 +62,6 @@ export const landscapeWideView: Writable<boolean> = writable(false)
 export const landscapeForceColor: Writable<boolean> = writable(false)
 export const landscapeRedraw: Writable<boolean> = writable(false)
 export const landscapeSVG: Writable<SVGElement | null> = writable(null)
+export const landscapeFunMode: Writable<LandscapeFunMode | null> = writable(null)
 
 export const newUser: Writable<boolean> = writable(false)

@@ -3,6 +3,14 @@
 	import { bezierEasing } from '$lib/transitions'
 	import { getDistance } from '$lib/math'
 
+	// TODO: Random idea: Tap hills to push them back into the ground
+	// Only in forceColor mode, so as to not replace color flash behavior
+	// And pull trees to pluck them out
+	// And hold on ponds to suck them up
+	// Using radial gradient that moves towards cursor
+	// If let go during, tiles outside of radius are removed
+	// Tiles on board mirror the effects?
+
 	const STROKE_WIDTH = 0.2
 	const STROKE_HALF = STROKE_WIDTH / 2
 	const DURATION = 900

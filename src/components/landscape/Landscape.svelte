@@ -10,7 +10,7 @@
 	import { tick } from 'svelte'
 	import { bezierEasing } from '$lib/transitions'
 
-	const { landscapeForceColor } = store
+	const { landscapeForceColor, landscapeFunMode } = store
 
 	let initializing = true
 	let svgElement: SVGElement
@@ -52,13 +52,13 @@
 		const tileWidth = tileHeight * 1.5
 		const newWidth = Math.floor(width / tileWidth)
 		const newHeight = Math.floor(height / tileHeight)
+		svgWidth = Math.ceil(newWidth * tileWidth)
+		svgHeight = Math.ceil(newHeight * tileHeight)
 		if (newWidth === landscape.width && newHeight === landscape.height) return
 		landscape.width = newWidth
 		landscape.height = newHeight
 		landscape.centerX = Math.floor(newWidth / 2)
 		landscape.centerY = Math.floor(newHeight / 2)
-		svgWidth = Math.ceil(newWidth * tileWidth)
-		svgHeight = Math.ceil(newHeight * tileHeight)
 		animate = false
 		redraw++
 		clearLandscape()
@@ -140,13 +140,7 @@
 		flashColor: FlashColorHandler
 	}
 
-	function updateMousePosition({
-		offsetX,
-		offsetY,
-	}: {
-		offsetX: number
-		offsetY: number
-	}) {
+	function updateMousePosition(offsetX: number, offsetY: number) {
 		mouseX = -0.1 + (offsetX / svgWidth) * (landscape.width * 1.5 + 0.2)
 		mouseY = -0.1 + (offsetY / svgHeight) * (landscape.height + 0.2)
 	}
@@ -157,37 +151,49 @@
 	let flashAnimateElement: SVGAnimateElement
 	$: landscapeSpan = getDistance(landscape.width + 3, landscape.height + 3)
 
-	const flashColors: svelte.JSX.PointerEventHandler<SVGElement> = (event) => {
+	const onPointerDown: svelte.JSX.PointerEventHandler<SVGElement> = (event) => {
+		// TODO: Handle multi touch
 		if (event.pointerType === 'mouse' && event.button !== 0) return
-		updateMousePosition(event)
-		const now = Date.now()
-		// This is brilliant
-		flashDurationExtra = Math.max(
-			0,
-			Math.min(3500, flashDurationExtra + lastFlashAt + 250 - now)
-		)
+		mouseDown = true
+		event.preventDefault()
+		updateMousePosition(event.offsetX, event.offsetY)
+		if (get(landscapeFunMode) === null) {
+			const now = Date.now()
+			// This is brilliant
+			flashDurationExtra = Math.max(
+				0,
+				Math.min(3500, flashDurationExtra + lastFlashAt + 250 - now)
+			)
+			const duration = landscapeSpan * 70 + flashDurationExtra
+			featureComponents.forEach((f) => f?.flashColor(mouseX, mouseY, duration))
+			pondComponent.flashColor(mouseX, mouseY, duration)
+			lastFlashAt = now
+		}
 		lastFlashXY = [mouseX, mouseY]
+		// TODO: Use different effect in fun modes
 		tick().then(() => flashAnimateElement?.beginElement())
-		const duration = landscapeSpan * 70 + flashDurationExtra
-		featureComponents.forEach((f) => f?.flashColor(mouseX, mouseY, duration))
-		pondComponent.flashColor(mouseX, mouseY, duration)
-		lastFlashAt = now
 	}
 
 	let mouseOver = false
+	let mouseDown = false
 	let mouseX: number
 	let mouseY: number
 
-	function onPointerMove(event: PointerEvent) {
-		if (event.pointerType === 'touch') return
-		mouseOver = true
-		updateMousePosition(event)
+	const onWindowPointerMove: svelte.JSX.PointerEventHandler<Window> = (event) => {
+		// TODO: Perhaps not needed, pointermove continues to fire on elements outside of SVG
+		// But if needed, just store pageX/Y of mouse on pointerdown and compare to this event
+	}
+	const onPointerUp: svelte.JSX.PointerEventHandler<Window> = () => (mouseDown = false)
+	const onSVGPointerMove: svelte.JSX.PointerEventHandler<SVGElement> = (event) => {
+		mouseOver = true // OK to redundantly assign, doesn't re-trigger reactivity
+		updateMousePosition(event.offsetX, event.offsetY)
 	}
 	const onMouseLeave = () => (mouseOver = false)
 
 	$: if (svgElement) store.landscapeSVG.set(svgElement)
 </script>
 
+<svelte:window on:pointerup={onPointerUp} on:pointermove={onWindowPointerMove} />
 <div bind:clientWidth={containerWidth} bind:clientHeight={containerHeight}>
 	<svg
 		style:display={hide ? 'none' : 'block'}
@@ -196,8 +202,8 @@
 		height={svgHeight}
 		style:left="{Math.floor((containerWidth - svgWidth) / 2)}px"
 		viewBox="-0.1 -0.1 {landscape.width * 1.5 + 0.2} {landscape.height + 0.2}"
-		on:pointerdown={flashColors}
-		on:pointermove={onPointerMove}
+		on:pointerdown={onPointerDown}
+		on:pointermove={onSVGPointerMove}
 		on:mouseleave={onMouseLeave}
 		bind:this={svgElement}
 	>
@@ -225,9 +231,11 @@
 						{animate}
 						delay={feature.delay}
 						{mouseOver}
+						{mouseDown}
 						{mouseX}
 						{mouseY}
 						forceColor={$landscapeForceColor}
+						pluckMode={$landscapeFunMode === 'pluck'}
 						bind:this={featureComponents[f]}
 					/>
 				{:else}
@@ -290,11 +298,14 @@
 	div {
 		height: 100%;
 		position: relative;
+		-webkit-user-select: none;
+		user-select: none;
 	}
 	svg {
 		position: absolute;
 		bottom: 0;
 		overflow: visible;
-		touch-action: manipulation;
+		touch-action: none;
+		/* background: #0f21; */
 	}
 </style>

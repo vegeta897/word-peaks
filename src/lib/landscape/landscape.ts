@@ -92,3 +92,6 @@ export function getCenterWeight({ centerX, centerY }: Landscape, x: number, y: n
 const getFeatureY = (feature: Feature) => feature.y + feature.yJitter
 
 const rowToWord = (row: Tile[]) => row.map((t) => t.letter).join('')
+
+export const landscapeFunModes = ['bop', 'pluck', 'slurp'] as const
+export type LandscapeFunMode = typeof landscapeFunModes[number]
