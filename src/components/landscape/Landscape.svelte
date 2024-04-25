@@ -148,7 +148,6 @@
 	let lastFlashAt = 0
 	let flashDurationExtra = 0
 	let lastFlashXY: null | XY = null
-	let flashAnimateElement: SVGAnimateElement
 	$: landscapeSpan = getDistance(landscape.width + 3, landscape.height + 3)
 
 	const onPointerDown: svelte.JSX.PointerEventHandler<SVGElement> = (event) => {
@@ -168,10 +167,9 @@
 			featureComponents.forEach((f) => f?.flashColor(mouseX, mouseY, duration))
 			pondComponent.flashColor(mouseX, mouseY, duration)
 			lastFlashAt = now
+			lastFlashXY = [mouseX, mouseY]
+			// TODO: Use different flash effect in fun modes
 		}
-		lastFlashXY = [mouseX, mouseY]
-		// TODO: Use different effect in fun modes
-		tick().then(() => flashAnimateElement?.beginElement())
 	}
 
 	let mouseOver = false
@@ -260,36 +258,17 @@
 		{/key}
 		{#if lastFlashXY}
 			{@const [cx, cy] = lastFlashXY}
-			<ellipse
-				{cx}
-				{cy}
-				style:transform-origin="{cx}px {cy}px"
-				rx="1.5"
-				ry="1"
-				fill="#fff7"
-			>
-				<animate
-					bind:this={flashAnimateElement}
-					id="landscape_flash_animate"
-					attributeName="opacity"
-					values="1;0"
-					calcMode="spline"
-					keySplines={bezierEasing.circOut}
-					dur="250ms"
-					fill="freeze"
-					begin="indefinite"
+			{#key lastFlashAt}
+				<ellipse
+					{cx}
+					{cy}
+					style:transform-origin="{cx}px {cy}px"
+					rx="1.5"
+					ry="1"
+					fill="#fff7"
+					class="flash"
 				/>
-				<animateTransform
-					attributeName="transform"
-					type="scale"
-					values="0;1"
-					calcMode="spline"
-					keySplines={bezierEasing.circOut}
-					dur="250ms"
-					fill="freeze"
-					begin="landscape_flash_animate.begin"
-				/>
-			</ellipse>
+			{/key}
 		{/if}
 	</svg>
 </div>
@@ -307,5 +286,17 @@
 		overflow: visible;
 		touch-action: none;
 		/* background: #0f21; */
+	}
+	.flash {
+		animation: flash_out 250ms forwards cubic-bezier(0.61, 1, 0.88, 1);
+	}
+
+	@keyframes flash_out {
+		from {
+			transform: scale(0);
+		}
+		to {
+			opacity: 0;
+		}
 	}
 </style>
