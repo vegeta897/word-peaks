@@ -72,7 +72,7 @@ function fillPond(
 			let openTile = landscape.openTiles.get(nGrid)
 			if (openTile) {
 				openTile.nearPonds = (openTile.nearPonds || 0) + 1
-				weight *= openTile.nearPonds
+				weight *= 2.5 - Math.abs(2.5 - openTile.nearPonds)
 			} else {
 				openTile = {
 					x: nx,
