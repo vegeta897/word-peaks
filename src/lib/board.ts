@@ -83,11 +83,11 @@ export function undoLetter(moveCaratBack = true) {
 	store.invalidWordPreview.set(false)
 }
 
-export function moveCarat(dir: number) {
+export function moveCarat(dir: number, absolute = false) {
 	if (get(store.gameFinished)) return
-	const moveTo = get(store.currentTile) + dir
+	const moveTo = absolute ? dir : get(store.currentTile) + dir
 	if (moveTo < 0 || moveTo >= WORD_LENGTH) return
-	store.currentTile.update((ct) => ct + dir)
+	store.currentTile.set(moveTo)
 }
 
 let submitting = false

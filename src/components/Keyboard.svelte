@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { alphabet, keyboardLayoutOptions } from '$lib/constants'
+	import { WORD_LENGTH, alphabet, keyboardLayoutOptions } from '$lib/constants'
 	import {
 		validLetters,
 		swapEnterBackspace,
@@ -10,8 +10,6 @@
 	import { moveCarat, submitRow, typeLetter, undoLetter } from '$lib/board'
 	import { get } from 'svelte/store'
 	import { browser } from '$app/env'
-
-	// TODO: Make all key rows fill width of screen
 
 	function handleKeydown({ key, ctrlKey, target, repeat }: KeyboardEvent) {
 		if (ctrlKey || repeat || get(openScreen) !== null) return
@@ -27,6 +25,8 @@
 		}
 		if (key === 'ArrowLeft') moveCarat(-1)
 		if (key === 'ArrowRight') moveCarat(1)
+		if (key === 'Home') moveCarat(0, true)
+		if (key === 'End') moveCarat(WORD_LENGTH - 1, true)
 		key = key.toLowerCase()
 		if (alphabet.includes(key) || key === ' ') typeLetter(key.trim())
 	}
