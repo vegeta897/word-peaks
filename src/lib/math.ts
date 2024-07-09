@@ -1,6 +1,6 @@
 export type XY = [x: number, y: number]
 
-export function randomChance(chance: number) {
+export function randomChance(chance: number = 0.5) {
 	return Math.random() < chance
 }
 export function randomFloat(min: number, max: number, rng = Math.random) {

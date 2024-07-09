@@ -3,6 +3,8 @@
 	import { bezierEasing } from '$lib/transitions'
 	import { getDistance } from '$lib/math'
 
+	export const featureType = 'hill'
+
 	// TODO: Random idea: Tap hills to push them back into the ground
 	// Only in forceColor mode, so as to not replace color flash behavior
 	// And pull trees to pluck them out
@@ -56,6 +58,8 @@
 		}, Math.max(duration, flashDelay))
 		lastTimeout = thisTimeout
 	}
+
+	export function onMouseDown(x: number, y: number) {}
 
 	$: centerX = (x + xJitter + (mini ? 1 : 1.5)) * 1.5
 	$: centerY = y + yJitter + 1

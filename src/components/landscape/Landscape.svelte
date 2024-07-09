@@ -135,6 +135,8 @@
 	type FlashColorHandler = (x: number, y: number, duration: number) => void
 	const featureComponents: {
 		flashColor: FlashColorHandler
+		onMouseDown: (x: number, y: number) => void
+		featureType: 'tree' | 'hill'
 	}[] = []
 	let pondComponent: {
 		flashColor: FlashColorHandler
@@ -153,10 +155,10 @@
 	const onPointerDown: svelte.JSX.PointerEventHandler<SVGElement> = (event) => {
 		// TODO: Handle multi touch
 		if (event.pointerType === 'mouse' && event.button !== 0) return
-		mouseDown = true
 		event.preventDefault()
 		updateMousePosition(event.offsetX, event.offsetY)
-		if (get(landscapeFunMode) === null) {
+		const funMode = get(landscapeFunMode)
+		if (funMode === null) {
 			const now = Date.now()
 			// This is brilliant
 			flashDurationExtra = Math.max(
@@ -169,19 +171,19 @@
 			lastFlashAt = now
 			lastFlashXY = [mouseX, mouseY]
 			// TODO: Use different flash effect in fun modes
+		} else {
+			featureComponents.forEach((f) => {
+				if (!f) return
+				if (f.featureType === 'tree' && funMode === 'pluck') f.onMouseDown(mouseX, mouseY)
+				if (f.featureType === 'hill' && funMode === 'bop') f.onMouseDown(mouseX, mouseY)
+			})
 		}
 	}
 
 	let mouseOver = false
-	let mouseDown = false
 	let mouseX: number
 	let mouseY: number
 
-	const onWindowPointerMove: svelte.JSX.PointerEventHandler<Window> = (event) => {
-		// TODO: Perhaps not needed, pointermove continues to fire on elements outside of SVG
-		// But if needed, just store pageX/Y of mouse on pointerdown and compare to this event
-	}
-	const onPointerUp: svelte.JSX.PointerEventHandler<Window> = () => (mouseDown = false)
 	const onSVGPointerMove: svelte.JSX.PointerEventHandler<SVGElement> = (event) => {
 		mouseOver = true // OK to redundantly assign, doesn't re-trigger reactivity
 		updateMousePosition(event.offsetX, event.offsetY)
@@ -191,7 +193,6 @@
 	$: if (svgElement) store.landscapeSVG.set(svgElement)
 </script>
 
-<svelte:window on:pointerup={onPointerUp} on:pointermove={onWindowPointerMove} />
 <div bind:clientWidth={containerWidth} bind:clientHeight={containerHeight}>
 	<svg
 		style:display={hide ? 'none' : 'block'}
@@ -229,7 +230,6 @@
 						{animate}
 						delay={feature.delay}
 						{mouseOver}
-						{mouseDown}
 						{mouseX}
 						{mouseY}
 						forceColor={$landscapeForceColor}

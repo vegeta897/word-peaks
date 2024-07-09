@@ -83,6 +83,7 @@ export function getLandscape(
 	return { ...landscape }
 }
 
+// TODO: Use perlin noise with center bias, like D-Zone
 export function getCenterWeight({ centerX, centerY }: Landscape, x: number, y: number) {
 	const verticalCenter = 1 - Math.abs(y - centerY) / (centerY + 1)
 	const horizontalCenter = 1 - Math.abs(x - centerX) / (centerX + 1)
