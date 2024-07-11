@@ -91,21 +91,6 @@ function fillPond(
 	return true
 }
 
-function getPathSegment(
-	[x, y]: XY,
-	[midX, midY]: XY,
-	[prevMidX, prevMidY]: XY,
-	scaleX = 1.5,
-	scaleY = 1,
-	offsetX = 0,
-	offsetY = 0
-) {
-	const toX = midX * scaleX + offsetX
-	const toY = midY * scaleY + offsetY
-	if (prevMidX === midX || prevMidY === midY) return `L${toX} ${toY}`
-	return `Q${x * scaleX + offsetX} ${y * scaleY + offsetY} ${toX} ${toY}`
-}
-
 type Dir = 0 | 1 | 2 | 3 // down | right | up | left
 type Edge = [x1: number, y1: number, x2: number, y2: number, dir: Dir]
 // prettier-ignore
@@ -119,6 +104,12 @@ export function createPondPath(
 	offsetX = 0,
 	offsetY = 0
 ) {
+	const getPathSegment = ([x, y]: XY, [midX, midY]: XY, [prevMidX, prevMidY]: XY) => {
+		const toX = midX * scaleX + offsetX
+		const toY = midY * scaleY + offsetY
+		if (prevMidX === midX || prevMidY === midY) return `L${toX} ${toY}`
+		return `Q${x * scaleX + offsetX} ${y * scaleY + offsetY} ${toX} ${toY}`
+	}
 	const segmentMap: Map<string, string> = new Map()
 	const startsMap: Map<string, string> = new Map()
 	for (const [x, y] of tiles) {
@@ -160,15 +151,7 @@ export function createPondPath(
 			firstMid = [midX, midY]
 			pathData += `M${midX * scaleX + offsetX} ${midY * scaleY + offsetY}`
 		} else {
-			pathData += getPathSegment(
-				[startX, startY],
-				[midX, midY],
-				prevMid!,
-				scaleX,
-				scaleY,
-				offsetX,
-				offsetY
-			)
+			pathData += getPathSegment([startX, startY], [midX, midY], prevMid!)
 		}
 		newPath = false
 		prevMid = [midX, midY]
@@ -180,15 +163,7 @@ export function createPondPath(
 			}
 		}
 		if (!nextStartKey) {
-			pathData += getPathSegment(
-				first!,
-				firstMid!,
-				prevMid,
-				scaleX,
-				scaleY,
-				offsetX,
-				offsetY
-			)
+			pathData += getPathSegment(first!, firstMid!, prevMid)
 			pathData += 'Z'
 			newPath = true
 		}
