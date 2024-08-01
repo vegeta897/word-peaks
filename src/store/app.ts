@@ -64,3 +64,5 @@ export const landscapeRedraw: Writable<boolean> = writable(false)
 export const landscapeSVG: Writable<SVGElement | null> = writable(null)
 
 export const newUser: Writable<boolean> = writable(false)
+
+export const dismissPromo: Writable<number> = storageWritable('wp-dismissPromo', 0)
