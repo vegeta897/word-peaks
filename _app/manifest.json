@@ -1,6 +1,6 @@
 {
   ".svelte-kit/runtime/client/start.js": {
-    "file": "start-12eb9af0.js",
+    "file": "start-0fc53b1a.js",
     "src": ".svelte-kit/runtime/client/start.js",
     "isEntry": true,
     "imports": [
@@ -13,23 +13,23 @@
       "src/routes/__layout.svelte",
       ".svelte-kit/runtime/components/error.svelte",
       "src/routes/debug.svelte",
-      "_index-1b8d36a5.js",
+      "_index-5f2cb3c4.js",
       "src/routes/no-landscape.svelte",
       "src/routes/random.svelte",
       "src/routes/stats.svelte"
     ]
   },
   "src/routes/__layout.svelte": {
-    "file": "pages/__layout.svelte-9116c6ba.js",
+    "file": "pages/__layout.svelte-024c6add.js",
     "src": "src/routes/__layout.svelte",
     "isEntry": true,
     "isDynamicEntry": true,
     "imports": [
       "_index-d85b3eb2.js",
-      "_index-29d54779.js",
+      "_index-9eddf47d.js",
       "_index-3d261b09.js",
       "_preload-helper-911a8840.js",
-      "_share-70b4b269.js"
+      "_share-acccaff3.js"
     ],
     "css": [
       "assets/pages/__layout.svelte-f86d9105.css"
@@ -45,13 +45,13 @@
     ]
   },
   "src/routes/debug.svelte": {
-    "file": "pages/debug.svelte-f3b3c9ad.js",
+    "file": "pages/debug.svelte-038767f4.js",
     "src": "src/routes/debug.svelte",
     "isEntry": true,
     "isDynamicEntry": true,
     "imports": [
       "_index-d85b3eb2.js",
-      "_index-29d54779.js",
+      "_index-9eddf47d.js",
       "_preload-helper-911a8840.js"
     ],
     "css": [
@@ -59,25 +59,25 @@
     ]
   },
   "src/routes/no-landscape.svelte": {
-    "file": "pages/no-landscape.svelte-b00bbf26.js",
+    "file": "pages/no-landscape.svelte-4b950c22.js",
     "src": "src/routes/no-landscape.svelte",
     "isEntry": true,
     "isDynamicEntry": true,
     "imports": [
       "_index-d85b3eb2.js",
       "_paths-396f020f.js",
-      "_index-29d54779.js",
-      "_index-1b8d36a5.js",
+      "_index-9eddf47d.js",
+      "_index-5f2cb3c4.js",
       "_preload-helper-911a8840.js",
       "_index-3d261b09.js",
-      "_share-70b4b269.js"
+      "_share-acccaff3.js"
     ],
     "css": [
       "assets/pages/no-landscape.svelte-494a552e.css"
     ]
   },
   "src/routes/random.svelte": {
-    "file": "pages/random.svelte-f0969c01.js",
+    "file": "pages/random.svelte-6f1a7d69.js",
     "src": "src/routes/random.svelte",
     "isEntry": true,
     "isDynamicEntry": true,
@@ -85,21 +85,21 @@
       "_index-d85b3eb2.js",
       "_navigation-0e6511d1.js",
       "_paths-396f020f.js",
-      "_index-29d54779.js",
+      "_index-9eddf47d.js",
       "_singletons-d1fb5791.js",
       "_preload-helper-911a8840.js"
     ]
   },
   "src/routes/stats.svelte": {
-    "file": "pages/stats.svelte-0a4ca1d0.js",
+    "file": "pages/stats.svelte-712fbe40.js",
     "src": "src/routes/stats.svelte",
     "isEntry": true,
     "isDynamicEntry": true,
     "imports": [
       "_index-d85b3eb2.js",
-      "_index-29d54779.js",
+      "_index-9eddf47d.js",
       "_navigation-0e6511d1.js",
-      "_share-70b4b269.js",
+      "_share-acccaff3.js",
       "_paths-396f020f.js",
       "_preload-helper-911a8840.js",
       "_singletons-d1fb5791.js"
@@ -109,16 +109,16 @@
     ]
   },
   "src/routes/index.svelte": {
-    "file": "pages/index.svelte-b50c8ca3.js",
+    "file": "pages/index.svelte-7420833e.js",
     "src": "src/routes/index.svelte",
     "isEntry": true,
     "imports": [
       "_preload-helper-911a8840.js",
       "_index-d85b3eb2.js",
-      "_index-1b8d36a5.js",
-      "_index-29d54779.js",
+      "_index-5f2cb3c4.js",
+      "_index-9eddf47d.js",
       "_index-3d261b09.js",
-      "_share-70b4b269.js",
+      "_share-acccaff3.js",
       "_paths-396f020f.js"
     ]
   },
@@ -137,8 +137,8 @@
   "_singletons-d1fb5791.js": {
     "file": "chunks/singletons-d1fb5791.js"
   },
-  "_index-29d54779.js": {
-    "file": "chunks/index-29d54779.js",
+  "_index-9eddf47d.js": {
+    "file": "chunks/index-9eddf47d.js",
     "imports": [
       "_index-d85b3eb2.js",
       "_preload-helper-911a8840.js"
@@ -158,10 +158,10 @@
       "assets/index-81b27de8.css"
     ]
   },
-  "_share-70b4b269.js": {
-    "file": "chunks/share-70b4b269.js",
+  "_share-acccaff3.js": {
+    "file": "chunks/share-acccaff3.js",
     "imports": [
-      "_index-29d54779.js"
+      "_index-9eddf47d.js"
     ]
   },
   "_index-3d261b09.js": {
@@ -170,25 +170,25 @@
       "_index-d85b3eb2.js"
     ]
   },
-  "_index-1b8d36a5.js": {
-    "file": "chunks/index-1b8d36a5.js",
+  "_index-5f2cb3c4.js": {
+    "file": "chunks/index-5f2cb3c4.js",
     "isDynamicEntry": true,
     "imports": [
       "_preload-helper-911a8840.js",
       "_index-d85b3eb2.js",
-      "_index-29d54779.js",
+      "_index-9eddf47d.js",
       "_index-3d261b09.js",
-      "_share-70b4b269.js",
+      "_share-acccaff3.js",
       "_paths-396f020f.js"
     ],
     "dynamicImports": [
       "src/components/Idler.svelte",
-      "_idle-scheduler-2cf23afa.js",
+      "_idle-scheduler-a4c61a5c.js",
       "src/lib/landscape/canvas.ts",
       "src/components/Console.svelte"
     ],
     "css": [
-      "assets/index-ff645dd5.css"
+      "assets/index-e6b33bf9.css"
     ]
   },
   "_navigation-0e6511d1.js": {
@@ -243,47 +243,47 @@
     "isDynamicEntry": true
   },
   "src/components/Console.svelte": {
-    "file": "chunks/Console-7416232d.js",
+    "file": "chunks/Console-4c2aed43.js",
     "src": "src/components/Console.svelte",
     "isDynamicEntry": true,
     "imports": [
       "_index-d85b3eb2.js",
-      "_index-29d54779.js",
+      "_index-9eddf47d.js",
       "_preload-helper-911a8840.js"
     ]
   },
   "src/components/Idler.svelte": {
-    "file": "chunks/Idler-e32f4fb5.js",
+    "file": "chunks/Idler-785e0bd2.js",
     "src": "src/components/Idler.svelte",
     "isDynamicEntry": true,
     "imports": [
       "_index-d85b3eb2.js",
-      "_idle-scheduler-2cf23afa.js",
-      "_index-29d54779.js",
+      "_idle-scheduler-a4c61a5c.js",
+      "_index-9eddf47d.js",
       "_preload-helper-911a8840.js"
     ],
     "css": [
       "assets/Idler-8eb7dc94.css"
     ]
   },
-  "_idle-scheduler-2cf23afa.js": {
-    "file": "chunks/idle-scheduler-2cf23afa.js",
+  "_idle-scheduler-a4c61a5c.js": {
+    "file": "chunks/idle-scheduler-a4c61a5c.js",
     "isDynamicEntry": true,
     "imports": [
-      "_index-29d54779.js"
+      "_index-9eddf47d.js"
     ]
   },
   "src/lib/landscape/canvas.ts": {
-    "file": "chunks/canvas-b63dff26.js",
+    "file": "chunks/canvas-329c9196.js",
     "src": "src/lib/landscape/canvas.ts",
     "isDynamicEntry": true,
     "imports": [
-      "_index-1b8d36a5.js",
+      "_index-5f2cb3c4.js",
       "_preload-helper-911a8840.js",
       "_index-d85b3eb2.js",
-      "_index-29d54779.js",
+      "_index-9eddf47d.js",
       "_index-3d261b09.js",
-      "_share-70b4b269.js",
+      "_share-acccaff3.js",
       "_paths-396f020f.js"
     ]
   }
