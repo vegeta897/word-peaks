@@ -81,7 +81,7 @@
 				fallingLeaves.push([
 					pluckRotation / 50 + randomFloat(-1.5, 1.5),
 					circleY - 1 + randomFloat(-0.9, 0.9),
-					randomInt(600, 1300),
+					randomInt(800, 1300),
 					randomInt(0, 600),
 				])
 			}
@@ -306,9 +306,7 @@
 			<g style:transform="translate({leafX}px,{leafY}px)" class="burst">
 				<g
 					class="falling"
-					style:transform="translate({(Math.round(Math.abs(leafY) * 5) % 10) *
-						0.03 *
-						Math.sign(pluckRotation)}px,0)"
+					style:transform="translate({(Math.round(leafX * 5) % 10) * 0.05}px,2px)"
 					style:animation-duration="{flickerDuration * 2}ms"
 				>
 					<circle
@@ -347,12 +345,12 @@
 	}
 
 	.falling {
-		animation: drift-down 1s 100ms ease-in forwards;
+		animation: move-from-center 1s 100ms ease-in both;
 	}
 
-	@keyframes drift-down {
-		100% {
-			transform: translate(0, 2px);
+	@keyframes move-from-center {
+		0% {
+			transform: translate(0, 0);
 		}
 	}
 
