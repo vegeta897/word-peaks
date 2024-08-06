@@ -10,8 +10,7 @@
 		sleep,
 	} from '$lib/math'
 
-	const STROKE_WIDTH = 0.2
-	const STROKE_HALF = STROKE_WIDTH / 2
+	export const featureType = 'tree'
 
 	export let id: number
 	export let x: number
@@ -27,7 +26,8 @@
 	export let forceColor: boolean
 	export let pluckMode: boolean
 
-	export const featureType = 'tree'
+	const STROKE_WIDTH = 0.2
+	const STROKE_HALF = STROKE_WIDTH / 2
 
 	let willAnimate = true
 	let animateOpacityElement: SVGAnimateElement
@@ -60,7 +60,12 @@
 
 	let plucked = false
 	let pluckRotation = 0
-	let fallingLeaves: [...XY, flickerDuration: number, flickerDelay: number][] = []
+	let fallingLeaves: [
+		...XY,
+		fallDuration: number,
+		flickerDuration: number,
+		flickerDelay: number
+	][] = []
 
 	export async function onMouseDown(x: number, y: number) {
 		if (plucked) return
@@ -79,13 +84,14 @@
 			plucked = true
 			for (let i = 0; i < 10 + size * 6; i++) {
 				fallingLeaves.push([
-					pluckRotation / 50 + randomFloat(-1.5, 1.5),
-					circleY - 1 + randomFloat(-0.9, 0.9),
-					randomInt(800, 1300),
-					randomInt(0, 600),
+					pluckRotation / 60 + randomFloat(-1, 1),
+					circleY - 1 + randomFloat(-0.7, 0.7),
+					randomInt(1600, 3000),
+					randomInt(500, 1300),
+					randomInt(400, 1000),
 				])
 			}
-			sleep(5000).then(() => (fallingLeaves.length = 0)) // Clean up leaves
+			// sleep(5200).then(() => (fallingLeaves.length = 0)) // Clean up leaves
 		} else {
 			// Almost pluck
 			const distance = getDistance(xDistance, yDistance)
@@ -122,7 +128,12 @@
 </script>
 
 <!-- Position relative to fix stacking context bug in FF -->
-<g style:position="relative" transform="translate({originX} {originY})">
+<g
+	class="tree"
+	class:fade={plucked}
+	style:position="relative"
+	transform="translate({originX} {originY})"
+>
 	<g opacity={willAnimate ? 0 : 1}>
 		<g>
 			<animateTransform
@@ -300,17 +311,19 @@
 			r={STROKE_HALF}
 			fill="var(--{inColor ? 'correct-color' : 'landscape-color'})"
 			style:transition="fill {inColor ? 200 : 1000}ms ease"
-			class="stump"
 		/>
-		{#each fallingLeaves as [leafX, leafY, flickerDuration, flickerDelay]}
+		{#each fallingLeaves as [leafX, leafY, fallDuration, flickerDuration, flickerDelay]}
 			<g style:transform="translate({leafX}px,{leafY}px)" class="burst">
 				<g
 					class="falling"
 					style:transform="translate({(Math.round(leafX * 5) % 10) * 0.05}px,2px)"
-					style:animation-duration="{flickerDuration * 2}ms"
+					style:animation-duration="{fallDuration}ms"
 				>
 					<circle
-						class="leaf"
+						style:animation="shimmer"
+						style:animation-iteration-count={Math.floor(
+							(fallDuration - flickerDelay) / flickerDuration
+						)}
 						style:animation-duration="{flickerDuration}ms"
 						style:animation-delay="{flickerDelay}ms"
 						r={STROKE_HALF}
@@ -323,8 +336,8 @@
 </g>
 
 <style>
-	.stump {
-		animation: fade 5s ease-in forwards;
+	.tree.fade {
+		animation: fade 1s 4.2s ease-in forwards;
 	}
 
 	@keyframes fade {
@@ -334,18 +347,18 @@
 	}
 
 	.burst {
-		animation: burst 200ms 100ms cubic-bezier(0.33, 1, 0.68, 1) both, fade 3s 2s forwards;
+		animation: burst 200ms 100ms cubic-bezier(0.33, 1, 0.68, 1) both;
 	}
 
 	@keyframes burst {
 		0% {
-			transform: translate(0, -1px);
+			transform: translate(0, -1px) scale(4);
 			opacity: 0;
 		}
 	}
 
 	.falling {
-		animation: move-from-center 1s 100ms ease-in both;
+		animation: move-from-center 1s 100ms cubic-bezier(0.42, 0, 0.85, 1) both;
 	}
 
 	@keyframes move-from-center {
@@ -354,16 +367,12 @@
 		}
 	}
 
-	.leaf {
-		animation: shimmer 2;
-	}
-
-	@keyframes shimmer {
+	@keyframes -global-shimmer {
 		0% {
-			animation-timing-function: cubic-bezier(0.32, 0, 0.67, 0);
+			animation-timing-function: cubic-bezier(0.2, 0, 0.8, 0);
 		}
 		50% {
-			animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1);
+			animation-timing-function: cubic-bezier(0.2, 1, 0.8, 1);
 			opacity: 0.3;
 		}
 		100% {
