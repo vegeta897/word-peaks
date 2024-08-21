@@ -13,7 +13,7 @@
 	import Footer from '$com/Footer.svelte'
 	import Header from '$com/Header.svelte'
 	import { initGameState } from '$src/store'
-	import Promo from '$com/Promo.svelte'
+	// import Promo from '$com/Promo.svelte'
 
 	const { openScreen, gameMode } = store
 
@@ -46,7 +46,7 @@
 	<section>
 		<Header />
 		<Board />
-		<Promo />
+		<!-- <Promo /> -->
 		<Controls />
 		{#if consoleMode}
 			{#await import('$com/Console.svelte') then c}
