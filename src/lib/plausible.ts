@@ -1,6 +1,9 @@
 import Plausible from 'plausible-tracker'
 import { browser, dev } from '$app/env'
 
+// TODO: Consolidate into one game finished event
+// with many properties about the game and user's options
+
 type EventName =
 	| 'gameWon'
 	| 'firstFinish'

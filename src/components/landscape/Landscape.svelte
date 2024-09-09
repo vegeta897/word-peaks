@@ -7,8 +7,6 @@
 	import Hill from './Hill.svelte'
 	import Pond from './Pond.svelte'
 	import { getDistance, type XY } from '$lib/math'
-	import { tick } from 'svelte'
-	import { bezierEasing } from '$lib/transitions'
 
 	const { landscapeForceColor, landscapeFunMode } = store
 
@@ -89,9 +87,10 @@
 			firstDraw = false
 			animate = true
 		}
-		if (get(store.landscapeRedraw)) {
-			animate = true
-			store.landscapeRedraw.set(false)
+		const redrawMode = get(store.landscapeRedraw)
+		if (redrawMode) {
+			animate = redrawMode === 'animate'
+			store.landscapeRedraw.set(null)
 		}
 		if (currentRow === landscape.rowsGenerated) return
 		landscape = getLandscape(
@@ -122,9 +121,8 @@
 		store.landscapeNewRow.set(false)
 		updateLandscape()
 	})
-	store.landscapeRedraw.subscribe((doRedraw) => {
-		if (!doRedraw) return
-		firstDraw = true
+	store.landscapeRedraw.subscribe((redrawType) => {
+		if (redrawType === null) return
 		redraw++
 		clearLandscape()
 		updateLandscape()
@@ -135,11 +133,12 @@
 	type FlashColorHandler = (x: number, y: number, duration: number) => void
 	const featureComponents: {
 		flashColor: FlashColorHandler
-		onMouseDown: (x: number, y: number) => void
+		doFun: (x: number, y: number) => void | true
 		featureType: 'tree' | 'hill'
 	}[] = []
 	let pondComponent: {
 		flashColor: FlashColorHandler
+		doFun: (x: number, y: number) => void
 	}
 
 	function updateMousePosition(offsetX: number, offsetY: number) {
@@ -152,7 +151,16 @@
 	let lastFlashXY: null | XY = null
 	$: landscapeSpan = getDistance(landscape.width + 3, landscape.height + 3)
 
-	const onPointerDown: svelte.JSX.PointerEventHandler<SVGElement> = (event) => {
+	// TODO: Hint fun mode buttons when clicking in full view
+
+	// TODO: When exiting full view after making any changes, show cropped version
+	// with overlay buttons to "resume" or "reset"
+
+	// TODO: Hidden gems inside the last hill, pond tile, tree
+
+	// TODO: Allow click and drag, check line segment intersects for trees and ponds
+
+	const onPointerDown: svelte.JSX.PointerEventHandler<SVGElement> = async (event) => {
 		// TODO: Handle multi touch
 		if (event.pointerType === 'mouse' && event.button !== 0) return
 		event.preventDefault()
@@ -172,11 +180,25 @@
 			lastFlashXY = [mouseX, mouseY]
 			// TODO: Use different flash effect in fun modes
 		} else {
-			featureComponents.forEach((f) => {
-				if (!f) return
-				if (f.featureType === 'tree' && funMode === 'pluck') f.onMouseDown(mouseX, mouseY)
-				if (f.featureType === 'hill' && funMode === 'bop') f.onMouseDown(mouseX, mouseY)
-			})
+			// TODO: Increase hit zone for mobile taps?
+			if (funMode === 'sop') {
+				pondComponent.doFun(mouseX, mouseY)
+				return
+			} else {
+				let pluckOrBopHappened = false
+				featureComponents.forEach((f) => {
+					if (!f) return
+					if (
+						(f.featureType === 'tree' && funMode === 'pluck') ||
+						(f.featureType === 'hill' && funMode === 'bop')
+					) {
+						const pluckedOrBopped = !!f.doFun(mouseX, mouseY)
+						// Assigned to a const, otherwise assignment will skip evaluation
+						pluckOrBopHappened ||= pluckedOrBopped
+					}
+				})
+				// console.log(pluckedOrBopped)
+			}
 		}
 	}
 
@@ -204,6 +226,7 @@
 		on:pointerdown={onPointerDown}
 		on:pointermove={onSVGPointerMove}
 		on:mouseleave={onMouseLeave}
+		on:touchend|preventDefault
 		bind:this={svgElement}
 	>
 		{#key redraw}
@@ -251,6 +274,7 @@
 						{mouseX}
 						{mouseY}
 						forceColor={$landscapeForceColor}
+						bopMode={$landscapeFunMode === 'bop'}
 						bind:this={featureComponents[f]}
 					/>
 				{/if}
@@ -284,8 +308,11 @@
 		position: absolute;
 		bottom: 0;
 		overflow: visible;
-		touch-action: none;
+		touch-action: manipulation; /* Allow panning and pinch zooming */
 		/* background: #0f21; */
+	}
+	svg :global(*) {
+		pointer-events: none;
 	}
 	.flash {
 		animation: flash_out 250ms forwards cubic-bezier(0.61, 1, 0.88, 1);

@@ -78,7 +78,7 @@ export function getLandscape(
 		}
 		landscape.rowsGenerated++
 	}
-	// Sort features for proper overlapping
+	// Sort features by Y for proper overlapping
 	landscape.features.sort((a, b) => getFeatureY(a) - getFeatureY(b))
 	return { ...landscape }
 }
@@ -94,5 +94,5 @@ const getFeatureY = (feature: Feature) => feature.y + feature.yJitter
 
 const rowToWord = (row: Tile[]) => row.map((t) => t.letter).join('')
 
-export const landscapeFunModes = ['bop', 'pluck', 'slurp'] as const
+export const landscapeFunModes = ['bop', 'sop', 'pluck'] as const
 export type LandscapeFunMode = typeof landscapeFunModes[number]

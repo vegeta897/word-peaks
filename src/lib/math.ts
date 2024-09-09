@@ -34,7 +34,7 @@ export function getNeighborGrids(grid: string) {
 	return neighbors.map(([nx, ny]) => xyToGrid([x + nx, y + ny]))
 }
 export const getNeighbors = (x: number, y: number) =>
-	neighbors.map(([nx, ny]) => [x + nx, y + ny])
+	neighbors.map(([nx, ny]) => [x + nx, y + ny]) as XY[]
 
 export const getDistance = (x: number, y: number) => Math.sqrt(x ** 2 + y ** 2)
 

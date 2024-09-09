@@ -1,7 +1,8 @@
 <script lang="ts">
-	import { onMount } from 'svelte'
+	import { onMount, tick } from 'svelte'
 	import { bezierEasing } from '$lib/transitions'
-	import { getDistance } from '$lib/math'
+	import { getDistance, randomInt } from '$lib/math'
+	import { cubicOut } from 'svelte/easing'
 
 	export const featureType = 'hill'
 
@@ -13,9 +14,7 @@
 	// If let go during, tiles outside of radius are removed
 	// Tiles on board mirror the effects?
 
-	const STROKE_WIDTH = 0.2
-	const STROKE_HALF = STROKE_WIDTH / 2
-	const DURATION = 900
+	// TODO: Chip away at hills, pieces flying off
 
 	export let id: number
 	export let x: number
@@ -30,10 +29,16 @@
 	export let mouseX: number
 	export let mouseY: number
 	export let forceColor: boolean
+	export let bopMode: boolean
+
+	const STROKE_WIDTH = 0.2
+	const STROKE_HALF = STROKE_WIDTH / 2
+	const DURATION = 900
 
 	let willAnimate = true
 	let animateElement: SVGAnimateElement
 	let animateSkewElement: SVGAnimateTransformElement
+	let animatePoppingPathElement: SVGAnimateElement
 
 	let inColor = false
 	$: inColor = forceColor
@@ -59,29 +64,53 @@
 		lastTimeout = thisTimeout
 	}
 
-	export function onMouseDown(x: number, y: number) {}
-
 	$: centerX = (x + xJitter + (mini ? 1 : 1.5)) * 1.5
 	$: centerY = y + yJitter + 1
 	$: radius = (mini ? 0.8 : 1.35) + 0.2 * size
-	$: centerMass = centerY - (mini ? 0.7 : 1)
+	$: diameter = radius * 2
+	$: vertLength = mini ? 0.7 : 1
+	$: centerMass = centerY - vertLength
 	$: hover =
+		!bopMode &&
 		mouseOver &&
 		Math.abs(centerX - mouseX) < radius + STROKE_HALF &&
 		Math.abs(centerMass - mouseY) < radius + STROKE_HALF
 
-	$: hillTopPath = `M-${radius} -0.5 v${-(mini ? 0.2 : 0.5)} a${radius} ${radius} 0 0 1 ${
-		radius * 2
-	} 0 v0.5 a${radius} ${radius / 3} 0 0 1 -${radius * 2} 0`
-	$: hillBottomPath = `M${radius} -0.6 v0.6 a${radius} ${radius / 3} 0 0 1 -${
-		radius * 2
-	} 0 v-0.6`
+	$: hillBottomSegment = `a${radius} ${radius / 3} 0 0 1 -${diameter} 0`
+	$: hillTopPath = `M-${radius} -0.5 v${-(mini
+		? 0.2
+		: 0.5)} a${radius} ${radius} 0 0 1 ${diameter} 0 v0.5 ${hillBottomSegment}`
+	$: hillBottomPath = `M${radius} -0.6 v0.6 ${hillBottomSegment} v-0.6`
+	$: hillPoppedPath = `M${radius} 0 ${hillBottomSegment} a${radius} ${
+		radius / 3
+	} 0 0 1 ${diameter} 0`
 	$: hillAnimationClip = `M${-radius - STROKE_HALF} 0 v${
-		-(mini ? 0.7 : 1) - radius - STROKE_HALF
-	} h${radius * 2 + STROKE_WIDTH} v${(mini ? 0.7 : 1) + radius + STROKE_HALF} a${
+		-vertLength - radius - STROKE_HALF
+	} h${diameter + STROKE_WIDTH} v${vertLength + radius + STROKE_HALF} a${
 		radius + STROKE_HALF
-	} ${radius / 3 + STROKE_HALF} 0 0 1 ${-radius * 2 - STROKE_WIDTH} 0`
-	$: popTranslate = mini ? 2.5 : 3.3
+	} ${radius / 3 + STROKE_HALF} 0 0 1 ${-diameter - STROKE_WIDTH} 0`
+	$: popUpTranslate = mini ? 2.5 : 3.3
+
+	let popped = false
+
+	const popFragments = new Array(10)
+		.fill(0)
+		.map((i) => [randomInt(0, 200), randomInt(8, 45) / 10, randomInt(2, 6) / 10])
+
+	export function doFun(x: number, y: number) {
+		if (popped) return
+		const xDistance = x - centerX
+		const yDistance = y - centerY
+		if (
+			Math.abs(xDistance) < radius * 1.2 &&
+			yDistance < radius / 3 &&
+			yDistance > -radius - 0.3 - vertLength
+		) {
+			popped = true
+			tick().then(() => animatePoppingPathElement?.beginElement())
+			return true
+		}
+	}
 
 	onMount(() => {
 		willAnimate = animate
@@ -128,40 +157,67 @@
 				style:transform="translateY({hover ? (mini ? 0.25 : 0.4) : 0}px)"
 				style:transition="transform {hover ? 75 : 200}ms ease-out, fill {inColor
 					? 200
-					: 1000}ms ease, stroke
+					: 1000}ms {y * 20}ms ease, stroke
 				{inColor ? 200 : 1000}ms ease"
 			/>
-			<animateTransform
-				attributeName="transform"
-				type="scale"
-				begin="hill_nudge_animate_{id}.begin"
-				values="1 1;1 {nudgeScaleY};1 1"
-				keyTimes="0;0.3;1"
-				calcMode="spline"
-				dur="600ms"
-				keySplines="{bezierEasing.cubicOut};{bezierEasing.cubicIn}"
-			/>
+			{#if !popped}
+				<animateTransform
+					attributeName="transform"
+					type="scale"
+					begin="hill_nudge_animate_{id}.begin"
+					values="1 1;1 {nudgeScaleY};1 1"
+					keyTimes="0;0.3;1"
+					calcMode="spline"
+					dur="600ms"
+					keySplines="{bezierEasing.cubicOut};{bezierEasing.cubicIn}"
+				/>
+			{:else}
+				<animateTransform
+					attributeName="transform"
+					type="scale"
+					values="1 1;1 0.5"
+					dur="200ms"
+					keySplines={bezierEasing.circInOut}
+					calcMode="spline"
+					fill="freeze"
+					bind:this={animatePoppingPathElement}
+					id="hill_popping_animate_{id}"
+					begin="indefinite"
+				/>
+			{/if}
 		</g>
 		<path
 			fill="var(--{inColor ? 'before-color' : 'tertiary-color'})"
 			stroke="var(--{inColor ? 'before-color' : 'landscape-color'})"
 			stroke-width={STROKE_WIDTH}
 			stroke-linecap="round"
-			style:transition="fill {inColor ? 200 : 1000}ms ease, stroke {inColor
+			style:transition="fill {inColor ? 200 : 1000}ms {y * 20}ms ease, stroke {inColor
 				? 200
 				: 1000}ms ease"
 			d={hillBottomPath}
 		/>
-		<animate
-			id="hill_draw_animate_{id}"
-			bind:this={animateElement}
-			attributeName="opacity"
-			values="0;0;1;1"
-			keyTimes="0;0.5;0.6;1"
-			begin="indefinite"
-			dur="{DURATION}ms"
-			fill="freeze"
-		/>
+		{#if !popped}
+			<animate
+				id="hill_draw_animate_{id}"
+				bind:this={animateElement}
+				attributeName="opacity"
+				values="0;0;1;1"
+				keyTimes="0;0.5;0.6;1"
+				begin="indefinite"
+				dur="{DURATION}ms"
+				fill="freeze"
+			/>
+		{:else}
+			<animate
+				attributeName="opacity"
+				values="1;0"
+				dur="200ms"
+				keySplines={bezierEasing.cubicOut}
+				calcMode="spline"
+				fill="freeze"
+				begin="hill_popping_animate_{id}.begin+150ms"
+			/>
+		{/if}
 	</g>
 	<clipPath id="hill_clip_{id}"> <path d={hillAnimationClip} /> </clipPath>
 	<g clip-path="url(#hill_clip_{id})">
@@ -170,20 +226,20 @@
 			style:transition="transform {hover ? 75 : 200}ms ease-out"
 		>
 			<path
-				d="M-{radius} 1 v-{mini ? 1.7 : 2} a{radius} {radius} 0 0 1 {radius * 2} 0 v{mini
+				d="M-{radius} 1 v-{mini ? 1.7 : 2} a{radius} {radius} 0 0 1 {diameter} 0 v{mini
 					? 1.7
 					: 2}"
 				fill="var(--before-color)"
 				stroke="var(--before-color)"
 				stroke-width={STROKE_WIDTH}
-				transform="translate(0 {popTranslate})"
+				transform="translate(0 {popUpTranslate})"
 			>
 				<animateTransform
 					attributeName="transform"
 					type="translate"
 					begin="hill_draw_animate_{id}.begin"
 					dur="{DURATION}ms"
-					values="0 {popTranslate};0 0;0 {popTranslate}"
+					values="0 {popUpTranslate};0 0;0 {popUpTranslate}"
 					keyTimes="0;0.6;1"
 					keySplines="{bezierEasing.cubicOut};{bezierEasing.cubicIn}"
 					calcMode="spline"
@@ -192,4 +248,78 @@
 			</path>
 		</g>
 	</g>
+	{#if popped}
+		<g class="fragments">
+			{#each popFragments as [delay, magnitude, size], f}
+				<g transform="rotate({-30 + 60 * (f / (popFragments.length - 1))})">
+					<ellipse
+						cx={-radius * 0.8 + radius * 1.6 * (f / (popFragments.length - 1))}
+						cy={-radius / 1}
+						rx={size}
+						ry={size * 2.5}
+						fill="var(--{inColor ? 'before-color' : 'landscape-color'})"
+						class="fragment"
+						style:animation-delay="{150 + delay + 250}ms"
+					>
+						<animate
+							attributeName="ry"
+							values="{size * 2.5};{size}"
+							dur="200ms"
+							keySplines={bezierEasing.cubicOut}
+							calcMode="spline"
+							fill="freeze"
+							begin="hill_popping_animate_{id}.begin+{150 + delay}ms"
+						/>
+
+						<animateTransform
+							attributeName="transform"
+							type="translate"
+							values="0 0;0 -{magnitude}"
+							dur="400ms"
+							keySplines={bezierEasing.circOut}
+							calcMode="spline"
+							fill="freeze"
+							begin="hill_popping_animate_{id}.begin+{150 + delay}ms"
+						/>
+					</ellipse>
+				</g>
+			{/each}
+			<path
+				class="ring"
+				fill="none"
+				stroke="var(--{inColor ? 'before-color' : 'landscape-color'})"
+				stroke-width={STROKE_WIDTH}
+				stroke-linecap="round"
+				d={hillPoppedPath}
+			/>
+		</g>
+	{/if}
 </g>
+
+<style>
+	.ring {
+		animation: fade 5s ease-in forwards;
+	}
+
+	.explosion {
+		animation: fade 150ms 120ms cubic-bezier(0.33, 1, 0.68, 1) forwards;
+	}
+
+	.fragments {
+		opacity: 0;
+		animation: fade 50ms 150ms cubic-bezier(0.33, 1, 0.68, 1) reverse forwards;
+	}
+
+	.fragment {
+		animation: fade 150ms cubic-bezier(0.32, 0, 0.67, 0) forwards;
+	}
+
+	@keyframes fade {
+		0% {
+			opacity: 1;
+		}
+		100% {
+			opacity: 0;
+		}
+	}
+</style>

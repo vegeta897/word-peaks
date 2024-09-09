@@ -24,6 +24,9 @@
 	} from '$lib/data-model'
 	import Icon from './landscape/Icon.svelte'
 	import { landscapeFunModes } from '$lib/landscape/landscape'
+
+	// TODO: Move coffee link to footer
+
 	const {
 		landscapeWideView,
 		landscapeForceColor,
@@ -215,6 +218,17 @@
 					>{mode}</button
 				>
 			{/each}
+			<div class="promo">
+				<a
+					on:auxclick={() => trackEvent('promoLinkFollow')}
+					on:click={() => trackEvent('promoLinkFollow')}
+					href="https://buymeacoffee.com/vegeta897"
+				>
+					<span class="hide-on-small-screens">{$t('main.footer.donate')}</span>
+					<span class="hide-on-big-screens">{$t('main.footer.donate_short')}</span>
+				</a>
+			</div>
+			<button on:click={() => landscapeRedraw.set('instant')}>reset</button>
 		</div>
 	{/if}
 	{#if !showScoreShareMenu && !$hideLandscape}
@@ -227,7 +241,12 @@
 					landscapeFunMode.set(null)
 				}}
 			>
+				<!-- TODO: Change to "fun mode" button -->
 				<Icon icon="wide" active={$landscapeWideView} />
+				<!-- TODO: Remove icon when a fun mode is used (put in local storage) -->
+				{#if !$landscapeWideView}
+					<span class="new-tag">{$t('main.messages.new')}</span>
+				{/if}
 			</button>
 			<button
 				title={$t('main.other.color')}
@@ -242,7 +261,7 @@
 				on:click={() => {
 					landscapeRedrawCooldown = true
 					setTimeout(() => (landscapeRedrawCooldown = false), 2000)
-					landscapeRedraw.set(true)
+					landscapeRedraw.set('animate')
 				}}
 			>
 				<Icon icon="redraw" />
@@ -250,7 +269,7 @@
 			<button title={$t('main.results.share')} on:click={onLandscapeShare}>
 				<Icon icon="photo" />
 			</button>
-			<div class="promo">
+			<!-- <div class="promo">
 				<a
 					on:auxclick={() => trackEvent('promoLinkFollow')}
 					on:click={() => trackEvent('promoLinkFollow')}
@@ -259,7 +278,7 @@
 					<span class="hide-on-small-screens">{$t('main.footer.donate')}</span>
 					<span class="hide-on-big-screens">{$t('main.footer.donate_short')}</span>
 				</a>
-			</div>
+			</div> -->
 		</div>
 	{/if}
 	<!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -372,19 +391,12 @@
 		opacity: 0.5;
 	}
 
-	.landscape-controls .promo {
-		grid-column: 1 / span 2;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-	}
-
 	.landscape-fun {
 		width: calc(var(--board-width) - 0.5rem);
 		display: grid;
 		grid-template-columns: 1fr 1fr 1fr;
 		gap: 0.5rem;
-		height: 8.25rem;
+		/* height: 8.25rem; */
 	}
 
 	.landscape-fun button {
@@ -393,6 +405,13 @@
 
 	.landscape-fun button:hover {
 		background: var(--secondary-color);
+	}
+
+	.landscape-fun .promo {
+		grid-column: 1 / span 2;
+		display: flex;
+		justify-content: center;
+		align-items: center;
 	}
 
 	button {
@@ -492,6 +511,16 @@
 		display: none;
 	}
 
+	.new-tag {
+		background: var(--accent-color);
+		border-radius: 0.375rem;
+		padding: 0.125rem 0.5rem;
+		font-weight: 700;
+		font-size: 0.75em;
+		position: absolute;
+		top: -5px;
+	}
+
 	@media (max-width: 430px) {
 		button {
 			font-size: 1.25em;
@@ -510,7 +539,7 @@
 			gap: 0.375rem;
 		}
 		.landscape-fun {
-			height: 8.25rem;
+			/* height: 8.25rem; */
 		}
 		.hide-on-small-screens {
 			display: none;

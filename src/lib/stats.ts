@@ -4,6 +4,11 @@ import * as store from '$src/store'
 import { get } from 'svelte/store'
 import { ROWS } from './constants'
 
+// TODO: Use page visibility API to track how long page was hidden
+// https://developer.mozilla.org/en-US/docs/Web/API/Page_Visibility_API
+// Add this to a sum which is subtracted from the guess time
+// Also, reset the first-guess timer if guesses is fully deleted
+
 export type Stats = {
 	currentStreak: number
 	bestStreak: number

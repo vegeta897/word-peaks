@@ -111,7 +111,7 @@ export function createPondPath(
 		return `Q${x * scaleX + offsetX} ${y * scaleY + offsetY} ${toX} ${toY}`
 	}
 	const segmentMap: Map<string, string> = new Map()
-	const startsMap: Map<string, string> = new Map()
+	const openStartsMap: Map<string, string> = new Map()
 	for (const [x, y] of tiles) {
 		for (const [ex1, ey1, ex2, ey2, dir] of EDGES) {
 			const sx1 = x + ex1
@@ -123,10 +123,10 @@ export function createPondPath(
 			const existingSegment = segmentMap.get(segmentKey)
 			if (existingSegment) {
 				segmentMap.delete(segmentKey)
-				startsMap.delete(existingSegment)
+				openStartsMap.delete(existingSegment)
 			} else {
 				segmentMap.set(segmentKey, startKey)
-				startsMap.set(startKey, `${sx2}:${sy2}`)
+				openStartsMap.set(startKey, `${sx2}:${sy2}`)
 			}
 		}
 	}
@@ -136,28 +136,33 @@ export function createPondPath(
 	let first: XY
 	let firstMid: XY
 	let nextStartKey: string | undefined = undefined
-	while (startsMap.size > 0) {
+	while (openStartsMap.size > 0) {
 		const [startKey, toGrid] = nextStartKey
-			? [nextStartKey, startsMap.get(nextStartKey)!]
-			: [...startsMap][0]
-		startsMap.delete(startKey)
+			? [nextStartKey, openStartsMap.get(nextStartKey)!]
+			: [...openStartsMap][0]
+		openStartsMap.delete(startKey)
 		nextStartKey = undefined
 		const [startX, startY, dir] = startKey.split(':').map((v) => +v)
 		const [toX, toY] = toGrid.split(':').map((v) => +v)
 		const midX = (startX + toX) / 2
 		const midY = (startY + toY) / 2
 		if (newPath) {
+			newPath = false
 			first = [startX, startY]
 			firstMid = [midX, midY]
 			pathData += `M${midX * scaleX + offsetX} ${midY * scaleY + offsetY}`
 		} else {
 			pathData += getPathSegment([startX, startY], [midX, midY], prevMid!)
 		}
-		newPath = false
 		prevMid = [midX, midY]
 		for (const dirOffset of nextDirOffets) {
 			const tryStartKey: string = `${toGrid}:${(dir + dirOffset) % 4}`
-			if (startsMap.has(tryStartKey)) {
+			// Avoid connecting diagonals
+			const forbiddenKey: string = `${toGrid}:${(dir + dirOffset + 2) % 4}`
+			if (
+				openStartsMap.has(tryStartKey) &&
+				(dirOffset !== 3 || !segmentMap.has(forbiddenKey))
+			) {
 				nextStartKey = tryStartKey
 				break
 			}

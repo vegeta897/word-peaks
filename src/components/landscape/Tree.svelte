@@ -58,6 +58,7 @@
 		lastTimeout = thisTimeout
 	}
 
+	let plucking = false
 	let plucked = false
 	let pluckRotation = 0
 	let fallingLeaves: [
@@ -67,8 +68,8 @@
 		flickerDelay: number
 	][] = []
 
-	export async function onMouseDown(x: number, y: number) {
-		if (plucked) return
+	export function doFun(x: number, y: number) {
+		if (plucking) return
 		const xDistance = x - originX
 		const yDistance = y - centerY
 		if (
@@ -77,21 +78,24 @@
 			yDistance > -radius * 1.5
 		) {
 			// Pluck it!
-			await sleep((xDistance + yDistance / 2) * 200)
-			const pluckXDir = randomChance() ? 1 : -1
-			pluckRotation = pluckXDir * randomInt(5, 40)
-			animatePluckScaleElement?.beginElement()
-			plucked = true
-			for (let i = 0; i < 10 + size * 6; i++) {
-				fallingLeaves.push([
-					pluckRotation / 60 + randomFloat(-1, 1),
-					circleY - 1 + randomFloat(-0.7, 0.7),
-					randomInt(1600, 3000),
-					randomInt(500, 1300),
-					randomInt(400, 1000),
-				])
-			}
-			// sleep(5200).then(() => (fallingLeaves.length = 0)) // Clean up leaves
+			plucking = true
+			sleep((xDistance + yDistance / 2) * 200).then(() => {
+				const pluckXDir = randomChance() ? 1 : -1
+				pluckRotation = pluckXDir * randomInt(5, 40)
+				animatePluckScaleElement?.beginElement()
+				plucked = true
+				for (let i = 0; i < 10 + size * 6; i++) {
+					fallingLeaves.push([
+						pluckRotation / 60 + randomFloat(-1, 1),
+						circleY - 1 + randomFloat(-0.7, 0.7),
+						randomInt(1600, 3000),
+						randomInt(500, 1300),
+						randomInt(400, 1000),
+					])
+				}
+				sleep(5200).then(() => (fallingLeaves.length = 0)) // Clean up leaves
+			})
+			return true
 		} else {
 			// Almost pluck
 			const distance = getDistance(xDistance, yDistance)
@@ -175,9 +179,9 @@
 				stroke-width={STROKE_WIDTH}
 				stroke-linecap="round"
 				y2={circleY + circleTranslateY}
-				style:transition="fill {inColor ? 200 : 1000}ms ease, stroke {inColor
+				style:transition="fill {inColor ? 200 : 1000}ms {y * 20}ms ease, stroke {inColor
 					? 200
-					: 1000}ms ease"
+					: 1000}ms {y * 20}ms ease"
 			/>
 			<g
 				style:transform="translateY({circleTranslateY}px)"
@@ -190,9 +194,9 @@
 					fill="var(--{inColor ? 'correct-color' : 'tertiary-color'})"
 					stroke="var(--{inColor ? 'correct-color' : 'landscape-color'})"
 					stroke-width={STROKE_WIDTH}
-					style:transition="fill {inColor ? 200 : 1000}ms ease, stroke {inColor
+					style:transition="fill {inColor ? 200 : 1000}ms {y * 20}ms ease, stroke {inColor
 						? 200
-						: 1000}ms ease, r 200ms ease-out"
+						: 1000}ms {y * 20}ms ease, r 200ms ease-out"
 					class:plucked-treetop={plucked}
 				>
 					<animate

@@ -60,7 +60,7 @@ export const landscapeNewGame: Writable<boolean> = writable(false)
 export const landscapeNewRow: Writable<boolean> = writable(false)
 export const landscapeWideView: Writable<boolean> = writable(false)
 export const landscapeForceColor: Writable<boolean> = writable(false)
-export const landscapeRedraw: Writable<boolean> = writable(false)
+export const landscapeRedraw: Writable<'instant' | 'animate' | null> = writable(null)
 export const landscapeSVG: Writable<SVGElement | null> = writable(null)
 export const landscapeFunMode: Writable<LandscapeFunMode | null> = writable(null)
 
