@@ -26,7 +26,7 @@
 	export let forceColor: boolean
 	export let pluckMode: boolean
 
-	const STROKE_WIDTH = 0.2
+	const STROKE_WIDTH = 0.2 * 10
 	const STROKE_HALF = STROKE_WIDTH / 2
 
 	let willAnimate = true
@@ -38,19 +38,19 @@
 	$: inColor = forceColor
 	let lastTimeout: NodeJS.Timer
 	let skewX = 0
-	let nudgeY = 1
+	let nudgeY = 10
 	export function flashColor(x: number, y: number, duration: number) {
 		const distance = getDistance(x - originX, y - centerY)
-		const force = 4 - distance
+		const force = 40 - distance
 		if (force > 0) {
 			const xMagnitude = (x - originX) / distance
 			const yMagnitude = (y - centerY) / distance
-			skewX = xMagnitude * force * 4
-			nudgeY = (yMagnitude * force) / 24
+			skewX = xMagnitude * force * 0.4
+			nudgeY = (yMagnitude * force) / 240
 			animateSkewElement?.beginElement()
 		}
 		if (forceColor) return
-		const flashDelay = distance * 70
+		const flashDelay = distance * 7
 		setTimeout(() => (inColor = true), flashDelay)
 		const thisTimeout = setTimeout(() => {
 			if (lastTimeout === thisTimeout) inColor = forceColor
@@ -79,15 +79,15 @@
 		) {
 			// Pluck it!
 			plucking = true
-			sleep((xDistance + yDistance / 2) * 200).then(() => {
+			sleep((xDistance + yDistance / 2) * 20).then(() => {
 				const pluckXDir = randomChance() ? 1 : -1
 				pluckRotation = pluckXDir * randomInt(5, 40)
 				animatePluckScaleElement?.beginElement()
 				plucked = true
 				for (let i = 0; i < 10 + size * 6; i++) {
 					fallingLeaves.push([
-						pluckRotation / 60 + randomFloat(-1, 1),
-						circleY - 1 + randomFloat(-0.7, 0.7),
+						pluckRotation / 6 + randomFloat(-13, 13),
+						circleY - 10 + randomFloat(-9, 9),
 						randomInt(1600, 3000),
 						randomInt(500, 1300),
 						randomInt(400, 1000),
@@ -99,23 +99,23 @@
 		} else {
 			// Almost pluck
 			const distance = getDistance(xDistance, yDistance)
-			const force = 2 - distance
+			const force = 20 - distance
 			if (force < 0) return
 			const xMagnitude = xDistance / distance
-			skewX = xMagnitude * force * -8
-			nudgeY = force * 0.2
+			skewX = xMagnitude * force * -0.8
+			nudgeY = force * 0.1
 			animateSkewElement?.beginElement()
 		}
 	}
 
 	$: growDuration = 800 * (0.8 + size * 0.4)
 
-	$: width = 0.85 + size * 0.25
+	$: width = 8.5 + size * 0.25 * 10
 	$: trunkLength = width / 2
 	$: radius = width / 2
 
-	$: originX = (x + xJitter + 0.5) * 1.5
-	$: originY = y + yJitter + 0.5
+	$: originX = (x + xJitter + 0.5) * 1.5 * 10
+	$: originY = (y + yJitter + 0.5) * 10
 	$: centerY = originY - trunkLength - radius
 	$: hover =
 		!pluckMode &&
@@ -123,7 +123,7 @@
 		Math.abs(originX - mouseX) < radius * 1.5 &&
 		Math.abs(centerY - mouseY) < radius * 1.5
 	$: circleY = -trunkLength - radius
-	$: circleTranslateY = hover ? 0.3 : 0
+	$: circleTranslateY = hover ? 3 : 0
 
 	onMount(() => {
 		willAnimate = animate
@@ -154,7 +154,7 @@
 				stroke-width={STROKE_WIDTH * 2.5}
 				stroke-linecap="round"
 				y2={circleY + circleTranslateY}
-				style:transition="stroke 200ms ease-in"
+				style:transition="stroke {plucked ? 50 : 200}ms ease-in"
 			/>
 			<circle
 				cy={circleY}
@@ -259,7 +259,7 @@
 			dur="350ms"
 			begin="tree_pluck_scale_animate_{id}.end"
 			calcMode="spline"
-			values="0 -0.5;0 -1;0 0"
+			values="0 -5;0 -10;0 0"
 			keySplines="{bezierEasing.cubicOut};{bezierEasing.cubicIn}"
 		/>
 	</g>
@@ -320,7 +320,7 @@
 			<g style:transform="translate({leafX}px,{leafY}px)" class="burst">
 				<g
 					class="falling"
-					style:transform="translate({(Math.round(leafX * 5) % 10) * 0.05}px,2px)"
+					style:transform="translate({(Math.round(leafX * 5) % 10) * 0.05}px,20px)"
 					style:animation-duration="{fallDuration}ms"
 				>
 					<circle
@@ -356,7 +356,7 @@
 
 	@keyframes burst {
 		0% {
-			transform: translate(0, -1px) scale(4);
+			transform: translate(0, -10px) scale(6);
 			opacity: 0;
 		}
 	}

@@ -99,8 +99,8 @@ const nextDirOffets = [1, 3, 0]
 
 export function createPondPath(
 	tiles: XY[],
-	scaleX = 1.5,
-	scaleY = 1,
+	scaleX = 15,
+	scaleY = 10,
 	offsetX = 0,
 	offsetY = 0
 ) {

@@ -11,7 +11,7 @@ type EventName =
 	| 'resultShare'
 	| 'gameLost'
 	| 'idleOnFinish'
-	| 'idleBeforeFinish'
+	| 'idleBeforeFinish' // TODO: Change to just "idle"
 	| 'dailyFinish'
 	| 'promoLinkFollow'
 	| 'danceClick'

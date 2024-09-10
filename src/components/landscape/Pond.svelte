@@ -64,13 +64,15 @@
 	let nonDrainedPath: string
 
 	export async function doFun(x: number, y: number) {
+		// TODO: Freeze and then bust into shards?
 		const normalizedX = x / 1.5
 		// const clickedTile: XY = [Math.floor(normalizedX), Math.floor(y)]
 		// if (!tileGrids.has(xyToGrid(clickedTile))) return
 		const nonDrainedTiles: Map<string, XY> = new Map()
 		for (let xy of tiles) {
 			const grid = xyToGrid(xy)
-			const distance = getDistance(xy[0] + 0.5 - normalizedX, xy[1] + 0.5 - y)
+			const distance =
+				getDistance((xy[0] + 0.5) * 10 - normalizedX, (xy[1] + 0.5) * 10 - y) / 10
 			if (distance <= 2) {
 				const drainedTile = drainedTilesMap.get(grid)
 				const drainage = 1 - distance / 2
@@ -149,10 +151,10 @@
 	<g clip-path="url(#pond_path)">
 		{#key dripsID}
 			{#each dripTiles as [x, y], t}
-				<ellipse fill="var(--after-color)" cx={(x + 0.5) * 1.5} cy={y + 0.5}>
+				<ellipse fill="var(--after-color)" cx={(x * 10 + 5) * 1.5} cy={y * 10 + 5}>
 					<animate
 						attributeName="rx"
-						values="0;{mini ? 3 : 6}"
+						values="0;{mini ? 30 : 60}"
 						calcMode="spline"
 						fill="freeze"
 						dur="1500ms"
@@ -161,7 +163,7 @@
 					/>
 					<animate
 						attributeName="ry"
-						values="0;{mini ? 2 : 4}"
+						values="0;{mini ? 20 : 40}"
 						calcMode="spline"
 						fill="freeze"
 						dur="1500ms"
@@ -176,15 +178,15 @@
 		<g clip-path="url(#prev_pond_path)">
 			<path fill="var(--landscape-color)" d={previousPondPath} />
 			<path
-				style:transform="translateY(0.2px)"
+				style:transform="translateY(2px)"
 				fill="var(--tertiary-color)"
-				stroke-width="0.2"
+				stroke-width="2"
 				stroke="var(--landscape-color)"
 				d={previousPondPath}
 			/>
 		</g>
 		<path
-			stroke-width="0.2"
+			stroke-width="2"
 			stroke="var(--landscape-color)"
 			stroke-linecap="round"
 			fill="none"
@@ -209,9 +211,9 @@
 				style:transition="fill {forceColor ? 200 : 1000}ms ease"
 			/>
 			<path
-				style:transform="translateY(0.2px)"
+				style:transform="translateY(2px)"
 				fill="var(--{forceColor ? 'after-color' : 'tertiary-color'})"
-				stroke-width="0.2"
+				stroke-width="2"
 				stroke="var(--{forceColor ? 'after-color' : 'landscape-color'})"
 				style:transition="fill {forceColor ? 200 : 1000}ms ease, stroke {forceColor
 					? 200
@@ -221,7 +223,7 @@
 		</g>
 		<!-- Main outline -->
 		<path
-			stroke-width="0.2"
+			stroke-width="2"
 			stroke="var(--{forceColor ? 'after-color' : 'landscape-color'})"
 			stroke-linecap="round"
 			fill="none"
@@ -232,7 +234,7 @@
 			<radialGradient
 				id="pond_flood_gradient_{flood[0]}"
 				gradientUnits="userSpaceOnUse"
-				gradientTransform="translate({flood[1]} {flood[2]}) scale(1.5 1)"
+				gradientTransform="translate({flood[1]} {flood[2]}) scale(15 10)"
 				cx="0"
 				cy="0"
 				r={maxDistance}
@@ -261,7 +263,7 @@
 				</stop>
 			</radialGradient>
 			<path
-				stroke-width="0.26"
+				stroke-width="2.6"
 				stroke-linecap="round"
 				stroke="url('#pond_flood_gradient_{flood[0]}')"
 				fill="url('#pond_flood_gradient_{flood[0]}')"
@@ -355,10 +357,10 @@
 		d={drainingPath}
 	/> -->
 	{#each drainedTiles as { xy, drainage }}
-		{@const ry = (1 - drainage ** 3) * 0.5}
+		{@const ry = (1 - drainage ** 3) * 5}
 		<ellipse
-			cx={(xy[0] + 0.5) * 1.5}
-			cy={xy[1] + 0.5}
+			cx={(xy[0] + 0.5) * 15}
+			cy={(xy[1] + 0.5) * 10}
 			rx={ry * 1.5}
 			{ry}
 			fill="var(--after-color)"
@@ -372,15 +374,15 @@
 			d={nonDrainedPath}
 		/>
 		<path
-			style:transform="translateY(0.2px)"
+			style:transform="translateY(2px)"
 			fill="var(--{forceColor ? 'after-color' : 'tertiary-color'})"
-			stroke-width="0.2"
+			stroke-width="2"
 			stroke="var(--{forceColor ? 'after-color' : 'landscape-color'})"
 			d={nonDrainedPath}
 		/>
 	</g>
 	<path
-		stroke-width="0.2"
+		stroke-width="2"
 		stroke="var(--{forceColor ? 'after-color' : 'landscape-color'})"
 		stroke-linecap="round"
 		fill="none"

@@ -142,8 +142,8 @@
 	}
 
 	function updateMousePosition(offsetX: number, offsetY: number) {
-		mouseX = -0.1 + (offsetX / svgWidth) * (landscape.width * 1.5 + 0.2)
-		mouseY = -0.1 + (offsetY / svgHeight) * (landscape.height + 0.2)
+		mouseX = -1 + (offsetX / svgWidth) * (landscape.width * 1.5 * 10 + 2)
+		mouseY = -1 + (offsetY / svgHeight) * (landscape.height * 10 + 2)
 	}
 
 	let lastFlashAt = 0
@@ -190,7 +190,7 @@
 					if (!f) return
 					if (
 						(f.featureType === 'tree' && funMode === 'pluck') ||
-						(f.featureType === 'hill' && funMode === 'bop')
+						(f.featureType === 'hill' && funMode === 'pop')
 					) {
 						const pluckedOrBopped = !!f.doFun(mouseX, mouseY)
 						// Assigned to a const, otherwise assignment will skip evaluation
@@ -216,13 +216,14 @@
 </script>
 
 <div bind:clientWidth={containerWidth} bind:clientHeight={containerHeight}>
+	<!-- Viewbox scaled by 10 to avoid FF's crappy rasterization in some places -->
 	<svg
 		style:display={hide ? 'none' : 'block'}
 		xmlns="http://www.w3.org/2000/svg"
 		width={svgWidth}
 		height={svgHeight}
 		style:left="{Math.floor((containerWidth - svgWidth) / 2)}px"
-		viewBox="-0.1 -0.1 {landscape.width * 1.5 + 0.2} {landscape.height + 0.2}"
+		viewBox="-1 -1 {landscape.width * 1.5 * 10 + 2} {landscape.height * 10 + 2}"
 		on:pointerdown={onPointerDown}
 		on:pointermove={onSVGPointerMove}
 		on:mouseleave={onMouseLeave}
@@ -274,7 +275,7 @@
 						{mouseX}
 						{mouseY}
 						forceColor={$landscapeForceColor}
-						bopMode={$landscapeFunMode === 'bop'}
+						popMode={$landscapeFunMode === 'pop'}
 						bind:this={featureComponents[f]}
 					/>
 				{/if}
@@ -287,8 +288,8 @@
 					{cx}
 					{cy}
 					style:transform-origin="{cx}px {cy}px"
-					rx="1.5"
-					ry="1"
+					rx="15"
+					ry="10"
 					fill="#fff7"
 					class="flash"
 				/>

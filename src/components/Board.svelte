@@ -42,7 +42,7 @@
 		danceClickProgress = 0
 		const thisIdleSessionID = ++idleSessionID
 		clearTimeout(idleTimeout!)
-		if (get(store.openScreen) === null && !document.hidden) {
+		if (get(store.openScreen) === null && !document.hidden && !get(gameFinished)) {
 			await new Promise<void>((resolve) => {
 				idleTimeout = setTimeout(() => {
 					resolve()
@@ -51,6 +51,7 @@
 			if (thisIdleSessionID !== idleSessionID) return
 			if (canAnimate === null) canAnimate = animationSupported()
 			if (!canAnimate) return
+			if (get(gameFinished)) return
 			trackEvent('idleBeforeFinish')
 			const scheduler = await import('$lib/idle-scheduler')
 			scheduler.initScheduler((ROWS - get(currentRow)) * WORD_LENGTH)
