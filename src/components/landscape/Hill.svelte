@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { onMount, tick } from 'svelte'
 	import { bezierEasing } from '$lib/transitions'
-	import { getDistance, randomFloat, randomInt } from '$lib/math'
-	import { cubicOut } from 'svelte/easing'
+	import { getDistance, randomChance, randomFloat, randomInt, sleep } from '$lib/math'
 
 	export const featureType = 'hill'
 
@@ -86,16 +85,6 @@
 	} ${radius / 3 + STROKE_HALF} 0 0 1 ${-diameter - STROKE_WIDTH} 0`
 	$: popUpTranslate = mini ? 25 : 33
 
-	$: popRingSpikeZoneSegment = `h${-STROKE_HALF} v5 h-10 v-30 h${
-		diameter + 20 + STROKE_WIDTH
-	} v30 h-10`
-	$: popRingTopClip = `M${radius} 0 A${radius} ${
-		radius / 3
-	} 0 0 0 ${-radius} 0 ${popRingSpikeZoneSegment} z`
-	$: popRingBottomClip = `M${radius},0 ${hillBottomSegment} ${popRingSpikeZoneSegment} z`
-
-	let popped = false
-
 	const FRAGMENT_COUNT = 10
 	const popFragments: [delay: number, magnitude: number, size: number][] = new Array(
 		FRAGMENT_COUNT
@@ -105,46 +94,59 @@
 			const center = 1 - Math.abs((i + 0.5) / FRAGMENT_COUNT - 0.5) * 0.5
 			return [randomInt(0, 200), randomInt(8, 45), (randomInt(4, 12) / 2) * center]
 		})
-	// console.log(popFragments)
-	function createPopRingPath(radius: number, bottom = false) {
-		const spikeCount = randomInt(3, 5)
-		return new Array(spikeCount)
-			.fill(0)
-			.map((_, i) => {
-				const prevXNorm = Math.max(0, (i - 0.5) / (spikeCount - 1)) - 0.5
-				const xNorm = i / (spikeCount - 1) - 0.5
-				const xNormAndHalf = (i + 0.5) / (spikeCount - 1) - 0.5
-				const prevX = prevXNorm * radius * 2
-				const x = xNorm * radius * 2
-				const peakX = xNorm * radius * 2.1 + randomFloat(-2, 2) * Math.abs(0.5 - xNorm)
-				const xAndHalf = xNormAndHalf * radius * 2
-				const prevBaseY =
-					(Math.sqrt(radius ** 2 - prevX ** 2) / 3) * (bottom ? 1 : -1) || 0
-				const baseY = (Math.sqrt(radius ** 2 - x ** 2) / 3) * (bottom ? 1 : -1) || 0
-				// console.log(xNorm, Math.abs(0.5 - xNorm))
-				const baseYAndHalf =
-					(Math.sqrt(radius ** 2 - xAndHalf ** 2) / 3) * (bottom ? 1 : -1) || 0
-				const y = randomInt(4, 12) / 2
-				// let segment = `M${x},${baseY} L${peakX},${
-				// 	baseY - 0.5
-				// } M${xAndHalf},${baseYAndHalf} v-0.2`
-				let segment = `Q${x - 1},${prevBaseY} ${peakX},${baseY - y}`
-				if (i < spikeCount - 1) {
-					segment += ` Q${x + 1},${baseY} ${xAndHalf},${baseYAndHalf}`
-				} else {
-					segment += `L${radius},0`
-					if (bottom) segment += hillBottomSegment
-					// if (bottom) segment += 'v2h-4'
+	function createPopRingPath(radius: number) {
+		const startAtRadians = randomFloat(0, Math.PI * 2)
+		let ringProgress = 0
+		let ringSegment = 0
+		let peakStart = [0, 0]
+		let peak = false
+		let bigPeak = randomChance()
+		let path = ''
+		while (ringProgress <= 1) {
+			const radians = startAtRadians + Math.PI * 2 * ringProgress
+			const x = radius * Math.cos(radians) * (peak ? 1.1 : 1)
+			const baseY = (radius * Math.sin(radians)) / 3
+			if (path === '') {
+				path += `M${x},${baseY}`
+				peakStart = [x, baseY]
+			} else {
+				const y = peak ? baseY - (bigPeak ? randomInt(5, 7) : randomInt(2, 4)) : baseY
+				const cRadians = peak
+					? radians - 0.1
+					: startAtRadians + (ringProgress - ringSegment) * Math.PI * 2 + 0.1
+				const cx = radius * Math.cos(cRadians)
+				const cBaseY = (radius * Math.sin(cRadians)) / 3
+				path += `Q${cx},${cBaseY} ${x},${y}`
+				if (!peak) {
+					path += `A${radius},${radius / 3} 0 0 0 ${peakStart[0]},${
+						peakStart[1]
+					} M${x},${y}`
+					peakStart = [x, y]
 				}
-				return segment
-			})
-			.join(' ')
+			}
+			if (ringProgress === 1) break
+			ringSegment = Math.min(1 - ringProgress, randomFloat(0.04, 0.12))
+			ringProgress += ringSegment
+			if (peak) bigPeak = !bigPeak
+			peak = !peak
+			if (ringProgress > 0.96) {
+				if (peak) {
+					ringProgress = 0.98
+					bigPeak = false
+				} else {
+					ringProgress = 1
+				}
+			}
+		}
+		return path
 	}
-	$: popRingTopPath = createPopRingPath(radius)
-	$: popRingBottomPath = createPopRingPath(radius, true)
+	$: popRingTopPath = popped ? createPopRingPath(radius) : ''
+
+	let popping = false
+	let popped = false
 
 	export function doFun(x: number, y: number) {
-		if (popped) return
+		if (popping) return
 		const xDistance = x - centerX
 		const yDistance = y - centerY
 		if (
@@ -152,9 +154,11 @@
 			yDistance < radius / 3 &&
 			yDistance > -radius - 0.3 - vertLength
 		) {
-			// TODO: Add distance-delay, like with tree plucking
-			popped = true
-			tick().then(() => animatePoppingPathElement?.beginElement())
+			popping = true
+			sleep((xDistance + yDistance) * 20).then(() => {
+				popped = true
+				tick().then(() => animatePoppingPathElement?.beginElement())
+			})
 			return true
 		}
 	}
@@ -339,63 +343,22 @@
 					</ellipse>
 				</g>
 			{/each}
-			<ellipse
-				class="ring!"
-				fill="none"
-				stroke="var(--{inColor ? 'before-color' : 'landscape-color'})"
-				stroke-width={STROKE_WIDTH}
-				stroke-linecap="round"
-				rx={radius}
-				ry={radius / 3}
-			/>
-			<clipPath id="hill_pop_ring_top_clip_{id}"> <path d={popRingTopClip} /> </clipPath>
 			<path
 				fill="var(--{inColor ? 'before-color' : 'landscape-color'})"
 				stroke="var(--{inColor ? 'before-color' : 'landscape-color'})"
 				stroke-width={STROKE_WIDTH}
 				stroke-linecap="round"
 				stroke-linejoin="round"
+				class="ring"
 				d="M{-radius},0 {popRingTopPath}z"
-				clip-path="url(#hill_pop_ring_top_clip_{id})"
 			/>
-			<!-- <path
-				fill="none"
-				stroke="#ff0"
-				stroke-width={0.5}
-				stroke-linecap="round"
-				stroke-linejoin="round"
-				d="M{-radius},0 {popRingTopPath}z"
-				clip-path="url(#hill_pop_ring_top_clip_{id})"
-			/> -->
-			<clipPath id="hill_pop_ring_bottom_clip_{id}">
-				<path d={popRingBottomClip} />
-			</clipPath>
-			<path
-				fill="var(--{inColor ? 'before-color' : 'landscape-color'})"
-				stroke="var(--{inColor ? 'before-color' : 'landscape-color'})"
-				stroke-width={STROKE_WIDTH}
-				stroke-linecap="round"
-				stroke-linejoin="round"
-				d="M{-radius},0 {popRingBottomPath}z"
-				clip-path="url(#hill_pop_ring_bottom_clip_{id})"
-			/>
-			<!-- <path d={popRingBottomClip} fill="none" stroke="#fff" stroke-width={0.05} /> -->
-			<!-- <path
-				fill="none"
-				stroke="#0ff"
-				stroke-width={0.5}
-				stroke-linecap="round"
-				stroke-linejoin="round"
-				d="M{-radius},0 {popRingBottomPath}z"
-				clip-path="url(#hill_pop_ring_bottom_clip_{id})"
-			/> -->
 		</g>
 	{/if}
 </g>
 
 <style>
 	.ring {
-		animation: fade 1s 4.2s ease-in forwards;
+		animation: fade 1s 2s ease-in forwards;
 	}
 
 	.fragments {
