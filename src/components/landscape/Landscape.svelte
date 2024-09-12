@@ -157,6 +157,7 @@
 	// with overlay buttons to "resume" or "reset"
 
 	// TODO: Hidden gems inside the last hill, pond tile, tree
+	// TODO: Make last hill/pond/tree sparkle if only one left
 
 	// TODO: Allow click and drag, check line segment intersects for trees and ponds
 

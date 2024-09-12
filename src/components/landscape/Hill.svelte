@@ -311,7 +311,7 @@
 				class="ring"
 				d="M{-radius},0 {popRingTopPath}z"
 			/>
-			<Gem />
+			<g transform="translate(0 -16)"><Gem /></g>
 			{#each popFragments as [delay, magnitude, fSize], f}
 				<g transform="rotate({-30 + 60 * (f / (FRAGMENT_COUNT - 1))})">
 					<ellipse
