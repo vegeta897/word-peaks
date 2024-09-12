@@ -4,7 +4,33 @@
 	const STROKE_WIDTH = 2
 	const STROKE_HALF = STROKE_WIDTH / 2
 
-	const DURATION = 2000
+	const DURATION = 4000
+
+	const h = 12
+	const w = 7
+	const pw = w + 1
+
+	const outline = [
+		`M0,${-h} L${pw},0 L0,${h} L${-pw},0 Z`,
+		`M0,${-h} L${w},0 L0,${h} L${-w},0 Z`,
+		`M0,${-h} L${pw},0 L0,${h} L${-pw},0 Z`,
+	]
+
+	const topFaces = [
+		`M0,${-h} L${w},0 L${w},0 Z`,
+		`M0,${-h} L${-w},0 L${w},0 Z`,
+		`M0,${-h} L${-w},0 L${-w},0 Z`,
+		`M0,${-h} L${-w},0 L${w},0 Z`,
+		`M0,${-h} L${w},0 L${w},0 Z`,
+	]
+
+	const bottomFaces = [
+		`M0,${h} L${w},0 L${w},0 Z`,
+		`M0,${h} L${-w},0 L${w},0 Z`,
+		`M0,${h} L${-w},0 L${-w},0 Z`,
+		`M0,${h} L${-w},0 L${w},0 Z`,
+		`M0,${h} L${w},0 L${w},0 Z`,
+	]
 
 	const outlineStrokeFills = [
 		[STROKE_WIDTH * 2, 'var(--tertiary-color)', 'none'],
@@ -24,7 +50,7 @@
 		stroke-linejoin="round"
 		{stroke}
 		{fill}
-		d="M0,-22 L8,-10 L0,2 L-8,-10 Z"
+		d={outline[0]}
 	>
 		<animate
 			attributeName="d"
@@ -33,40 +59,40 @@
 			repeatCount="indefinite"
 			calcMode="spline"
 			keySplines="{bezierEasing.sineIn};{bezierEasing.sineOut}"
-			values="M0,-22 L8,-10 L0,2 L-8,-10 Z;M0,-22 L7,-10 L0,2 L-7,-10 Z;M0,-22 L8,-10 L0,2 L-8,-10 Z"
+			values={outline.join(';')}
 		/>
 	</path>
 {/each}
 <!-- TODO: Attempt a 3D tilt, add 1/8th stages with dipped middle vertex -->
-{#each [0, 1, 2, 3] as shimmer}
-	<path fill={shimmer % 2 ? '#ffffff' : '#ffbfe4'} d="M0,-22 L8,-10 L0,-10 Z">
+{#each [0, 1, 2, 3] as face}
+	<path fill={face % 2 ? '#ffffff' : '#ffbfe4'} d="M0,{-h} L{w},0 L0,0 Z">
 		<animate
 			attributeName="d"
 			dur="{DURATION}ms"
-			begin="{(shimmer * DURATION) / 4}ms"
+			begin="{(face * DURATION) / 4}ms"
 			repeatCount="indefinite"
-			values="M0,-22 L7,-10 L7,-10 Z;M0,-22 L-7,-10 L7,-10 Z;M0,-22 L-7,-10 L-7,-10 Z;M0,-22 L-7,-10 L7,-10 Z;M0,-22 L7,-10 L7,-10 Z"
+			values={topFaces.join(';')}
 		/>
 		<animate
 			attributeName="opacity"
 			dur="{DURATION}ms"
-			begin="{(shimmer * DURATION) / 4}ms"
+			begin="{(face * DURATION) / 4}ms"
 			repeatCount="indefinite"
 			values="0.5;1;0.1;0.3;0.2;0.1;0;0.3"
 		/>
 	</path>
-	<path fill={shimmer % 2 ? '#ab387c' : '#b82f7e'} d="M0,-22 L8,-10 L0,-10 Z">
+	<path fill={face % 2 ? '#ab387c' : '#b82f7e'} d="M0,{h} L{-w},0 L0,0 Z">
 		<animate
 			attributeName="d"
 			dur="{DURATION}ms"
-			begin="{((shimmer + 1) * DURATION) / 4}ms"
+			begin="{((face + 1) * DURATION) / 4}ms"
 			repeatCount="indefinite"
-			values="M0,2 L7,-10 L7,-10 Z;M0,2 L-7,-10 L7,-10 Z;M0,2 L-7,-10 L-7,-10 Z;M0,2 L7,-10 L-7,-10 Z;M0,2 L7,-10 L7,-10 Z"
+			values={bottomFaces.join(';')}
 		/>
 		<animate
 			attributeName="opacity"
 			dur="{DURATION}ms"
-			begin="{((shimmer + 1) * DURATION) / 4}ms"
+			begin="{((face + 1) * DURATION) / 4}ms"
 			repeatCount="indefinite"
 			values="0;0.2;0.5;1;0.8;0.4;0;0.1"
 		/>
