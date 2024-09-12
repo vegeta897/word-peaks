@@ -2,6 +2,7 @@
 	import { onMount, tick } from 'svelte'
 	import { bezierEasing } from '$lib/transitions'
 	import { getDistance, randomChance, randomFloat, randomInt, sleep } from '$lib/math'
+	import Gem from './Gem.svelte'
 
 	export const featureType = 'hill'
 
@@ -300,7 +301,17 @@
 		</g>
 	</g>
 	{#if popped}
-		<g class="fragments">
+		<g class="popped">
+			<path
+				fill="var(--{inColor ? 'before-color' : 'landscape-color'})"
+				stroke="var(--{inColor ? 'before-color' : 'landscape-color'})"
+				stroke-width={STROKE_WIDTH}
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				class="ring"
+				d="M{-radius},0 {popRingTopPath}z"
+			/>
+			<Gem />
 			{#each popFragments as [delay, magnitude, fSize], f}
 				<g transform="rotate({-30 + 60 * (f / (FRAGMENT_COUNT - 1))})">
 					<ellipse
@@ -343,15 +354,6 @@
 					</ellipse>
 				</g>
 			{/each}
-			<path
-				fill="var(--{inColor ? 'before-color' : 'landscape-color'})"
-				stroke="var(--{inColor ? 'before-color' : 'landscape-color'})"
-				stroke-width={STROKE_WIDTH}
-				stroke-linecap="round"
-				stroke-linejoin="round"
-				class="ring"
-				d="M{-radius},0 {popRingTopPath}z"
-			/>
 		</g>
 	{/if}
 </g>
@@ -361,7 +363,7 @@
 		animation: fade 1s 2s ease-in forwards;
 	}
 
-	.fragments {
+	.popped {
 		opacity: 0;
 		animation: fade 50ms 150ms cubic-bezier(0.33, 1, 0.68, 1) reverse forwards;
 	}
