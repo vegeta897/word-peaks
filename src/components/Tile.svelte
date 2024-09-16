@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { fly, fade } from '$lib/../lib/transitions'
-	import { quadOut } from 'svelte/easing'
+	import { sineOut, quadOut, sineIn } from 'svelte/easing'
 	import {
 		invalidWord,
 		invalidWordPreview,
@@ -11,7 +11,7 @@
 		currentRow,
 	} from '$src/store'
 	import type { Tile } from '$lib/data-model'
-	import { aprilFools } from '$lib/share'
+	import { WORD_LENGTH } from '$lib/constants'
 
 	export let tile: Omit<Tile, 'magnitude'>
 	export let current = false
@@ -21,10 +21,13 @@
 	let animate = !tile.scored
 	currentRow.subscribe(() => (animate = !tile.scored))
 
-	const tileFlipDelay = 150
+	$: tileFlipDelay = tile.id * 150
+
+	const tileFlipDuration = 500
 	const typeAnimation = { duration: 100, from: 'bottom', easing: quadOut }
 </script>
 
+<!-- svelte-ignore a11y-click-events-have-key-events -->
 <div
 	class="tile-container"
 	class:correct={tile.scored && tile.distance === 0}
@@ -40,7 +43,7 @@
 				(tile.letter < tile.letterBounds[0] || tile.letter > tile.letterBounds[1])))}
 	style={`animation-delay: ${
 		tile.id * ($notEnoughLetters || $invalidHardModeGuess ? 20 : 0)
-	}ms; --tile-animation-delay: ${tile.id * tileFlipDelay}ms;`}
+	}ms; --tile-animation-delay: ${tileFlipDelay}ms; --tile-animation-duration: ${tileFlipDuration}ms;`}
 	on:click={() => inCurrentRow && currentTile.set(tile.id)}
 >
 	{#if tile.scored}
@@ -58,7 +61,7 @@
 			class:finished={$gameFinished}
 			class:clickable={inCurrentRow}
 			class:invalid={$invalidWordPreview && inCurrentRow}
-			out:fade|local={{ delay: tile.id * tileFlipDelay + 300, duration: 0 }}
+			out:fade|local={{ delay: tileFlipDelay + tileFlipDuration * 0.6, duration: 0 }}
 		>
 			{#if tile.letter}<div in:fly={typeAnimation}>{tile.letter}</div>{/if}
 			{#if tile.letterBounds && !tile.letter && showHint}
@@ -91,6 +94,7 @@
 		position: absolute;
 		width: 100%;
 		height: 100%;
+		border-radius: 14%;
 	}
 
 	.tile-container.animate.correct::after {
@@ -100,11 +104,8 @@
 		width: 100%;
 		height: 100%;
 		border-radius: 14%;
-		animation-fill-mode: backwards;
-		animation-name: glow;
-		animation-duration: 0.8s;
-		animation-timing-function: ease-in;
-		animation-delay: var(--tile-animation-delay);
+		animation: glow calc(var(--tile-animation-duration) * 1.6) var(--tile-animation-delay)
+			ease-in backwards;
 		box-shadow: 0 0 10px var(--correct-color);
 	}
 
@@ -113,7 +114,6 @@
 		height: 100%;
 		border-radius: 14%;
 		position: absolute;
-		animation-delay: var(--tile-animation-delay);
 		top: 0;
 		left: 0;
 	}
@@ -123,10 +123,8 @@
 	}
 
 	.correct.animate .tile-background {
-		animation-fill-mode: backwards;
-		animation-name: illuminate;
-		animation-duration: 0.5s;
-		animation-timing-function: ease-in;
+		animation: illuminate var(--tile-animation-duration) var(--tile-animation-delay)
+			ease-in backwards;
 	}
 
 	.before .tile-background {
@@ -136,10 +134,8 @@
 	}
 
 	.before.animate .tile-background {
-		animation-fill-mode: backwards;
-		animation-name: rise, bulge-upper;
-		animation-duration: 0.5s;
-		animation-timing-function: ease-in, ease-out;
+		animation: bloop-up var(--tile-animation-duration) var(--tile-animation-delay)
+			backwards;
 	}
 
 	.after .tile-background {
@@ -149,38 +145,25 @@
 	}
 
 	.after.animate .tile-background {
-		animation-fill-mode: backwards;
-		animation-name: drop, bulge-lower;
-		animation-duration: 0.5s;
-		animation-timing-function: ease-in, ease-out;
+		animation: bloop-down var(--tile-animation-duration) var(--tile-animation-delay)
+			backwards;
 	}
 
-	@keyframes drop {
+	@keyframes bloop-down {
 		0% {
 			transform: translateY(-102%);
+			animation-timing-function: ease-in;
 		}
 		40% {
 			transform: translateY(0);
-		}
-	}
-
-	@keyframes rise {
-		0% {
-			transform: translateY(102%);
-		}
-		40% {
-			transform: translateY(0);
-		}
-	}
-
-	@keyframes bulge-lower {
-		40% {
 			border-bottom-left-radius: 50%;
 			border-bottom-right-radius: 50%;
+			animation-timing-function: ease-out;
 		}
 		60% {
 			border-bottom-left-radius: 14%;
 			border-bottom-right-radius: 14%;
+			animation-timing-function: ease-in;
 		}
 		100% {
 			border-bottom-left-radius: 35%;
@@ -188,14 +171,21 @@
 		}
 	}
 
-	@keyframes bulge-upper {
+	@keyframes bloop-up {
+		0% {
+			transform: translateY(102%);
+			animation-timing-function: ease-in;
+		}
 		40% {
+			transform: translateY(0);
 			border-top-left-radius: 50%;
 			border-top-right-radius: 50%;
+			animation-timing-function: ease-out;
 		}
 		60% {
 			border-top-left-radius: 14%;
 			border-top-right-radius: 14%;
+			animation-timing-function: ease-in;
 		}
 		100% {
 			border-top-left-radius: 35%;
