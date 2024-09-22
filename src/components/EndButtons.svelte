@@ -52,6 +52,11 @@
 			label: 'main.options.include_times',
 			click: toggle(store.shareTimes),
 		},
+		{
+			bind: store.hideArrows,
+			label: 'main.options.hide_arrows',
+			click: toggle(store.hideArrows),
+		},
 	]
 
 	function shareText() {
@@ -61,6 +66,7 @@
 		const emojiGridParams: Parameters<typeof getEmojiGrid>[0] = {
 			guesses: get(store.guesses),
 			answer: get(store.answer),
+			hideArrows: get(store.hideArrows),
 		}
 		let totalTime = ''
 		if (get(store.shareTimes)) {
@@ -95,6 +101,7 @@
 			totalTime: get(store.shareTimes) ? get(store.totalGuessTimeString) : undefined,
 			showURL: get(store.shareURL),
 			hash: hash || undefined,
+			hideArrows: get(store.hideArrows),
 		})
 		canvas.toBlob((blob) => {
 			canvasBlob = blob!
@@ -166,7 +173,7 @@
 						on:click={toggleOption.click}
 						hideLabel
 						label={$t(toggleOption.label)}
-						style="transform: scale(1.2); touch-action: manipulation; flex-basis: 2.5rem;"
+						style="transform: scale(var(--toggle-scale)); touch-action: manipulation; flex-basis: 2.5rem;"
 						toggledColor="var(--accent-color)"
 						untoggledColor="#695d6e"
 					>
@@ -398,13 +405,17 @@
 		flex-grow: 1;
 		margin: 0 auto;
 		padding: 0 0.25rem 0 0.5rem;
+		height: 100%;
+		display: flex;
+		flex-direction: column;
+		justify-content: space-evenly;
+		--toggle-scale: 1.2;
 	}
 
 	.label {
 		order: -1;
 		flex-grow: 1;
 		font-size: 1.2em;
-		margin: 0.875rem 0;
 		padding-right: 0.625rem;
 	}
 
@@ -468,6 +479,7 @@
 		}
 		.share-options {
 			font-size: 0.75em;
+			--toggle-scale: 1;
 		}
 		.landscape-controls {
 			gap: 0.375rem;

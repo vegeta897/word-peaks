@@ -86,6 +86,7 @@
 		"allow_dancing_letters": "Permitir letras dançantes",
 		"include_link": "Incluir link",
 		"include_times": "Incluir tempos",
+		"hide_arrows": "Hide arrows",
 		"show_precise_times": "Mostrar horários precisos"
 	},
 	"footer": {

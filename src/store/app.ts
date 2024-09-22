@@ -28,6 +28,7 @@ export const allowDancing: Writable<boolean> = storageWritable('wp-allowDancing'
 export const hideLandscape: Writable<boolean> = storageWritable('wp-hideLandscape', false)
 export const shareURL: Writable<boolean> = storageWritable('wp-shareURL', true)
 export const shareTimes: Writable<boolean> = storageWritable('wp-shareTimes', false)
+export const hideArrows: Writable<boolean> = storageWritable('wp-hideArrows', false)
 export const preciseTimes: Writable<boolean> = storageWritable('wp-preciseTimes', false)
 
 export const lastPlayedDaily: Writable<number> = storageWritable('wp-lastPlayedDaily', -1)

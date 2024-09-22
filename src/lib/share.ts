@@ -26,10 +26,12 @@ export function getEmojiGrid({
 	guesses,
 	answer,
 	guessTimes,
+	hideArrows,
 }: {
 	guesses: string[]
 	answer: string
 	guessTimes?: string[]
+	hideArrows: boolean
 }): string {
 	let timeStringPad: number
 	if (guessTimes) timeStringPad = longestStringLength(guessTimes)
@@ -42,7 +44,7 @@ export function getEmojiGrid({
 					[...word]
 						.map((letter, l) => {
 							if (letter === answer[l]) return '🟩'
-							return letter > answer[l] ? downTile : '🔼'
+							return hideArrows ? '🟪' : letter > answer[l] ? downTile : '🔼'
 						})
 						.join('') + (guessTimes ? ' ' + guessTimes[w].padStart(timeStringPad) : '')
 			)
@@ -83,6 +85,7 @@ export function drawResults(
 		totalTime,
 		showURL,
 		hash,
+		hideArrows,
 	}: {
 		highContrast: boolean
 		boardContent: Board
@@ -92,6 +95,7 @@ export function drawResults(
 		totalTime?: string
 		showURL: boolean
 		hash?: string
+		hideArrows: boolean
 	}
 ): void {
 	if (!canvas) return
@@ -122,14 +126,15 @@ export function drawResults(
 	ctx.font = '50px Arial'
 	ctx.textAlign = 'right'
 	ctx.textBaseline = 'middle'
-	const isAprilFools = aprilFools()
+	// const isAprilFools = aprilFools()
 	boardContent.forEach((row, r) => {
 		if (r >= guesses.length) return
 		row.forEach((tile, t) => {
 			let topRadius = 12
 			let bottomRadius = 12
-			if (tile.distance === 0) {
-				ctx.fillStyle = highContrast ? '#64ba2e' : '#15a850'
+			const correctTile = tile.distance === 0
+			if (correctTile || hideArrows) {
+				ctx.fillStyle = correctTile ? (highContrast ? '#64ba2e' : '#15a850') : '#a640c7'
 			} else if (tile.distance > 0) {
 				ctx.fillStyle = '#567de8'
 				bottomRadius = 31
