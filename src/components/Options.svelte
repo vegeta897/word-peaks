@@ -204,7 +204,7 @@
 		cursor: pointer;
 		outline: none;
 		border-radius: 0.75rem;
-		background-color: var(--tertiary-color);
+		background-color: #695d6e;
 		overflow: hidden;
 	}
 
