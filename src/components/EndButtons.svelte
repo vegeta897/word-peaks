@@ -102,6 +102,7 @@
 			showURL: get(store.shareURL),
 			hash: hash || undefined,
 			hideArrows: get(store.hideArrows),
+			tileSharpness: get(store.tileSharpness),
 		})
 		canvas.toBlob((blob) => {
 			canvasBlob = blob!
@@ -183,14 +184,14 @@
 			</div>
 		{:else}
 			<div class="action-items">
-				<button on:click={() => (showScoreShareMenu = true)}
-					>{$t('main.results.share')}</button
-				>
+				<button on:click={() => (showScoreShareMenu = true)}>
+					{$t('main.results.share')}
+				</button>
 				{#if gameMode === 'daily'}
 					{#if nextWordReady}
-						<button class="play-button" on:click={playDaily}
-							>{$t('main.results.play_daily')}</button
-						>
+						<button class="play-button" on:click={playDaily}>
+							{$t('main.results.play_daily')}
+						</button>
 					{:else}
 						<div class="countdown">
 							<Time mode="countdown" alwaysShowHours ms={nextDailyTime} class="time">
@@ -199,9 +200,9 @@
 						</div>
 					{/if}
 				{:else}
-					<button class="play-button" on:click={() => playRandom(getRandomWord())}
-						>{$t('main.results.play_random')}</button
-					>
+					<button class="play-button" on:click={() => playRandom(getRandomWord())}>
+						{$t('main.results.play_random')}
+					</button>
 				{/if}
 			</div>
 		{/if}

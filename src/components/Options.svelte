@@ -10,10 +10,12 @@
 	import { loadTranslations, t } from '$lib/translations'
 	import lang from '$lib/translations/lang.json'
 	import Screen from '$com/Screen.svelte'
+	import Tile from './Tile.svelte'
 
 	const languages = Object.entries(lang).map(([value, label]) => ({ value, label }))
 
-	const { storedLocale, keyboardLayout, highContrast, showAllHints } = store
+	const { storedLocale, keyboardLayout, highContrast, showAllHints, tileSharpness } =
+		store
 
 	let _keyboardLayoutOptions = [...keyboardLayoutOptions]
 
@@ -126,6 +128,26 @@
 				untoggledColor="#695d6e"><div class="label">{$t(toggleOption.label)}</div></Toggle
 			>
 		{/each}
+		<div class="slider-container">
+			<label>
+				Tile sharpness
+				<input
+					type="range"
+					bind:value={$tileSharpness}
+					min="0"
+					max="2"
+					step="0.02"
+					list="tileSharpnessOptions"
+				/>
+				<datalist id="tileSharpnessOptions">
+					<option value="0.72" />
+				</datalist>
+			</label>
+			<div style="margin-right: 0.25rem;">
+				<Tile tile={{ scored: true, letter: 'w', distance: -1, id: 0, polarity: 0 }} />
+			</div>
+			<Tile tile={{ scored: true, letter: 'p', distance: 1, id: 0, polarity: 0 }} />
+		</div>
 	</div>
 </Screen>
 
@@ -156,6 +178,54 @@
 		font-size: 1.2em;
 		margin: 0.8rem 0;
 		padding: 0.4rem 0.8rem 0.4rem 0;
+	}
+
+	.slider-container {
+		display: flex;
+		margin-top: 0.75rem;
+		margin-right: -7px;
+		align-items: center;
+	}
+
+	.slider-container label {
+		flex-grow: 1;
+		font-size: 1.2em;
+		display: flex;
+		flex-direction: column;
+		padding-right: 2rem;
+	}
+
+	.slider-container input {
+		max-width: 16rem;
+		margin-top: 1rem;
+		-webkit-appearance: none;
+		appearance: none;
+		width: 100%;
+		cursor: pointer;
+		outline: none;
+		border-radius: 0.75rem;
+		background-color: var(--tertiary-color);
+		overflow: hidden;
+	}
+
+	.slider-container input::-webkit-slider-thumb {
+		-webkit-appearance: none;
+		appearance: none;
+		width: 1.5rem;
+		height: 1.5rem;
+		border-radius: 50%;
+		background-color: #fff;
+		border: none;
+		box-shadow: -16.75rem 0 0 16rem var(--accent-color);
+	}
+
+	.slider-container input::-moz-range-thumb {
+		width: 1.5rem;
+		height: 1.5rem;
+		border-radius: 50%;
+		background-color: #fff;
+		border: none;
+		box-shadow: -16.75rem 0 0 16rem var(--accent-color);
 	}
 
 	@media (max-width: 480px) {

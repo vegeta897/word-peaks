@@ -119,14 +119,14 @@
 	.guess-letter.before {
 		background: var(--before-color);
 		border-color: var(--before-color);
-		border-top-left-radius: 35%;
-		border-top-right-radius: 35%;
+		border-top-left-radius: var(--tile-arrow-radius);
+		border-top-right-radius: var(--tile-arrow-radius);
 	}
 	.guess-letter.after {
 		background: var(--after-color);
 		border-color: var(--after-color);
-		border-bottom-left-radius: 35%;
-		border-bottom-right-radius: 35%;
+		border-bottom-left-radius: var(--tile-arrow-radius);
+		border-bottom-right-radius: var(--tile-arrow-radius);
 	}
 
 	.guess-table .time-value {

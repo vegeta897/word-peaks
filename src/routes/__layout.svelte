@@ -25,6 +25,8 @@
 	import { SvelteToast } from '@zerodevx/svelte-toast'
 	import { highContrast, dyslexicFont, lastPlayedDaily } from '$src/store'
 	import { aprilFools } from '$lib/share'
+	import { tileArrowRadius } from '$src/store'
+
 	$: isAprilFools = $lastPlayedDaily && aprilFools()
 </script>
 
@@ -57,7 +59,7 @@
 	{/if}
 </svelte:head>
 
-<div id="main">
+<div id="main" style="--tile-arrow-radius: {$tileArrowRadius}">
 	<SvelteToast options={{ intro: { y: 0 }, duration: 2000 }} />
 	<slot />
 </div>

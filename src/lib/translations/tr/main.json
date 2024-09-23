@@ -87,7 +87,8 @@
 		"include_link": "Adresi ekle",
 		"include_times": "Süreyi ekle",
 		"hide_arrows": "Hide arrows",
-		"show_precise_times": "Hassas süreleri göster"
+		"show_precise_times": "Hassas süreleri göster",
+		"tile_sharpness": "Tile sharpness"
 	},
 	"footer": {
 		"credits": "<a href=\"https://github.com/vegeta897/word-peaks\">açık kaynak</a> kodlu bir proje",

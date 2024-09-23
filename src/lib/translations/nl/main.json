@@ -87,7 +87,8 @@
 		"include_link": "Koppeling toevoegen",
 		"include_times": "Voeg tijden toe",
 		"hide_arrows": "Hide arrows",
-		"show_precise_times": "Toon precieze tijden"
+		"show_precise_times": "Toon precieze tijden",
+		"tile_sharpness": "Tile sharpness"
 	},
 	"footer": {
 		"credits": "een <a href=\"https://github.com/vegeta897/word-peaks\">open source</a> project",

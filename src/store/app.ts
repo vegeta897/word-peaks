@@ -30,6 +30,17 @@ export const shareURL: Writable<boolean> = storageWritable('wp-shareURL', true)
 export const shareTimes: Writable<boolean> = storageWritable('wp-shareTimes', false)
 export const hideArrows: Writable<boolean> = storageWritable('wp-hideArrows', false)
 export const preciseTimes: Writable<boolean> = storageWritable('wp-preciseTimes', false)
+export const tileSharpness: Writable<number> = storageWritable('wp-tileSharpness', 0.72)
+export const tileArrowRadius: Readable<string> = derived(
+	[tileSharpness],
+	([$tileSharpness]) => {
+		if ($tileSharpness <= 1) {
+			return `${14 + $tileSharpness * 36}%`
+		} else {
+			return `50% ${50 + ($tileSharpness - 1) * 36}%`
+		}
+	}
+)
 
 export const lastPlayedDaily: Writable<number> = storageWritable('wp-lastPlayedDaily', -1)
 

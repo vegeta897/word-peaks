@@ -98,7 +98,7 @@
 	section {
 		flex-grow: 1;
 		position: relative;
-		padding: 1rem 1.5rem;
+		padding: 1rem 1.5rem 3.5rem;
 		box-sizing: border-box;
 	}
 	section.no-title {

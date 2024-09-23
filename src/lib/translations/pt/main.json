@@ -87,7 +87,8 @@
 		"include_link": "Incluir link",
 		"include_times": "Incluir tempos",
 		"hide_arrows": "Hide arrows",
-		"show_precise_times": "Mostrar horários precisos"
+		"show_precise_times": "Mostrar horários precisos",
+		"tile_sharpness": "Tile sharpness"
 	},
 	"footer": {
 		"credits": "um projeto <a href=\"https://github.com/vegeta897/word-peaks\">open source</a>",

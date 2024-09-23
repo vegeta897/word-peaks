@@ -74,6 +74,8 @@ export async function shareImage(blob: Blob, name: string): Promise<void> {
 	if (navigator.share) await navigator.share(shareData)
 }
 
+const TILE_SIZE = 88
+
 export function drawResults(
 	canvas: HTMLCanvasElement,
 	{
@@ -86,6 +88,7 @@ export function drawResults(
 		showURL,
 		hash,
 		hideArrows,
+		tileSharpness,
 	}: {
 		highContrast: boolean
 		boardContent: Board
@@ -96,6 +99,7 @@ export function drawResults(
 		showURL: boolean
 		hash?: string
 		hideArrows: boolean
+		tileSharpness: number
 	}
 ): void {
 	if (!canvas) return
@@ -115,37 +119,51 @@ export function drawResults(
 	) => {
 		rBottom = rBottom ?? rTop
 		ctx.beginPath()
-		ctx.moveTo(x + rTop, y)
-		ctx.arcTo(x + w, y, x + w, y + h, rTop)
-		ctx.arcTo(x + w, y + h, x, y + h, rBottom)
-		ctx.arcTo(x, y + h, x, y, rBottom)
-		ctx.arcTo(x, y, x + w, y, rTop)
+		const maxRadius = Math.max(rTop, rBottom)
+		if (maxRadius > h * 0.5) {
+			if (rBottom > rTop) {
+				ctx.ellipse(x + w / 2, y + (h - rBottom), w / 2, rBottom, 0, Math.PI, 0, true)
+				ctx.arcTo(x + w, y, x, y, rTop)
+				ctx.arcTo(x, y, x, y + h, rTop)
+			} else {
+				ctx.ellipse(x + w / 2, y + rTop, w / 2, rTop, 0, Math.PI, 0)
+				ctx.arcTo(x + w, y + h, x, y + h, rBottom)
+				ctx.arcTo(x, y + h, x, y, rBottom)
+			}
+		} else {
+			ctx.moveTo(x + rTop, y)
+			ctx.arcTo(x + w, y, x + w, y + h, rTop)
+			ctx.arcTo(x + w, y + h, x, y + h, rBottom)
+			ctx.arcTo(x, y + h, x, y, rBottom)
+			ctx.arcTo(x, y, x + w, y, rTop)
+		}
 		ctx.closePath()
 		ctx.fill()
 	}
 	ctx.font = '50px Arial'
 	ctx.textAlign = 'right'
 	ctx.textBaseline = 'middle'
-	// const isAprilFools = aprilFools()
+	const arrowRadius =
+		TILE_SIZE *
+		(tileSharpness <= 1 ? 0.14 + tileSharpness * 0.36 : 0.5 + (tileSharpness - 1) * 0.36)
 	boardContent.forEach((row, r) => {
 		if (r >= guesses.length) return
 		row.forEach((tile, t) => {
-			let topRadius = 12
-			let bottomRadius = 12
+			let topRadius = TILE_SIZE * 0.14
+			let bottomRadius = TILE_SIZE * 0.14
 			const correctTile = tile.distance === 0
 			if (correctTile || hideArrows) {
 				ctx.fillStyle = correctTile ? (highContrast ? '#64ba2e' : '#15a850') : '#a640c7'
 			} else if (tile.distance > 0) {
 				ctx.fillStyle = '#567de8'
-				bottomRadius = 31
+				bottomRadius = arrowRadius
 			} else {
 				ctx.fillStyle = highContrast ? '#da3f8b' : '#e38f2f'
-				topRadius = 31
+				topRadius = arrowRadius
 			}
 			const x = 8 + t * 100
 			const y = 8 + r * 100
-			const l = 88
-			roundedRectangle(x, y, l, l, topRadius, bottomRadius)
+			roundedRectangle(x, y, TILE_SIZE, TILE_SIZE, topRadius, bottomRadius)
 		})
 		if (guessTimes) {
 			ctx.fillStyle = '#a7a1a9'
