@@ -25,6 +25,9 @@
 		_keyboardLayoutOptions.find((o) => o.value === 'alphabetic')!.label = get(t)(
 			'main.options.alphabetic'
 		)
+		_keyboardLayoutOptions.find((o) => o.value === 'alphabetic_reversed')!.label = get(t)(
+			'main.options.alphabetic_reversed'
+		)
 		_keyboardLayoutOptions = _keyboardLayoutOptions
 	}
 

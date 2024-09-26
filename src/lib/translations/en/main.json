@@ -81,7 +81,7 @@
 		"show_all_hints": "Show all hints in row",
 		"swap_enter_backspace": "Swap Enter/Backspace keys",
 		"alphabetic": "Alphabetic",
-        "reverse_alphabetic": "Alphabetic (reversed)",
+		"alphabetic_reversed": "Alphabetic (reversed)",
 		"use_dyslexic_font": "OpenDyslexic font",
 		"hide_landscape": "Hide landscape",
 		"allow_dancing_letters": "Allow dancing letters",
