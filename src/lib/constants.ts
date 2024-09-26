@@ -10,6 +10,7 @@ export const keyboardLayoutNames = [
 	'qwertz',
 	'dvorak',
 	'colemak',
+	'alphabetic_reversed',
 ] as const
 export type KeyboardLayout = typeof keyboardLayoutNames[number]
 export const keyboardLayoutOptions: {
@@ -75,6 +76,16 @@ export const keyboardLayoutOptions: {
 			['q', 'w', 'f', 'p', 'g', 'j', 'l', 'u', 'y'],
 			['a', 'r', 's', 't', 'd', 'h', 'n', 'e', 'i', 'o'],
 			['z', 'x', 'c', 'v', 'b', 'k', 'm'],
+		],
+		wideKeysRow: 2,
+	},
+	{
+		value: 'alphabetic_reversed',
+		label: 'Alphabetic (reversed)',
+		layout: [
+			['z', 'y', 'x', 'w', 'v', 'u', 't', 's', 'r', 'q'],
+			['p', 'o', 'n', 'm', 'l', 'k', 'j', 'i', 'h', 'g'],
+			['f', 'e', 'd', 'c', 'b', 'a'],
 		],
 		wideKeysRow: 2,
 	},
