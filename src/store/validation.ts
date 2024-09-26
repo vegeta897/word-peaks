@@ -32,7 +32,7 @@ export function validateLocalStorage() {
 	if (![true, false].includes(get(app.shareTimes))) app.shareTimes.set(false)
 	if (![true, false].includes(get(app.preciseTimes))) app.preciseTimes.set(false)
 	if (!keyboardLayoutNames.includes(get(app.keyboardLayout)))
-		app.keyboardLayout.set('qwerty')
+		app.keyboardLayout.set('alphabetic')
 
 	// Stats
 	const stats = get(app.stats)
