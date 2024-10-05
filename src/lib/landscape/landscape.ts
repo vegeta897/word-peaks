@@ -96,3 +96,19 @@ const rowToWord = (row: Tile[]) => row.map((t) => t.letter).join('')
 
 export const landscapeFunModes = ['pop', 'sop', 'pluck'] as const
 export type LandscapeFunMode = typeof landscapeFunModes[number]
+
+export type FunStats = {
+	totalGems: 0
+	activeDayNumber: 0
+	activeDayGems: 0
+	counts: { pluck: 0; pop: 0; sop: 0 }
+}
+
+export function newFunStats(): FunStats {
+	return {
+		totalGems: 0,
+		activeDayNumber: 0,
+		activeDayGems: 0,
+		counts: { pluck: 0, pop: 0, sop: 0 },
+	}
+}
