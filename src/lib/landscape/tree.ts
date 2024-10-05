@@ -19,11 +19,11 @@ export function createTrees(
 		const [grid, { x, y }] = randomElementWeighted(
 			openTilesArray,
 			openTilesArray.map(([, { y, centerWeight, nearTrees }]) =>
-				// Prioritize center tree placement on winning row
+				// De-prioritize center tree placement on winning row
 				y === 0 // Trees at the top would be cut off
 					? 0
 					: winningRow
-					? centerWeight ** 3
+					? centerWeight ** 0.25
 					: centerWeight * ((nearTrees || 0) + 1)
 			),
 			getRng
