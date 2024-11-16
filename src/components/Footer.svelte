@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { t } from '$lib/translations'
-	import { DiscordIconPathData, TwitterIconPathData } from '$lib/constants'
+	import { DiscordIconPathData, BlueskyIconPathData } from '$lib/constants'
 </script>
 
 <footer>
@@ -21,11 +21,11 @@
 			<pre>vegeta897</pre>
 		</div>
 		<div class="footer-item icon-item">
-			<svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 248 204">
-				<title>Twitter</title>
-				<path fill="#bbbbbb" d={TwitterIconPathData} />
+			<svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 520">
+				<title>Bluesky</title>
+				<path fill="#bbbbbb" d={BlueskyIconPathData} />
 			</svg>
-			<a href="https://twitter.com/vegeta897">@vegeta897</a>
+			<a href="https://bsky.app/profile/vegeta897.bsky.social">@vegeta897</a>
 		</div>
 	</div>
 </footer>
