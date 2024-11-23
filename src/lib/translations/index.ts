@@ -14,6 +14,7 @@ export const config: Config = {
 		de: { lang },
 		pl: { lang },
 	},
+	fallbackLocale: 'en',
 	loaders: [
 		{
 			locale: 'en',
