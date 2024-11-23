@@ -79,6 +79,7 @@
 		"hard_mode": "Hard mode",
 		"high_contrast_mode": "High contrast mode",
 		"show_all_hints": "Show all hints in row",
+		"preview_invalid_words": "Preview invalid words",
 		"swap_enter_backspace": "Swap Enter/Backspace keys",
 		"alphabetic": "Alphabetic",
 		"alphabetic_reversed": "Alphabetic (reversed)",

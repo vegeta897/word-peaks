@@ -29,7 +29,7 @@ export function resetGuess() {
 	store.notEnoughLetters.set(false)
 }
 
-export function typeLetter(letter: string) {
+export async function typeLetter(letter: string) {
 	if (get(store.gameFinished)) return
 	loadDictionary().catch((_) => {
 		showError(get(t)('main.messages.need_reload'), () => {}, 8000)
@@ -55,12 +55,10 @@ export function typeLetter(letter: string) {
 	if (letter || _currentTile < WORD_LENGTH - 1) {
 		store.currentTile.update((ct) => ct + 1)
 		const typedWord = getBoardRowString(get(store.boardContent)[_currentRow])
-		if (typedWord.length === WORD_LENGTH) {
-			loadDictionary().then(async () => {
-				if (typedWord !== get(store.answer) && !(await isValidWord(typedWord))) {
-					store.invalidWordPreview.set(true)
-				}
-			})
+		if (typedWord.length === WORD_LENGTH && get(store.previewInvalidWords)) {
+			if (typedWord !== get(store.answer) && !(await isValidWord(typedWord))) {
+				store.invalidWordPreview.set(true)
+			}
 		}
 	}
 }
@@ -116,6 +114,7 @@ export async function submitRow() {
 	}
 	if (submittedWord !== get(store.answer) && !validWord) {
 		store.invalidWord.set(true)
+		store.invalidWordPreview.set(true)
 		showError(get(t)('main.messages.invalid_word'), () => store.invalidWord.set(false))
 		submitting = false
 		return

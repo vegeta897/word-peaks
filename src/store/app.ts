@@ -15,6 +15,10 @@ export const openScreen: Writable<null | 'options' | 'tutorial' | 'stats'> =
 
 export const highContrast: Writable<boolean> = storageWritable('wp-highContrast', false)
 export const showAllHints: Writable<boolean> = storageWritable('wp-showAllHints', false)
+export const previewInvalidWords: Writable<boolean> = storageWritable(
+	'wp-previewInvalidWords',
+	true
+)
 export const swapEnterBackspace: Writable<boolean> = storageWritable(
 	'wp-swapEnterBackspace',
 	false

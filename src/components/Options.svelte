@@ -56,6 +56,11 @@
 			click: toggle(showAllHints),
 		},
 		{
+			bind: store.previewInvalidWords,
+			label: 'main.options.preview_invalid_words',
+			click: toggle(store.previewInvalidWords),
+		},
+		{
 			bind: store.swapEnterBackspace,
 			label: 'main.options.swap_enter_backspace',
 			click: toggle(store.swapEnterBackspace),
