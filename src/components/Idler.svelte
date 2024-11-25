@@ -114,7 +114,7 @@
 	}
 	.letter {
 		position: relative;
-		top: 3px;
+		top: 1px;
 		text-transform: uppercase;
 		font-weight: 700;
 		color: #5b505e;
@@ -128,7 +128,7 @@
 			transform: scale(1.25) translateY(18px);
 		}
 		.letter {
-			top: 0;
+			top: -2px;
 		}
 	}
 	@media (max-width: 640px) {
@@ -136,7 +136,7 @@
 			transform: translateY(20px);
 		}
 		.letter {
-			top: -3px;
+			top: -4px;
 		}
 	}
 	@media (max-width: 560px) {
@@ -146,7 +146,7 @@
 	}
 	@media (max-width: 480px) {
 		.letter {
-			top: -6px;
+			top: -8px;
 		}
 	}
 	@media (max-width: 430px) {
@@ -154,7 +154,7 @@
 			transform: translateY(14px);
 		}
 		.letter {
-			top: -7px;
+			top: -9px;
 		}
 	}
 	@media (max-width: 390px) {
@@ -162,7 +162,7 @@
 			transform: scale(0.95) translateY(13px);
 		}
 		.letter {
-			top: -9px;
+			top: -12px;
 		}
 	}
 	@media (max-width: 375px) {
@@ -170,7 +170,7 @@
 			transform: scale(0.9) translateY(14px);
 		}
 		.letter {
-			top: -10px;
+			top: -12px;
 		}
 	}
 </style>

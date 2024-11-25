@@ -162,7 +162,7 @@
 	:root {
 		--tile-margin: 5px;
 		--tile-size: 70px;
-		--tile-font-size: 2.5rem;
+		--tile-font-size: 2.75rem;
 		--board-width: calc(5 * var(--tile-size) + 4 * var(--tile-margin));
 	}
 
@@ -233,7 +233,7 @@
 	@media (max-width: 640px) {
 		:root {
 			--tile-size: 58px;
-			--tile-font-size: 2rem;
+			--tile-font-size: 2.375rem;
 		}
 	}
 	@media (max-width: 560px) {
@@ -255,14 +255,14 @@
 	@media (max-width: 390px) {
 		:root {
 			--tile-size: 44px;
-			--tile-font-size: 1.9rem;
+			--tile-font-size: 1.875rem;
 		}
 	}
 	@media (max-width: 375px) {
 		:root {
 			--tile-size: 42px;
 			--tile-margin: 2px;
-			--tile-font-size: 1.8rem;
+			--tile-font-size: 1.75rem;
 		}
 		.container {
 			margin-bottom: 4px;

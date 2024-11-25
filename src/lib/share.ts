@@ -150,11 +150,10 @@ export function drawResults(
 	ctx.textBaseline = 'alphabetic'
 	ctx.fillStyle = '#cccccc'
 	if (totalTime) ctx.fillText(totalTime, canvas.width - 6, guesses.length * 100 + 44)
-	ctx.font = '40px Arial'
+	ctx.font = '40px sans-serif'
 	ctx.textAlign = totalTime ? 'left' : 'center'
 	ctx.fillText(caption, totalTime ? 8 : canvas.width / 2, guesses.length * 100 + 44)
 	if (showURL) {
-		ctx.font = '40px Arial'
 		let url = 'wordpeaks.com'
 		if (hash) url += '/#' + hash
 		ctx.fillStyle = '#a7a1a9'

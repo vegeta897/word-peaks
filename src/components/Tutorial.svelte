@@ -62,6 +62,11 @@
 		margin: 0.9rem auto;
 	}
 
+	p {
+		font-family: var(--reading-font);
+		font-size: 18px;
+	}
+
 	.row p {
 		margin: 0;
 	}
