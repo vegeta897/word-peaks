@@ -250,12 +250,15 @@ function defineAnimation(definition: AnimationDefinition): MultipartAnimation {
 	for (const part of AnimationParts) {
 		const partKeyframes = animation[part]
 		if (partKeyframes) {
+			// Insert first and/or last frames if definition is missing offset 0 and/or 1
 			const firstFrame = partKeyframes[0]
 			if (firstFrame.offset && firstFrame.offset > 0)
 				partKeyframes.unshift({ ...firstFrame, offset: 0 })
 			const lastFrame = partKeyframes[partKeyframes.length - 1]!
 			if (lastFrame.offset && lastFrame.offset < 1)
 				partKeyframes.push({ ...lastFrame, offset: 1 })
+			// Animations need at least 2 frames to work properly
+			if (partKeyframes.length === 1) partKeyframes.push({ ...firstFrame, offset: 1 })
 		}
 	}
 	return animation
