@@ -52,7 +52,7 @@ export function getSchedule(id: string): IdleSchedule | { wait: number } {
 		? idlers / 2.5
 		: Math.min(idlers / randomInt(3, 5), ((Date.now() - scheduleBegin) / 1000 - 20) / 30)
 	if (!firstIdler && animating.size > maxAnimations)
-		return { wait: randomFloat(5000, idlers * 2 * 1000) }
+		return { wait: fastStart ? 250 : randomFloat(5000, idlers * 2 * 1000) }
 	const letter = randomElement(firstIdler ? firstLetterAlphabet : alphabet)
 	const schedule: IdleSchedule = { letter, animations: [] }
 	if (firstIdler || randomChance(0.95)) {
