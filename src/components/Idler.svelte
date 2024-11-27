@@ -26,8 +26,7 @@
 	const performAnimation = async (
 		animation: MultipartAnimation,
 		endDelay = 0,
-		iterations = 1,
-		fill: FillMode = 'forwards'
+		iterations = 1
 	): Promise<void> => {
 		await Promise.all(
 			AnimationParts.map(async (part) => {
@@ -36,9 +35,10 @@
 					await element.animate(animation[part]!, {
 						duration: animation.duration,
 						iterations,
-						endDelay,
-						fill,
+						fill: 'forwards',
 					}).finished
+					// Using the animation API's endDelay causes flickering on iOS, so we sleep instead
+					await sleep(endDelay)
 				}
 			})
 		)

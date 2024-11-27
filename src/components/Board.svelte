@@ -118,13 +118,11 @@
 											<!-- svelte-ignore a11y-click-events-have-key-events -->
 											<div
 												class="dance-tile"
-												style:opacity={((t < danceClickProgress ? 1 : 0) *
-													danceClickProgress) /
-													5}
+												style:opacity={danceClickProgress / 5 || 1}
 												on:click={() => danceClick(t)}
 												out:fade={{ duration: 500 }}
 											>
-												{'DANCE'[t]}
+												{'DANCE'.substring(0, danceClickProgress)[t] || ''}
 											</div>
 										{/if}
 										{#if idle && tile.letter === '' && r > $currentRow}

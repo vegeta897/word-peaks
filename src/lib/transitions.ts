@@ -43,8 +43,6 @@ export const bezierEasing = {
 
 // Based on https://codepen.io/danwilson/pen/xGBKVq
 export const animationSupported = (): boolean => {
-	// Unfortunately we can't risk having Chrome iOS's flickering animation bugs
-	if (navigator.userAgent.match('iPhone.*CriOS')) return false
 	const element = document.createElement('a')
 	document.body.appendChild(element)
 	if (!element.animate) return false
