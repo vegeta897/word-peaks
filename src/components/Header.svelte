@@ -32,10 +32,7 @@
 <header class:high-contrast={$highContrast}>
 	<div class="heading-container">
 		<h1>
-			<span style="letter-spacing: -1px;"
-				>Word <span class:leak={leakActive}>{isAprilFools ? 'Leaks' : 'Peaks'}</span
-				></span
-			>
+			Word <span class:leak={leakActive}>{isAprilFools ? 'Leaks' : 'Peaks'}</span>
 			{#if browser}
 				<small class="game-mode">
 					{#if $gameMode === 'daily'}

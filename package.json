@@ -30,7 +30,7 @@
 		"typescript": "~4.5.4"
 	},
 	"dependencies": {
-		"@fontsource/orienta": "^5.1.0",
+		"@fontsource-variable/asap": "^5.1.0",
 		"plausible-tracker": "^0.3.5",
 		"rand-seed": "^1.0.1",
 		"sveltekit-i18n": "^2.1.3"

@@ -5,7 +5,7 @@
 	import type { Load } from '@sveltejs/kit'
 	import { get } from 'svelte/store'
 	import { browser } from '$app/env'
-	import '@fontsource/orienta'
+	import '@fontsource-variable/asap'
 	export const load: Load = async () => {
 		if (!browser) {
 			await loadTranslations('en')

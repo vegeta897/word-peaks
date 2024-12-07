@@ -40,7 +40,7 @@ export type IdleSchedule = {
 }
 
 // Avoid letters that don't look as good for the first idler
-const firstLetterAlphabet = alphabet.filter((l) => !['l', 'i'].includes(l))
+const firstLetterAlphabet = alphabet.filter((l) => !['l', 'i', 'q'].includes(l))
 
 export function getSchedule(id: string): IdleSchedule | { wait: number } {
 	const firstIdler = !fastStart && idlerIDs.size === 0
