@@ -1,6 +1,6 @@
 {
   ".svelte-kit/runtime/client/start.js": {
-    "file": "start-6dd5692e.js",
+    "file": "start-8420504f.js",
     "src": ".svelte-kit/runtime/client/start.js",
     "isEntry": true,
     "imports": [
@@ -13,7 +13,7 @@
       "src/routes/__layout.svelte",
       ".svelte-kit/runtime/components/error.svelte",
       "src/routes/debug.svelte",
-      "_index-18865342.js",
+      "_index-270b6d18.js",
       "src/routes/no-landscape.svelte",
       "src/routes/random.svelte",
       "src/routes/stats.svelte"
@@ -59,7 +59,7 @@
     ]
   },
   "src/routes/no-landscape.svelte": {
-    "file": "pages/no-landscape.svelte-b9f89a8d.js",
+    "file": "pages/no-landscape.svelte-bedcf3b7.js",
     "src": "src/routes/no-landscape.svelte",
     "isEntry": true,
     "isDynamicEntry": true,
@@ -67,7 +67,7 @@
       "_index-0dc809ca.js",
       "_paths-396f020f.js",
       "_index-2a8aa57a.js",
-      "_index-18865342.js",
+      "_index-270b6d18.js",
       "_preload-helper-5ea9bf72.js",
       "_index-83aebdf3.js",
       "_share-6b036bd3.js"
@@ -109,13 +109,13 @@
     ]
   },
   "src/routes/index.svelte": {
-    "file": "pages/index.svelte-42753d46.js",
+    "file": "pages/index.svelte-549edce0.js",
     "src": "src/routes/index.svelte",
     "isEntry": true,
     "imports": [
       "_preload-helper-5ea9bf72.js",
       "_index-0dc809ca.js",
-      "_index-18865342.js",
+      "_index-270b6d18.js",
       "_index-2a8aa57a.js",
       "_index-83aebdf3.js",
       "_share-6b036bd3.js",
@@ -170,8 +170,8 @@
       "_index-0dc809ca.js"
     ]
   },
-  "_index-18865342.js": {
-    "file": "chunks/index-18865342.js",
+  "_index-270b6d18.js": {
+    "file": "chunks/index-270b6d18.js",
     "isDynamicEntry": true,
     "imports": [
       "_preload-helper-5ea9bf72.js",
@@ -274,11 +274,11 @@
     ]
   },
   "src/lib/landscape/canvas.ts": {
-    "file": "chunks/canvas-2b087025.js",
+    "file": "chunks/canvas-de84218c.js",
     "src": "src/lib/landscape/canvas.ts",
     "isDynamicEntry": true,
     "imports": [
-      "_index-18865342.js",
+      "_index-270b6d18.js",
       "_preload-helper-5ea9bf72.js",
       "_index-0dc809ca.js",
       "_index-2a8aa57a.js",
