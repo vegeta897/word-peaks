@@ -138,7 +138,7 @@
 		{/each}
 		<div class="slider-container">
 			<label>
-				Tile sharpness
+				{$t('main.options.tile_sharpness')}
 				<input
 					type="range"
 					bind:value={$tileSharpness}
