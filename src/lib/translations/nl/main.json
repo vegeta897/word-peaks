@@ -79,16 +79,18 @@
 		"hard_mode": "Moeilijke Modus",
 		"high_contrast_mode": "Hoog contrast modus",
 		"show_all_hints": "Toon alle hints in rij",
+		"preview_invalid_words": "Voorbeeldweergave ongeldige woorden",
 		"swap_enter_backspace": "Wissel Enter/Backspace toetsen",
 		"alphabetic": "Alfabetisch",
+		"alphabetic_reversed": "Alfabetisch (omgedraaid)",
 		"use_dyslexic_font": "OpenDyslexisch lettertype",
 		"hide_landscape": "Landschap verbergen",
 		"allow_dancing_letters": "Laat dansende letters toe",
 		"include_link": "Koppeling toevoegen",
 		"include_times": "Voeg tijden toe",
-		"hide_arrows": "Hide arrows",
+		"hide_arrows": "Pijlen verbergen",
 		"show_precise_times": "Toon precieze tijden",
-		"tile_sharpness": "Tile sharpness"
+		"tile_sharpness": "Tegel scherpte"
 	},
 	"footer": {
 		"credits": "een <a href=\"https://github.com/vegeta897/word-peaks\">open source</a> project",
