@@ -7,7 +7,7 @@
 	import { trackEvent } from '$lib/plausible'
 	import { animationSupported } from '$lib/transitions'
 	import { ROWS, WORD_LENGTH } from '$lib/constants'
-	import { browser } from '$app/env'
+	import { browser } from '$app/environment'
 	import { fade } from 'svelte/transition'
 	import LastGameDetail from './LastGameDetail.svelte'
 	import { cubicOut } from 'svelte/easing'
@@ -32,7 +32,7 @@
 	let idle = false
 	let canAnimate: boolean | null = null
 
-	let idleTimeout: NodeJS.Timer | undefined
+	let idleTimeout: number | undefined
 	let idleSessionID = 0
 
 	async function waitForIdle() {
@@ -104,7 +104,7 @@
 				{#if !$gameFinished || !$lastGameDetail || !$showEndView}
 					<div
 						class="tile-row-container"
-						transition:fade|local={{ duration: transitionDuration, easing: cubicOut }}
+						transition:fade={{ duration: transitionDuration, easing: cubicOut }}
 					>
 						{#each $boardContent as boardRow, r}
 							<div class="tile-row">
@@ -116,12 +116,12 @@
 										showHint={!$gameFinished && (t === $currentTile || $showAllHints)}
 									>
 										{#if !idle && !$guesses[0] && r === ROWS - 1}
-											<!-- svelte-ignore a11y-click-events-have-key-events -->
+											<!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
 											<div
 												class="dance-tile"
 												style:opacity={danceClickProgress / 5 || 1}
 												on:click={() => danceClick(t)}
-												out:fade={{ duration: 500 }}
+												out:fade|global={{ duration: 500 }}
 											>
 												{'DANCE'.substring(0, danceClickProgress)[t] || ''}
 											</div>

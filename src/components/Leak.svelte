@@ -24,7 +24,7 @@
 		dripTimeout = setTimeout(newDrip, dripDelay + dripDuration)
 	}
 
-	let dripTimeout: NodeJS.Timer
+	let dripTimeout: number
 	onMount(() => {
 		dripTimeout = setTimeout(newDrip, 500 + Math.floor(Math.random() * 500))
 		return () => clearTimeout(dripTimeout)
@@ -36,7 +36,7 @@
 	viewBox="0 0 10 10"
 	width="100%"
 	height="100%"
-	out:fade={{
+	out:fade|global={{
 		delay: $currentRow ? 150 * tileID : 0,
 		duration: $currentRow ? 400 : 0,
 		easing: cubicIn,
@@ -49,8 +49,8 @@
 				bind:this={animateElement}
 				attributeName="d"
 				values="M{dripX} {9.8 - dripSize} a 0.1 0.1 0 1 0 0.1 0;M{dripX} {10 -
-					dripSize} a {dripSize * 0.9} {dripSize * 0.9} 0 1 0 0.1 0;M{dripX} 16 a {dripSize *
-					0.7} {dripSize * 1.6} 0 1 0 0.1 0"
+					dripSize} a {dripSize * 0.9} {dripSize *
+					0.9} 0 1 0 0.1 0;M{dripX} 16 a {dripSize * 0.7} {dripSize * 1.6} 0 1 0 0.1 0"
 				dur="{dripDuration}ms"
 				keyTimes="0;{dripGrowStart / dripDuration};1"
 				calcMode="spline"

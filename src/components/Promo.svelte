@@ -7,7 +7,7 @@
 </script>
 
 {#if $showEndView && $dismissPromo < CURRENT_PROMO}
-	<section in:fly={{ duration: 400, y: 100 }}>
+	<section in:fly|global={{ duration: 400, y: 100 }}>
 		<div>
 			<p class="promo-link">
 				<a

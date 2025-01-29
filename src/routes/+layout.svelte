@@ -1,25 +1,3 @@
-<script lang="ts" context="module">
-	import { trackPageview } from '$lib/plausible'
-	import { locales, loadTranslations, getNavigatorLanguage } from '$lib/translations'
-	import { storedLocale } from '$src/store'
-	import type { Load } from '@sveltejs/kit'
-	import { get } from 'svelte/store'
-	import { browser } from '$app/env'
-	export const load: Load = async () => {
-		if (!browser) {
-			await loadTranslations('en')
-			return {}
-		}
-		let initialLocale = get(storedLocale)
-		if (!initialLocale) initialLocale = getNavigatorLanguage()
-		if (!locales.get().includes(initialLocale)) initialLocale = 'en'
-		storedLocale.set(initialLocale)
-		await loadTranslations(initialLocale)
-		return {}
-	}
-	trackPageview()
-</script>
-
 <script lang="ts">
 	import '../app.css'
 	import { SvelteToast } from '@zerodevx/svelte-toast'

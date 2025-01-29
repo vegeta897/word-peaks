@@ -104,9 +104,9 @@
 				<Select
 					items={languages}
 					value={{ label: language.label, value: $storedLocale }}
-					on:select={({ detail: { value } }) => onLanguageChange(value)}
-					isClearable={false}
-					isSearchable={false}
+					on:change={({ detail: { value } }) => onLanguageChange(value)}
+					clearable={false}
+					searchable={false}
 					containerStyles="color: var(--primary-color);flex: 1 1 auto;width:13rem;"
 					inputStyles="box-sizing: border-box;"
 				/>
@@ -118,9 +118,9 @@
 			<Select
 				items={keyboardLayoutOptions}
 				value={{ label: keyboard.label, value: $keyboardLayout }}
-				on:select={({ detail: { value } }) => keyboardLayout.set(value)}
-				isClearable={false}
-				isSearchable={false}
+				on:change={({ detail: { value } }) => keyboardLayout.set(value)}
+				clearable={false}
+				searchable={false}
 				containerStyles="color: var(--primary-color);flex: 1 1 auto;width:13rem;"
 				inputStyles="box-sizing: border-box;"
 			/>

@@ -9,7 +9,7 @@
 	import { t } from '$lib/translations'
 	import { moveCarat, submitRow, typeLetter, undoLetter } from '$lib/board'
 	import { get } from 'svelte/store'
-	import { browser } from '$app/env'
+	import { browser } from '$app/environment'
 
 	// TODO: Make all key rows fill width of screen
 

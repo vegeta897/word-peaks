@@ -19,7 +19,7 @@
 		lastGameDetail.guesses[lastGameDetail.guesses.length - 1] === lastGameDetail.answer
 </script>
 
-<section transition:fade|local={{ duration: 250, easing: cubicOut }}>
+<section transition:fade={{ duration: 250, easing: cubicOut }}>
 	<table class="guess-table">
 		{#each lastGameDetail.guesses as guess, g}
 			<tr class="guess-row">

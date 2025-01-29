@@ -15,11 +15,11 @@
 
 <section>
 	{#if $showEndView}
-		<div transition:fade={{ duration: transitionDuration, easing: cubicOut }}>
+		<div transition:fade|global={{ duration: transitionDuration, easing: cubicOut }}>
 			<EndButtons gameMode={$gameMode} />
 		</div>
 	{:else}
-		<div transition:fade={{ duration: transitionDuration, easing: cubicOut }}>
+		<div transition:fade|global={{ duration: transitionDuration, easing: cubicOut }}>
 			<Keyboard />
 		</div>
 	{/if}

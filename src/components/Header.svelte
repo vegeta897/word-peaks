@@ -9,15 +9,16 @@
 		gameFinished,
 	} from '$src/store'
 	import { OptionsIconPathData } from '$lib/constants'
-	import { browser } from '$app/env'
+	import { browser } from '$app/environment'
 	import { aprilFools } from '$lib/share'
 	import { getRandomWord, playDaily, playRandom } from '$lib/data-model'
 	import { fly } from 'svelte/transition'
 	import { toast } from '@zerodevx/svelte-toast'
 	import { get } from 'svelte/store'
+	import type { MouseEventHandler } from 'svelte/elements'
 
 	const toastTheme = { theme: { '--toastBackground': 'var(--cta-color)' } }
-	const newRandomWord: svelte.JSX.MouseEventHandler<HTMLButtonElement> = (event) => {
+	const newRandomWord: MouseEventHandler<HTMLButtonElement> = (event) => {
 		const gameInProgress = !get(gameFinished)
 		playRandom(getRandomWord())
 		event.currentTarget.blur()
@@ -61,7 +62,7 @@
 				</button>
 				{#if $gameMode !== 'daily'}
 					<button
-						transition:fly={{ x: -10, duration: 150 }}
+						transition:fly|global={{ x: -10, duration: 150 }}
 						on:click={newRandomWord}
 						class="new-random"
 						title={$t('main.other.new_word')}
@@ -209,7 +210,9 @@
 	}
 
 	.menu-buttons button.bulge span {
-		transition: font-size 150ms ease-in-out, transform 200ms ease-in-out 150ms;
+		transition:
+			font-size 150ms ease-in-out,
+			transform 200ms ease-in-out 150ms;
 	}
 
 	@media (hover: hover) {

@@ -1,40 +1,40 @@
 import { derived, writable } from 'svelte/store'
 import type { Writable, Readable } from 'svelte/store'
-import { writable as storageWritable } from 'svelte-local-storage-store'
+import { persisted } from 'svelte-persisted-store'
 import type { Stats, GameDetail, TimeStats } from '$lib/stats'
 import { newStats, newTimeStats } from '$lib/stats'
 import { gameMode } from '$src/store/game-state'
 import type { KeyboardLayout } from '$lib/constants'
 import type { Landscape } from '$lib/landscape/landscape'
 
-export const storeVersion: Writable<number> = storageWritable('wp-version', 0)
-export const storedLocale: Writable<string> = storageWritable('wp-locale', '')
+export const storeVersion: Writable<number> = persisted('wp-version', 0)
+export const storedLocale: Writable<string> = persisted('wp-locale', '')
 
 export const openScreen: Writable<null | 'options' | 'tutorial' | 'stats'> =
 	writable(null)
 
-export const highContrast: Writable<boolean> = storageWritable('wp-highContrast', false)
-export const showAllHints: Writable<boolean> = storageWritable('wp-showAllHints', false)
-export const previewInvalidWords: Writable<boolean> = storageWritable(
+export const highContrast: Writable<boolean> = persisted('wp-highContrast', false)
+export const showAllHints: Writable<boolean> = persisted('wp-showAllHints', false)
+export const previewInvalidWords: Writable<boolean> = persisted(
 	'wp-previewInvalidWords',
 	true
 )
-export const swapEnterBackspace: Writable<boolean> = storageWritable(
+export const swapEnterBackspace: Writable<boolean> = persisted(
 	'wp-swapEnterBackspace',
 	false
 )
-export const keyboardLayout: Writable<KeyboardLayout> = storageWritable(
+export const keyboardLayout: Writable<KeyboardLayout> = persisted(
 	'wp-keyboardLayout',
 	'alphabetic'
 )
-export const dyslexicFont: Writable<boolean> = storageWritable('wp-dyslexicFont', false)
-export const allowDancing: Writable<boolean> = storageWritable('wp-allowDancing', true)
-export const hideLandscape: Writable<boolean> = storageWritable('wp-hideLandscape', false)
-export const shareURL: Writable<boolean> = storageWritable('wp-shareURL', true)
-export const shareTimes: Writable<boolean> = storageWritable('wp-shareTimes', false)
-export const hideArrows: Writable<boolean> = storageWritable('wp-hideArrows', false)
-export const preciseTimes: Writable<boolean> = storageWritable('wp-preciseTimes', false)
-export const tileSharpness: Writable<number> = storageWritable('wp-tileSharpness', 0.72)
+export const dyslexicFont: Writable<boolean> = persisted('wp-dyslexicFont', false)
+export const allowDancing: Writable<boolean> = persisted('wp-allowDancing', true)
+export const hideLandscape: Writable<boolean> = persisted('wp-hideLandscape', false)
+export const shareURL: Writable<boolean> = persisted('wp-shareURL', true)
+export const shareTimes: Writable<boolean> = persisted('wp-shareTimes', false)
+export const hideArrows: Writable<boolean> = persisted('wp-hideArrows', false)
+export const preciseTimes: Writable<boolean> = persisted('wp-preciseTimes', false)
+export const tileSharpness: Writable<number> = persisted('wp-tileSharpness', 0.72)
 export const tileArrowRadius: Readable<string> = derived(
 	[tileSharpness],
 	([$tileSharpness]) => {
@@ -46,18 +46,15 @@ export const tileArrowRadius: Readable<string> = derived(
 	}
 )
 
-export const lastPlayedDaily: Writable<number> = storageWritable('wp-lastPlayedDaily', -1)
+export const lastPlayedDaily: Writable<number> = persisted('wp-lastPlayedDaily', -1)
 
-export const stats: Writable<Stats> = storageWritable('wp-stats', newStats())
-export const timeStats: Writable<TimeStats> = storageWritable(
-	'wp-timeStats',
-	newTimeStats()
-)
-export const lastDailyDetail: Writable<GameDetail | null> = storageWritable(
+export const stats: Writable<Stats> = persisted('wp-stats', newStats())
+export const timeStats: Writable<TimeStats> = persisted('wp-timeStats', newTimeStats())
+export const lastDailyDetail: Writable<GameDetail | null> = persisted(
 	'wp-lastDailyDetail',
 	null
 )
-export const lastRandomDetail: Writable<GameDetail | null> = storageWritable(
+export const lastRandomDetail: Writable<GameDetail | null> = persisted(
 	'wp-lastRandomDetail',
 	null
 )
@@ -81,4 +78,4 @@ export const landscapeSVG: Writable<SVGElement | null> = writable(null)
 
 export const newUser: Writable<boolean> = writable(false)
 
-export const dismissPromo: Writable<number> = storageWritable('wp-dismissPromo', 0)
+export const dismissPromo: Writable<number> = persisted('wp-dismissPromo', 0)

@@ -11,5 +11,5 @@
 	"[svelte]": {
 		"editor.defaultFormatter": "svelte.svelte-vscode"
 	},
-	"editor.defaultColorDecorators": true
+	"editor.defaultColorDecorators": "auto"
 }

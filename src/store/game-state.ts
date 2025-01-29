@@ -7,25 +7,25 @@ import {
 	getValidLetters,
 	scoreTile,
 } from '$lib/data-model'
-import { writable as storageWritable } from 'svelte-local-storage-store'
+import { persisted } from 'svelte-persisted-store'
 import { ROWS } from '$lib/constants'
 
-export const answerDaily: Writable<string> = storageWritable('wp-answer', '')
-export const answerRandom: Writable<string> = storageWritable('wp-answerRandom', '')
+export const answerDaily: Writable<string> = persisted('wp-answer', '')
+export const answerRandom: Writable<string> = persisted('wp-answerRandom', '')
 
-export const guessesDaily: Writable<string[]> = storageWritable('wp-guesses', [])
-export const guessesRandom: Writable<string[]> = storageWritable('wp-guessesRandom', [])
+export const guessesDaily: Writable<string[]> = persisted('wp-guesses', [])
+export const guessesRandom: Writable<string[]> = persisted('wp-guessesRandom', [])
 
-export const lastPlayedDailyWasHard: Writable<boolean> = storageWritable(
+export const lastPlayedDailyWasHard: Writable<boolean> = persisted(
 	'wp-lastPlayedWasHard',
 	false
 )
-export const lastPlayedRandomWasHard: Writable<boolean> = storageWritable(
+export const lastPlayedRandomWasHard: Writable<boolean> = persisted(
 	'wp-lastPlayedRandomWasHard',
 	false
 )
 
-const hardModeStored: Writable<boolean> = storageWritable('wp-hardMode', false)
+const hardModeStored: Writable<boolean> = persisted('wp-hardMode', false)
 export const hardMode: Readable<boolean> = derived(
 	hardModeStored,
 	($hardModeStored) => $hardModeStored
@@ -67,14 +67,8 @@ export function updateGuesses(fn: Updater<string[]>): void {
 	;(get(gameMode) === 'daily' ? guessesDaily : guessesRandom).update(fn)
 }
 
-export const guessTimesDaily: Writable<number[]> = storageWritable(
-	'wp-guessTimesDaily',
-	[]
-)
-export const guessTimesRandom: Writable<number[]> = storageWritable(
-	'wp-guessTimesRandom',
-	[]
-)
+export const guessTimesDaily: Writable<number[]> = persisted('wp-guessTimesDaily', [])
+export const guessTimesRandom: Writable<number[]> = persisted('wp-guessTimesRandom', [])
 export const guessTimes: Readable<number[]> = derived(
 	[gameMode, guessTimesDaily, guessTimesRandom],
 	([$gameMode, $guessTimesDaily, $guessTimesRandom]) =>

@@ -85,7 +85,6 @@
 		{/if}
 		{#if gameMode === 'random'}<em>{$t('main.stats.stats_daily')}</em>{/if}
 		<div class="import-export">
-			<span class="new-tag">{$t('main.messages.new')}</span>
 			<a href="{base}/stats">{$t('main.stats.import_export')}</a>
 		</div>
 	</section>
@@ -161,12 +160,12 @@
 		margin-top: 1.5rem;
 	}
 
-	.new-tag {
+	/* .new-tag {
 		background: var(--accent-color);
 		border-radius: 0.375rem;
 		padding: 0.25rem 0.5rem;
 		font-weight: 700;
-	}
+	} */
 
 	@media (max-width: 480px) {
 		.stats-item {

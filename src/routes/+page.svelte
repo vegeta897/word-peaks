@@ -8,7 +8,7 @@
 	import Options from '$com/Options.svelte'
 	import { decodeWord, playDaily, playRandom } from '$lib/data-model'
 	import * as store from '$src/store'
-	import { browser } from '$app/env'
+	import { browser } from '$app/environment'
 	import { page } from '$app/stores'
 	import Footer from '$com/Footer.svelte'
 	import Header from '$com/Header.svelte'

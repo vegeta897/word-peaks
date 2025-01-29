@@ -9,6 +9,7 @@
 	import { getDistance, type XY } from '$lib/math'
 	import { tick } from 'svelte'
 	import { bezierEasing } from '$lib/transitions'
+	import type { PointerEventHandler } from 'svelte/elements'
 
 	const { landscapeForceColor } = store
 
@@ -157,7 +158,7 @@
 	let flashAnimateElement: SVGAnimateElement
 	$: landscapeSpan = getDistance(landscape.width + 3, landscape.height + 3)
 
-	const flashColors: svelte.JSX.PointerEventHandler<SVGElement> = (event) => {
+	const flashColors: PointerEventHandler<SVGElement> = (event) => {
 		if (event.pointerType === 'mouse' && event.button !== 0) return
 		updateMousePosition(event)
 		const now = Date.now()
@@ -200,6 +201,7 @@
 		on:pointermove={onPointerMove}
 		on:mouseleave={onMouseLeave}
 		bind:this={svgElement}
+		role="application"
 	>
 		{#key redraw}
 			<Pond

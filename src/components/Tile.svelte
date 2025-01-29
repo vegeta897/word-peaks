@@ -27,8 +27,9 @@
 	const typeAnimation = { duration: 100, from: 'bottom', easing: quadOut }
 </script>
 
-<!-- svelte-ignore a11y-click-events-have-key-events -->
+<!-- svelte-ignore a11y-click-events-have-key-events a11y-interactive-supports-focus -->
 <div
+	role="button"
 	class="tile-container"
 	class:correct={tile.scored && tile.distance === 0}
 	class:before={tile.distance < 0}
@@ -61,9 +62,9 @@
 			class:finished={$gameFinished}
 			class:clickable={inCurrentRow}
 			class:invalid={$invalidWordPreview && inCurrentRow}
-			out:fade|local={{ delay: tileFlipDelay + tileFlipDuration * 0.6, duration: 0 }}
+			out:fade={{ delay: tileFlipDelay + tileFlipDuration * 0.6, duration: 0 }}
 		>
-			{#if tile.letter}<div in:fly={typeAnimation}>{tile.letter}</div>{/if}
+			{#if tile.letter}<div in:fly|global={typeAnimation}>{tile.letter}</div>{/if}
 			{#if tile.letterBounds && !tile.letter && showHint}
 				<span class="hint"
 					>{tile.letterBounds[0]}

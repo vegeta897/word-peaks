@@ -1,7 +1,7 @@
 <script lang="ts">
 	import * as store from '$src/store'
 	import { get } from 'svelte/store'
-	import { browser } from '$app/env'
+	import { browser } from '$app/environment'
 
 	const storeProps = Object.entries(store)
 		.filter(

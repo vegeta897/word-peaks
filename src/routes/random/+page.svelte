@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation'
-	import { browser } from '$app/env'
+	import { browser } from '$app/environment'
 	import { base } from '$app/paths'
 	import { encodeWord, getRandomWord } from '$lib/data-model'
 

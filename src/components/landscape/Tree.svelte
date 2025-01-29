@@ -26,7 +26,7 @@
 
 	let inColor = false
 	$: inColor = forceColor
-	let lastTimeout: NodeJS.Timer
+	let lastTimeout: number
 	let nudgeX = 0
 	let nudgeY = 1
 	export function flashColor(x: number, y: number, duration: number) {
@@ -42,9 +42,12 @@
 		if (forceColor) return
 		const flashDelay = distance * 70
 		setTimeout(() => (inColor = true), flashDelay)
-		const thisTimeout = setTimeout(() => {
-			if (lastTimeout === thisTimeout) inColor = forceColor
-		}, Math.max(duration, flashDelay))
+		const thisTimeout = setTimeout(
+			() => {
+				if (lastTimeout === thisTimeout) inColor = forceColor
+			},
+			Math.max(duration, flashDelay)
+		)
 		lastTimeout = thisTimeout
 	}
 

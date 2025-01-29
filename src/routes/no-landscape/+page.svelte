@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { base } from '$app/paths'
 	import { hideLandscape } from '$src/store'
-	import Index from './index.svelte'
+	import Index from '../+page.svelte'
 
 	hideLandscape.set(true)
 </script>

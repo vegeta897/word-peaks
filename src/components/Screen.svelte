@@ -2,30 +2,32 @@
 	import { slide } from 'svelte/transition'
 	import { quadOut } from 'svelte/easing'
 	import { openScreen } from '$src/store'
+	import type { MouseEventHandler, KeyboardEventHandler } from 'svelte/elements'
 
 	export let title: string
 
 	let backgroundElement: HTMLDivElement
 	let backgroundClickTarget: EventTarget
-	const onBackgroundMousedown: svelte.JSX.MouseEventHandler<HTMLDivElement> = (event) => {
+	const onBackgroundMousedown: MouseEventHandler<HTMLDivElement> = (event) => {
 		if (event.target === backgroundElement) backgroundClickTarget = event.target
 	}
-	const onBackgroundMouseup: svelte.JSX.MouseEventHandler<HTMLDivElement> = (event) => {
+	const onBackgroundMouseup: MouseEventHandler<HTMLDivElement> = (event) => {
 		if (event.target === backgroundClickTarget) {
 			event.preventDefault()
 			openScreen.set(null)
 		}
 	}
-	const handleKeyDown: svelte.JSX.KeyboardEventHandler<Window> = ({ key }) => {
+	const handleKeyDown: KeyboardEventHandler<Window> = ({ key }) => {
 		if (key === 'Escape') openScreen.set(null)
 	}
 </script>
 
 <svelte:window on:keydown={handleKeyDown} />
+<!-- svelte-ignore a11y-no-static-element-interactions -->
 <div
 	class="background"
 	bind:this={backgroundElement}
-	transition:slide={{ easing: quadOut, duration: 250 }}
+	transition:slide|global={{ easing: quadOut, duration: 250 }}
 	on:mousedown={onBackgroundMousedown}
 	on:mouseup={onBackgroundMouseup}
 >

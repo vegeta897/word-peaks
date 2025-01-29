@@ -1,6 +1,6 @@
 import adapter from '@sveltejs/adapter-static'
 import preprocess from 'svelte-preprocess'
-import path from 'path'
+import { vitePreprocess } from '@sveltejs/vite-plugin-svelte'
 
 const dev = process.env.NODE_ENV === 'development'
 const netlify = process.env.NETLIFY_BUILD
@@ -9,23 +9,20 @@ const netlify = process.env.NETLIFY_BUILD
 const config = {
 	// Consult https://github.com/sveltejs/svelte-preprocess
 	// for more information about preprocessors
-	preprocess: preprocess(),
+	preprocess: [vitePreprocess(), preprocess()],
 
 	kit: {
 		adapter: adapter(),
-		vite: {
-			resolve: {
-				alias: {
-					$src: path.resolve('./src'),
-					$com: path.resolve('./src/components'),
-				},
-			},
-		},
 		paths: {
 			base: dev || netlify ? '' : '/word-peaks',
 		},
-		prerender: {
-			default: true,
+		alias: {
+			$src: 'src',
+			'$src/*': 'src/*',
+			$lib: 'src/lib',
+			'$lib/*': 'src/lib/*',
+			$com: 'src/components',
+			'$com/*': 'src/components/*',
 		},
 	},
 }

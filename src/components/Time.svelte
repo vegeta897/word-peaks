@@ -18,7 +18,7 @@
 	let countdown = mode === 'countdown'
 	let msTotal = countdown ? ms - Date.now() : ms
 
-	let interval: NodeJS.Timer
+	let interval: number
 	if (countdown && msTotal > 0) {
 		interval = setInterval(() => {
 			msTotal = ms - Date.now()
