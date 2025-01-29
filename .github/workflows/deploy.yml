@@ -17,7 +17,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Upgrade npm 🎉
-        run: sudo npm i -g npm@7 --registry=https://registry.npmjs.org
+        run: sudo npm i -g npm@8 --registry=https://registry.npmjs.org
 
       - name: Cache Node Modules
         id: cache-node-modules
