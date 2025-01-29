@@ -8,6 +8,7 @@ on:
       - 'static/**'
       - 'package-lock.json'
       - 'svelte.config.js'
+      - 'vite.config.ts'
       - 'tsconfig.json'
 jobs:
   build-and-deploy:

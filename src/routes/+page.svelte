@@ -15,6 +15,8 @@
 	import { initGameState } from '$src/store'
 	// import Promo from '$com/Promo.svelte'
 
+	// Hello! Sorry you had to look at my code
+
 	const { openScreen, gameMode } = store
 
 	// Calling get(page) must happen here, while component initializes
