@@ -67,6 +67,7 @@
 		flickerDuration: number,
 		flickerDelay: number
 	][] = []
+	let burstLeaves: XY[] = []
 
 	export function doFun(x: number, y: number) {
 		if (plucking) return
@@ -79,23 +80,32 @@
 		) {
 			// Pluck it!
 			plucking = true
-			sleep((xDistance + yDistance / 2) * 20).then(() => {
+			const pluckDelay = (xDistance + yDistance / 2) * 20
+			sleep(pluckDelay).then(() => {
 				const pluckXDir = randomChance() ? 1 : -1
 				pluckRotation = pluckXDir * randomInt(5, 40)
 				animatePluckScaleElement?.beginElement()
 				plucked = true
-				for (let i = 0; i < 10 + size * 6; i++) {
+				const fallingLeafCount = Math.ceil(10 + size * 6)
+				const burstLeafCount = 15
+				for (let i = 0; i < fallingLeafCount; i++) {
 					fallingLeaves.push([
 						pluckRotation / 6 + randomFloat(-13, 13),
-						circleY - 10 + randomFloat(-9, 9),
+						circleY - 15 + randomFloat(-9, 9),
 						randomInt(1600, 3000),
 						randomInt(500, 1300),
 						randomInt(400, 1000),
 					])
 				}
+				for (let i = 0; i < burstLeafCount; i++) {
+					burstLeaves.push([
+						pluckRotation / 6 + randomFloat(-13, 13),
+						circleY - 15 + randomFloat(-9, 9),
+					])
+				}
 				sleep(5200).then(() => (fallingLeaves.length = 0)) // Clean up leaves
 			})
-			return true
+			return pluckDelay
 		} else {
 			// Almost pluck
 			const distance = getDistance(xDistance, yDistance)
@@ -132,12 +142,7 @@
 </script>
 
 <!-- Position relative to fix stacking context bug in FF -->
-<g
-	class="tree"
-	class:fade={plucked}
-	style:position="relative"
-	transform="translate({originX} {originY})"
->
+<g class="tree" style:position="relative" transform="translate({originX} {originY})">
 	<g opacity={willAnimate ? 0 : 1}>
 		<g>
 			<animateTransform
@@ -216,7 +221,7 @@
 				values="1;0"
 				calcMode="spline"
 				keySplines={bezierEasing.cubicIn}
-				dur="250ms"
+				dur="200ms"
 				fill="freeze"
 			/>
 		</g>
@@ -316,32 +321,52 @@
 			fill="var(--{inColor ? 'correct-color' : 'landscape-color'})"
 			style:transition="fill {inColor ? 200 : 1000}ms ease"
 		/>
-		{#each fallingLeaves as [leafX, leafY, fallDuration, flickerDuration, flickerDelay]}
-			<g style:transform="translate({leafX}px,{leafY}px)" class="burst">
+		<g class="fade">
+			{#each fallingLeaves as [leafX, leafY, fallDuration, flickerDuration, flickerDelay], l}
 				<g
-					class="falling"
-					style:transform="translate({(Math.round(leafX * 5) % 10) * 0.05}px,20px)"
-					style:animation-duration="{fallDuration}ms"
+					style:transform="translate({leafX}px,{leafY}px)"
+					class="burst"
+					style:animation-delay="{100 + l * 10}ms"
+				>
+					<g
+						class="falling"
+						style:transform="translate({(Math.round(leafX * 5) % 10) * 0.05}px,25px)"
+						style:animation-duration="{fallDuration}ms"
+					>
+						<circle
+							style:animation="shimmer"
+							style:animation-iteration-count={Math.floor(
+								(fallDuration - flickerDelay) / flickerDuration
+							)}
+							style:animation-duration="{flickerDuration}ms"
+							style:animation-delay="{flickerDelay}ms"
+							r={STROKE_HALF}
+							fill="var(--{inColor ? 'correct-color' : 'landscape-color'})"
+						/>
+					</g>
+				</g>
+			{/each}
+		</g>
+		<g class="fade" style:animation-duration="300ms" style:animation-delay="200ms">
+			{#each burstLeaves as [leafX, leafY], l}
+				<g
+					style:transform="translate({leafX}px,{leafY}px)"
+					class="burst"
+					style:animation-delay="{100 + l * 10}ms"
 				>
 					<circle
-						style:animation="shimmer"
-						style:animation-iteration-count={Math.floor(
-							(fallDuration - flickerDelay) / flickerDuration
-						)}
-						style:animation-duration="{flickerDuration}ms"
-						style:animation-delay="{flickerDelay}ms"
 						r={STROKE_HALF}
 						fill="var(--{inColor ? 'correct-color' : 'landscape-color'})"
 					/>
 				</g>
-			</g>
-		{/each}
+			{/each}
+		</g>
 	{/if}
 </g>
 
 <style>
-	.tree.fade {
-		animation: fade 1s 4.2s ease-in forwards;
+	.fade {
+		animation: fade 2s 3.2s ease-in forwards;
 	}
 
 	@keyframes fade {
@@ -351,12 +376,12 @@
 	}
 
 	.burst {
-		animation: burst 200ms 100ms cubic-bezier(0.33, 1, 0.68, 1) both;
+		animation: burst 200ms 200ms cubic-bezier(0.33, 1, 0.68, 1) both;
 	}
 
 	@keyframes burst {
 		0% {
-			transform: translate(0, -10px) scale(6);
+			transform: translate(0, -20px) scale(6);
 			opacity: 0;
 		}
 	}
@@ -385,7 +410,8 @@
 	}
 
 	.plucked-treetop {
-		animation: expand 400ms 100ms forwards, fade 400ms 100ms forwards;
+		animation: expand 300ms 100ms forwards,
+			fade 300ms 10ms cubic-bezier(0.32, 0, 0.67, 0) forwards;
 	}
 
 	@keyframes expand {

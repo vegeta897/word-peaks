@@ -33,6 +33,7 @@
 		landscapeRedraw,
 		hideLandscape,
 		landscapeFunMode,
+		funStats,
 	} = store
 
 	export let gameMode: GameMode
@@ -165,6 +166,8 @@
 	{#if !$landscapeWideView}
 		<div class="actions" class:full-width={showScoreShareMenu}>
 			{#if showScoreShareMenu}
+				<!-- TODO: Make sharing more intuitive -->
+				<!-- Use a modal, or the board area? -->
 				<div class="share-buttons">
 					<button on:click={shareText}>{$t('main.results.text')}</button>
 					<button on:click={onBoardImageShare}>{$t('main.results.image')}</button>
@@ -218,7 +221,13 @@
 					>{mode}</button
 				>
 			{/each}
-			<div class="promo">
+			<div style="padding-left: 0.5rem; grid-column: 1 / span 2; height: 0;">
+				Gems: {$funStats.totalGems}<br />
+				Pops: {$funStats.counts.pop}<br />
+				Sops: {$funStats.counts.sop}<br />
+				Plucks: {$funStats.counts.pluck}
+			</div>
+			<!-- <div class="promo">
 				<a
 					on:auxclick={() => trackEvent('promoLinkFollow')}
 					on:click={() => trackEvent('promoLinkFollow')}
@@ -227,11 +236,13 @@
 					<span class="hide-on-small-screens">{$t('main.footer.donate')}</span>
 					<span class="hide-on-big-screens">{$t('main.footer.donate_short')}</span>
 				</a>
-			</div>
+			</div> -->
+			<!-- TODO: Don't really need this, redraw button does the same thing -->
 			<button on:click={() => landscapeRedraw.set('instant')}>reset</button>
 		</div>
 	{/if}
 	{#if !showScoreShareMenu && !$hideLandscape}
+		<!-- TODO: Shrink down when in fun mode on mobile -->
 		<div class="landscape-controls">
 			<button
 				title={$t('main.other.wide_view')}

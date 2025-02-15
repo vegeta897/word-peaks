@@ -6,14 +6,6 @@
 
 	export const featureType = 'hill'
 
-	// TODO: Random idea: Tap hills to push them back into the ground
-	// Only in forceColor mode, so as to not replace color flash behavior
-	// And pull trees to pluck them out
-	// And hold on ponds to suck them up
-	// Using radial gradient that moves towards cursor
-	// If let go during, tiles outside of radius are removed
-	// Tiles on board mirror the effects?
-
 	export let id: number
 	export let x: number
 	export let y: number
@@ -74,6 +66,7 @@
 		Math.abs(centerX - mouseX) < radius + STROKE_HALF &&
 		Math.abs(centerMass - mouseY) < radius + STROKE_HALF
 
+	// Vertical radius should be 2/3, not 1/3, but it just looks better this way
 	$: hillBottomSegment = `a${radius} ${radius / 3} 0 0 1 -${diameter} 0`
 	$: hillTopPath = `M-${radius} -5 v${-(mini
 		? 2
@@ -156,11 +149,12 @@
 			yDistance > -radius - 0.3 - vertLength
 		) {
 			popping = true
-			sleep((xDistance + yDistance) * 20).then(() => {
+			const popDelay = (xDistance + yDistance) * 20
+			sleep(popDelay).then(() => {
 				popped = true
 				tick().then(() => animatePoppingPathElement?.beginElement())
 			})
-			return true
+			return popDelay
 		}
 	}
 
@@ -210,7 +204,7 @@
 				style:transition="transform {hover ? 75 : 200}ms ease-out, fill {inColor
 					? 200
 					: 1000}ms {y * 20}ms ease, stroke
-				{inColor ? 200 : 1000}ms ease"
+				{inColor ? 200 : 1000}ms {y * 20}ms ease"
 			/>
 			{#if !popped}
 				<animateTransform
@@ -245,7 +239,7 @@
 			stroke-linecap="round"
 			style:transition="fill {inColor ? 200 : 1000}ms {y * 20}ms ease, stroke {inColor
 				? 200
-				: 1000}ms ease"
+				: 1000}ms {y * 20}ms ease"
 			d={hillBottomPath}
 		/>
 		{#if !popped}
@@ -310,8 +304,11 @@
 				stroke-linejoin="round"
 				class="ring"
 				d="M{-radius},0 {popRingTopPath}z"
+				style:transition="fill {inColor ? 200 : 1000}ms {y * 20}ms ease, stroke {inColor
+					? 200
+					: 1000}ms {y * 20}ms ease"
 			/>
-			<g transform="translate(0 -16)"><Gem /></g>
+			<!-- <g transform="translate(0 -16)"><Gem /></g> -->
 			{#each popFragments as [delay, magnitude, fSize], f}
 				<g transform="rotate({-30 + 60 * (f / (FRAGMENT_COUNT - 1))})">
 					<ellipse
@@ -360,7 +357,7 @@
 
 <style>
 	.ring {
-		animation: fade 1s 2s ease-in forwards;
+		/*animation: fade 1s 2s ease-in forwards;*/
 	}
 
 	.popped {

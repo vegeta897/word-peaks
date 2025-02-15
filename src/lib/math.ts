@@ -27,8 +27,9 @@ export function randomElementWeighted<T>(arr: T[], weights: number[], rng = Math
 
 export const xyToGrid = ([x, y]: XY) => `${x}:${y}`
 
+export type Dir = 0 | 1 | 2 | 3 // down | right | up | left
 // prettier-ignore
-const neighbors = [[-1, 0],[1, 0],[0, -1],[0, 1]]
+export const neighbors = [[0, 1],[1, 0],[0, -1],[-1, 0]]
 export function getNeighborGrids(grid: string) {
 	const [x, y] = grid.split(':').map((v) => +v)
 	return neighbors.map(([nx, ny]) => xyToGrid([x + nx, y + ny]))

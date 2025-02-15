@@ -1,5 +1,4 @@
 import {
-	getCenterWeight,
 	type Landscape,
 	type Feature,
 	LANDSCAPE_FEATURE_DELAY,
@@ -14,14 +13,16 @@ import {
 
 export function createHill(getRng: () => number, landscape: Landscape) {
 	const hillSize = landscape.mini ? 4 : 6
-	const { features, tileMap, openTiles, width, height } = landscape
+	const { features, tileMap, width, height } = landscape
 	let validXY: false | XY = false
 	const hillGrids: string[] = []
 	while (!validXY) {
-		const openHillTiles = [...openTiles].filter(([, { noHill }]) => !noHill)
+		const openHillTiles = [...tileMap].filter(
+			([, { feature, noHill }]) => !feature && !noHill
+		)
 		if (openHillTiles.length === 0) break
 		const openTileWeights = openHillTiles.map(
-			([, { y, centerWeight }]) => (y > 1 ? centerWeight : 0) // Hills higher than y=1 would be cut off
+			([, { y, centerWeight }]) => (y > 1 ? centerWeight ** 2 : 0) // Hills higher than y=1 would be cut off
 		)
 		const [, tile] = randomElementWeighted(openHillTiles, openTileWeights, getRng)
 		const subtileStartIndex = randomInt(0, 5, getRng)
@@ -33,12 +34,12 @@ export function createHill(getRng: () => number, landscape: Landscape) {
 			if (originX < 0 || originX + 2 >= width) continue
 			const originY = tile.y - stY
 			if (originY < 0 || originY + 1 >= height) continue
-			const openTile = openTiles.get(xyToGrid([originX, originY]))
-			if (openTile?.noHill) continue
+			const hillRootTile = tileMap.get(xyToGrid([originX, originY]))
+			if (hillRootTile?.noHill) continue
 			hillGrids.length = 0
 			for (const [hsX, hsY] of subtiles) {
 				const hillGrid = xyToGrid([originX + hsX, originY + hsY])
-				if (tileMap.has(hillGrid)) break
+				if (tileMap.get(hillGrid)?.feature) break
 				hillGrids.push(hillGrid)
 			}
 			if (hillGrids.length < hillSize) continue
@@ -66,29 +67,20 @@ export function createHill(getRng: () => number, landscape: Landscape) {
 	features.push(feature)
 	landscape.totalDelay += LANDSCAPE_FEATURE_DELAY * hillSize
 	for (const hillGrid of hillGrids) {
-		tileMap.set(hillGrid, feature)
-		openTiles.delete(hillGrid)
+		tileMap.get(hillGrid)!.feature = feature
 	}
 	const neighbors = landscape.mini ? hillNeighborsMini : hillNeighbors
 	for (const [nxRel, nyRel] of neighbors) {
+		// TODO: Still needed?
 		const nx = x + nxRel
 		const ny = y + nyRel
 		if (nx < 0 || nx >= width || ny < 0 || ny >= height) continue
 		const nGrid = xyToGrid([nx, ny])
-		if (tileMap.has(nGrid)) continue
+		const nTile = tileMap.get(nGrid)
+		if (!nTile) continue
 		// No hills directly above or below other hills, unless in mini mode
 		const noHill = !landscape.mini && nxRel === 0
-		const openTile = openTiles.get(nGrid)
-		if (openTile && noHill) {
-			openTile.noHill = noHill
-		} else {
-			openTiles.set(nGrid, {
-				x: nx,
-				y: ny,
-				centerWeight: getCenterWeight(landscape, nx, ny),
-				noHill,
-			})
-		}
+		if (noHill) nTile.noHill = true
 	}
 }
 

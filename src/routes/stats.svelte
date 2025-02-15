@@ -100,6 +100,7 @@
 			serializeStats(get(store.stats)),
 			serializeTimeStats(get(store.timeStats)),
 			serializeGameDetail(get(store.lastDailyDetail)),
+			// TODO: Add fun mode stats
 		])
 	}
 

@@ -1,14 +1,14 @@
 <script lang="ts">
 	import * as store from '$src/store'
 	import { get } from 'svelte/store'
-	import type { Landscape } from '$lib/landscape/landscape'
+	import type { Landscape, LandscapeFunMode } from '$lib/landscape/landscape'
 	import { getLandscape } from '$lib/landscape/landscape'
 	import Tree from './Tree.svelte'
 	import Hill from './Hill.svelte'
 	import Pond from './Pond.svelte'
-	import { getDistance, type XY } from '$lib/math'
+	import { getDistance, sleep, type XY } from '$lib/math'
 
-	const { landscapeForceColor, landscapeFunMode } = store
+	const { landscapeForceColor, landscapeFunMode, funStats } = store
 
 	let initializing = true
 	let svgElement: SVGElement
@@ -29,7 +29,6 @@
 		rowsGenerated: 0,
 		features: [],
 		tileMap: new Map(),
-		openTiles: new Map(),
 		pondTiles: [],
 		newPondTiles: [],
 		nextID: 1,
@@ -65,7 +64,6 @@
 
 	function clearLandscape() {
 		landscape.rowsGenerated = 0
-		landscape.openTiles.clear()
 		landscape.tileMap.clear()
 		landscape.features.length = 0
 		landscape.pondTiles.length = 0
@@ -133,7 +131,7 @@
 	type FlashColorHandler = (x: number, y: number, duration: number) => void
 	const featureComponents: {
 		flashColor: FlashColorHandler
-		doFun: (x: number, y: number) => void | true
+		doFun: (x: number, y: number) => void | number
 		featureType: 'tree' | 'hill'
 	}[] = []
 	let pondComponent: {
@@ -161,6 +159,17 @@
 
 	// TODO: Allow click and drag, check line segment intersects for trees and ponds
 
+	// TODO: Idle game?
+
+	// TODO: Persist gems and pop/pluck/sop stats, share-able, add to stats screen
+
+	// TODO: Gems only appear when you clear the landscape a certain way, like a puzzle game
+
+	// TODO: Omni-tool that can perform all 3 fun modes at once
+
+	// TODO: Progress bars for clearing landscape feature on each corresponding fun mode button
+	// Get your stickers for the day, one for each feature
+
 	const onPointerDown: svelte.JSX.PointerEventHandler<SVGElement> = async (event) => {
 		// TODO: Handle multi touch
 		if (event.pointerType === 'mouse' && event.button !== 0) return
@@ -186,19 +195,25 @@
 				pondComponent.doFun(mouseX, mouseY)
 				return
 			} else {
-				let pluckOrBopHappened = false
+				const delayedFun: Promise<LandscapeFunMode>[] = []
 				featureComponents.forEach((f) => {
 					if (!f) return
-					if (
-						(f.featureType === 'tree' && funMode === 'pluck') ||
-						(f.featureType === 'hill' && funMode === 'pop')
-					) {
-						const pluckedOrBopped = !!f.doFun(mouseX, mouseY)
-						// Assigned to a const, otherwise assignment will skip evaluation
-						pluckOrBopHappened ||= pluckedOrBopped
+					const treeFun = f.featureType === 'tree' && funMode === 'pluck'
+					const hillFun = f.featureType === 'hill' && funMode === 'pop'
+					if (!treeFun && !hillFun) return
+					const funResult = f.doFun(mouseX, mouseY)
+					if (typeof funResult === 'number') {
+						delayedFun.push(sleep(funResult).then(() => funMode))
 					}
 				})
-				// console.log(pluckedOrBopped)
+				Promise.all(delayedFun).then((funModes) => {
+					funStats.update((fs) => {
+						for (const funMode of funModes) {
+							fs.counts[funMode]++
+						}
+						return fs
+					})
+				})
 			}
 		}
 	}

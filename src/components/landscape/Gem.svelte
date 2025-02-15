@@ -2,12 +2,12 @@
 	const STROKE_WIDTH = 2
 	const STROKE_HALF = STROKE_WIDTH / 2
 
-	const DURATION = 2000
+	const DURATION = 1500
 	const FRAMES = 12
 
-	const height = 12
-	const radius = 8
-	const tilt = 1 / 3 // Ratio of projected circle height to width
+	const height = 8
+	const radius = 6
+	const tilt = 2 / 5 // Ratio of projected circle height to width
 	const outlinePadding = 1.1
 
 	function generateFaceFrames() {
@@ -122,3 +122,19 @@
 		{/each}
 	{/each}
 </g>
+
+<style>
+	g {
+		animation: wobble 1s infinite cubic-bezier(0.37, 0, 0.63, 1);
+	}
+
+	@keyframes wobble {
+		0%,
+		100% {
+			transform: rotate(5deg);
+		}
+		50% {
+			transform: rotate(-5deg);
+		}
+	}
+</style>

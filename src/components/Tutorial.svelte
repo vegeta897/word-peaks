@@ -63,7 +63,6 @@
 	}
 
 	p {
-		font-family: var(--reading-font);
 		font-size: 18px;
 	}
 
