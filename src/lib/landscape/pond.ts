@@ -9,6 +9,7 @@ import {
 	type Dir,
 	randomFloat,
 } from '$lib/math'
+import { type PathDataCommand } from '$lib/paths'
 import Rand from 'rand-seed'
 
 export function createPond(getRng: () => number, landscape: Landscape) {
@@ -88,14 +89,14 @@ type Edge = [x1: number, y1: number, x2: number, y2: number, dir: Dir]
 const EDGES: Edge[] = [[0, 0, 0, 1, 0],[0, 1, 1, 1, 1],[1, 1, 1, 0, 2],[1, 0, 0, 0, 3]]
 const nextDirOffets = [1, 3, 0]
 
-const getPathSegmentFunction =
-	(scaleX: number, scaleY: number, offsetX: number, offsetY: number) =>
-	([x, y]: XY, [midX, midY]: XY, [prevMidX, prevMidY]: XY) => {
-		const toX = midX * scaleX + offsetX
-		const toY = midY * scaleY + offsetY
-		if (prevMidX === midX || prevMidY === midY) return `L${toX} ${toY}`
-		return `Q${x * scaleX + offsetX} ${y * scaleY + offsetY} ${toX} ${toY}`
-	}
+const getPathSegment = (
+	corner: XY,
+	mid: XY,
+	[prevMidX, prevMidY]: XY
+): PathDataCommand => {
+	if (prevMidX === mid[0] || prevMidY === mid[1]) return ['L', mid]
+	return ['Q', corner, mid]
+}
 
 function getSegmentMaps(tiles: XY[]) {
 	const segmentMap: Map<string, string> = new Map()
@@ -144,16 +145,9 @@ function findNextSegmentKey(
 	}
 }
 
-export function createPondPath(
-	tiles: XY[],
-	scaleX = 15,
-	scaleY = 10,
-	offsetX = 0,
-	offsetY = 0
-) {
+export function createPondPath(tiles: XY[]) {
 	const { segmentMap, directionalSegmentMap } = getSegmentMaps(tiles)
-	const getPathSegment = getPathSegmentFunction(scaleX, scaleY, offsetX, offsetY)
-	let pathData = ''
+	const pathData: PathDataCommand[] = []
 	let newPath = true
 	let prevMid: XY
 	let first: XY
@@ -171,9 +165,9 @@ export function createPondPath(
 			newPath = false
 			first = [fromX, fromY]
 			firstMid = midXY
-			pathData += `M${midXY[0] * scaleX + offsetX} ${midXY[1] * scaleY + offsetY}`
+			pathData.push(['M', midXY])
 		} else {
-			pathData += getPathSegment([fromX, fromY], midXY, prevMid!)
+			pathData.push(getPathSegment([fromX, fromY], midXY, prevMid!))
 		}
 		prevMid = midXY
 		nextSegmentKey = findNextSegmentKey(dir, toX, toY, {
@@ -181,42 +175,46 @@ export function createPondPath(
 			directionalSegmentMap,
 		})
 		if (!nextSegmentKey) {
-			pathData += getPathSegment(first!, firstMid!, prevMid)
-			pathData += 'Z'
+			pathData.push(getPathSegment(first!, firstMid!, prevMid))
+			pathData.push(['Z'])
 			newPath = true
 		}
 	}
 	return pathData
 }
 
-// TODO: Make these output an array of path commands, without scale/offset
-// Make a function that stringifies that into the path command
+const drawShelf = (from: XY, to: XY): PathDataCommand[] => [
+	['M', from],
+	['L', to],
+	['L', [to[0], to[1] + 0.35]],
+	['L', [from[0], from[1] + 0.35]],
+	['Z'],
+]
 
-export function createFrozenPondPath(
-	iceTiles: XY[],
-	emptyTiles: XY[],
-	scaleX = 15,
-	scaleY = 10,
-	offsetX = 0,
-	offsetY = 0
-) {
+export function createFrozenPondPaths(iceTiles: XY[], emptyTiles: XY[], answer: string) {
 	const { segmentMap, directionalSegmentMap } = getSegmentMaps(iceTiles)
 	const { segmentMap: emptySegmentMap } = getSegmentMaps(emptyTiles)
 	const isJagged = (...xy: XY[]) => xy.some(([x, y]) => emptySegmentMap.has(x + ':' + y))
-	const getPathSegment = getPathSegmentFunction(scaleX, scaleY, offsetX, offsetY)
-	let pathData = ''
-	const drawNextSegment = (to: XY, mid: XY, prev: XY) => {
+	const mainPath: PathDataCommand[] = []
+	const shelfPaths: PathDataCommand[][] = []
+	const drawNextSegment = (corner: XY, mid: XY, prev: XY) => {
 		if (isJagged(mid, prev)) {
-			const halfX = (prev[0] + mid[0]) / 2
-			const halfY = (prev[1] + mid[1]) / 2
-			const rng = new Rand(halfX + ':' + halfY)
+			const halfX = ((prev[0] + mid[0]) / 2 + corner[0]) / 2
+			const halfY = ((prev[1] + mid[1]) / 2 + corner[1]) / 2
+			const rng = new Rand(answer + halfX + ':' + halfY)
 			const getRng = () => rng.next()
-			pathData += `L${(halfX + randomFloat(-0.2, 0.2, getRng)) * scaleX + offsetX} ${
-				(halfY + randomFloat(-0.2, 0.2, getRng)) * scaleY + offsetY
-			}`
-			pathData += `L${mid[0] * scaleX + offsetX} ${mid[1] * scaleY + offsetY}`
+			const xVariance = prev[0] === mid[0] ? 0.2 : 0.1
+			const yVariance = prev[1] === mid[1] ? 0.2 : 0.1
+			const jagged: XY = [
+				halfX + randomFloat(-xVariance, xVariance, getRng),
+				halfY + randomFloat(-yVariance, yVariance, getRng),
+			]
+			mainPath.push(['L', jagged])
+			mainPath.push(['L', mid])
+			if (jagged[0] > prev[0]) shelfPaths.push(drawShelf(prev, jagged))
+			if (mid[0] > jagged[0]) shelfPaths.push(drawShelf(jagged, mid))
 		} else {
-			pathData += getPathSegment(to, mid, prev)
+			mainPath.push(getPathSegment(corner, mid, prev))
 		}
 	}
 	let newPath = true
@@ -236,7 +234,7 @@ export function createFrozenPondPath(
 			newPath = false
 			first = [fromX, fromY]
 			firstMid = midXY
-			pathData += `M${midXY[0] * scaleX + offsetX} ${midXY[1] * scaleY + offsetY}`
+			mainPath.push(['M', midXY])
 		} else {
 			drawNextSegment([fromX, fromY], midXY, prevMid!)
 		}
@@ -247,9 +245,9 @@ export function createFrozenPondPath(
 		})
 		if (!nextSegmentKey) {
 			drawNextSegment(first!, firstMid!, prevMid)
-			pathData += 'Z'
+			mainPath.push(['Z'])
 			newPath = true
 		}
 	}
-	return pathData
+	return { mainPath, shelfPaths }
 }

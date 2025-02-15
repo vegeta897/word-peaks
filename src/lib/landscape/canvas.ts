@@ -1,4 +1,5 @@
 import type { Landscape } from '$lib/landscape/landscape'
+import { stringifyPathData } from '$lib/paths'
 import { createPondPath } from './pond'
 
 const TILE_WIDTH = 48
@@ -21,7 +22,13 @@ export function drawLandscapeToCanvas(
 	ctx.fillStyle = bgColor
 	ctx.fillRect(0, 0, canvas.width, canvas.height)
 	const pondPath = new Path2D(
-		createPondPath(pondTiles, TILE_WIDTH, TILE_HEIGHT, TILE_WIDTH / 2, TILE_HEIGHT * 1.5)
+		stringifyPathData(
+			createPondPath(pondTiles),
+			TILE_WIDTH,
+			TILE_HEIGHT,
+			TILE_WIDTH / 2,
+			TILE_HEIGHT * 1.5
+		)
 	)
 	const pondColor = color ? '#567de8' : WHITE
 	ctx.fillStyle = pondColor
@@ -31,8 +38,8 @@ export function drawLandscapeToCanvas(
 		ctx.save()
 		ctx.clip(pondPath)
 		const shiftedPondPath = new Path2D(
-			createPondPath(
-				pondTiles,
+			stringifyPathData(
+				createPondPath(pondTiles),
 				TILE_WIDTH,
 				TILE_HEIGHT,
 				TILE_WIDTH / 2,

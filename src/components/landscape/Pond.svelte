@@ -1,16 +1,10 @@
 <script lang="ts">
 	import { bezierEasing } from '$lib/transitions'
-	import {
-		getDistance,
-		getNeighborGrids,
-		getNeighbors,
-		randomInt,
-		xyToGrid,
-		type XY,
-	} from '$lib/math'
+	import { getDistance, getNeighbors, xyToGrid, type XY } from '$lib/math'
 	import { tick } from 'svelte'
-	import { createFrozenPondPath, createPondPath } from '$lib/landscape/pond'
+	import { createFrozenPondPaths, createPondPath } from '$lib/landscape/pond'
 	import { highContrast } from '$src/store'
+	import { stringifyPathData } from '$lib/paths'
 
 	export let tiles: XY[] = []
 	export let newTiles: XY[] = []
@@ -20,6 +14,7 @@
 	export let landscapeHeight: number
 	export let mini = false
 	export let forceColor: boolean
+	export let answer: string
 
 	$: maxDistance = getDistance(landscapeWidth, landscapeHeight)
 	$: expandDuration = maxDistance * 70
@@ -63,6 +58,7 @@
 	const iceTilesMap: Map<string, XY> = new Map()
 	let iceTiles: XY[] = []
 	let icePath: string
+	let iceShelfPaths: string[]
 	const emptyTilesMap: Map<string, XY> = new Map()
 	let emptyPath: string
 
@@ -76,8 +72,6 @@
 	export async function doFun(x: number, y: number) {
 		const normalizedX = x / 10 / 1.5
 		const normalizedY = y / 10
-		// TODO: Only do ice breaking if an ice tile is directly clicked
-		// TODO: And only break ice connected to clicked tile
 		let clickedTile: null | { grid: string; xy: XY; distance: number } = null
 		for (
 			let nearX = Math.floor(normalizedX - 0.2);
@@ -139,10 +133,12 @@
 				([grid]) => !emptyTilesMap.has(grid) && !iceTilesMap.has(grid)
 			)
 		)
-		nonDrainedPath = createPondPath([...nonDrainedTiles.values()])
+		nonDrainedPath = stringifyPathData(createPondPath([...nonDrainedTiles.values()]))
 		iceTiles = [...iceTilesMap.values()]
 		const emptyTiles = [...emptyTilesMap.values()]
-		icePath = createFrozenPondPath(iceTiles, emptyTiles)
+		const icePaths = createFrozenPondPaths(iceTiles, emptyTiles, answer)
+		icePath = stringifyPathData(icePaths.mainPath)
+		iceShelfPaths = icePaths.shelfPaths.map((p) => stringifyPathData(p))
 		// emptyPath = createPondPath(emptyTiles)
 		// drainingTime += 6
 		// // drain some amount, add to total drain if already draining
@@ -179,8 +175,8 @@
 
 	async function onTiles() {
 		previousPondPath = pondPath
-		pondPath = createPondPath(tiles)
-		tilesMap = new Map(tiles.map((xy) => [xyToGrid(xy), xy])) // TODO: Only useful for crawl lookups
+		pondPath = stringifyPathData(createPondPath(tiles))
+		tilesMap = new Map(tiles.map((xy) => [xyToGrid(xy), xy]))
 		if (animate && previousPondPath !== pondPath && newTiles.length > 0) {
 			dripsID++
 			dripTiles = newTiles
@@ -241,7 +237,6 @@
 		<path
 			stroke-width="2"
 			stroke="var(--landscape-color)"
-			stroke-linecap="round"
 			fill="none"
 			d={previousPondPath}
 		/>
@@ -278,7 +273,6 @@
 		<path
 			stroke-width="2"
 			stroke="var(--{forceColor ? 'after-color' : 'landscape-color'})"
-			stroke-linecap="round"
 			fill="none"
 			style:transition="stroke {forceColor ? 200 : 1000}ms ease"
 			d={pondPath}
@@ -317,7 +311,6 @@
 			</radialGradient>
 			<path
 				stroke-width="2.6"
-				stroke-linecap="round"
 				stroke="url('#pond_flood_gradient_{flood[0]}')"
 				fill="url('#pond_flood_gradient_{flood[0]}')"
 				d={pondPath}
@@ -405,7 +398,6 @@
 	<!-- <path
 		stroke-width="0.2"
 		stroke="url('#pond_drain_gradient')"
-		stroke-linecap="round"
 		fill="url('#pond_drain_gradient')"
 		d={drainingPath}
 	/> -->
@@ -417,14 +409,16 @@
 			fill={'var(--tertiary-color)'}
 			style:transform="translateY(3.5px)"
 		/>
-		<!-- TODO: Only need to draw faces for lines with a negative X component -->
-		<!-- TODO: Could use angle to determine shading color -->
-		<path
-			fill="#68c"
-			d={icePath}
-			style:transition="stroke {forceColor ? 200 : 1000}ms ease"
-			style:transform="translateY(3.5px)"
-		/>
+		{#each iceShelfPaths as shelfPath (shelfPath)}
+			<path
+				stroke-width="0.2"
+				stroke-linejoin="round"
+				stroke="#56A9FF"
+				fill="#56A9FF"
+				d={shelfPath}
+				style:transition="fill {forceColor ? 200 : 1000}ms ease"
+			/>
+		{/each}
 	</g>
 
 	<clipPath id="non_drained_clip"> <path d={nonDrainedPath} /> </clipPath>
@@ -448,7 +442,6 @@
 	<path
 		stroke-width="2"
 		stroke="var(--{forceColor ? 'after-color' : 'landscape-color'})"
-		stroke-linecap="round"
 		fill="none"
 		d={nonDrainedPath}
 		style:transition="stroke {forceColor ? 200 : 1000}ms ease"
@@ -459,9 +452,12 @@
 		/>
 	</clipPath> -->
 	<path
-		fill="#8af"
+		stroke-width="0.2"
+		stroke-linejoin="round"
+		stroke="#B2CFFF"
+		fill="#B2CFFF"
 		d={icePath}
-		style:transition="stroke {forceColor ? 200 : 1000}ms ease"
+		style:transition="fill {forceColor ? 200 : 1000}ms ease"
 	/>
 
 	{#each iceShards as { xy: [x, y], height }}
@@ -481,7 +477,6 @@
 	<!-- <path
 		stroke-width="2"
 		stroke="var(--landscape-color)"
-		stroke-linecap="round"
 		fill="#0008"
 		d={emptyPath}
 		style:transition="stroke {forceColor ? 200 : 1000}ms ease"

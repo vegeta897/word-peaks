@@ -8,7 +8,7 @@
 	import Pond from './Pond.svelte'
 	import { getDistance, sleep, type XY } from '$lib/math'
 
-	const { landscapeForceColor, landscapeFunMode, funStats } = store
+	const { landscapeForceColor, landscapeFunMode, funStats, answer } = store
 
 	let initializing = true
 	let svgElement: SVGElement
@@ -257,6 +257,7 @@
 				landscapeHeight={landscape.height}
 				mini={landscape.mini}
 				forceColor={$landscapeForceColor}
+				answer={$answer}
 			/>
 			{#each landscape.features as feature, f (feature.id)}
 				{#if feature.type === 'tree'}
