@@ -154,9 +154,6 @@
 	// TODO: When exiting full view after making any changes, show cropped version
 	// with overlay buttons to "resume" or "reset"
 
-	// TODO: Hidden gems inside the last hill, pond tile, tree
-	// TODO: Make last hill/pond/tree sparkle if only one left
-
 	// TODO: Allow click and drag, check line segment intersects for trees and ponds
 
 	// TODO: Idle game?
@@ -169,6 +166,9 @@
 
 	// TODO: Progress bars for clearing landscape feature on each corresponding fun mode button
 	// Get your stickers for the day, one for each feature
+
+	// TODO: Hidden gem under one random tile per day, hill tree or pond
+	// TODO: Gem is buried and poking out after feature is removed, click to dig up
 
 	const onPointerDown: svelte.JSX.PointerEventHandler<SVGElement> = async (event) => {
 		// TODO: Handle multi touch

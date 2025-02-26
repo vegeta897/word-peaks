@@ -1,6 +1,13 @@
 <script lang="ts">
 	import { bezierEasing } from '$lib/transitions'
-	import { getDistance, getNeighbors, xyToGrid, type XY } from '$lib/math'
+	import {
+		getDistance,
+		getManhattanDistanceBetween,
+		getNeighbors,
+		randomFloat,
+		xyToGrid,
+		type XY,
+	} from '$lib/math'
 	import { tick } from 'svelte'
 	import { createFrozenPondPaths, createPondPath } from '$lib/landscape/pond'
 	import { highContrast } from '$src/store'
@@ -53,6 +60,7 @@
 	let dripDuration: number
 	let pondAnimateElement: SVGAnimateElement
 
+	let havingFun = false
 	let nonDrainedPath: string
 
 	const iceTilesMap: Map<string, XY> = new Map()
@@ -92,39 +100,48 @@
 				}
 			}
 		}
-		if (clickedTile) {
-			if (iceTilesMap.has(clickedTile.grid)) {
-				// TODO: Crawl to break nearby (and connected) ice
-				emptyTilesMap.set(clickedTile.grid, clickedTile.xy)
-				iceTilesMap.delete(clickedTile.grid)
-			} else {
-				// const newIceTiles: Map<string, XY> = new Map()
-				const openTiles: Map<string, XY> = new Map([[clickedTile.grid, clickedTile.xy]])
-				const newIceShards: IceShard[] = []
-				while (openTiles.size > 0) {
-					const [grid, xy] = [...openTiles][0]
-					openTiles.delete(grid)
-					iceTilesMap.set(grid, xy)
-					// newIceTiles.set(grid, xy)
-					// newIceShards.push({ xy: [xy[0] * 15, xy[1] * 10], height: randomInt(0, 6) })
-					// newIceShards.push({ xy: [xy[0] * 15 + 8, xy[1] * 10], height: randomInt(0, 6) })
-					// newIceShards.push({
-					// 	xy: [xy[0] * 15 + 4, xy[1] * 10 + 5],
-					// 	height: randomInt(0, 6),
-					// })
-					// newIceShards.push({
-					// 	xy: [xy[0] * 15 + 12, xy[1] * 10 + 5],
-					// 	height: randomInt(0, 6),
-					// })
-					getNeighbors(...xy).forEach((nXY) => {
-						const nGrid = xyToGrid(nXY)
-						if (!iceTilesMap.has(nGrid) && tilesMap.has(nGrid)) openTiles.set(nGrid, nXY)
-					})
-				}
-				iceShards = [...iceShards, ...newIceShards]
-				// TODO: Radial gradient of ice expands, as shards fade in on edges
-				// Maybe make entire frozen pond be jagged, with visible chunks to break
+		if (!clickedTile) return
+		havingFun = true
+		if (iceTilesMap.has(clickedTile.grid)) {
+			// TODO: Don't crawl if clicking and dragging
+			const openTiles: Map<string, XY> = new Map([[clickedTile.grid, clickedTile.xy]])
+			while (openTiles.size > 0) {
+				const [grid, xy] = [...openTiles][0]
+				openTiles.delete(grid)
+				emptyTilesMap.set(grid, xy)
+				iceTilesMap.delete(grid)
+				getNeighbors(...xy).forEach((nXY) => {
+					const neighborGrid = xyToGrid(nXY)
+					if (!iceTilesMap.has(neighborGrid)) return
+					const neighborAlone = !getNeighbors(...nXY).some((nnXY) =>
+						iceTilesMap.has(xyToGrid(nnXY))
+					)
+					if (neighborAlone) {
+						emptyTilesMap.set(neighborGrid, nXY)
+						iceTilesMap.delete(neighborGrid)
+					} else {
+						const distance = getManhattanDistanceBetween(clickedTile.xy, nXY)
+						if (distance > randomFloat(2, 4)) return
+						openTiles.set(neighborGrid, nXY)
+					}
+				})
 			}
+		} else {
+			// const newIceTiles: Map<string, XY> = new Map()
+			const openTiles: Map<string, XY> = new Map([[clickedTile.grid, clickedTile.xy]])
+			const newIceShards: IceShard[] = []
+			while (openTiles.size > 0) {
+				const [grid, xy] = [...openTiles][0]
+				openTiles.delete(grid)
+				iceTilesMap.set(grid, xy)
+				getNeighbors(...xy).forEach((nXY) => {
+					const nGrid = xyToGrid(nXY)
+					if (!iceTilesMap.has(nGrid) && tilesMap.has(nGrid)) openTiles.set(nGrid, nXY)
+				})
+			}
+			iceShards = [...iceShards, ...newIceShards]
+			// TODO: Radial gradient of ice expands, as shards fade in on edges
+			// Maybe make entire frozen pond be jagged, with visible chunks to break
 		}
 		// TODO: Subtle white dots on ice?
 		// TODO: Refactor this
@@ -195,7 +212,7 @@
 </script>
 
 <clipPath id="pond_path"> <path d={pondPath} /> </clipPath>
-{#if iceTiles.length === 0}
+{#if !havingFun}
 	<clipPath id="prev_pond_path"> <path d={previousPondPath} /> </clipPath>
 	<g clip-path="url(#pond_path)">
 		{#key dripsID}
@@ -413,10 +430,12 @@
 			<path
 				stroke-width="0.2"
 				stroke-linejoin="round"
-				stroke="#56A9FF"
-				fill="#56A9FF"
+				stroke={forceColor ? '#56A9FF' : 'var(--landscape-color)'}
+				fill={forceColor ? '#56A9FF' : 'var(--landscape-color)'}
 				d={shelfPath}
-				style:transition="fill {forceColor ? 200 : 1000}ms ease"
+				style:transition="fill {forceColor ? 200 : 1000}ms ease, stroke {forceColor
+					? 200
+					: 1000}ms ease"
 			/>
 		{/each}
 	</g>
@@ -454,8 +473,8 @@
 	<path
 		stroke-width="0.2"
 		stroke-linejoin="round"
-		stroke="#B2CFFF"
-		fill="#B2CFFF"
+		stroke={forceColor ? '#B2CFFF' : 'var(--landscape-color)'}
+		fill={forceColor ? '#B2CFFF' : 'var(--landscape-color)'}
 		d={icePath}
 		style:transition="fill {forceColor ? 200 : 1000}ms ease"
 	/>
