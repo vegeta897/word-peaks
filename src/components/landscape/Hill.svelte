@@ -296,6 +296,7 @@
 	</g>
 	{#if popped}
 		<g class="popped">
+			<ellipse rx={radius} ry={radius / 3} fill="#0005" />
 			<path
 				fill="var(--{inColor ? 'before-color' : 'landscape-color'})"
 				stroke="var(--{inColor ? 'before-color' : 'landscape-color'})"

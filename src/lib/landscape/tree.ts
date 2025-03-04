@@ -38,8 +38,8 @@ export function createTrees(getRng: () => number, landscape: Landscape) {
 			id: landscape.nextID++,
 			x: tile.x,
 			y: tile.y,
-			xJitter: randomFloat(-0.35, 0.35, getRng),
-			yJitter: randomFloat(-0.25, 0.15, getRng),
+			xJitter: randomFloat(-0.4, 0.4, getRng),
+			yJitter: randomFloat(-0.35, 0.25, getRng),
 			size: getRng(),
 			delay: landscape.totalDelay,
 		}

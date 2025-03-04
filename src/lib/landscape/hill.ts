@@ -59,8 +59,8 @@ export function createHill(getRng: () => number, landscape: Landscape) {
 		id: landscape.nextID++,
 		x,
 		y,
-		xJitter: randomFloat(-0.2, 0.2, getRng),
-		yJitter: randomFloat(-0.2, 0.19, getRng),
+		xJitter: randomFloat(-0.3, 0.3, getRng),
+		yJitter: randomFloat(-0.3, 0.25, getRng),
 		size: getRng(),
 		delay: landscape.totalDelay,
 	}

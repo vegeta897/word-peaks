@@ -2,6 +2,7 @@
 	import { bezierEasing } from '$lib/transitions'
 	import {
 		getDistance,
+		getDistanceBetween,
 		getManhattanDistanceBetween,
 		getNeighbors,
 		randomFloat,
@@ -60,22 +61,29 @@
 	let dripDuration: number
 	let pondAnimateElement: SVGAnimateElement
 
+	// TODO: Move frozen pond stuff into child component
+
 	let havingFun = false
-	let nonDrainedPath: string
-
-	const iceTilesMap: Map<string, XY> = new Map()
-	let iceTiles: XY[] = []
-	let icePath: string
-	let iceShelfPaths: string[]
-	const emptyTilesMap: Map<string, XY> = new Map()
-	let emptyPath: string
-
-	type IceShard = {
-		xy: XY
-		height: number
+	let nonFrozenTilesMap: Map<string, XY>
+	let nonFrozenPath: string
+	type FrozenPond = {
+		radius: number
+		origin: XY
+		gradientElement: SVGAnimateElement | null
+		tilesMap: Map<string, XY>
+		emptyTilesMap: Map<string, XY>
+		path: string
+		shelfPaths: string[]
 	}
+	let frozenPonds: FrozenPond[] = []
+	const emptyTilesMap: Map<string, XY> = new Map()
 
-	let iceShards: IceShard[] = []
+	// type IceShard = {
+	// 	xy: XY
+	// 	height: number
+	// }
+
+	// let iceShards: IceShard[] = []
 
 	export async function doFun(x: number, y: number) {
 		const normalizedX = x / 10 / 1.5
@@ -101,24 +109,28 @@
 			}
 		}
 		if (!clickedTile) return
-		havingFun = true
-		if (iceTilesMap.has(clickedTile.grid)) {
+		if (!havingFun) {
+			havingFun = true
+			nonFrozenTilesMap = new Map(tilesMap)
+		}
+		const clickedFrozenPond = frozenPonds.find((f) => f.tilesMap.has(clickedTile.grid))
+		if (clickedFrozenPond) {
 			// TODO: Don't crawl if clicking and dragging
 			const openTiles: Map<string, XY> = new Map([[clickedTile.grid, clickedTile.xy]])
 			while (openTiles.size > 0) {
 				const [grid, xy] = [...openTiles][0]
 				openTiles.delete(grid)
-				emptyTilesMap.set(grid, xy)
-				iceTilesMap.delete(grid)
+				clickedFrozenPond.emptyTilesMap.set(grid, xy)
+				clickedFrozenPond.tilesMap.delete(grid)
 				getNeighbors(...xy).forEach((nXY) => {
 					const neighborGrid = xyToGrid(nXY)
-					if (!iceTilesMap.has(neighborGrid)) return
+					if (!clickedFrozenPond.tilesMap.has(neighborGrid)) return
 					const neighborAlone = !getNeighbors(...nXY).some((nnXY) =>
-						iceTilesMap.has(xyToGrid(nnXY))
+						clickedFrozenPond.tilesMap.has(xyToGrid(nnXY))
 					)
 					if (neighborAlone) {
-						emptyTilesMap.set(neighborGrid, nXY)
-						iceTilesMap.delete(neighborGrid)
+						clickedFrozenPond.emptyTilesMap.set(neighborGrid, nXY)
+						clickedFrozenPond.tilesMap.delete(neighborGrid)
 					} else {
 						const distance = getManhattanDistanceBetween(clickedTile.xy, nXY)
 						if (distance > randomFloat(2, 4)) return
@@ -126,68 +138,53 @@
 					}
 				})
 			}
+			updateFrozenPond(clickedFrozenPond)
+			clickedFrozenPond.emptyTilesMap.forEach((v, k) => emptyTilesMap.set(k, v))
+			frozenPonds = [...frozenPonds]
 		} else {
 			// const newIceTiles: Map<string, XY> = new Map()
+			const freezingPond: FrozenPond = {
+				radius: 1,
+				origin: [x, y],
+				gradientElement: null,
+				tilesMap: new Map(),
+				emptyTilesMap: new Map(),
+				path: '',
+				shelfPaths: [],
+			}
 			const openTiles: Map<string, XY> = new Map([[clickedTile.grid, clickedTile.xy]])
-			const newIceShards: IceShard[] = []
+			// const newIceShards: IceShard[] = []
 			while (openTiles.size > 0) {
 				const [grid, xy] = [...openTiles][0]
 				openTiles.delete(grid)
-				iceTilesMap.set(grid, xy)
+				nonFrozenTilesMap.delete(grid)
+				freezingPond.tilesMap.set(grid, xy)
+				const distance = getDistanceBetween(clickedTile.xy, xy)
+				freezingPond.radius = Math.max(freezingPond.radius, distance + 1)
 				getNeighbors(...xy).forEach((nXY) => {
 					const nGrid = xyToGrid(nXY)
-					if (!iceTilesMap.has(nGrid) && tilesMap.has(nGrid)) openTiles.set(nGrid, nXY)
+					if (!freezingPond.tilesMap.has(nGrid) && nonFrozenTilesMap.has(nGrid))
+						openTiles.set(nGrid, nXY)
 				})
 			}
-			iceShards = [...iceShards, ...newIceShards]
-			// TODO: Radial gradient of ice expands, as shards fade in on edges
+			updateFrozenPond(freezingPond)
+			frozenPonds = [...frozenPonds, freezingPond]
+			// iceShards = [...iceShards, ...newIceShards]
+			tick().then(() => freezingPond.gradientElement?.beginElement())
 			// Maybe make entire frozen pond be jagged, with visible chunks to break
+			nonFrozenPath = stringifyPathData(createPondPath([...nonFrozenTilesMap.values()]))
 		}
 		// TODO: Subtle white dots on ice?
-		// TODO: Refactor this
-		const nonDrainedTiles: Map<string, XY> = new Map(
-			[...tilesMap.entries()].filter(
-				([grid]) => !emptyTilesMap.has(grid) && !iceTilesMap.has(grid)
-			)
+	}
+
+	function updateFrozenPond(frozenPond: FrozenPond) {
+		const { mainPath, shelfPaths } = createFrozenPondPaths(
+			[...frozenPond.tilesMap.values()],
+			[...frozenPond.emptyTilesMap.values()],
+			answer
 		)
-		nonDrainedPath = stringifyPathData(createPondPath([...nonDrainedTiles.values()]))
-		iceTiles = [...iceTilesMap.values()]
-		const emptyTiles = [...emptyTilesMap.values()]
-		const icePaths = createFrozenPondPaths(iceTiles, emptyTiles, answer)
-		icePath = stringifyPathData(icePaths.mainPath)
-		iceShelfPaths = icePaths.shelfPaths.map((p) => stringifyPathData(p))
-		// emptyPath = createPondPath(emptyTiles)
-		// drainingTime += 6
-		// // drain some amount, add to total drain if already draining
-		// // only pick new pond if draining === 0
-		// const originTile: XY = [Math.floor(x / 1.5), Math.floor(y)]
-		// if (!tileGrids.has(xyToGrid(originTile))) return
-		// drainingOrigin = originTile
-		// const drainingTiles: Map<string, XY> = new Map()
-		// const nonDrainingTiles: Map<string, XY> = new Map(
-		// 	tiles.map((xy) => [xyToGrid(xy), xy])
-		// )
-		// // crawl from originTile to get all tiles in just this pond
-		// drainingRadius = 0
-		// const openTiles: Map<string, XY> = new Map([[xyToGrid(originTile), originTile]])
-		// while (openTiles.size > 0) {
-		// 	const [tileGrid, xy] = [...openTiles][0]
-		// 	drainingTiles.set(tileGrid, xy)
-		// 	openTiles.delete(tileGrid)
-		// 	nonDrainingTiles.delete(tileGrid)
-		// 	const distance = getDistance(xy[0] - originTile[0], xy[1] - originTile[1])
-		// 	drainingRadius = Math.max(drainingRadius, distance + 1)
-		// 	getNeighbors(...xy).forEach((nXY) => {
-		// 		const nGrid = xyToGrid(nXY)
-		// 		if (!drainingTiles.has(nGrid) && tileGrids.has(nGrid)) openTiles.set(nGrid, nXY)
-		// 	})
-		// }
-		// drainingPath = createPondPath([...drainingTiles].map(([, XY]) => XY))
-		// nonDrainingPath = createPondPath([...nonDrainingTiles].map(([, XY]) => XY))
-		// await tick()
-		// drainingGradientElement?.beginElement()
-		// // TODO: Bug on samsung viewport, first sop doesn't animate
-		// console.log(drainingGradientElement, drainingOrigin, drainingRadius)
+		frozenPond.path = stringifyPathData(mainPath)
+		frozenPond.shelfPaths = shelfPaths.map((p) => stringifyPathData(p))
 	}
 
 	async function onTiles() {
@@ -241,22 +238,23 @@
 		{/key}
 	</g>
 	<g opacity={animate ? 1 : 0}>
+		<!-- Expanding ponds -->
 		<g clip-path="url(#prev_pond_path)">
 			<path fill="var(--landscape-color)" d={previousPondPath} />
 			<path
 				style:transform="translateY(2px)"
 				fill="var(--tertiary-color)"
-				stroke-width="2"
+				stroke-width="3"
 				stroke="var(--landscape-color)"
 				d={previousPondPath}
 			/>
+			<path
+				stroke-width="3"
+				stroke="var(--landscape-color)"
+				fill="none"
+				d={previousPondPath}
+			/>
 		</g>
-		<path
-			stroke-width="2"
-			stroke="var(--landscape-color)"
-			fill="none"
-			d={previousPondPath}
-		/>
 		{#if animate}
 			<animate
 				attributeName="opacity"
@@ -269,29 +267,25 @@
 		{/if}
 	</g>
 	<g opacity={animate ? 0 : 1}>
+		<!-- Static ponds -->
 		<g clip-path="url(#pond_path)">
-			<path
-				fill="var(--{forceColor ? 'after-color' : 'landscape-color'})"
-				d={pondPath}
-				style:transition="fill {forceColor ? 200 : 1000}ms ease"
-			/>
+			<path fill="var(--landscape-color)" d={pondPath} />
 			<path
 				style:transform="translateY(2px)"
-				fill="var(--{forceColor ? 'after-color' : 'tertiary-color'})"
-				stroke-width="2"
-				stroke="var(--{forceColor ? 'after-color' : 'landscape-color'})"
-				style:transition="fill {forceColor ? 200 : 1000}ms ease, stroke {forceColor
-					? 200
-					: 1000}ms ease"
+				fill="var(--tertiary-color)"
+				stroke-width="3"
+				stroke="var(--landscape-color)"
 				d={pondPath}
 			/>
+			<path stroke-width="3" stroke="var(--landscape-color)" fill="none" d={pondPath} />
 		</g>
-		<!-- Main outline -->
 		<path
-			stroke-width="2"
+			stroke-width="0.3"
 			stroke="var(--{forceColor ? 'after-color' : 'landscape-color'})"
-			fill="none"
-			style:transition="stroke {forceColor ? 200 : 1000}ms ease"
+			fill={forceColor ? 'var(--after-color)' : '#fff0'}
+			style:transition="fill {forceColor ? 200 : 1000}ms ease, stroke {forceColor
+				? 200
+				: 1000}ms ease"
 			d={pondPath}
 		/>
 		{#each floods as flood (flood)}
@@ -327,7 +321,7 @@
 				</stop>
 			</radialGradient>
 			<path
-				stroke-width="2.6"
+				stroke-width="0.5"
 				stroke="url('#pond_flood_gradient_{flood[0]}')"
 				fill="url('#pond_flood_gradient_{flood[0]}')"
 				d={pondPath}
@@ -362,41 +356,70 @@
 		{/if}
 	</g>
 {:else}
-	<!-- Draining -->
-	<!-- <radialGradient
-		id="pond_drain_gradient"
-		gradientUnits="userSpaceOnUse"
-		gradientTransform="translate({(drainingOrigin[0] + 0.5) * 1.5} {drainingOrigin[1] +
-			0.5}) scale(1.5 1)"
-		cx="0"
-		cy="0"
-		r={drainingRadius}
-	>
-		<stop stop-color="var(--after-color)">
-			<animate
-				bind:this={drainingGradientElement}
-				id="pond_drain_animate"
-				attributeName="offset"
-				values="1;0"
-				calcMode="spline"
-				keySplines={bezierEasing.cubicOut}
-				dur="{drainingRadius * 400}ms"
-				fill="freeze"
-				begin="indefinite"
-			/>
-		</stop>
-		<stop stop-color="var(--after-color)" stop-opacity="0">
-			<animate
-				attributeName="offset"
-				values="1.01;0"
-				calcMode="spline"
-				keySplines={bezierEasing.cubicOut}
-				dur="{drainingRadius * 400}ms"
-				fill="freeze"
-				begin="pond_drain_animate.begin"
-			/>
-		</stop>
-	</radialGradient> -->
+	<!-- Freezing -->
+	<path d={pondPath} fill={$highContrast ? '#000' : '#0008'} />
+	<path
+		d={pondPath}
+		opacity="0.6"
+		fill="var(--tertiary-color)"
+		style:transform="translateY(3.5px)"
+	/>
+	{#each frozenPonds as { radius, origin, gradientElement, path, shelfPaths }, f (f)}
+		<radialGradient
+			id="pond_freeze_gradient_{f}"
+			gradientUnits="userSpaceOnUse"
+			gradientTransform="translate({origin[0]} {origin[1]}) scale(15 10)"
+			cx="0"
+			cy="0"
+			r={radius}
+		>
+			<stop stop-color="#B2CFFF">
+				<animate
+					bind:this={gradientElement}
+					id="pond_freeze_animate_{f}"
+					attributeName="offset"
+					values="0;0;1"
+					calcMode="spline"
+					keySplines="{bezierEasing.cubicIn};{bezierEasing.cubicOut}"
+					keyTimes="0;{1 / (1 + radius)};1"
+					dur="{(radius + 1) * 70}ms"
+					fill="freeze"
+					begin="indefinite"
+				/>
+			</stop>
+			<stop stop-color="var(--after-color)">
+				<animate
+					attributeName="offset"
+					values="0;1.01"
+					calcMode="spline"
+					keySplines={bezierEasing.cubicOut}
+					dur="{radius * 70}ms"
+					fill="freeze"
+					begin="pond_freeze_animate_{f}.begin"
+				/>
+			</stop>
+		</radialGradient>
+		<g clip-path="url(#pond_path)">
+			{#each shelfPaths as shelfPath (shelfPath)}
+				<path
+					stroke-width="0.2"
+					stroke-linejoin="round"
+					stroke={forceColor ? '#56A9FF' : 'var(--landscape-color)'}
+					fill={forceColor ? '#56A9FF' : 'var(--landscape-color)'}
+					d={shelfPath}
+					style:transition="fill {forceColor ? 200 : 1000}ms ease, stroke {forceColor
+						? 200
+						: 1000}ms ease"
+				/>
+			{/each}
+		</g>
+		<path
+			stroke-width="0.2"
+			stroke="url('#pond_freeze_gradient_{f}')"
+			fill="url('#pond_freeze_gradient_{f}')"
+			d={path}
+		/>
+	{/each}
 	<!-- <clipPath id="draining_path"> <path d={drainedPath} /> </clipPath> -->
 	<!-- <g clip-path="url(#draining_path)">
 		<path
@@ -412,57 +435,35 @@
 			d={drainingPath}
 		/>
 	</g> -->
-	<!-- <path
-		stroke-width="0.2"
-		stroke="url('#pond_drain_gradient')"
-		fill="url('#pond_drain_gradient')"
-		d={drainingPath}
-	/> -->
-	<g clip-path="url(#pond_path)">
-		<path d={pondPath} fill={$highContrast ? '#000' : '#0008'} />
-		<path
-			opacity="0.6"
-			d={pondPath}
-			fill={'var(--tertiary-color)'}
-			style:transform="translateY(3.5px)"
-		/>
-		{#each iceShelfPaths as shelfPath (shelfPath)}
-			<path
-				stroke-width="0.2"
-				stroke-linejoin="round"
-				stroke={forceColor ? '#56A9FF' : 'var(--landscape-color)'}
-				fill={forceColor ? '#56A9FF' : 'var(--landscape-color)'}
-				d={shelfPath}
-				style:transition="fill {forceColor ? 200 : 1000}ms ease, stroke {forceColor
-					? 200
-					: 1000}ms ease"
-			/>
-		{/each}
-	</g>
-
-	<clipPath id="non_drained_clip"> <path d={nonDrainedPath} /> </clipPath>
-	<g clip-path="url(#non_drained_clip)">
+	<clipPath id="non_frozen_clip"> <path d={nonFrozenPath} /> </clipPath>
+	<g clip-path="url(#non_frozen_clip)">
 		<path
 			fill="var(--{forceColor ? 'after-color' : 'landscape-color'})"
-			d={nonDrainedPath}
+			d={nonFrozenPath}
 			style:transition="fill {forceColor ? 200 : 1000}ms ease"
 		/>
 		<path
 			style:transform="translateY(2px)"
 			fill="var(--{forceColor ? 'after-color' : 'tertiary-color'})"
-			stroke-width="2"
+			stroke-width="3"
 			stroke="var(--{forceColor ? 'after-color' : 'landscape-color'})"
-			d={nonDrainedPath}
+			d={nonFrozenPath}
 			style:transition="fill {forceColor ? 200 : 1000}ms ease, stroke {forceColor
 				? 200
 				: 1000}ms ease"
 		/>
+		<path
+			stroke-width="3"
+			stroke="var(--landscape-color)"
+			fill="none"
+			d={nonFrozenPath}
+		/>
 	</g>
 	<path
-		stroke-width="2"
+		stroke-width="0.3"
 		stroke="var(--{forceColor ? 'after-color' : 'landscape-color'})"
-		fill="none"
-		d={nonDrainedPath}
+		fill={forceColor ? 'var(--after-color)' : '#fff0'}
+		d={nonFrozenPath}
 		style:transition="stroke {forceColor ? 200 : 1000}ms ease"
 	/>
 	<!-- <clipPath id="empty-clip">
@@ -470,18 +471,18 @@
 			d="{emptyPath} M-1,-1 H{landscapeWidth * 15 + 1} V{landscapeHeight * 10 + 1} H-1 z"
 		/>
 	</clipPath> -->
-	<path
+	<!-- <path
 		stroke-width="0.2"
 		stroke-linejoin="round"
 		stroke={forceColor ? '#B2CFFF' : 'var(--landscape-color)'}
 		fill={forceColor ? '#B2CFFF' : 'var(--landscape-color)'}
 		d={icePath}
 		style:transition="fill {forceColor ? 200 : 1000}ms ease"
-	/>
+	/> -->
 
-	{#each iceShards as { xy: [x, y], height }}
+	<!-- {#each iceShards as { xy: [x, y], height }}
 		<path stroke="#8afa" fill="#8afa" d="M{x - 3},{y + 1} l4,-2 l4,2 v3 l-4,2 l-4,-2 z" />
-	{/each}
+	{/each} -->
 	<!-- <clipPath id="empty-clip-2"> <path d={emptyPath} /> </clipPath>
 	<g clip-path="url(#empty-clip-2)">
 		<path

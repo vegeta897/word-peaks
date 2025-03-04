@@ -145,7 +145,7 @@ function findNextSegmentKey(
 	}
 }
 
-export function createPondPath(tiles: XY[]) {
+export function createPondPath(tiles: XY[]): PathDataCommand[] {
 	const { segmentMap, directionalSegmentMap } = getSegmentMaps(tiles)
 	const pathData: PathDataCommand[] = []
 	let newPath = true
