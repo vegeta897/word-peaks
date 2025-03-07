@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte'
-	import { bezierEasing } from '$lib/transitions'
+	import { bezierEasing } from '$lib/animation'
 	import {
 		getDistance,
 		randomInt,
@@ -340,7 +340,7 @@
 							)}
 							style:animation-duration="{flickerDuration}ms"
 							style:animation-delay="{flickerDelay}ms"
-							r={STROKE_HALF}
+							r={STROKE_WIDTH / 3}
 							fill="var(--{inColor ? 'correct-color' : 'landscape-color'})"
 						/>
 					</g>

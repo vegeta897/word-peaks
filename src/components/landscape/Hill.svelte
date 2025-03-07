@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount, tick } from 'svelte'
-	import { bezierEasing } from '$lib/transitions'
+	import { bezierEasing } from '$lib/animation'
 	import { getDistance, randomChance, randomFloat, randomInt, sleep } from '$lib/math'
 	import Gem from './Gem.svelte'
 

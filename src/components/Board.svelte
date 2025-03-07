@@ -5,7 +5,7 @@
 	import Tile from '$com/Tile.svelte'
 	import { get } from 'svelte/store'
 	import { trackEvent } from '$lib/plausible'
-	import { animationSupported } from '$lib/transitions'
+	import { animationSupported } from '$lib/animation'
 	import { ROWS, WORD_LENGTH } from '$lib/constants'
 	import { browser } from '$app/env'
 	import { fade } from 'svelte/transition'

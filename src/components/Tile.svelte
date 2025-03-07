@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { fly, fade } from '$lib/../lib/transitions'
-	import { sineOut, quadOut, sineIn } from 'svelte/easing'
+	import { quadOut } from 'svelte/easing'
 	import {
 		invalidWord,
 		invalidWordPreview,
@@ -11,7 +10,7 @@
 		currentRow,
 	} from '$src/store'
 	import type { Tile } from '$lib/data-model'
-	import { WORD_LENGTH } from '$lib/constants'
+	import { fly, fade, type FlyParams } from 'svelte/transition'
 
 	export let tile: Omit<Tile, 'magnitude'>
 	export let current = false
@@ -24,7 +23,7 @@
 	$: tileFlipDelay = tile.id * 150
 
 	const tileFlipDuration = 500
-	const typeAnimation = { duration: 100, from: 'bottom', easing: quadOut }
+	const typeAnimation: FlyParams = { duration: 100, y: '50%', easing: quadOut }
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
