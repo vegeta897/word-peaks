@@ -344,12 +344,12 @@
 			<path
 				style:transform="translateY(2px)"
 				fill="var(--tertiary-color)"
-				stroke-width="3"
+				stroke-width="2"
 				stroke="var(--landscape-color)"
 				d={previousPondPath}
 			/>
 			<path
-				stroke-width="3"
+				stroke-width="2"
 				stroke="var(--landscape-color)"
 				fill="none"
 				d={previousPondPath}
@@ -368,24 +368,22 @@
 	</g>
 	<g opacity={animate ? 0 : 1}>
 		<!-- Static ponds -->
-		<g clip-path="url(#pond_path)">
-			<path fill="var(--landscape-color)" d={pondPath} />
-			<path
-				style:transform="translateY(2px)"
-				fill="var(--tertiary-color)"
-				stroke-width="3"
-				stroke="var(--landscape-color)"
-				d={pondPath}
-			/>
-			<path stroke-width="3" stroke="var(--landscape-color)" fill="none" d={pondPath} />
-		</g>
+		{#if !forceColor}
+			<g clip-path="url(#pond_path)" out:fade|local={{ duration: 200 }}>
+				<path fill="var(--landscape-color)" d={pondPath} />
+				<path
+					style:transform="translateY(2px)"
+					fill="var(--tertiary-color)"
+					stroke="var(--landscape-color)"
+					stroke-width="2"
+					d={pondPath}
+				/>
+				<path fill="none" stroke="var(--landscape-color)" stroke-width="2" d={pondPath} />
+			</g>
+		{/if}
 		<path
-			stroke-width="0.3"
-			stroke="var(--{forceColor ? 'after-color' : 'landscape-color'})"
 			fill={forceColor ? 'var(--after-color)' : '#fff0'}
-			style:transition="fill {forceColor ? 200 : 1000}ms ease, stroke {forceColor
-				? 200
-				: 1000}ms ease"
+			style:transition="fill {forceColor ? 200 : 1000}ms ease"
 			d={pondPath}
 		/>
 		{#each floods as flood (flood)}
@@ -467,37 +465,28 @@
 	{#key nonFrozenPath}
 		<g out:fade|local={{ delay: freezeDelay, duration: 0 }}>
 			<clipPath id="non_frozen_clip"> <path d={nonFrozenPath} /> </clipPath>
-			<g clip-path="url(#non_frozen_clip)">
-				<path
-					fill="var(--{forceColor ? 'after-color' : 'landscape-color'})"
-					d={nonFrozenPath}
-					style:transition="fill {forceColor ? 200 : 1000}ms ease"
-				/>
-				<path
-					style:transform="translateY(2px)"
-					fill="var(--{forceColor ? 'after-color' : 'tertiary-color'})"
-					stroke-width="3"
-					stroke="var(--{forceColor ? 'after-color' : 'landscape-color'})"
-					d={nonFrozenPath}
-					style:transition="fill {forceColor ? 200 : 1000}ms ease, stroke {forceColor
-						? 200
-						: 1000}ms ease"
-				/>
-				<path
-					stroke-width="3"
-					stroke="var(--landscape-color)"
-					fill="none"
-					d={nonFrozenPath}
-				/>
-			</g>
+			{#if !forceColor}
+				<g clip-path="url(#non_frozen_clip)" out:fade|local={{ duration: 200 }}>
+					<path fill="var(--landscape-color)" d={nonFrozenPath} />
+					<path
+						style:transform="translateY(2px)"
+						fill="var(--tertiary-color)"
+						stroke="var(--landscape-color)"
+						stroke-width="2"
+						d={nonFrozenPath}
+					/>
+					<path
+						fill="none"
+						stroke="var(--landscape-color)"
+						stroke-width="2"
+						d={nonFrozenPath}
+					/>
+				</g>
+			{/if}
 			<path
-				stroke-width="0.3"
-				stroke="var(--{forceColor ? 'after-color' : 'landscape-color'})"
 				fill={forceColor ? 'var(--after-color)' : '#fff0'}
 				d={nonFrozenPath}
-				style:transition="fill {forceColor ? 200 : 1000}ms ease, stroke {forceColor
-					? 200
-					: 1000}ms ease"
+				style:transition="fill {forceColor ? 200 : 1000}ms ease"
 			/>
 		</g>
 	{/key}
