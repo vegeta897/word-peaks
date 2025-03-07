@@ -6,6 +6,7 @@ import { createHill } from './hill'
 import { createTrees } from './tree'
 
 export type Feature = {
+	type: 'hill' | 'tree' | 'pond-row'
 	id: number
 	x: number
 	y: number
@@ -13,7 +14,7 @@ export type Feature = {
 	yJitter: number
 	size: number
 	delay: number
-} & ({ type: 'hill' } | { type: 'tree' })
+}
 
 type LandscapeTile = {
 	x: number
@@ -38,6 +39,7 @@ export type Landscape = {
 	tileMap: Map<string, LandscapeTile>
 	pondTiles: XY[]
 	newPondTiles: XY[]
+	pondRows: Set<number>
 	nextID: number
 	pondDelay?: number
 	totalDelay: number
@@ -73,7 +75,7 @@ export function getLandscape(
 	}
 	while (landscape.rowsGenerated < currentRow) {
 		const rowTiles = board[landscape.rowsGenerated]
-		const rowWord = rowToWord(rowTiles)
+		// const rowWord = rowToWord(rowTiles)
 		const seed = answer + board.slice(0, landscape.rowsGenerated).map(rowToWord).join('')
 		const rng = new Rand(seed)
 		const getRng = () => rng.next()
@@ -101,9 +103,21 @@ export function getCenterWeight({ centerX, centerY }: Landscape, x: number, y: n
 	return verticalCenter * horizontalCenter
 }
 
-const getFeatureY = (feature: Feature) => feature.y + feature.yJitter
+const getFeatureY = (feature: Feature) =>
+	feature.y + feature.yJitter + (feature.type === 'hill' ? 0.5 : 0)
 
 const rowToWord = (row: LetterTile[]) => row.map((t) => t.letter).join('')
+
+export function clearLandscape(landscape: Landscape) {
+	landscape.rowsGenerated = 0
+	landscape.tileMap.clear()
+	landscape.features.length = 0
+	landscape.pondTiles.length = 0
+	landscape.newPondTiles.length = 0
+	landscape.pondRows.clear()
+	landscape.nextID = 1
+	landscape.pondDelay = undefined
+}
 
 // TODO: Change sop to chill, or ice
 // Change pop to burst? All 5 letter words?

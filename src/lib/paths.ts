@@ -13,11 +13,15 @@ export function stringifyPathData(
 	for (const [command, ...params] of pathData) {
 		pathDataString +=
 			command +
-			params.map((param) =>
-				typeof param === 'number'
-					? param
-					: `${param[0] * scaleX + offsetX},${param[1] * scaleY + offsetY}`
-			)
+			params.map((param) => {
+				if (typeof param === 'number') return param
+				// Use toFixed to round, and Number() to remove unnecessary zeroes
+				return (
+					Number((param[0] * scaleX + offsetX).toFixed(2)) +
+					',' +
+					Number((param[1] * scaleY + offsetY).toFixed(2))
+				)
+			})
 	}
 	return pathDataString
 }

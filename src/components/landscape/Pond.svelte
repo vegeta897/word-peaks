@@ -1,18 +1,23 @@
 <script lang="ts">
-	import { bezierEasing } from '$lib/transitions'
+	import { bezierEasing } from '$lib/animation'
 	import {
 		getDistance,
 		getDistanceBetween,
 		getManhattanDistanceBetween,
 		getNeighbors,
+		getNeighbors8,
 		randomFloat,
+		randomInt,
 		xyToGrid,
 		type XY,
 	} from '$lib/math'
 	import { tick } from 'svelte'
-	import { createFrozenPondPaths, createPondPath } from '$lib/landscape/pond'
+	import { createPondPath, createSubTilePath } from '$lib/landscape/pond'
 	import { highContrast } from '$src/store'
 	import { stringifyPathData } from '$lib/paths'
+	import { circIn } from 'svelte/easing'
+	import { fade } from 'svelte/transition'
+	import Rand from 'rand-seed'
 
 	export let tiles: XY[] = []
 	export let newTiles: XY[] = []
@@ -66,71 +71,89 @@
 	let havingFun = false
 	let nonFrozenTilesMap: Map<string, XY>
 	let nonFrozenPath: string
+	let lastFreeze = 0
+	$: freezeDelay =
+		frozenPonds.length > 0 ? frozenPonds[frozenPonds.length - 1].freezeDelay : 0
 	type FrozenPond = {
+		freezeDelay: number
 		radius: number
 		origin: XY
 		gradientElement: SVGAnimateElement | null
-		tilesMap: Map<string, XY>
-		emptyTilesMap: Map<string, XY>
+		tiles: Map<string, { xy: XY; subTiles: Map<string, SubTile> }>
+		emptyTiles: Map<string, XY>
 		path: string
-		shelfPaths: string[]
+		shelfPath: string
+		subTiles: Map<string, SubTile>
+		subPoints: Map<string, XY>
+		brokenPath: string
 	}
+	type SubTile = { subTileXY: XY; tileGrids: Set<string> }
 	let frozenPonds: FrozenPond[] = []
 	const emptyTilesMap: Map<string, XY> = new Map()
 
-	// type IceShard = {
-	// 	xy: XY
-	// 	height: number
-	// }
+	type IceShard = {
+		xy: XY
+		rotation: number
+		velocity: XY
+		delay: number
+		duration: number
+	}
 
-	// let iceShards: IceShard[] = []
+	let iceShards: IceShard[] = []
 
 	export async function doFun(x: number, y: number) {
-		const normalizedX = x / 10 / 1.5
-		const normalizedY = y / 10
+		const normalizedXY: XY = [x / 10 / 1.5, y / 10]
 		let clickedTile: null | { grid: string; xy: XY; distance: number } = null
 		for (
-			let nearX = Math.floor(normalizedX - 0.2);
-			nearX <= Math.floor(normalizedX + 0.2);
+			let nearX = Math.floor(normalizedXY[0] - 0.3);
+			nearX <= Math.floor(normalizedXY[0] + 0.3);
 			nearX++
 		) {
 			for (
-				let nearY = Math.floor(normalizedY - 0.3);
-				nearY <= Math.floor(normalizedY + 0.3);
+				let nearY = Math.floor(normalizedXY[1] - 0.4);
+				nearY <= Math.floor(normalizedXY[1] + 0.4);
 				nearY++
 			) {
 				const nearXY: XY = [nearX, nearY]
 				const nearGrid = xyToGrid(nearXY)
 				if (emptyTilesMap.has(nearGrid) || !tilesMap.has(nearGrid)) continue
-				const distance = getDistance(nearX + 0.5 - normalizedX, nearY + 0.5 - normalizedY)
+				const distance = getDistanceBetween([nearX + 0.5, nearY + 0.5], normalizedXY)
 				if (!clickedTile || distance < clickedTile.distance) {
 					clickedTile = { grid: nearGrid, xy: nearXY, distance }
 				}
 			}
 		}
 		if (!clickedTile) return
-		if (!havingFun) {
+		let firstFun = !havingFun
+		if (firstFun) {
 			havingFun = true
 			nonFrozenTilesMap = new Map(tilesMap)
 		}
-		const clickedFrozenPond = frozenPonds.find((f) => f.tilesMap.has(clickedTile.grid))
+		const clickedFrozenPond = frozenPonds.find((f) => f.tiles.has(clickedTile.grid))
 		if (clickedFrozenPond) {
 			// TODO: Don't crawl if clicking and dragging
+			if (Date.now() < lastFreeze + clickedFrozenPond.freezeDelay) return
+			const breakableSubTiles: Map<string, SubTile> = new Map()
 			const openTiles: Map<string, XY> = new Map([[clickedTile.grid, clickedTile.xy]])
 			while (openTiles.size > 0) {
 				const [grid, xy] = [...openTiles][0]
 				openTiles.delete(grid)
-				clickedFrozenPond.emptyTilesMap.set(grid, xy)
-				clickedFrozenPond.tilesMap.delete(grid)
+				clickedFrozenPond.tiles
+					.get(grid)!
+					.subTiles.forEach((st, g) => breakableSubTiles.set(g, st))
+				breakIce(clickedFrozenPond, grid, xy, normalizedXY)
 				getNeighbors(...xy).forEach((nXY) => {
 					const neighborGrid = xyToGrid(nXY)
-					if (!clickedFrozenPond.tilesMap.has(neighborGrid)) return
+					if (openTiles.has(neighborGrid) || !clickedFrozenPond.tiles.has(neighborGrid))
+						return
 					const neighborAlone = !getNeighbors(...nXY).some((nnXY) =>
-						clickedFrozenPond.tilesMap.has(xyToGrid(nnXY))
+						clickedFrozenPond.tiles.has(xyToGrid(nnXY))
 					)
 					if (neighborAlone) {
-						clickedFrozenPond.emptyTilesMap.set(neighborGrid, nXY)
-						clickedFrozenPond.tilesMap.delete(neighborGrid)
+						clickedFrozenPond.tiles
+							.get(neighborGrid)!
+							.subTiles.forEach((st, g) => breakableSubTiles.set(g, st))
+						breakIce(clickedFrozenPond, neighborGrid, nXY, normalizedXY)
 					} else {
 						const distance = getManhattanDistanceBetween(clickedTile.xy, nXY)
 						if (distance > randomFloat(2, 4)) return
@@ -138,53 +161,130 @@
 					}
 				})
 			}
-			updateFrozenPond(clickedFrozenPond)
-			clickedFrozenPond.emptyTilesMap.forEach((v, k) => emptyTilesMap.set(k, v))
-			frozenPonds = [...frozenPonds]
+			breakableSubTiles.forEach((subTile, subTileGrid) => {
+				const willBreak = [...subTile.tileGrids].every(
+					(tg) => !clickedFrozenPond.tiles.has(tg)
+				)
+				if (willBreak) clickedFrozenPond.subTiles.delete(subTileGrid)
+			})
+			// TODO: Store all broken subTiles on pond object
+			const { mainPath, shelfPath } = createSubTilePath(
+				[...clickedFrozenPond.subTiles.values()].map((st) => st.subTileXY),
+				clickedFrozenPond.subPoints
+			)
+			clickedFrozenPond.brokenPath = stringifyPathData(mainPath)
+			clickedFrozenPond.shelfPath = stringifyPathData(shelfPath)
+			// updateFrozenPond(clickedFrozenPond)
+			clickedFrozenPond.emptyTiles.forEach((v, k) => emptyTilesMap.set(k, v))
+			frozenPonds = frozenPonds // Reactivity
+			iceShards = iceShards // Reactivity
 		} else {
-			// const newIceTiles: Map<string, XY> = new Map()
+			// Freeze a pond
+			lastFreeze = Date.now()
 			const freezingPond: FrozenPond = {
+				freezeDelay: 0,
 				radius: 1,
 				origin: [x, y],
 				gradientElement: null,
-				tilesMap: new Map(),
-				emptyTilesMap: new Map(),
+				tiles: new Map(),
+				emptyTiles: new Map(),
 				path: '',
-				shelfPaths: [],
+				shelfPath: '',
+				subTiles: new Map(),
+				subPoints: new Map(),
+				brokenPath: '',
 			}
+			const tileList: XY[] = []
+			const rng = new Rand(answer + clickedTile.grid)
+			const getRng = () => rng.next()
 			const openTiles: Map<string, XY> = new Map([[clickedTile.grid, clickedTile.xy]])
-			// const newIceShards: IceShard[] = []
 			while (openTiles.size > 0) {
 				const [grid, xy] = [...openTiles][0]
 				openTiles.delete(grid)
 				nonFrozenTilesMap.delete(grid)
-				freezingPond.tilesMap.set(grid, xy)
-				const distance = getDistanceBetween(clickedTile.xy, xy)
+				const subTiles: Map<string, SubTile> = new Map()
+				freezingPond.tiles.set(grid, { subTiles, xy })
+				tileList.push(xy)
+				for (let fxi = 0; fxi < 4; fxi++) {
+					const xDir = fxi % 2 ? 1 : -1
+					const subPointX = xy[0] * 2 + fxi
+					for (let fyi = 0; fyi < 4; fyi++) {
+						const yDir = fyi % 2 ? 1 : -1
+						const subPointY = xy[1] * 2 + fyi
+						const subPointGrid = xyToGrid([subPointX, subPointY])
+						let fracturePoint = freezingPond.subPoints.get(subPointGrid)
+						if (!fracturePoint) {
+							fracturePoint = [(subPointX - 0.5) / 2, (subPointY - 0.5) / 2]
+							const onTileGrid = xyToGrid([
+								Math.floor(fracturePoint[0]),
+								Math.floor(fracturePoint[1]),
+							])
+							const maxJitter = tilesMap.has(onTileGrid) ? 0.2 : 0.1
+							fracturePoint[0] += randomFloat(0, maxJitter, getRng) * xDir * yDir
+							fracturePoint[1] += randomFloat(0, maxJitter, getRng) * xDir * yDir
+							freezingPond.subPoints.set(subPointGrid, fracturePoint)
+						}
+						if (fxi > 0 && fyi > 0) {
+							const subTileXY: XY = [subPointX - 1, subPointY - 1]
+							const subTileGrid = xyToGrid(subTileXY)
+							let subTile = freezingPond.subTiles.get(subTileGrid)
+							if (!subTile) {
+								subTile = {
+									subTileXY,
+									tileGrids: new Set([grid]),
+								}
+								freezingPond.subTiles.set(subTileGrid, subTile)
+							} else {
+								subTile.tileGrids.add(grid)
+							}
+							subTiles.set(subTileGrid, subTile)
+						}
+					}
+				}
+				const distance = getDistanceBetween(normalizedXY, [xy[0] + 0.5, xy[1] + 0.5])
 				freezingPond.radius = Math.max(freezingPond.radius, distance + 1)
-				getNeighbors(...xy).forEach((nXY) => {
+				getNeighbors8(...xy).forEach((nXY) => {
 					const nGrid = xyToGrid(nXY)
-					if (!freezingPond.tilesMap.has(nGrid) && nonFrozenTilesMap.has(nGrid))
+					if (!freezingPond.tiles.has(nGrid) && nonFrozenTilesMap.has(nGrid))
 						openTiles.set(nGrid, nXY)
 				})
 			}
-			updateFrozenPond(freezingPond)
+			const freezingPondPathData = createPondPath(tileList)
+			freezingPond.path = stringifyPathData(freezingPondPathData)
+			// console.log(freezingPond.subTiles)
+			// updateFrozenPond(freezingPond)
 			frozenPonds = [...frozenPonds, freezingPond]
-			// iceShards = [...iceShards, ...newIceShards]
-			tick().then(() => freezingPond.gradientElement?.beginElement())
-			// Maybe make entire frozen pond be jagged, with visible chunks to break
-			nonFrozenPath = stringifyPathData(createPondPath([...nonFrozenTilesMap.values()]))
+			// Draw all ponds as non-frozen first so we can transition them away
+			if (firstFun) nonFrozenPath = pondPath
+			freezingPond.freezeDelay = (freezingPond.radius + 1) * 60
+			tick().then(() => {
+				freezingPond.gradientElement?.beginElement()
+				nonFrozenPath = stringifyPathData(createPondPath([...nonFrozenTilesMap.values()]))
+			})
 		}
-		// TODO: Subtle white dots on ice?
 	}
 
-	function updateFrozenPond(frozenPond: FrozenPond) {
-		const { mainPath, shelfPaths } = createFrozenPondPaths(
-			[...frozenPond.tilesMap.values()],
-			[...frozenPond.emptyTilesMap.values()],
-			answer
-		)
-		frozenPond.path = stringifyPathData(mainPath)
-		frozenPond.shelfPaths = shelfPaths.map((p) => stringifyPathData(p))
+	function breakIce(pond: FrozenPond, tileGrid: string, tileXY: XY, clickXY: XY) {
+		pond.emptyTiles.set(tileGrid, tileXY)
+		pond.tiles.delete(tileGrid)
+		// TODO: Animate an inverted clip path for frozen pond breaking away as shards are spawned
+		// TODO: Need to get these in the right z-order amidst other landscape features
+		// TODO: Expanding transparent gradient on broken ice sections
+		// TODO: Shards will have to be invisible during delay, since they will render above the frozen pond
+		// TODO: Delete shards after max delay+duration
+		// for (let i = 0; i < 9; i++) {
+		// 	const shardX = xy[0] + (i % 3) / 3
+		// 	const shardY = xy[1] + Math.floor(i / 3) / 3
+		// 	const normalizedDistance = getDistanceBetween([shardX, shardY], clickXY) / 5
+		// 	const delay = Math.floor(circIn(Math.min(1, normalizedDistance)) * 500)
+		// 	iceShards.push({
+		// 		xy: [shardX * 15, shardY * 10],
+		// 		rotation: randomFloat(-1, 1),
+		// 		velocity: [randomFloat(-1, 1), randomFloat(0.5, 1)],
+		// 		delay,
+		// 		duration: randomInt(400, 650),
+		// 	})
+		// }
 	}
 
 	async function onTiles() {
@@ -321,7 +421,7 @@
 				</stop>
 			</radialGradient>
 			<path
-				stroke-width="0.5"
+				stroke-width="0.25"
 				stroke="url('#pond_flood_gradient_{flood[0]}')"
 				fill="url('#pond_flood_gradient_{flood[0]}')"
 				d={pondPath}
@@ -356,7 +456,7 @@
 		{/if}
 	</g>
 {:else}
-	<!-- Freezing -->
+	<!-- Fun -->
 	<path d={pondPath} fill={$highContrast ? '#000' : '#0008'} />
 	<path
 		d={pondPath}
@@ -364,7 +464,44 @@
 		fill="var(--tertiary-color)"
 		style:transform="translateY(3.5px)"
 	/>
-	{#each frozenPonds as { radius, origin, gradientElement, path, shelfPaths }, f (f)}
+	{#key nonFrozenPath}
+		<g out:fade|local={{ delay: freezeDelay, duration: 0 }}>
+			<clipPath id="non_frozen_clip"> <path d={nonFrozenPath} /> </clipPath>
+			<g clip-path="url(#non_frozen_clip)">
+				<path
+					fill="var(--{forceColor ? 'after-color' : 'landscape-color'})"
+					d={nonFrozenPath}
+					style:transition="fill {forceColor ? 200 : 1000}ms ease"
+				/>
+				<path
+					style:transform="translateY(2px)"
+					fill="var(--{forceColor ? 'after-color' : 'tertiary-color'})"
+					stroke-width="3"
+					stroke="var(--{forceColor ? 'after-color' : 'landscape-color'})"
+					d={nonFrozenPath}
+					style:transition="fill {forceColor ? 200 : 1000}ms ease, stroke {forceColor
+						? 200
+						: 1000}ms ease"
+				/>
+				<path
+					stroke-width="3"
+					stroke="var(--landscape-color)"
+					fill="none"
+					d={nonFrozenPath}
+				/>
+			</g>
+			<path
+				stroke-width="0.3"
+				stroke="var(--{forceColor ? 'after-color' : 'landscape-color'})"
+				fill={forceColor ? 'var(--after-color)' : '#fff0'}
+				d={nonFrozenPath}
+				style:transition="fill {forceColor ? 200 : 1000}ms ease, stroke {forceColor
+					? 200
+					: 1000}ms ease"
+			/>
+		</g>
+	{/key}
+	{#each frozenPonds as { radius, origin, freezeDelay, gradientElement, path, shelfPath, subTiles, subPoints, brokenPath, tiles }, f (f)}
 		<radialGradient
 			id="pond_freeze_gradient_{f}"
 			gradientUnits="userSpaceOnUse"
@@ -373,133 +510,116 @@
 			cy="0"
 			r={radius}
 		>
-			<stop stop-color="#B2CFFF">
+			<stop
+				stop-color={forceColor ? '#B2CFFF' : 'var(--landscape-color)'}
+				style:transition="stop-color {forceColor ? 200 : 1000}ms ease"
+			>
 				<animate
 					bind:this={gradientElement}
 					id="pond_freeze_animate_{f}"
 					attributeName="offset"
 					values="0;0;1"
 					calcMode="spline"
-					keySplines="{bezierEasing.cubicIn};{bezierEasing.cubicOut}"
+					keySplines="{bezierEasing.sineIn};{bezierEasing.sineOut}"
 					keyTimes="0;{1 / (1 + radius)};1"
-					dur="{(radius + 1) * 70}ms"
+					dur="{freezeDelay}ms"
 					fill="freeze"
 					begin="indefinite"
 				/>
 			</stop>
-			<stop stop-color="var(--after-color)">
+			<stop stop-color={forceColor ? '#B2CFFF00' : '#fff0'}>
 				<animate
 					attributeName="offset"
 					values="0;1.01"
 					calcMode="spline"
-					keySplines={bezierEasing.cubicOut}
-					dur="{radius * 70}ms"
+					keySplines={bezierEasing.sineOut}
+					dur="{radius * 60}ms"
 					fill="freeze"
 					begin="pond_freeze_animate_{f}.begin"
 				/>
 			</stop>
 		</radialGradient>
-		<g clip-path="url(#pond_path)">
-			{#each shelfPaths as shelfPath (shelfPath)}
-				<path
-					stroke-width="0.2"
-					stroke-linejoin="round"
-					stroke={forceColor ? '#56A9FF' : 'var(--landscape-color)'}
-					fill={forceColor ? '#56A9FF' : 'var(--landscape-color)'}
-					d={shelfPath}
-					style:transition="fill {forceColor ? 200 : 1000}ms ease, stroke {forceColor
-						? 200
-						: 1000}ms ease"
-				/>
-			{/each}
-		</g>
-		<path
-			stroke-width="0.2"
-			stroke="url('#pond_freeze_gradient_{f}')"
-			fill="url('#pond_freeze_gradient_{f}')"
-			d={path}
-		/>
+		{#if tiles.size > 0}
+			<path
+				clip-path="url(#pond_path)"
+				stroke-width="0.25"
+				stroke-linejoin="round"
+				stroke={forceColor ? '#56A9FF' : 'var(--landscape-color)'}
+				fill={forceColor ? '#56A9FF' : 'var(--landscape-color)'}
+				d={shelfPath}
+				style:transition="fill {forceColor ? 200 : 1000}ms ease, stroke {forceColor
+					? 200
+					: 1000}ms ease"
+			/>
+			<clipPath id="broken_path_{f}"> <path d={brokenPath} /> </clipPath>
+			<path
+				clip-path={brokenPath ? `url(#broken_path_${f}` : 'none'}
+				stroke-width="0.25"
+				stroke-linejoin="round"
+				stroke="url('#pond_freeze_gradient_{f}')"
+				fill="url('#pond_freeze_gradient_{f}')"
+				d={path}
+			/>
+		{/if}
+		{#each [...subTiles.values()] as { subTileXY: [x, y] }}
+			{@const points = [
+				[0, 0],
+				[1, 0],
+				[1, 1],
+				[0, 1],
+			].map(([nx, ny]) =>
+				subPoints.get(x + nx + ':' + (y + ny))?.map((v, i) => v * (i ? 10 : 15))
+			)}
+			<path
+				stroke="#99BEFD20"
+				stroke-width="0.3"
+				fill="none"
+				d="M{points[0]} L{points[1]} L{points[2]} L{points[3]} Z"
+			/>
+		{/each}
+		<!-- {#each [...subPoints.values()] as [fx, fy]}
+			<circle fill="#00f" cx={fx * 15} cy={fy * 10} r="0.3" />
+		{/each} -->
 	{/each}
-	<!-- <clipPath id="draining_path"> <path d={drainedPath} /> </clipPath> -->
-	<!-- <g clip-path="url(#draining_path)">
-		<path
-			fill="var(--{forceColor ? 'after-color' : 'landscape-color'})"
-			d={drainingPath}
-			style:transition="fill {forceColor ? 200 : 1000}ms ease"
-		/>
-		<path
-			style:transform="translateY(0.2px)"
-			fill="var(--{forceColor ? 'after-color' : 'tertiary-color'})"
-			stroke-width="0.2"
-			stroke="var(--{forceColor ? 'after-color' : 'landscape-color'})"
-			d={drainingPath}
-		/>
-	</g> -->
-	<clipPath id="non_frozen_clip"> <path d={nonFrozenPath} /> </clipPath>
-	<g clip-path="url(#non_frozen_clip)">
-		<path
-			fill="var(--{forceColor ? 'after-color' : 'landscape-color'})"
-			d={nonFrozenPath}
-			style:transition="fill {forceColor ? 200 : 1000}ms ease"
-		/>
-		<path
-			style:transform="translateY(2px)"
-			fill="var(--{forceColor ? 'after-color' : 'tertiary-color'})"
-			stroke-width="3"
-			stroke="var(--{forceColor ? 'after-color' : 'landscape-color'})"
-			d={nonFrozenPath}
-			style:transition="fill {forceColor ? 200 : 1000}ms ease, stroke {forceColor
-				? 200
-				: 1000}ms ease"
-		/>
-		<path
-			stroke-width="3"
-			stroke="var(--landscape-color)"
-			fill="none"
-			d={nonFrozenPath}
-		/>
-	</g>
-	<path
-		stroke-width="0.3"
-		stroke="var(--{forceColor ? 'after-color' : 'landscape-color'})"
-		fill={forceColor ? 'var(--after-color)' : '#fff0'}
-		d={nonFrozenPath}
-		style:transition="stroke {forceColor ? 200 : 1000}ms ease"
-	/>
-	<!-- <clipPath id="empty-clip">
-		<path
-			d="{emptyPath} M-1,-1 H{landscapeWidth * 15 + 1} V{landscapeHeight * 10 + 1} H-1 z"
-		/>
-	</clipPath> -->
-	<!-- <path
-		stroke-width="0.2"
-		stroke-linejoin="round"
-		stroke={forceColor ? '#B2CFFF' : 'var(--landscape-color)'}
-		fill={forceColor ? '#B2CFFF' : 'var(--landscape-color)'}
-		d={icePath}
-		style:transition="fill {forceColor ? 200 : 1000}ms ease"
-	/> -->
-
-	<!-- {#each iceShards as { xy: [x, y], height }}
-		<path stroke="#8afa" fill="#8afa" d="M{x - 3},{y + 1} l4,-2 l4,2 v3 l-4,2 l-4,-2 z" />
-	{/each} -->
-	<!-- <clipPath id="empty-clip-2"> <path d={emptyPath} /> </clipPath>
-	<g clip-path="url(#empty-clip-2)">
-		<path
-			stroke-width="2"
-			stroke="var(--landscape-color)"
-			fill="none"
-			d={emptyPath}
-			style:transform="translateY(1.8px)"
-		/>
-	</g>
-	<path stroke-width="2" stroke="var(--landscape-color)" fill="none" d={emptyPath} /> -->
-	<!-- <path
-		stroke-width="2"
-		stroke="var(--landscape-color)"
-		fill="#0008"
-		d={emptyPath}
-		style:transition="stroke {forceColor ? 200 : 1000}ms ease"
-	/>
-	<path clip-path="url(#test-clip)" fill="#35f" d="M5,30 h40 v40 h-40 z" /> -->
+	{#each iceShards as { xy, rotation, velocity, delay, duration }, i (i)}
+		<g
+			class="ice-shard-container"
+			style:transform="translateY({-20 * velocity[1]}px)"
+			style:transform-origin="{xy[0] + 2.5}px {xy[1] + 1.67}px"
+			style:animation-duration="{duration}ms"
+			style:animation-delay="{delay}ms"
+		>
+			<path
+				class="ice-shard"
+				fill={forceColor ? '#B2CFFF' : 'var(--landscape-color)'}
+				d="M{xy[0]},{xy[1]} h5 v3.33 h-5 z"
+				style:transform="translateX({velocity[0] * 15}px) rotate({rotation * 180}deg)"
+				style:transform-origin="{xy[0] + 2.5}px {xy[1] + 1.67}px"
+				style:animation-duration="{duration}ms, {100}ms"
+				style:animation-delay="{delay}ms, {delay + (duration - 100)}ms"
+			/>
+		</g>
+	{/each}
 {/if}
+
+<style>
+	.ice-shard-container {
+		animation: transform-from-init cubic-bezier(0.33, 1, 0.68, 1) both;
+	}
+
+	.ice-shard {
+		animation: transform-from-init linear both, fade ease-in both;
+	}
+
+	@keyframes transform-from-init {
+		0% {
+			transform: none;
+		}
+	}
+
+	@keyframes fade {
+		100% {
+			opacity: 0;
+		}
+	}
+</style>

@@ -29,13 +29,16 @@ export const xyToGrid = ([x, y]: XY) => `${x}:${y}`
 
 export type Dir = 0 | 1 | 2 | 3 // down | right | up | left
 // prettier-ignore
-export const neighbors = [[0, 1],[1, 0],[0, -1],[-1, 0]]
+export const neighbors = [[0, 1], [1, 0], [0, -1], [-1, 0]]
+const neighbors8 = [...neighbors, [1, 1], [-1, 1], [-1, -1], [1, -1]]
 export function getNeighborGrids(grid: string) {
 	const [x, y] = grid.split(':').map((v) => +v)
 	return neighbors.map(([nx, ny]) => xyToGrid([x + nx, y + ny]))
 }
 export const getNeighbors = (x: number, y: number) =>
 	neighbors.map(([nx, ny]) => [x + nx, y + ny]) as XY[]
+export const getNeighbors8 = (x: number, y: number) =>
+	neighbors8.map(([nx, ny]) => [x + nx, y + ny]) as XY[]
 
 export const getDistance = (x: number, y: number) => Math.sqrt(x ** 2 + y ** 2)
 export const getDistanceBetween = (a: XY, b: XY) =>

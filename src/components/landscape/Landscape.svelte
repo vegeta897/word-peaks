@@ -2,7 +2,7 @@
 	import * as store from '$src/store'
 	import { get } from 'svelte/store'
 	import type { Landscape, LandscapeFunMode } from '$lib/landscape/landscape'
-	import { getLandscape } from '$lib/landscape/landscape'
+	import { clearLandscape, getLandscape } from '$lib/landscape/landscape'
 	import Tree from './Tree.svelte'
 	import Hill from './Hill.svelte'
 	import Pond from './Pond.svelte'
@@ -31,6 +31,7 @@
 		tileMap: new Map(),
 		pondTiles: [],
 		newPondTiles: [],
+		pondRows: new Set(),
 		nextID: 1,
 		totalDelay: 0,
 	}
@@ -58,18 +59,8 @@
 		landscape.centerY = Math.floor(newHeight / 2)
 		animate = false
 		redraw++
-		clearLandscape()
+		clearLandscape(landscape)
 		updateLandscape()
-	}
-
-	function clearLandscape() {
-		landscape.rowsGenerated = 0
-		landscape.tileMap.clear()
-		landscape.features.length = 0
-		landscape.pondTiles.length = 0
-		landscape.newPondTiles.length = 0
-		landscape.nextID = 1
-		landscape.pondDelay = undefined
 	}
 
 	function updateLandscape() {
@@ -78,7 +69,7 @@
 		if (initializing || !landscape.width) return
 		const currentRow = get(store.currentRow)
 		if (currentRow === 0) {
-			if (landscape.rowsGenerated > 0) clearLandscape()
+			if (landscape.rowsGenerated > 0) clearLandscape(landscape)
 			return
 		}
 		if (firstDraw || landscape.rowsGenerated > 0) {
@@ -110,7 +101,7 @@
 		store.landscapeNewGame.set(false)
 		firstDraw = true
 		redraw++
-		clearLandscape()
+		clearLandscape(landscape)
 		// Skip update if landscapeWideView is true, because it is about to change
 		if (!get(store.landscapeWideView)) updateLandscape()
 	})
@@ -122,7 +113,7 @@
 	store.landscapeRedraw.subscribe((redrawType) => {
 		if (redrawType === null) return
 		redraw++
-		clearLandscape()
+		clearLandscape(landscape)
 		updateLandscape()
 	})
 	// Hide landscape until it updates to avoid flashing on FF
@@ -224,6 +215,7 @@
 
 	const onSVGPointerMove: svelte.JSX.PointerEventHandler<SVGElement> = (event) => {
 		mouseOver = true // OK to redundantly assign, doesn't re-trigger reactivity
+		// TODO: Use event.buttons for dragging fun-mode
 		updateMousePosition(event.offsetX, event.offsetY)
 	}
 	const onMouseLeave = () => (mouseOver = false)
@@ -277,7 +269,7 @@
 						pluckMode={$landscapeFunMode === 'pluck'}
 						bind:this={featureComponents[f]}
 					/>
-				{:else}
+				{:else if feature.type === 'hill'}
 					<Hill
 						id={feature.id}
 						x={feature.x}
@@ -295,6 +287,13 @@
 						popMode={$landscapeFunMode === 'pop'}
 						bind:this={featureComponents[f]}
 					/>
+				{:else}
+					<!-- <rect
+						fill="#f001"
+						y={feature.y * 10 + 1}
+						height="8"
+						width={landscape.width * 15}
+					/> -->
 				{/if}
 			{/each}
 		{/key}
