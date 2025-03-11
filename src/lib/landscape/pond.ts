@@ -1,8 +1,12 @@
-import { LANDSCAPE_FEATURE_DELAY, type Landscape } from '$lib/landscape/landscape'
+import {
+	getNewCenterOfMass,
+	getTileBalance,
+	LANDSCAPE_FEATURE_DELAY,
+	type Landscape,
+} from '$lib/landscape/landscape'
 import {
 	randomElementWeighted,
 	xyToGrid,
-	getDistance,
 	type XY,
 	type Dir,
 	getNeighbors8,
@@ -14,13 +18,13 @@ export function createPond(getRng: () => number, landscape: Landscape) {
 	let generatedPond = false
 	while (!generatedPond) {
 		const openTiles = [...tileMap].filter(
-			([, { feature, noPond }]) => !feature && !noPond
+			([, tile]) => !tile.feature && tile.connected && !tile.noPond
 		)
 		if (openTiles.length === 0) break
 		const [startGrid, openTile] = randomElementWeighted(
 			openTiles,
 			openTiles.map(
-				([, { centerWeight, nearPonds }]) => centerWeight ** 2 / ((nearPonds || 0) + 1)
+				([, { x, y, connected }]) => getTileBalance(x, y, 6, landscape) + connected
 			),
 			getRng
 		)
@@ -43,6 +47,10 @@ function fillPond(
 	const newTiles: Map<string, XY> = new Map()
 	const openPondTiles = new Map([[startGrid, { weight: 1, x, y }]])
 	const pondSize = landscape.mini ? 4 : 6
+	let minX = x,
+		maxX = x,
+		minY = y,
+		maxY = y
 	for (let i = 0; i < pondSize; i++) {
 		if (openPondTiles.size === 0) {
 			// Mark any open tiles attempted as invalid for ponds
@@ -61,25 +69,43 @@ function fillPond(
 		)
 		openPondTiles.delete(grid)
 		newTiles.set(grid, [x, y])
+		minX = Math.min(minX, x)
+		maxX = Math.max(maxX, x)
+		minY = Math.min(minY, y)
+		maxY = Math.max(maxY, y)
 		getNeighbors8(x, y).forEach(([nx, ny], n) => {
 			if (nx < 0 || nx >= width || ny < 0 || ny >= height) return
 			const nGrid = xyToGrid([nx, ny])
 			const nTile = tileMap.get(nGrid)
-			if (!nTile) return
-			if (nTile.feature) return
+			if (!nTile || nTile.feature) return
 			if (newTiles.has(nGrid)) return
-			const fromCenter = getDistance(nx - centerX, ny - centerY)
-			let weight = fromCenter
-			const diagonal = n > 3
-			nTile.nearPonds = (nTile.nearPonds || 0) + (diagonal ? 0 : 1)
-			weight *= 2.5 - Math.abs(2.5 - nTile.nearPonds)
-			openPondTiles.set(nGrid, { weight, x: nx, y: ny })
+			let weight = getTileBalance(nx, ny, 1, landscape)
+			// Bias against expanding the pond's bounding box
+			if (nx < minX || nx > maxX) weight /= 2
+			if (ny < minY || ny > maxY) weight /= 2
+			openPondTiles.set(nGrid, {
+				weight: weight + (openPondTiles.get(nGrid)?.weight || 0),
+				x: nx,
+				y: ny,
+			})
 		})
 	}
+	let pondWeight = 0
+	const pondCenterOfMass: XY = [0, 0]
 	newTiles.forEach((xy) => {
 		landscape.pondTiles.push(xy)
 		landscape.newPondTiles.push(xy)
 		tileMap.get(xyToGrid(xy))!.feature = 'pond'
+		pondCenterOfMass[0] = (pondCenterOfMass[0] * pondWeight + xy[0]) / (pondWeight + 1)
+		pondCenterOfMass[1] = (pondCenterOfMass[1] * pondWeight + xy[1]) / (pondWeight + 1)
+		pondWeight++
+		getNeighbors8(...xy).forEach(([nx, ny], n) => {
+			if (nx < 0 || nx >= width || ny < 0 || ny >= height) return
+			const nGrid = xyToGrid([nx, ny])
+			const nTile = tileMap.get(nGrid)
+			if (!nTile) return
+			nTile.connected += n < 4 ? 1 : Math.max(nTile.connected, 0.5)
+		})
 		if (!landscape.pondRows.has(xy[1])) {
 			landscape.pondRows.add(xy[1])
 			landscape.features.push({
@@ -94,6 +120,7 @@ function fillPond(
 			})
 		}
 	})
+	landscape.centerOfMass = getNewCenterOfMass(landscape, ...pondCenterOfMass, pondWeight)
 	return true
 }
 

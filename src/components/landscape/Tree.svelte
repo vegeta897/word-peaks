@@ -330,7 +330,7 @@
 				>
 					<g
 						class="falling"
-						style:transform="translate({(Math.round(leafX * 5) % 10) * 0.05}px,25px)"
+						style:transform="translate({(Math.round(leafX * 5) % 10) * 0.06}px,25px)"
 						style:animation-duration="{fallDuration}ms"
 					>
 						<circle
@@ -340,7 +340,7 @@
 							)}
 							style:animation-duration="{flickerDuration}ms"
 							style:animation-delay="{flickerDelay}ms"
-							r={STROKE_WIDTH / 3}
+							r={STROKE_WIDTH * (0.3 + (fallDuration % 4) / 16)}
 							fill="var(--{inColor ? 'correct-color' : 'landscape-color'})"
 						/>
 					</g>

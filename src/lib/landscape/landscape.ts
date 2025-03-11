@@ -19,13 +19,9 @@ export type Feature = {
 type LandscapeTile = {
 	x: number
 	y: number
-	// TODO: "Heat" value that is increased by nearby features, used for weighting
-	// Calculate landscape's "center of mass" and try to keep it centered
-	centerWeight: number
+	connected: 0 | 0.5 | 1
 	noHill?: boolean
 	noPond?: boolean
-	nearPonds?: number
-	nearTrees?: number
 	feature?: Feature | 'pond'
 }
 
@@ -37,6 +33,7 @@ export type Landscape = {
 	rowsGenerated: number
 	features: Feature[]
 	tileMap: Map<string, LandscapeTile>
+	centerOfMass: { center: XY; totalMass: number }
 	pondTiles: XY[]
 	newPondTiles: XY[]
 	pondRows: Set<number>
@@ -60,18 +57,15 @@ export function getLandscape(
 	if (landscape.rowsGenerated === 0 && currentRow > landscape.rowsGenerated) {
 		for (let x = 0; x < landscape.width; x++) {
 			for (let y = 0; y < landscape.height; y++) {
+				const nearCenter =
+					Math.abs(x - landscape.centerX) <= 1 && Math.abs(y - landscape.centerY) <= 1
 				landscape.tileMap.set(xyToGrid([x, y]), {
 					x,
 					y,
-					centerWeight: getCenterWeight(landscape, x, y),
+					connected: nearCenter ? 1 : 0,
 				})
 			}
 		}
-		// landscape.openTiles.set(xyToGrid([landscape.centerX, landscape.centerY]), {
-		// 	x: landscape.centerX,
-		// 	y: landscape.centerY,
-		// 	centerWeight: 1,
-		// })
 	}
 	while (landscape.rowsGenerated < currentRow) {
 		const rowTiles = board[landscape.rowsGenerated]
@@ -95,12 +89,38 @@ export function getLandscape(
 	return { ...landscape }
 }
 
-// Old todo: Use perlin noise with center bias, like D-Zone
-// No, resolution is too low to make perlin worth it
-export function getCenterWeight({ centerX, centerY }: Landscape, x: number, y: number) {
+function getCenterWeight({ centerX, centerY }: Landscape, x: number, y: number) {
 	const verticalCenter = 1 - Math.abs(y - centerY) / (centerY + 1)
 	const horizontalCenter = 1 - Math.abs(x - centerX) / (centerX + 1)
-	return verticalCenter * horizontalCenter
+	return (verticalCenter * horizontalCenter) ** 3
+}
+
+export function getTileBalance(
+	x: number,
+	y: number,
+	weight: number,
+	landscape: Landscape
+) {
+	const {
+		center: [newCenterX, newCenterY],
+	} = getNewCenterOfMass(landscape, x, y, weight)
+	return getCenterWeight(landscape, newCenterX, newCenterY)
+}
+
+export function getNewCenterOfMass(
+	landscape: Landscape,
+	x: number,
+	y: number,
+	weight: number
+): Landscape['centerOfMass'] {
+	const newTotalMass = landscape.centerOfMass.totalMass + weight
+	const newCenterX =
+		(landscape.centerOfMass.totalMass * landscape.centerOfMass.center[0] + x * weight) /
+		newTotalMass
+	const newCenterY =
+		(landscape.centerOfMass.totalMass * landscape.centerOfMass.center[1] + y * weight) /
+		newTotalMass
+	return { center: [newCenterX, newCenterY], totalMass: newTotalMass }
 }
 
 const getFeatureY = (feature: Feature) =>
@@ -108,10 +128,27 @@ const getFeatureY = (feature: Feature) =>
 
 const rowToWord = (row: LetterTile[]) => row.map((t) => t.letter).join('')
 
+export const initLandscape = (): Landscape => ({
+	width: 0,
+	height: 0,
+	centerX: 0,
+	centerY: 0,
+	rowsGenerated: 0,
+	features: [],
+	tileMap: new Map(),
+	centerOfMass: { center: [0, 0], totalMass: 0 },
+	pondTiles: [],
+	newPondTiles: [],
+	pondRows: new Set(),
+	nextID: 1,
+	totalDelay: 0,
+})
+
 export function clearLandscape(landscape: Landscape) {
 	landscape.rowsGenerated = 0
 	landscape.tileMap.clear()
 	landscape.features.length = 0
+	landscape.centerOfMass = { center: [0, 0], totalMass: 0 }
 	landscape.pondTiles.length = 0
 	landscape.newPondTiles.length = 0
 	landscape.pondRows.clear()

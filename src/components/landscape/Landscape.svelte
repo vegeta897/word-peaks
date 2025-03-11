@@ -1,8 +1,8 @@
 <script lang="ts">
 	import * as store from '$src/store'
 	import { get } from 'svelte/store'
-	import type { Landscape, LandscapeFunMode } from '$lib/landscape/landscape'
-	import { clearLandscape, getLandscape } from '$lib/landscape/landscape'
+	import type { LandscapeFunMode } from '$lib/landscape/landscape'
+	import { initLandscape, clearLandscape, getLandscape } from '$lib/landscape/landscape'
 	import Tree from './Tree.svelte'
 	import Hill from './Hill.svelte'
 	import Pond from './Pond.svelte'
@@ -21,20 +21,7 @@
 	let firstDraw = true
 	let redraw = 0
 
-	let landscape: Landscape = {
-		width: 0,
-		height: 0,
-		centerX: 0,
-		centerY: 0,
-		rowsGenerated: 0,
-		features: [],
-		tileMap: new Map(),
-		pondTiles: [],
-		newPondTiles: [],
-		pondRows: new Set(),
-		nextID: 1,
-		totalDelay: 0,
-	}
+	let landscape = initLandscape()
 
 	const IDEAL_TILE_COUNT = 240
 	const IDEAL_TILE_COUNT_MINI = 170

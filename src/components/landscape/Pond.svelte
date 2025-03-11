@@ -4,7 +4,6 @@
 		getDistance,
 		getDistanceBetween,
 		getManhattanDistanceBetween,
-		getNeighbors,
 		getNeighbors8,
 		randomFloat,
 		randomInt,
@@ -142,11 +141,11 @@
 					.get(grid)!
 					.subTiles.forEach((st, g) => breakableSubTiles.set(g, st))
 				breakIce(clickedFrozenPond, grid, xy, normalizedXY)
-				getNeighbors(...xy).forEach((nXY) => {
+				getNeighbors8(...xy).forEach((nXY) => {
 					const neighborGrid = xyToGrid(nXY)
 					if (openTiles.has(neighborGrid) || !clickedFrozenPond.tiles.has(neighborGrid))
 						return
-					const neighborAlone = !getNeighbors(...nXY).some((nnXY) =>
+					const neighborAlone = !getNeighbors8(...nXY).some((nnXY) =>
 						clickedFrozenPond.tiles.has(xyToGrid(nnXY))
 					)
 					if (neighborAlone) {
