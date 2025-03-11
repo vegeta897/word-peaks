@@ -69,13 +69,14 @@ export function getLandscape(
 	}
 	while (landscape.rowsGenerated < currentRow) {
 		const rowTiles = board[landscape.rowsGenerated]
-		// const rowWord = rowToWord(rowTiles)
+		const rowWord = rowToWord(rowTiles)
+		const winningRow = rowWord === answer
 		const seed = answer + board.slice(0, landscape.rowsGenerated).map(rowToWord).join('')
 		const rng = new Rand(seed)
 		const getRng = () => rng.next()
 		for (const tile of rowTiles) {
 			if (tile.polarity === 0) {
-				createTrees(getRng, landscape)
+				createTrees(getRng, landscape, winningRow)
 			} else if (tile.polarity < 0) {
 				createHill(getRng, landscape)
 			} else {
@@ -89,7 +90,7 @@ export function getLandscape(
 	return { ...landscape }
 }
 
-function getCenterWeight({ centerX, centerY }: Landscape, x: number, y: number) {
+export function getCenterWeight({ centerX, centerY }: Landscape, x: number, y: number) {
 	const verticalCenter = 1 - Math.abs(y - centerY) / (centerY + 1)
 	const horizontalCenter = 1 - Math.abs(x - centerX) / (centerX + 1)
 	return (verticalCenter * horizontalCenter) ** 3

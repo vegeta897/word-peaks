@@ -3,10 +3,11 @@ import {
 	LANDSCAPE_FEATURE_DELAY,
 	getNewCenterOfMass,
 	type Landscape,
+	getCenterWeight,
 } from '$lib/landscape/landscape'
 import { randomElementWeighted, xyToGrid, randomFloat, getNeighbors8 } from '$lib/math'
 
-export function createTrees(getRng: () => number, landscape: Landscape) {
+export function createTrees(getRng: () => number, landscape: Landscape, win: boolean) {
 	const { features, tileMap, width, height } = landscape
 	const treeCount = landscape.mini ? 4 : 6
 	for (let i = 0; i < treeCount; i++) {
@@ -16,8 +17,10 @@ export function createTrees(getRng: () => number, landscape: Landscape) {
 		if (openTiles.length === 0) break
 		const [, tile] = randomElementWeighted(
 			openTiles,
-			openTiles.map(
-				([, { x, y, connected }]) => getTileBalance(x, y, 1, landscape) + connected
+			openTiles.map(([, { x, y, connected }]) =>
+				win
+					? getCenterWeight(landscape, x, y) * 100 // Fill in gaps on winning row
+					: getTileBalance(x, y, 1, landscape) + connected
 			),
 			getRng
 		)
