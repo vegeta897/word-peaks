@@ -7,6 +7,7 @@
 	import Hill from './Hill.svelte'
 	import Pond from './Pond.svelte'
 	import { getDistance, sleep, type XY } from '$lib/math'
+	import { dev } from '$app/env'
 
 	const { landscapeForceColor, landscapeFunMode, funStats, answer } = store
 
@@ -212,6 +213,7 @@
 
 <div bind:clientWidth={containerWidth} bind:clientHeight={containerHeight}>
 	<!-- Viewbox scaled by 10 to avoid FF's crappy rasterization in some places -->
+	{#if dev}{$answer}{/if}
 	<svg
 		style:display={hide ? 'none' : 'block'}
 		xmlns="http://www.w3.org/2000/svg"

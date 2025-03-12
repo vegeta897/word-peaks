@@ -184,7 +184,7 @@ export function createPondPath(tiles: XY[]): PathDataCommand[] {
 	let firstMid: XY
 	let nextSegmentKey: string | undefined = undefined
 	const openDirSegments = new Map(directionalSegmentMap)
-	while (openDirSegments.size > 0 && pathData.length < 1000) {
+	while (openDirSegments.size > 0) {
 		const [segmentKey, toGrid] = nextSegmentKey
 			? [nextSegmentKey, openDirSegments.get(nextSegmentKey)!]
 			: [...openDirSegments][0]
@@ -212,7 +212,7 @@ export function createPondPath(tiles: XY[]): PathDataCommand[] {
 	return pathData
 }
 
-export function createSubTilePath(subTiles: XY[], subPointMap: Map<string, XY>) {
+export function createSubTilePath(subTiles: XY[], subVertexMap: Map<string, XY>) {
 	const { directionalSegmentMap } = getSegmentMaps(subTiles)
 	const mainPath: PathDataCommand[] = []
 	const shelfPath: PathDataCommand[] = []
@@ -225,13 +225,13 @@ export function createSubTilePath(subTiles: XY[], subPointMap: Map<string, XY>) 
 			: [...openDirSegments][0]
 		openDirSegments.delete(segmentKey)
 		const [fromX, fromY, dir] = segmentKey.split(':').map((v) => +v)
-		const drawFromXY = subPointMap.get(xyToGrid([fromX, fromY]))!
+		const drawFromXY = subVertexMap.get(xyToGrid([fromX, fromY]))!
 		if (newPath) {
 			newPath = false
 			mainPath.push(['M', drawFromXY])
 		}
 		const toXY = toGrid.split(':').map((v) => +v) as XY
-		const drawToXY = subPointMap.get(xyToGrid(toXY))!
+		const drawToXY = subVertexMap.get(xyToGrid(toXY))!
 		mainPath.push(['L', drawToXY])
 		if (drawToXY[0] > drawFromXY[0]) shelfPath.push(...drawShelf(drawFromXY, drawToXY))
 		nextSegmentKey = findNextSegmentKey(dir, toXY[0], toXY[1], directionalSegmentMap)
