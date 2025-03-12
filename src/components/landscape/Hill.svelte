@@ -296,14 +296,13 @@
 	</g>
 	{#if popped}
 		<g class="popped">
-			<ellipse rx={radius} ry={radius / 3} fill="#0005" />
+			<ellipse class="popped-base" rx={radius} ry={radius / 3} fill="#0005" />
 			<path
 				fill="var(--{inColor ? 'before-color' : 'landscape-color'})"
 				stroke="var(--{inColor ? 'before-color' : 'landscape-color'})"
 				stroke-width={STROKE_WIDTH}
 				stroke-linecap="round"
 				stroke-linejoin="round"
-				class="ring"
 				d="M{-radius},0 {popRingTopPath}z"
 				style:transition="fill {inColor ? 200 : 1000}ms {y * 20}ms ease, stroke {inColor
 					? 200
@@ -357,13 +356,13 @@
 </g>
 
 <style>
-	.ring {
-		/*animation: fade 1s 2s ease-in forwards;*/
-	}
-
 	.popped {
 		opacity: 0;
 		animation: fade 50ms 150ms cubic-bezier(0.33, 1, 0.68, 1) reverse forwards;
+	}
+
+	.popped-base {
+		animation: fade-color 300ms 200ms ease-out both;
 	}
 
 	.fragment {
@@ -376,6 +375,12 @@
 		}
 		100% {
 			opacity: 0;
+		}
+	}
+
+	@keyframes fade-color {
+		0% {
+			fill: var(--before-color);
 		}
 	}
 </style>
