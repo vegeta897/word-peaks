@@ -11,7 +11,7 @@
 		currentRow,
 	} from '$src/store'
 	import type { Tile } from '$lib/data-model'
-	import { aprilFools } from '$lib/share'
+	import { onDestroy } from 'svelte'
 
 	export let tile: Omit<Tile, 'magnitude'>
 	export let current = false
@@ -19,7 +19,8 @@
 	export let inCurrentRow = false
 
 	let animate = !tile.scored
-	currentRow.subscribe(() => (animate = !tile.scored))
+
+	onDestroy(currentRow.subscribe(() => (animate = !tile.scored)))
 
 	$: tileFlipDelay = tile.id * 150
 

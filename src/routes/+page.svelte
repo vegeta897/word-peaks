@@ -9,7 +9,7 @@
 	import { decodeWord, playDaily, playRandom } from '$lib/data-model'
 	import * as store from '$src/store'
 	import { browser } from '$app/environment'
-	import { page } from '$app/stores'
+	import { page } from '$app/state'
 	import Footer from '$com/Footer.svelte'
 	import Header from '$com/Header.svelte'
 	import { initGameState } from '$src/store'
@@ -19,8 +19,7 @@
 
 	const { openScreen, gameMode } = store
 
-	// Calling get(page) must happen here, while component initializes
-	const wordFromHash = decodeWord(get(page).url.hash?.slice(1))
+	const wordFromHash = decodeWord(page.url.hash?.slice(1))
 
 	onMount(() => {
 		if (!get(store.answerDaily) && !get(store.answerRandom)) {

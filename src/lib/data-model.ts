@@ -4,6 +4,8 @@ import { resetBoard, resetGuess } from './board'
 import { randomElement } from './math'
 import * as store from '$src/store'
 import { ROWS, WORD_LENGTH, alphabet } from './constants'
+import { pushState } from '$app/navigation'
+import { tick } from 'svelte'
 
 let dictionary: string[] | undefined
 export async function loadDictionary() {
@@ -28,7 +30,7 @@ export type GameMode = 'daily' | 'random'
 
 export function playDaily() {
 	store.gameMode.set('daily')
-	history.pushState('', document.title, window.location.pathname + window.location.search) // Remove # from URL
+	tick().then(() => pushState(window.location.pathname + window.location.search, {})) // Remove # from URL
 	const dayNumber = getDayNumber()
 	const dailyWord = getWordByDay(dayNumber)
 	const newGame =
@@ -53,10 +55,8 @@ export function playRandom(word?: string) {
 	const newGame = (word && word !== currentAnswer) || !currentAnswer
 	const answer = newGame ? word || getRandomWord() : currentAnswer
 	const hash = encodeWord(answer)
-	history.pushState(
-		'',
-		document.title,
-		window.location.pathname + `#${hash}` + window.location.search
+	tick().then(() =>
+		pushState(window.location.pathname + `#${hash}` + window.location.search, {})
 	)
 	if (newGame) {
 		resetBoard()

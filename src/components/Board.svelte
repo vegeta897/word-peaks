@@ -12,7 +12,7 @@
 	import LastGameDetail from './LastGameDetail.svelte'
 	import { cubicOut } from 'svelte/easing'
 	import { aprilFools } from '$lib/share'
-	import Leak from './Leak.svelte'
+	import Worm from './Worm.svelte'
 
 	const {
 		boardContent,
@@ -25,13 +25,13 @@
 		landscapeWideView,
 		showEndView,
 		gameMode,
-		lastPlayedDaily,
 		hideLandscape,
+		answer,
 	} = store
 
+	let initialized = false
 	let idle = false
 	let canAnimate: boolean | null = null
-
 	let idleTimeout: number | undefined
 	let idleSessionID = 0
 
@@ -58,14 +58,12 @@
 		}
 	}
 
-	let transitionDuration = 0
-
 	onMount(() => {
 		document.addEventListener('visibilitychange', () => waitForIdle())
 		store.openScreen.subscribe(() => waitForIdle())
 		store.boardContent.subscribe(() => waitForIdle())
 		store.currentTile.subscribe(() => waitForIdle())
-		tick().then(() => (transitionDuration = 250))
+		initialized = true
 	})
 	onDestroy(() => {
 		clearTimeout(idleTimeout!)
@@ -94,17 +92,18 @@
 		}
 	}
 
-	$: isAprilFools = $lastPlayedDaily && aprilFools()
+	// Using answer as a dependency so this will refresh when the next word starts
+	$: isAprilFools = $answer && aprilFools()
 </script>
 
 <div class="container" style="--row-count: {ROWS}">
-	{#if browser}
+	{#if browser && initialized}
 		{#if !$landscapeWideView}
 			<div class="board">
 				{#if !$gameFinished || !$lastGameDetail || !$showEndView}
 					<div
 						class="tile-row-container"
-						transition:fade={{ duration: transitionDuration, easing: cubicOut }}
+						transition:fade={{ duration: 250, easing: cubicOut }}
 					>
 						{#each $boardContent as boardRow, r}
 							<div class="tile-row">
@@ -131,13 +130,13 @@
 												<svelte:component this={module.default} id={r + ':' + t} />
 											{/await}
 										{/if}
-										{#if isAprilFools && r === $currentRow - 1 && tile.distance > 0}
-											<Leak rowID={r} tileID={t} />
-										{/if}
 									</Tile>
 								{/each}
 							</div>
 						{/each}
+						{#if isAprilFools}
+							<Worm />
+						{/if}
 					</div>
 				{:else}
 					{#key $gameMode}

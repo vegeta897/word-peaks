@@ -7,6 +7,7 @@
 		lastPlayedDaily,
 		boardContent,
 		gameFinished,
+		answer,
 	} from '$src/store'
 	import { OptionsIconPathData } from '$lib/constants'
 	import { browser } from '$app/environment'
@@ -25,15 +26,16 @@
 		if (gameInProgress) toast.push(get(t)('main.messages.answer_randomized'), toastTheme)
 	}
 
-	$: isAprilFools = $lastPlayedDaily && aprilFools()
-	$: leakActive =
+	// Using answer as a dependency so this will refresh when the next word starts
+	$: isAprilFools = $answer && aprilFools()
+	$: wormActive =
 		isAprilFools && $boardContent.some((r) => r.some((t) => t.scored && t.distance > 0))
 </script>
 
 <header class:high-contrast={$highContrast}>
 	<div class="heading-container">
 		<h1>
-			Word <span class:leak={leakActive}>{isAprilFools ? 'Leaks' : 'Peaks'}</span>
+			<span class:worm={wormActive}>{isAprilFools ? 'Worm' : 'Word'}</span> Peaks
 			{#if browser}
 				<small class="game-mode">
 					{#if $gameMode === 'daily'}
@@ -182,8 +184,8 @@
 		padding: 0 0.25rem;
 	}
 
-	.leak {
-		color: var(--after-color);
+	.worm {
+		color: var(--accent-color);
 		transition: color 2s ease-in;
 	}
 

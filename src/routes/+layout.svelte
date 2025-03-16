@@ -1,11 +1,11 @@
 <script lang="ts">
 	import '../app.css'
 	import { SvelteToast } from '@zerodevx/svelte-toast'
-	import { highContrast, dyslexicFont, lastPlayedDaily } from '$src/store'
+	import { highContrast, dyslexicFont, answer } from '$src/store'
 	import { aprilFools } from '$lib/share'
 	import { tileArrowRadius } from '$src/store'
 
-	$: isAprilFools = $lastPlayedDaily && aprilFools()
+	$: isAprilFools = $answer && aprilFools()
 </script>
 
 <svelte:head>
@@ -33,7 +33,7 @@
 		</style>
 	{/if}
 	{#if isAprilFools}
-		<title>Word Leaks</title>
+		<title>Worm Peaks</title>
 	{/if}
 </svelte:head>
 

@@ -1,6 +1,7 @@
 import type { Board, GameMode } from '$lib/data-model'
 import { toast } from '@zerodevx/svelte-toast'
-// import { dev } from '$app/environment'
+import { dev } from '$app/environment'
+import { getWormHoleColor, wormHolePositions } from '$src/components/Worm.svelte'
 
 export function getShareTitle({
 	gameWon,
@@ -18,7 +19,7 @@ export function getShareTitle({
 	const score = gameWon ? guesses.length : 'X'
 	const dayText = gameMode === 'random' ? '∞ ' : `#${day!} `
 	const scoreText = `${score}/6${hardMode ? '*' : ''}`
-	const gameName = aprilFools() ? 'Word Leaks' : 'Word Peaks'
+	const gameName = aprilFools() ? 'Worm Peaks' : 'Word Peaks'
 	return `${gameName} ${dayText}${scoreText}`
 }
 
@@ -35,7 +36,6 @@ export function getEmojiGrid({
 }): string {
 	let timeStringPad: number
 	if (guessTimes) timeStringPad = longestStringLength(guessTimes)
-	const downTile = aprilFools() ? '💧' : '🔽'
 	return (
 		'  ' +
 		guesses
@@ -44,7 +44,7 @@ export function getEmojiGrid({
 					[...word]
 						.map((letter, l) => {
 							if (letter === answer[l]) return '🟩'
-							return hideArrows ? '🟪' : letter > answer[l] ? downTile : '🔼'
+							return hideArrows ? '🟪' : letter > answer[l] ? '🔽' : '🔼'
 						})
 						.join('') + (guessTimes ? ' ' + guessTimes[w].padStart(timeStringPad) : '')
 			)
@@ -106,6 +106,7 @@ export function drawResults(
 	canvas.width = 504 + (guessTimes ? longestStringLength(guessTimes) * 28 + 6 : 0)
 	canvas.style.maxWidth = `min(100%, ${Math.round(canvas.width / 2)}px)`
 	canvas.height = guesses.length * 100 + 60 + (showURL ? 44 : 0)
+	canvas.style.maxHeight = `${Math.round(canvas.height / 2)}px`
 	const ctx = canvas.getContext('2d')!
 	ctx.fillStyle = highContrast ? '#161a25' : '#312236'
 	ctx.fillRect(0, 0, canvas.width, canvas.height)
@@ -183,6 +184,31 @@ export function drawResults(
 		ctx.fillStyle = '#a7a1a9'
 		ctx.fillText(url, totalTime ? 8 : canvas.width / 2, guesses.length * 100 + 92)
 	}
+	if (aprilFools()) {
+		const holeRadius = Math.round((TILE_SIZE * 0.33) / 2)
+		boardContent.forEach((row, r) => {
+			if (r >= guesses.length) return
+			row.forEach((tile, t) => {
+				if (t !== wormHolePositions[r][0]) return
+				const holeX =
+					8 + t * 100 + (wormHolePositions[r][1] / 100) * TILE_SIZE + holeRadius
+				const holeY =
+					8 + r * 100 + (wormHolePositions[r][2] / 100) * TILE_SIZE + holeRadius
+				ctx.fillStyle = getWormHoleColor(tile.polarity, highContrast)
+				ctx.beginPath()
+				ctx.moveTo(holeX, holeY - holeRadius)
+				ctx.arc(holeX, holeY, holeRadius, 0, Math.PI * 2)
+				ctx.fill()
+				if (r === guesses.length - 1) {
+					ctx.strokeStyle = '#de49a2'
+					ctx.lineWidth = holeRadius * 1.6
+					ctx.lineCap = 'round'
+					ctx.beginPath()
+					ctx.stroke(new Path2D(`M${holeX},${holeY} c36,30 -10,30 30,55`))
+				}
+			})
+		})
+	}
 }
 
 const longestStringLength = (strArr: string[]) =>
@@ -191,7 +217,7 @@ const longestStringLength = (strArr: string[]) =>
 	).length
 
 export const aprilFools = () => {
-	// if (dev) return true
+	if (dev) return true
 	const today = new Date()
 	return today.getMonth() === 3 && today.getDate() === 1
 }
