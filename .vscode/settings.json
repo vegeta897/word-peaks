@@ -11,5 +11,8 @@
 	"[svelte]": {
 		"editor.defaultFormatter": "svelte.svelte-vscode"
 	},
-	"editor.defaultColorDecorators": "auto"
+	"editor.defaultColorDecorators": "auto",
+	"workbench.editorAssociations": {
+		"*.svg": "default"
+	}
 }

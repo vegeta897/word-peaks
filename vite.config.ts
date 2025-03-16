@@ -4,7 +4,7 @@ import path from 'path'
 
 export default defineConfig({
 	plugins: [sveltekit()],
-	server: { port: 3000 },
+	server: { port: 3000, allowedHosts: ['kolvir.local'] },
 	resolve: {
 		alias: {
 			$src: path.resolve('./src'),
@@ -12,5 +12,4 @@ export default defineConfig({
 			$lib: path.resolve('./src/lib'),
 		},
 	},
-	preview: { allowedHosts: ['kolvir.local'] },
 })
