@@ -11,8 +11,6 @@
 	import { get } from 'svelte/store'
 	import { browser } from '$app/environment'
 
-	// TODO: Make all key rows fill width of screen
-
 	function handleKeydown({ key, ctrlKey, target, repeat }: KeyboardEvent) {
 		if (ctrlKey || repeat || get(openScreen) !== null) return
 		if (key === 'Backspace') undoLetter()
@@ -121,8 +119,9 @@
 	}
 
 	.key-row button.invalid {
-		background: var(--secondary-color);
-		color: #ccca;
+		border: 3px solid var(--secondary-color);
+		background: none;
+		color: #ccc8;
 	}
 
 	.key-row button.wide {
