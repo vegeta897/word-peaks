@@ -10,8 +10,9 @@
 	import { tick } from 'svelte'
 	import { bezierEasing } from '$lib/transitions'
 	import type { PointerEventHandler } from 'svelte/elements'
+	import { dev } from '$app/environment'
 
-	const { landscapeForceColor } = store
+	const { landscapeForceColor, answer } = store
 
 	let initializing = true
 	let svgElement: SVGElement
@@ -190,6 +191,7 @@
 </script>
 
 <div bind:clientWidth={containerWidth} bind:clientHeight={containerHeight}>
+	{#if dev}{$answer}{/if}
 	<svg
 		style:display={hide ? 'none' : 'block'}
 		xmlns="http://www.w3.org/2000/svg"
