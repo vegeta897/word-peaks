@@ -9,6 +9,7 @@ import {
 } from '$lib/data-model'
 import { persisted } from 'svelte-persisted-store'
 import { ROWS } from '$lib/constants'
+import { newPauseState, type PauseState } from '$src/lib/stats'
 
 export const answerDaily: Writable<string> = persisted('wp-answer', '')
 export const answerRandom: Writable<string> = persisted('wp-answerRandom', '')
@@ -73,6 +74,10 @@ export const guessTimes: Readable<number[]> = derived(
 	[gameMode, guessTimesDaily, guessTimesRandom],
 	([$gameMode, $guessTimesDaily, $guessTimesRandom]) =>
 		$gameMode === 'daily' ? $guessTimesDaily : $guessTimesRandom
+)
+export const pauseInfo: Writable<{ daily: PauseState; random: PauseState }> = persisted(
+	'wp-pauseInfo',
+	{ daily: newPauseState(), random: newPauseState() }
 )
 
 export const currentRow: Readable<number> = derived(

@@ -6,6 +6,7 @@ import * as store from '$src/store'
 import { ROWS, WORD_LENGTH, alphabet } from './constants'
 import { pushState } from '$app/navigation'
 import { tick } from 'svelte'
+import { pauseTimer, resumeTimer } from './stats'
 
 let dictionary: string[] | undefined
 export async function loadDictionary() {
@@ -29,7 +30,14 @@ export type Board = Tile[][]
 export type GameMode = 'daily' | 'random'
 
 export function playDaily() {
-	store.gameMode.set('daily')
+	const previousGameMode = get(store.gameMode)
+	if (previousGameMode !== 'daily') {
+		if (!get(store.gameFinished)) {
+			pauseTimer()
+		}
+		store.gameMode.set('daily')
+	}
+	resumeTimer()
 	tick().then(() => pushState(window.location.pathname + window.location.search, {})) // Remove # from URL
 	const dayNumber = getDayNumber()
 	const dailyWord = getWordByDay(dayNumber)
@@ -50,7 +58,14 @@ export function playDaily() {
 }
 
 export function playRandom(word?: string) {
-	store.gameMode.set('random')
+	const previousGameMode = get(store.gameMode)
+	if (previousGameMode !== 'random') {
+		if (!get(store.gameFinished)) {
+			pauseTimer()
+		}
+		store.gameMode.set('random')
+	}
+	resumeTimer()
 	const currentAnswer = get(store.answerRandom)
 	const newGame = (word && word !== currentAnswer) || !currentAnswer
 	const answer = newGame ? word || getRandomWord() : currentAnswer

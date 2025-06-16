@@ -27,18 +27,14 @@
 			store.newUser.set(true)
 			openScreen.set('tutorial')
 		}
-		startGame()
-	})
-
-	initGameState()
-
-	function startGame() {
 		if (!wordFromHash) {
 			playDaily()
 		} else {
 			playRandom(wordFromHash)
 		}
-	}
+	})
+
+	initGameState()
 
 	let consoleMode: boolean
 	if (browser) window.wp_start = () => (consoleMode = true)

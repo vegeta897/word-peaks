@@ -13,6 +13,7 @@
 	import { cubicOut } from 'svelte/easing'
 	import { aprilFools } from '$lib/share'
 	import Worm from './Worm.svelte'
+	import { pauseTimer, resumeTimer } from '$src/lib/stats'
 
 	const {
 		boardContent,
@@ -42,7 +43,7 @@
 		danceClickProgress = 0
 		const thisIdleSessionID = ++idleSessionID
 		clearTimeout(idleTimeout!)
-		if (get(store.openScreen) === null && !document.hidden) {
+		if (!get(gameFinished) && get(store.openScreen) === null && !document.hidden) {
 			await new Promise<void>((resolve) => {
 				idleTimeout = setTimeout(() => {
 					resolve()
@@ -59,7 +60,16 @@
 	}
 
 	onMount(() => {
-		document.addEventListener('visibilitychange', () => waitForIdle())
+		document.addEventListener('visibilitychange', () => {
+			waitForIdle()
+			if (!get(gameFinished)) {
+				if (document.hidden) {
+					pauseTimer()
+				} else {
+					resumeTimer()
+				}
+			}
+		})
 		store.openScreen.subscribe(() => waitForIdle())
 		store.boardContent.subscribe(() => waitForIdle())
 		store.currentTile.subscribe(() => waitForIdle())

@@ -105,10 +105,52 @@ function saveGameDetail(fastest: boolean) {
 }
 
 export function recordGuessTime(row: number) {
-	store[get(store.gameMode) === 'daily' ? 'guessTimesDaily' : 'guessTimesRandom'].update(
+	const gameMode = get(store.gameMode)
+	store[gameMode === 'daily' ? 'guessTimesDaily' : 'guessTimesRandom'].update(
 		(guessTimes) => {
-			guessTimes[row] = new Date().getTime()
+			if (row === 0) {
+				resetPauseState()
+			}
+			const pauseTotal = get(store.pauseInfo)[gameMode].pauseTotal
+			guessTimes[row] = new Date().getTime() - pauseTotal
 			return guessTimes
 		}
 	)
+}
+
+export type PauseState = { paused: boolean; pausedAt: number; pauseTotal: number }
+export const newPauseState = (): PauseState => ({
+	paused: false,
+	pausedAt: 0,
+	pauseTotal: 0,
+})
+
+export function resetPauseState() {
+	store.pauseInfo.update((info) => {
+		info[get(store.gameMode)] = newPauseState()
+		return info
+	})
+}
+
+export function pauseTimer() {
+	store.pauseInfo.update((info) => {
+		const state = info[get(store.gameMode)]
+		if (!state.paused) {
+			state.paused = true
+			state.pausedAt = new Date().getTime()
+		}
+		return info
+	})
+}
+
+export function resumeTimer() {
+	store.pauseInfo.update((info) => {
+		const state = info[get(store.gameMode)]
+		if (state.paused) {
+			state.paused = false
+			const now = new Date().getTime()
+			state.pauseTotal += now - state.pausedAt
+		}
+		return info
+	})
 }
