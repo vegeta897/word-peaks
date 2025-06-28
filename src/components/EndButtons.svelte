@@ -31,8 +31,12 @@
 
 	let showScoreShareMenu: boolean
 	let showImageShare: boolean
-	let canvas: HTMLCanvasElement
+	const canvas = document.createElement('canvas')
 	let canvasBlob: Blob
+	let canvasImageURL: string
+	let canvasImageAltText: string
+	let canvasWidth = 0
+	let canvasHeight = 0
 	let shareTitleText: string
 	let landscapeRedrawCooldown = false
 
@@ -114,6 +118,10 @@
 			canvasBlob = blob!
 			shareImage(canvasBlob, `${hash || dayNumber}`)
 		})
+		canvasImageURL = canvas.toDataURL()
+		canvasImageAltText = `Word Peaks #${hash || dayNumber} results`
+		canvasWidth = canvas.width
+		canvasHeight = canvas.height
 		showImageShare = true
 		trackEvent('resultShare')
 		canvas.scrollIntoView({ block: 'center' })
@@ -126,13 +134,17 @@
 			color,
 			highContrast: get(store.highContrast),
 		})
+		const { hash, dayNumber } = get(store.lastGameDetail)!
 		canvas.toBlob((blob) => {
 			canvasBlob = blob!
 			shareImage(canvasBlob, `${hash || dayNumber}-landscape${color ? '-color' : ''}`)
 		})
+		canvasImageURL = canvas.toDataURL()
+		canvasImageAltText = `Word Peaks #${hash || dayNumber} landscape`
+		canvasWidth = canvas.width
+		canvasHeight = canvas.height
 		showImageShare = true
 		trackEvent('landscapeShare')
-		const { hash, dayNumber } = get(store.lastGameDetail)!
 		canvas.scrollIntoView({ block: 'center' })
 	}
 
@@ -263,7 +275,12 @@
 		style:display={showImageShare ? 'flex' : 'none'}
 	>
 		<div class="image-share">
-			<canvas bind:this={canvas} />
+			<img
+				alt={canvasImageAltText}
+				src={canvasImageURL}
+				style:max-width="min(100%, {Math.round(canvasWidth / 2)}px"
+				style:max-height="{Math.round(canvasHeight / 2)}px"
+			/>
 			<button on:click={onCopyImage}>{$t('main.results.copy_image')}</button>
 			<button
 				title="Close"
