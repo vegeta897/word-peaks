@@ -72,25 +72,38 @@
 	}
 
 	const outlineFrames = generateOutlineFrames()
-	const outlineStrokeFills = [
-		[STROKE_WIDTH * 2, 'var(--tertiary-color)', 'none'],
-		[STROKE_HALF, 'url(#gemGradient)', 'var(--accent-color)'],
-	] as const
 </script>
 
-<g>
-	<linearGradient id="gemGradient" gradientTransform="rotate(90)">
-		<stop offset="0" stop-color="#fff" />
-		<stop offset="0.5" stop-color="var(--accent-color)" />
-		<stop offset="1" stop-color="#ab387c" />
-	</linearGradient>
-	{#each outlineStrokeFills as [strokeWidth, stroke, fill]}
+<script lang="ts">
+	import { lastGameDetail, funStats } from '$src/store'
+
+	export let x: number
+	export let y: number
+
+	$: originX = x - radius / 2
+	$: originY = y - height / 1.2
+
+	$: collected = $lastGameDetail?.dayNumber === $funStats.lastDayCollected
+
+	export function collect(mouseX: number, mouseY: number) {
+		console.log('collect!', mouseX, mouseY, x, y)
+		return true
+	}
+</script>
+
+<g style:position="relative" transform="translate({originX} {originY})">
+	<g class="wobble">
+		<linearGradient id="gemGradient" gradientTransform="rotate(90)">
+			<stop offset="0" stop-color="#fff" />
+			<stop offset="0.5" stop-color="var(--accent-color)" />
+			<stop offset="1" stop-color="#ab387c" />
+		</linearGradient>
 		<path
-			stroke-width={strokeWidth}
+			stroke-width={STROKE_HALF}
 			stroke-linecap="round"
 			stroke-linejoin="round"
-			{stroke}
-			{fill}
+			stroke="url(#gemGradient)"
+			fill="var(--accent-color)"
 			d={outlineFrames[0]}
 		>
 			<animate
@@ -100,41 +113,41 @@
 				values={outlineFrames.join(';')}
 			/>
 		</path>
-	{/each}
-	{#each faceIndexes as _, face}
-		{#each topAndBottom as [transform, colors, opacityValues]}
-			<path {transform} fill={colors[face % 2]}>
-				<animate
-					attributeName="d"
-					dur="{DURATION}ms"
-					begin="{(face * DURATION) / 4}ms"
-					repeatCount="indefinite"
-					values={faceFrames.join(';')}
-				/>
-				<animate
-					attributeName="opacity"
-					dur="{DURATION}ms"
-					begin="{(face * DURATION) / 4}ms"
-					repeatCount="indefinite"
-					values={opacityValues.join(';')}
-				/>
-			</path>
+		{#each faceIndexes as _, face}
+			{#each topAndBottom as [transform, colors, opacityValues]}
+				<path {transform} fill={colors[face % 2]}>
+					<animate
+						attributeName="d"
+						dur="{DURATION}ms"
+						begin="{(face * DURATION) / 4}ms"
+						repeatCount="indefinite"
+						values={faceFrames.join(';')}
+					/>
+					<animate
+						attributeName="opacity"
+						dur="{DURATION}ms"
+						begin="{(face * DURATION) / 4}ms"
+						repeatCount="indefinite"
+						values={opacityValues.join(';')}
+					/>
+				</path>
+			{/each}
 		{/each}
-	{/each}
+	</g>
 </g>
 
 <style>
-	g {
+	.wobble {
 		animation: wobble 1s infinite cubic-bezier(0.37, 0, 0.63, 1);
 	}
 
 	@keyframes wobble {
 		0%,
 		100% {
-			transform: rotate(5deg);
+			transform: rotate(3deg);
 		}
 		50% {
-			transform: rotate(-5deg);
+			transform: rotate(-3deg);
 		}
 	}
 </style>

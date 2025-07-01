@@ -65,9 +65,9 @@ export function drawLandscapeToCanvas(
 	const hillFillColor = color ? hillColor : bgColor
 	for (const { type, x, y, xJitter, yJitter, size } of features) {
 		if (type === 'tree') {
-			const centerX = (0.5 + x + xJitter + 0.5) * TILE_WIDTH
-			const centerY = (1.5 + y + yJitter + 0.5) * TILE_HEIGHT
-			const radius = ((0.85 + size * 0.25) * TILE_HEIGHT) / 2
+			const centerX = (0.5 + x + (xJitter || 0) + 0.5) * TILE_WIDTH
+			const centerY = (1.5 + y + (yJitter || 0) + 0.5) * TILE_HEIGHT
+			const radius = ((0.85 + (size || 1) * 0.25) * TILE_HEIGHT) / 2
 			ctx.lineWidth = thickLineWidth
 			ctx.strokeStyle = bgColor
 			ctx.beginPath()
@@ -91,9 +91,9 @@ export function drawLandscapeToCanvas(
 				ctx.fill()
 			}
 		} else {
-			const centerX = (0.5 + x + xJitter + (mini ? 1 : 1.5)) * TILE_WIDTH
-			const centerY = (1.5 + y + yJitter + 1) * TILE_HEIGHT
-			const radius = ((mini ? 0.8 : 1.35) + 0.2 * size) * TILE_HEIGHT
+			const centerX = (0.5 + x + (xJitter || 0) + (mini ? 1 : 1.5)) * TILE_WIDTH
+			const centerY = (1.5 + y + (yJitter || 0) + 1) * TILE_HEIGHT
+			const radius = ((mini ? 0.8 : 1.35) + 0.2 * (size || 1)) * TILE_HEIGHT
 			const hilltopY = centerY - TILE_HEIGHT / 2 - (mini ? 0.2 : 0.5) * TILE_HEIGHT
 			ctx.lineWidth = thickLineWidth
 			ctx.strokeStyle = bgColor

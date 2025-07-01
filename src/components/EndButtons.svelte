@@ -23,7 +23,7 @@
 		type GameMode,
 	} from '$lib/data-model'
 	import Icon from './landscape/Icon.svelte'
-	import { landscapeFunModes } from '$lib/landscape/landscape'
+	import { landscapeFunModes } from '$lib/landscape/fun'
 
 	// TODO: Move coffee link to footer
 

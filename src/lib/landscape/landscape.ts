@@ -4,16 +4,17 @@ import { createPond } from './pond'
 import { type XY, xyToGrid } from '../math'
 import { createHill } from './hill'
 import { createTrees } from './tree'
+import { landscape } from '$src/store'
 
 export type Feature = {
-	type: 'hill' | 'tree' | 'pond-row'
+	type: 'hill' | 'tree' | 'pond-row' | 'gem'
 	id: number
 	x: number
 	y: number
-	xJitter: number
-	yJitter: number
-	size: number
-	delay: number
+	xJitter?: number
+	yJitter?: number
+	size?: number
+	delay?: number
 }
 
 type LandscapeTile = {
@@ -85,8 +86,7 @@ export function getLandscape(
 		}
 		landscape.rowsGenerated++
 	}
-	// Sort features by Y for proper overlapping
-	landscape.features.sort((a, b) => getFeatureY(a) - getFeatureY(b))
+	sortFeatures(landscape)
 	return { ...landscape }
 }
 
@@ -124,8 +124,13 @@ export function getNewCenterOfMass(
 	return { center: [newCenterX, newCenterY], totalMass: newTotalMass }
 }
 
+// Sort features by Y for proper overlapping
+export const sortFeatures = (landscape: Landscape) => {
+	landscape.features.sort((a, b) => getFeatureY(a) - getFeatureY(b))
+}
+
 const getFeatureY = (feature: Feature) =>
-	feature.y + feature.yJitter + (feature.type === 'hill' ? 0.5 : 0)
+	feature.y + (feature.yJitter || 0) + (feature.type === 'hill' ? 0.5 : 0)
 
 const rowToWord = (row: LetterTile[]) => row.map((t) => t.letter).join('')
 
@@ -155,25 +160,4 @@ export function clearLandscape(landscape: Landscape) {
 	landscape.pondRows.clear()
 	landscape.nextID = 1
 	landscape.pondDelay = undefined
-}
-
-// TODO: Change sop to chill, or ice
-// Change pop to burst? All 5 letter words?
-export const landscapeFunModes = ['pop', 'sop', 'pluck'] as const
-export type LandscapeFunMode = typeof landscapeFunModes[number]
-
-export type FunStats = {
-	totalGems: 0
-	activeDayNumber: 0
-	activeDayGems: 0
-	counts: Record<LandscapeFunMode, number>
-}
-
-export function newFunStats(): FunStats {
-	return {
-		totalGems: 0,
-		activeDayNumber: 0,
-		activeDayGems: 0,
-		counts: { pluck: 0, pop: 0, sop: 0 },
-	}
 }

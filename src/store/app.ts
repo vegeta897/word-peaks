@@ -5,12 +5,8 @@ import type { Stats, GameDetail, TimeStats } from '$lib/stats'
 import { newStats, newTimeStats } from '$lib/stats'
 import { gameMode } from '$src/store/game-state'
 import type { KeyboardLayout } from '$lib/constants'
-import {
-	type Landscape,
-	type LandscapeFunMode,
-	type FunStats,
-	newFunStats,
-} from '$lib/landscape/landscape'
+import { type Landscape } from '$lib/landscape/landscape'
+import { type FunStats, type LandscapeFunMode, newFunStats } from '$lib/landscape/fun'
 
 export const storeVersion: Writable<number> = storageWritable('wp-version', 0)
 export const storedLocale: Writable<string> = storageWritable('wp-locale', '')

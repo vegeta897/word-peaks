@@ -3,16 +3,18 @@
 	import { bezierEasing } from '$lib/animation'
 	import { getDistance, randomChance, randomFloat, randomInt, sleep } from '$lib/math'
 	import Gem from './Gem.svelte'
+	import { fade } from 'svelte/transition'
 
 	export const featureType = 'hill'
+	export const funStatus = { done: false, clean: false }
 
 	export let id: number
 	export let x: number
 	export let y: number
-	export let xJitter: number
-	export let yJitter: number
+	export let xJitter = 0
+	export let yJitter = 0
 	export let mini = false
-	export let size: number
+	export let size = 1
 	export let animate: boolean
 	export let delay = 0
 	export let mouseOver: boolean
@@ -80,7 +82,7 @@
 	$: popUpTranslate = mini ? 25 : 33
 
 	const FRAGMENT_COUNT = 10
-	const popFragments: [delay: number, magnitude: number, size: number][] = new Array(
+	let popFragments: [delay: number, magnitude: number, size: number][] = new Array(
 		FRAGMENT_COUNT
 	)
 		.fill(0)
@@ -90,14 +92,14 @@
 		})
 	function createPopRingPath(radius: number) {
 		const startAtRadians = randomFloat(0, Math.PI * 2)
-		let ringProgress = 0
+		let ringPercent = 0
 		let ringSegment = 0
 		let peakStart = [0, 0]
 		let peak = false
 		let bigPeak = randomChance()
 		let path = ''
-		while (ringProgress <= 1) {
-			const radians = startAtRadians + Math.PI * 2 * ringProgress
+		while (ringPercent <= 1) {
+			const radians = startAtRadians + Math.PI * 2 * ringPercent
 			const x = radius * Math.cos(radians) * (peak ? 1.1 : 1)
 			const baseY = (radius * Math.sin(radians)) / 3
 			if (path === '') {
@@ -107,7 +109,7 @@
 				const y = peak ? baseY - (bigPeak ? randomInt(5, 7) : randomInt(2, 4)) : baseY
 				const cRadians = peak
 					? radians - 0.1
-					: startAtRadians + (ringProgress - ringSegment) * Math.PI * 2 + 0.1
+					: startAtRadians + (ringPercent - ringSegment) * Math.PI * 2 + 0.1
 				const cx = radius * Math.cos(cRadians)
 				const cBaseY = (radius * Math.sin(cRadians)) / 3
 				path += `Q${cx},${cBaseY} ${x},${y}`
@@ -118,17 +120,17 @@
 					peakStart = [x, y]
 				}
 			}
-			if (ringProgress === 1) break
-			ringSegment = Math.min(1 - ringProgress, randomFloat(0.04, 0.12))
-			ringProgress += ringSegment
+			if (ringPercent === 1) break
+			ringSegment = Math.min(1 - ringPercent, randomFloat(0.04, 0.12))
+			ringPercent += ringSegment
 			if (peak) bigPeak = !bigPeak
 			peak = !peak
-			if (ringProgress > 0.96) {
+			if (ringPercent > 0.96) {
 				if (peak) {
-					ringProgress = 0.98
+					ringPercent = 0.98
 					bigPeak = false
 				} else {
-					ringProgress = 1
+					ringPercent = 1
 				}
 			}
 		}
@@ -139,7 +141,7 @@
 	let popping = false
 	let popped = false
 
-	export function doFun(x: number, y: number) {
+	export function doFun(x: number, y: number): void | number {
 		if (popping) return
 		const xDistance = x - centerX
 		const yDistance = y - centerY
@@ -152,10 +154,28 @@
 			const popDelay = (xDistance + yDistance) * 20
 			sleep(popDelay).then(() => {
 				popped = true
-				tick().then(() => animatePoppingPathElement?.beginElement())
+				funStatus.done = true
+				tick().then(async () => {
+					animatePoppingPathElement?.beginElement()
+					await sleep(750) // Wait until all fragments fade out
+					// TODO: Replace this with #if-ing out hidden elements
+					popFragments.length = 0 // Clean up fragments
+				})
 			})
 			return popDelay
 		}
+	}
+
+	let filled = false
+	let fillDistance = 0
+
+	export function fillIn(x: number, y: number): number {
+		if (filled) return 0
+		filled = true
+		const xDelta = x - centerX
+		const yDelta = y - centerY
+		fillDistance = getDistance(xDelta, yDelta)
+		return fillDistance
 	}
 
 	onMount(() => {
@@ -295,8 +315,28 @@
 		</g>
 	</g>
 	{#if popped}
-		<g class="popped">
+		<g
+			class="popped"
+			opacity={filled ? 0 : 1}
+			style:transition="opacity {1500 + fillDistance * 20}ms 1.5s cubic-bezier(0.32, 0,
+			0.67, 0)"
+		>
+			<clipPath id="hill_base_clip_{id}">
+				<ellipse rx={radius} ry={radius / 3} />
+			</clipPath>
 			<ellipse class="popped-base" rx={radius} ry={radius / 3} fill="#0005" />
+			{#if filled}
+				<g clip-path="url(#hill_base_clip_{id})">
+					<ellipse
+						class="fill-up"
+						rx={radius}
+						ry={radius / 3}
+						fill="var(--accent-color)"
+						style:transform="translateY({radius / 1.4}px)"
+						style:animation-delay="{500 + fillDistance * 20}ms"
+					/>
+				</g>
+			{/if}
 			<path
 				fill="var(--{inColor ? 'before-color' : 'landscape-color'})"
 				stroke="var(--{inColor ? 'before-color' : 'landscape-color'})"
@@ -307,6 +347,7 @@
 				style:transition="fill {inColor ? 200 : 1000}ms {y * 20}ms ease, stroke {inColor
 					? 200
 					: 1000}ms {y * 20}ms ease"
+				class="popped-ring"
 			/>
 			<!-- <g transform="translate(0 -16)"><Gem /></g> -->
 			{#each popFragments as [delay, magnitude, fSize], f}
@@ -357,12 +398,16 @@
 
 <style>
 	.popped {
-		opacity: 0;
-		animation: fade 50ms 150ms cubic-bezier(0.33, 1, 0.68, 1) reverse forwards;
+		/* opacity: 0; */
+		animation: fade 50ms 150ms cubic-bezier(0.33, 1, 0.68, 1) reverse backwards;
 	}
 
 	.popped-base {
 		animation: fade-color 300ms 200ms ease-out both;
+	}
+
+	.popped-ring {
+		animation: fade 500ms 1s ease-in forwards;
 	}
 
 	.fragment {
@@ -381,6 +426,16 @@
 	@keyframes fade-color {
 		0% {
 			fill: var(--before-color);
+		}
+	}
+
+	.fill-up {
+		animation: to-middle 1s cubic-bezier(0.32, 1, 0.67, 1) forwards;
+	}
+
+	@keyframes to-middle {
+		100% {
+			transform: translateY(0);
 		}
 	}
 </style>

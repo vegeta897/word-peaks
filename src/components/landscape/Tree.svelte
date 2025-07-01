@@ -9,15 +9,17 @@
 		randomFloat,
 		sleep,
 	} from '$lib/math'
+	import { fade } from 'svelte/transition'
 
 	export const featureType = 'tree'
+	export const funStatus = { done: false, clean: false }
 
 	export let id: number
 	export let x: number
 	export let y: number
-	export let xJitter: number
-	export let yJitter: number
-	export let size: number
+	export let xJitter = 0
+	export let yJitter = 0
+	export let size = 1
 	export let animate: boolean
 	export let delay = 0
 	export let mouseOver: boolean
@@ -30,6 +32,7 @@
 	const STROKE_HALF = STROKE_WIDTH / 2
 
 	let willAnimate = true
+	let animationFinished = true
 	let animateOpacityElement: SVGAnimateElement
 	let animateSkewElement: SVGAnimateTransformElement
 	let animatePluckScaleElement: SVGAnimateElement
@@ -60,6 +63,7 @@
 
 	let plucking = false
 	let plucked = false
+	let animatingPluck = true
 	let pluckRotation = 0
 	let fallingLeaves: [
 		...XY,
@@ -69,16 +73,22 @@
 	][] = []
 	let burstLeaves: XY[] = []
 
-	export function doFun(x: number, y: number) {
+	export function doFun(x: number, y: number): void | number {
 		if (plucking) return
 		const xDistance = x - originX
 		const yDistance = y - centerY
 		if (
-			Math.abs(xDistance) < radius * 1.5 &&
-			yDistance < radius * 2.5 &&
-			yDistance > -radius * 1.5
+			Math.abs(xDistance) < radius * 10.5 &&
+			yDistance < radius * 20.5 &&
+			yDistance > -radius * 10.5
 		) {
+			// if (
+			// 	Math.abs(xDistance) < radius * 1.5 &&
+			// 	yDistance < radius * 2.5 &&
+			// 	yDistance > -radius * 1.5
+			// ) {
 			// Pluck it!
+			// TODO: Chance for delay after pull animation, in which trunk vibrates like a string
 			plucking = true
 			const pluckDelay = (xDistance + yDistance / 2) * 20
 			sleep(pluckDelay).then(() => {
@@ -86,6 +96,7 @@
 				pluckRotation = pluckXDir * randomInt(5, 40)
 				animatePluckScaleElement?.beginElement()
 				plucked = true
+				funStatus.done = true
 				const fallingLeafCount = Math.ceil(10 + size * 6)
 				const burstLeafCount = 15
 				for (let i = 0; i < fallingLeafCount; i++) {
@@ -103,7 +114,7 @@
 						circleY - 15 + randomFloat(-9, 9),
 					])
 				}
-				sleep(5200).then(() => (fallingLeaves.length = 0)) // Clean up leaves
+				sleep(3000).then(() => (animatingPluck = false))
 			})
 			return pluckDelay
 		} else {
@@ -116,6 +127,24 @@
 			nudgeY = force * 0.1
 			animateSkewElement?.beginElement()
 		}
+	}
+
+	let filling = false
+	let filled = false
+	let fillDistance = 0
+	let fillDuration = 0
+	let fillFromXY: XY
+
+	export function fillIn(x: number, y: number): number {
+		if (filling) return 0
+		filling = true
+		const xDelta = x - originX
+		const yDelta = y - originY
+		fillFromXY = [xDelta, yDelta]
+		fillDistance = getDistance(xDelta, yDelta)
+		fillDuration = 500 + fillDistance * 15
+		sleep(fillDuration).then(() => (filled = true))
+		return fillDuration
 	}
 
 	$: growDuration = 800 * (0.8 + size * 0.4)
@@ -135,74 +164,37 @@
 	$: circleY = -trunkLength - radius
 	$: circleTranslateY = hover ? 3 : 0
 
-	onMount(() => {
+	onMount(async () => {
 		willAnimate = animate
-		if (animate) setTimeout(() => animateOpacityElement?.beginElement(), delay)
+		if (animate) {
+			animationFinished = false
+			await sleep(delay)
+			animateOpacityElement?.beginElement()
+			await sleep(growDuration)
+			animationFinished = true
+		}
 	})
 </script>
 
 <!-- Position relative to fix stacking context bug in FF -->
 <g class="tree" style:position="relative" transform="translate({originX} {originY})">
-	<g opacity={willAnimate ? 0 : 1}>
-		<g>
-			<animateTransform
-				attributeName="transform"
-				type="rotate"
-				dur="350ms"
-				begin="tree_pluck_scale_animate_{id}.end"
-				calcMode="spline"
-				values="0;{pluckRotation}"
-				keySplines={bezierEasing.cubicOut}
-			/>
-			<line
-				stroke={plucked ? '#0000' : 'var(--tertiary-color)'}
-				stroke-width={STROKE_WIDTH * 2.5}
-				stroke-linecap="round"
-				y2={circleY + circleTranslateY}
-				style:transition="stroke {plucked ? 50 : 200}ms ease-in"
-			/>
-			<circle
-				cy={circleY}
-				r={radius + STROKE_HALF * 1.5}
-				fill={plucked ? '#0000' : 'var(--tertiary-color)'}
-				style:transform="translateY({circleTranslateY}px)"
-				style:transition="transform {hover ? 50 : 200}ms ease-out, r 200ms ease-out, fill
-				200ms ease-in"
-			>
-				<animate
-					attributeName="cy"
-					begin="tree_nudge_animate_{id}.begin"
-					values="{circleY};{circleY - nudgeY};{circleY}"
-					keyTimes="0;0.3;1"
-					calcMode="spline"
-					dur="600ms"
-					keySplines="{bezierEasing.cubicOut};{bezierEasing.cubicIn}"
+	{#if animatingPluck}
+		<g opacity={willAnimate ? 0 : 1}>
+			<g>
+				<line
+					stroke={plucked ? '#0000' : 'var(--tertiary-color)'}
+					stroke-width={STROKE_WIDTH * 2.5}
+					stroke-linecap="round"
+					y2={circleY + circleTranslateY}
+					style:transition="stroke 150ms ease-in"
 				/>
-			</circle>
-			<line
-				stroke="var(--{inColor ? 'correct-color' : 'landscape-color'})"
-				stroke-width={STROKE_WIDTH}
-				stroke-linecap="round"
-				y2={circleY + circleTranslateY}
-				style:transition="fill {inColor ? 200 : 1000}ms {y * 20}ms ease, stroke {inColor
-					? 200
-					: 1000}ms {y * 20}ms ease"
-			/>
-			<g
-				style:transform="translateY({circleTranslateY}px)"
-				style:transition="transform {hover ? 50 : 200}ms ease-out"
-			>
-				<!-- Using a wrapper group to avoid transform/color easing bug in FF -->
 				<circle
 					cy={circleY}
-					r={radius - STROKE_HALF}
-					fill="var(--{inColor ? 'correct-color' : 'tertiary-color'})"
-					stroke="var(--{inColor ? 'correct-color' : 'landscape-color'})"
-					stroke-width={STROKE_WIDTH}
-					style:transition="fill {inColor ? 200 : 1000}ms {y * 20}ms ease, stroke {inColor
-						? 200
-						: 1000}ms {y * 20}ms ease, r 200ms ease-out"
-					class:plucked-treetop={plucked}
+					r={radius + STROKE_HALF * 1.5}
+					fill={plucked ? '#0000' : 'var(--tertiary-color)'}
+					style:transform="translateY({circleTranslateY}px)"
+					style:transition="transform {hover ? 50 : 200}ms ease-out, r 200ms ease-out,
+					fill 150ms ease-in"
 				>
 					<animate
 						attributeName="cy"
@@ -214,159 +206,229 @@
 						keySplines="{bezierEasing.cubicOut};{bezierEasing.cubicIn}"
 					/>
 				</circle>
+				<line
+					stroke="var(--{inColor ? 'correct-color' : 'landscape-color'})"
+					stroke-width={STROKE_WIDTH}
+					stroke-linecap="round"
+					y2={circleY + circleTranslateY}
+					style:transition="fill {inColor ? 200 : 1000}ms {y * 20}ms ease, stroke {inColor
+						? 200
+						: 1000}ms {y * 20}ms ease"
+				/>
+				<g
+					style:transform="translateY({circleTranslateY}px)"
+					style:transition="transform {hover ? 50 : 200}ms ease-out"
+				>
+					<!-- Using a wrapper group to avoid transform/color easing bug in FF -->
+					<circle
+						cy={circleY}
+						r={radius - STROKE_HALF}
+						fill="var(--{inColor ? 'correct-color' : 'tertiary-color'})"
+						stroke="var(--{inColor ? 'correct-color' : 'landscape-color'})"
+						stroke-width={STROKE_WIDTH}
+						style:transition="fill {inColor ? 200 : 1000}ms {y * 20}ms ease, stroke {inColor
+							? 200
+							: 1000}ms {y * 20}ms ease, r 200ms ease-out"
+						class:plucked-treetop={plucked}
+					>
+						<animate
+							attributeName="cy"
+							begin="tree_nudge_animate_{id}.begin"
+							values="{circleY};{circleY - nudgeY};{circleY}"
+							keyTimes="0;0.3;1"
+							calcMode="spline"
+							dur="600ms"
+							keySplines="{bezierEasing.cubicOut};{bezierEasing.cubicIn}"
+						/>
+					</circle>
+				</g>
+				<animate
+					attributeName="opacity"
+					begin="tree_pluck_scale_animate_{id}.end"
+					values="1;0"
+					calcMode="spline"
+					keySplines={bezierEasing.cubicIn}
+					dur="200ms"
+					fill="freeze"
+				/>
+				<animateTransform
+					attributeName="transform"
+					type="rotate"
+					dur="350ms"
+					begin="tree_pluck_scale_animate_{id}.end"
+					calcMode="spline"
+					values="0;{pluckRotation}"
+					keySplines={bezierEasing.cubicOut}
+				/>
 			</g>
 			<animate
+				id="animate_tree_{id}"
+				bind:this={animateOpacityElement}
 				attributeName="opacity"
-				begin="tree_pluck_scale_animate_{id}.end"
-				values="1;0"
-				calcMode="spline"
-				keySplines={bezierEasing.cubicIn}
-				dur="200ms"
+				values="0;0;1;1"
+				keyTimes="0;0.4;0.6;1"
+				begin="indefinite"
+				dur="{growDuration}ms"
 				fill="freeze"
 			/>
+			<animateTransform
+				id="tree_nudge_animate_{id}"
+				bind:this={animateSkewElement}
+				attributeName="transform"
+				type="skewX"
+				begin="indefinite"
+				values="0;{skewX};0"
+				keyTimes="0;0.3;1"
+				calcMode="spline"
+				dur="600ms"
+				keySplines="{bezierEasing.cubicOut};{bezierEasing.cubicIn}"
+			/>
+			<animateTransform
+				id="tree_pluck_scale_animate_{id}"
+				bind:this={animatePluckScaleElement}
+				attributeName="transform"
+				type="scale"
+				begin="indefinite"
+				dur="150ms"
+				calcMode="spline"
+				values="1 1;1 1.5"
+				keySplines={bezierEasing.cubicOut}
+			/>
+			<animateTransform
+				attributeName="transform"
+				type="translate"
+				dur="350ms"
+				begin="tree_pluck_scale_animate_{id}.end"
+				calcMode="spline"
+				values="0 -5;0 -10;0 0"
+				keySplines="{bezierEasing.cubicOut};{bezierEasing.cubicIn}"
+			/>
 		</g>
-		<animate
-			id="animate_tree_{id}"
-			bind:this={animateOpacityElement}
-			attributeName="opacity"
-			values="0;0;1;1"
-			keyTimes="0;0.4;0.6;1"
-			begin="indefinite"
-			dur="{growDuration}ms"
-			fill="freeze"
-		/>
-		<animateTransform
-			id="tree_nudge_animate_{id}"
-			bind:this={animateSkewElement}
-			attributeName="transform"
-			type="skewX"
-			begin="indefinite"
-			values="0;{skewX};0"
-			keyTimes="0;0.3;1"
-			calcMode="spline"
-			dur="600ms"
-			keySplines="{bezierEasing.cubicOut};{bezierEasing.cubicIn}"
-		/>
-		<animateTransform
-			id="tree_pluck_scale_animate_{id}"
-			bind:this={animatePluckScaleElement}
-			attributeName="transform"
-			type="scale"
-			begin="indefinite"
-			dur="150ms"
-			calcMode="spline"
-			values="1 1;1 1.5"
-			keySplines={bezierEasing.cubicOut}
-		/>
-		<animateTransform
-			attributeName="transform"
-			type="translate"
-			dur="350ms"
-			begin="tree_pluck_scale_animate_{id}.end"
-			calcMode="spline"
-			values="0 -5;0 -10;0 0"
-			keySplines="{bezierEasing.cubicOut};{bezierEasing.cubicIn}"
-		/>
-	</g>
-	<!-- Growth animation -->
-	<circle
-		cy={circleY}
-		r="0"
-		fill="var(--correct-color)"
-		style:transform="translateY({hover ? 0.3 : 0}px)"
-		style:transition="transform {hover ? 50 : 200}ms ease-out"
-	>
-		<animate
-			attributeName="r"
-			values="0;0;{radius};0;0"
-			keyTimes="0;0.2;0.5;0.8;1"
-			begin="animate_tree_{id}.begin"
-			dur="{growDuration}ms"
-			calcMode="spline"
-			keySplines="0 0 0 0;{bezierEasing.cubicOut};{bezierEasing.cubicIn};0 0 0 0"
-			fill="freeze"
-		/>
-	</circle>
-	<line
-		stroke="var(--correct-color)"
-		stroke-width="0"
-		stroke-linecap="round"
-		style:transform="scaleY({hover ? 0.7 : 1})"
-		style:transition="transform {hover ? 50 : 200}ms ease-out"
-	>
-		<animate
-			attributeName="y2"
-			values="0;{circleY};{circleY};0"
-			keyTimes="0;0.2;0.8;1"
-			begin="animate_tree_{id}.begin"
-			dur="{growDuration}ms"
-			fill="freeze"
-			calcMode="spline"
-			keySplines="0 0 0 0;0 0 0 0;{bezierEasing.cubicOut}"
-		/>
-		<animate
-			attributeName="stroke-width"
-			values="0;{STROKE_WIDTH};{STROKE_WIDTH};0"
-			keyTimes="0;0.1;0.9;1"
-			begin="animate_tree_{id}.begin"
-			dur="{growDuration}ms"
-			fill="freeze"
-			calcMode="spline"
-			keySplines="{bezierEasing.expoIn};0 0 0 0;{bezierEasing.expoOut}"
-		/>
-	</line>
+		<!-- Growth animation -->
+		{#if animate && !animationFinished}
+			<circle
+				cy={circleY}
+				r="0"
+				fill="var(--correct-color)"
+				style:transform="translateY({hover ? 0.3 : 0}px)"
+				style:transition="transform {hover ? 50 : 200}ms ease-out"
+			>
+				<animate
+					attributeName="r"
+					values="0;0;{radius};0;0"
+					keyTimes="0;0.2;0.5;0.8;1"
+					begin="animate_tree_{id}.begin"
+					dur="{growDuration}ms"
+					calcMode="spline"
+					keySplines="0 0 0 0;{bezierEasing.cubicOut};{bezierEasing.cubicIn};0 0 0 0"
+					fill="freeze"
+				/>
+			</circle>
+			<line
+				stroke="var(--correct-color)"
+				stroke-width="0"
+				stroke-linecap="round"
+				style:transform="scaleY({hover ? 0.7 : 1})"
+				style:transition="transform {hover ? 50 : 200}ms ease-out"
+			>
+				<animate
+					attributeName="y2"
+					values="0;{circleY};{circleY};0"
+					keyTimes="0;0.2;0.8;1"
+					begin="animate_tree_{id}.begin"
+					dur="{growDuration}ms"
+					fill="freeze"
+					calcMode="spline"
+					keySplines="0 0 0 0;0 0 0 0;{bezierEasing.cubicOut}"
+				/>
+				<animate
+					attributeName="stroke-width"
+					values="0;{STROKE_WIDTH};{STROKE_WIDTH};0"
+					keyTimes="0;0.1;0.9;1"
+					begin="animate_tree_{id}.begin"
+					dur="{growDuration}ms"
+					fill="freeze"
+					calcMode="spline"
+					keySplines="{bezierEasing.expoIn};0 0 0 0;{bezierEasing.expoOut}"
+				/>
+			</line>
+		{/if}
+	{/if}
 	{#if plucked}
-		<circle
-			r={STROKE_HALF}
-			fill="var(--{inColor ? 'correct-color' : 'landscape-color'})"
-			style:transition="fill {inColor ? 200 : 1000}ms ease"
-		/>
-		<g class="fade">
-			{#each fallingLeaves as [leafX, leafY, fallDuration, flickerDuration, flickerDelay], l}
-				<g
-					style:transform="translate({leafX}px,{leafY}px)"
-					class="burst"
-					style:animation-delay="{100 + l * 10}ms"
-				>
-					<g
-						class="falling"
-						style:transform="translate({(Math.round(leafX * 5) % 10) * 0.06}px,25px)"
-						style:animation-duration="{fallDuration}ms"
-					>
-						<circle
-							style:animation="shimmer"
-							style:animation-iteration-count={Math.floor(
-								(fallDuration - flickerDelay) / flickerDuration
-							)}
-							style:animation-duration="{flickerDuration}ms"
-							style:animation-delay="{flickerDelay}ms"
-							r={STROKE_WIDTH * (0.3 + (fallDuration % 4) / 16)}
-							fill="var(--{inColor ? 'correct-color' : 'landscape-color'})"
-						/>
+		<g
+			opacity={filled ? 0 : 1}
+			style:transition="opacity 0.5s 1.5s cubic-bezier(0.32, 0, 0.67, 0)"
+		>
+			<circle
+				r={STROKE_HALF}
+				fill={animatingPluck
+					? `var(--${inColor ? 'correct-color' : 'landscape-color'})`
+					: '#0006'}
+				style:transition="fill 1.5s 1s"
+			/>
+			{#if animatingPluck}
+				<g out:fade={{ duration: 500 }}>
+					{#each fallingLeaves as [leafX, leafY, fallDuration, flickerDuration, flickerDelay], l}
+						<g
+							style:transform="translate({leafX}px,{leafY}px)"
+							class="burst"
+							style:animation-delay="{100 + l * 10}ms"
+						>
+							<g
+								class="falling"
+								style:transform="translate({(Math.round(leafX * 5) % 10) * 0.06}px,25px)"
+								style:animation-duration="{fallDuration}ms"
+							>
+								<circle
+									style:animation="shimmer"
+									style:animation-iteration-count={Math.floor(
+										(fallDuration - flickerDelay) / flickerDuration
+									)}
+									style:animation-duration="{flickerDuration}ms"
+									style:animation-delay="{flickerDelay}ms"
+									r={STROKE_WIDTH * (0.3 + (fallDuration % 4) / 16)}
+									fill="var(--{inColor ? 'correct-color' : 'landscape-color'})"
+								/>
+							</g>
+						</g>
+					{/each}
+					<g class="burst-group">
+						{#each burstLeaves as [leafX, leafY], l}
+							<g
+								style:transform="translate({leafX}px,{leafY}px)"
+								class="burst"
+								style:animation-delay="{100 + l * 10}ms"
+							>
+								<circle
+									r={STROKE_HALF}
+									fill="var(--{inColor ? 'correct-color' : 'landscape-color'})"
+								/>
+							</g>
+						{/each}
 					</g>
 				</g>
-			{/each}
-		</g>
-		<g class="fade" style:animation-duration="300ms" style:animation-delay="200ms">
-			{#each burstLeaves as [leafX, leafY], l}
-				<g
-					style:transform="translate({leafX}px,{leafY}px)"
-					class="burst"
-					style:animation-delay="{100 + l * 10}ms"
-				>
-					<circle
-						r={STROKE_HALF}
-						fill="var(--{inColor ? 'correct-color' : 'landscape-color'})"
-					/>
-				</g>
-			{/each}
+			{/if}
+			{#if filling}
+				<path
+					class="fill-line"
+					d="M0,0 C0,-{fillDistance} {fillFromXY[0] / 1.2},{fillFromXY[1] -
+						fillDistance} {fillFromXY.join(',')}"
+					fill="none"
+					stroke="var(--accent-color)"
+					stroke-width={STROKE_WIDTH}
+					stroke-linecap="round"
+					style:stroke-dashoffset={fillDistance * -2}
+					style:animation-delay="{fillDistance * 10}ms"
+					style:animation-duration="{fillDuration}ms"
+				/>
+			{/if}
 		</g>
 	{/if}
 </g>
 
 <style>
-	.fade {
-		animation: fade 2s 3.2s ease-in forwards;
+	.burst-group {
+		animation: fade 300ms 200ms ease-in forwards;
 	}
 
 	@keyframes fade {
@@ -417,6 +479,17 @@
 	@keyframes expand {
 		100% {
 			transform: scale(1.7);
+		}
+	}
+
+	.fill-line {
+		stroke-dasharray: 5 1000;
+		animation: fill-line-dash 2s both cubic-bezier(0, 0.5, 1, 1);
+	}
+
+	@keyframes fill-line-dash {
+		100% {
+			stroke-dashoffset: 4.9;
 		}
 	}
 </style>

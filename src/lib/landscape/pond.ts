@@ -113,10 +113,6 @@ function fillPond(
 				id: landscape.nextID++,
 				x: 0,
 				y: xy[1],
-				xJitter: 0,
-				yJitter: 0,
-				size: 0,
-				delay: 0,
 			})
 		}
 	})
