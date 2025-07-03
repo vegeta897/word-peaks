@@ -181,11 +181,11 @@
 <div class="container">
 	<div class="actions" class:full-width={showScoreShareMenu}>
 		{#if showScoreShareMenu}
-			<div class="share-buttons">
+			<div class="results-buttons">
 				<button on:click={shareText}>{$t('main.results.text')}</button>
 				<button on:click={onBoardImageShare}>{$t('main.results.image')}</button>
 			</div>
-			<div class="share-options">
+			<div class="results-options">
 				{#each toggleOptions as toggleOption}
 					<Toggle
 						toggled={get(toggleOption.bind)}
@@ -274,7 +274,7 @@
 		on:click|self={() => (showImageShare = false)}
 		style:display={showImageShare ? 'flex' : 'none'}
 	>
-		<div class="image-share">
+		<div class="image-results">
 			<img
 				alt={canvasImageAltText}
 				src={canvasImageURL}
@@ -416,7 +416,7 @@
 		outline-offset: 2px;
 	}
 
-	.share-buttons {
+	.results-buttons {
 		width: calc(var(--board-width) - 2.5rem);
 		height: 100%;
 		display: grid;
@@ -424,7 +424,7 @@
 		gap: 0.5rem;
 	}
 
-	.share-options {
+	.results-options {
 		max-width: 220px;
 		flex-grow: 1;
 		margin: 0 auto;
@@ -455,7 +455,7 @@
 		align-items: center;
 	}
 
-	.image-share {
+	.image-results {
 		padding: 1.5rem;
 		border-radius: 1rem;
 		display: flex;
@@ -466,13 +466,13 @@
 		position: relative;
 	}
 
-	.image-share button {
+	.image-results button {
 		height: 3rem;
 		padding: 0 1rem;
 		margin-top: 1rem;
 	}
 
-	.image-share button.close-button {
+	.image-results button.close-button {
 		width: 2.75rem;
 		height: 2.75rem;
 		padding: 0;
@@ -483,7 +483,7 @@
 		border-radius: 100%;
 	}
 
-	.image-share button.close-button:hover {
+	.image-results button.close-button:hover {
 		background: var(--secondary-color);
 	}
 
@@ -498,10 +498,10 @@
 		.actions {
 			padding: 0.5rem;
 		}
-		.share-buttons {
+		.results-buttons {
 			width: 50%;
 		}
-		.share-options {
+		.results-options {
 			font-size: 0.75em;
 			--toggle-scale: 1;
 		}
