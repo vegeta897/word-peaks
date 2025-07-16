@@ -121,18 +121,18 @@
 	const emptyTilesMap: Map<string, XY> = new Map()
 	let iceShardSectionId = 0
 
-	export function doFun(x: number, y: number): void | number {
+	export function doFun(x: number, y: number, dragMode: boolean): void | number {
 		if (funStatus.done) return
 		const normalizedXY: XY = [x / 10 / 1.5, y / 10]
 		let clickedTile: null | { grid: string; xy: XY; distance: number } = null
 		for (
-			let nearX = Math.floor(normalizedXY[0] - 0.3);
-			nearX <= Math.floor(normalizedXY[0] + 0.3);
+			let nearX = Math.floor(normalizedXY[0] - 0.4);
+			nearX <= Math.floor(normalizedXY[0] + 0.4);
 			nearX++
 		) {
 			for (
-				let nearY = Math.floor(normalizedXY[1] - 0.4);
-				nearY <= Math.floor(normalizedXY[1] + 0.4);
+				let nearY = Math.floor(normalizedXY[1] - 0.6);
+				nearY <= Math.floor(normalizedXY[1] + 0.6);
 				nearY++
 			) {
 				const nearXY: XY = [nearX, nearY]
@@ -152,7 +152,6 @@
 		}
 		const clickedFrozenPond = frozenPonds.find((f) => f.tiles.has(clickedTile.grid))
 		if (clickedFrozenPond) {
-			// TODO: Don't crawl if clicking and dragging
 			if (Date.now() < lastFreeze + clickedFrozenPond.freezeDelay) return // Debounce
 			const breakableSubTiles: Map<string, SubTile> = new Map()
 			const openTiles: Map<string, XY> = new Map([[clickedTile.grid, clickedTile.xy]])
@@ -160,6 +159,7 @@
 				const [grid, xy] = [...openTiles][0]
 				openTiles.delete(grid)
 				breakIce(clickedFrozenPond, grid, xy, breakableSubTiles)
+				if (dragMode) break // TODO: Maybe do _some_ crawling while dragging
 				getNeighbors8(...xy).forEach((nXY, n) => {
 					const neighborGrid = xyToGrid(nXY)
 					if (openTiles.has(neighborGrid) || !clickedFrozenPond.tiles.has(neighborGrid))
@@ -257,13 +257,18 @@
 				)
 				animatedBreak.mainPaths.push(stringifyPathData(mainPath))
 				animatedBreak.shelfPaths.push(stringifyPathData(shelfPath))
-				animatedBreak.timing.push(cubicIn((i - 1) / (breakSections.length - 1)))
+				animatedBreak.timing.push(
+					cubicIn(animatedBreak.timing.length / (breakSections.length - 1))
+				)
 			}
 			animatedBreak.duration =
 				cubicOut(Math.min(8, animatedBreak.timing.length) / 8) * 250
 			animatedBreak.mainPaths.push('Z')
 			animatedBreak.shelfPaths.push('Z')
 			animatedBreak.timing.push(1)
+			if (animatedBreak.timing.length !== animatedBreak.mainPaths.length) {
+				console.log(breakSections, animatedBreak)
+			}
 			const shardSectionsByRow: Map<number, IceShardSection[]> = new Map()
 			shardSectionMap.forEach((section, shard) => {
 				const delay = animatedBreak.duration * animatedBreak.timing[section]
@@ -405,6 +410,7 @@
 	let fillingGradientElement: SVGAnimateElement
 
 	export function fillIn(x: number, y: number): number {
+		if (filled) return 0
 		filled = true
 		fillFromXY = [x, y]
 		sleep(500).then(() => fillingGradientElement?.beginElement())

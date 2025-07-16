@@ -4,7 +4,6 @@ import { createPond } from './pond'
 import { type XY, xyToGrid } from '../math'
 import { createHill } from './hill'
 import { createTrees } from './tree'
-import { landscape } from '$src/store'
 
 export type Feature = {
 	type: 'hill' | 'tree' | 'pond-row' | 'gem'
@@ -42,6 +41,40 @@ export type Landscape = {
 	pondDelay?: number
 	totalDelay: number
 	mini?: boolean
+	fun?: {
+		status: 'gem' | 'complete'
+		resultDelay: number
+		gem: { xy: XY }
+	}
+}
+
+export const initLandscape = (): Landscape => ({
+	width: 0,
+	height: 0,
+	centerX: 0,
+	centerY: 0,
+	rowsGenerated: 0,
+	features: [],
+	tileMap: new Map(),
+	centerOfMass: { center: [0, 0], totalMass: 0 },
+	pondTiles: [],
+	newPondTiles: [],
+	pondRows: new Set(),
+	nextID: 1,
+	totalDelay: 0,
+})
+
+export function clearLandscape(landscape: Landscape) {
+	landscape.rowsGenerated = 0
+	landscape.tileMap.clear()
+	landscape.features.length = 0
+	landscape.centerOfMass = { center: [0, 0], totalMass: 0 }
+	landscape.pondTiles.length = 0
+	landscape.newPondTiles.length = 0
+	landscape.pondRows.clear()
+	landscape.nextID = 1
+	landscape.pondDelay = undefined
+	landscape.fun = undefined
 }
 
 export const LANDSCAPE_FEATURE_DELAY = 30
@@ -133,31 +166,3 @@ const getFeatureY = (feature: Feature) =>
 	feature.y + (feature.yJitter || 0) + (feature.type === 'hill' ? 0.5 : 0)
 
 const rowToWord = (row: LetterTile[]) => row.map((t) => t.letter).join('')
-
-export const initLandscape = (): Landscape => ({
-	width: 0,
-	height: 0,
-	centerX: 0,
-	centerY: 0,
-	rowsGenerated: 0,
-	features: [],
-	tileMap: new Map(),
-	centerOfMass: { center: [0, 0], totalMass: 0 },
-	pondTiles: [],
-	newPondTiles: [],
-	pondRows: new Set(),
-	nextID: 1,
-	totalDelay: 0,
-})
-
-export function clearLandscape(landscape: Landscape) {
-	landscape.rowsGenerated = 0
-	landscape.tileMap.clear()
-	landscape.features.length = 0
-	landscape.centerOfMass = { center: [0, 0], totalMass: 0 }
-	landscape.pondTiles.length = 0
-	landscape.newPondTiles.length = 0
-	landscape.pondRows.clear()
-	landscape.nextID = 1
-	landscape.pondDelay = undefined
-}

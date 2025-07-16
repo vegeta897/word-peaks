@@ -15,6 +15,11 @@
 	import { dev } from '$app/env'
 	import PondRow from './PondRow.svelte'
 	import Gem from './Gem.svelte'
+	import FunSummary from './FunSummary.svelte'
+
+	// Pie in the sky idea:
+	// Split the grid into actual 3d orthographic (bevelled?) tiles
+	// Maybe user can shuffle them around
 
 	const { landscapeForceColor, landscapeFunMode, funStats, answer } = store
 
@@ -28,7 +33,6 @@
 	let animate = false
 	let firstDraw = true
 	let redraw = 0
-	let funComplete = false
 
 	let landscape = initLandscape()
 	let pondRows: PondRow[] = []
@@ -56,7 +60,6 @@
 		landscape.centerY = Math.floor(newHeight / 2)
 		animate = false
 		redraw++
-		funComplete = false
 		clearLandscape(landscape)
 		updateLandscape()
 	}
@@ -68,7 +71,6 @@
 		const currentRow = get(store.currentRow)
 		if (currentRow === 0) {
 			if (landscape.rowsGenerated > 0) {
-				funComplete = false
 				clearLandscape(landscape)
 			}
 			return
@@ -102,7 +104,6 @@
 		store.landscapeNewGame.set(false)
 		firstDraw = true
 		redraw++
-		funComplete = false
 		clearLandscape(landscape)
 		// Skip update if landscapeWideView is true, because it is about to change
 		if (!get(store.landscapeWideView)) updateLandscape()
@@ -115,7 +116,6 @@
 	store.landscapeRedraw.subscribe((redrawType) => {
 		if (redrawType === null) return
 		redraw++
-		funComplete = false
 		clearLandscape(landscape)
 		updateLandscape()
 	})
@@ -133,14 +133,13 @@
 	}[] = []
 	let pondComponent: {
 		flashColor: FlashColorHandler
-		doFun: (x: number, y: number) => void | number
+		doFun: (x: number, y: number, dragMode: boolean) => void | number
 		fillIn: (x: number, y: number) => number
 		funStatus: { done: boolean; clean: boolean }
 	}
 	let gemComponent: {
 		collect: (x: number, y: number) => boolean
 	}
-	let gemXY: XY
 
 	function updateMousePosition(offsetX: number, offsetY: number) {
 		mouseX = -1 + (offsetX / svgWidth) * (landscape.width * 1.5 * 10 + 2)
@@ -157,10 +156,6 @@
 	// TODO: When exiting full view after making any changes, show cropped version
 	// with overlay buttons to "resume" or "reset"
 
-	// TODO: Allow click and drag, check line segment intersects for trees and ponds
-
-	// TODO: Idle game?
-
 	// TODO: Persist gems and pop/pluck/sop stats, share-able, add to stats screen
 
 	// TODO: Gems only appear when you clear the landscape a certain way, like a puzzle game
@@ -174,32 +169,60 @@
 	// TODO: Hidden gem under one random tile per day, hill tree or pond
 	// TODO: Gem is buried and poking out after feature is removed, click to dig up
 
-	// TODO: AWESOME IDEA!
-	// TODO: Gem unlocks pink button that fills in pond, hill, and tree holes
-	// Ponds fill with ellipse
-	// Trees fill with winding "snake" paths emitting from cursor to holes, all nearby trees in one click
-	// Hills fill with same-sized ellipse that comes up from below like an elevator
-	// TODO: Or, collecting the one gem expands pink effect outwards, doing similar effects
+	// TODO: Do the randomly hidden gem idea! Don't make people clear the landscape
+	// Unless they want to! Show fun stats when gem acquired, but user can close it
 
-	// TODO: Show fun stats screen when landscape cleared, in space where landscape was
+	// TODO: Use sparkles near funned features that are close to gem
 
-	const onPointerDown: svelte.JSX.PointerEventHandler<SVGElement> = async (event) => {
+	// TODO: "Find today's gem!" Store counts used to find gem, and total counts
+	// Lower counts to gems ratio is favorable
+
+	let mouseOver = false
+	let dragging = false
+	let mouseX: number
+	let mouseY: number
+
+	const onSVGPointerMove: svelte.JSX.PointerEventHandler<SVGElement> = (event) => {
+		mouseOver = true // OK to redundantly assign, doesn't re-trigger reactivity
+		updateMousePosition(event.offsetX, event.offsetY)
+		// Ignore dragging from outside of landscape
+		if (dragging === false && event.buttons > 0) return
+		dragging = event.buttons === 1
+		if (event.buttons !== 1) return
+		event.preventDefault()
+		interact(true)
+	}
+	const onPointerDown: svelte.JSX.PointerEventHandler<SVGElement> = (event) => {
 		// TODO: Handle multi touch
 		if (event.pointerType === 'mouse' && event.button !== 0) return
+		dragging = true
 		event.preventDefault()
 		updateMousePosition(event.offsetX, event.offsetY)
-		if (funComplete) {
+		interact()
+	}
+	const onPointerLeave: svelte.JSX.PointerEventHandler<SVGElement> = (event) => {
+		dragging = event.buttons === 1
+		mouseOver = false
+	}
+
+	const interact = (dragMode = false) => {
+		const fun = landscape.fun
+		if (fun?.status === 'complete') {
+			return
+		}
+		if (fun?.status === 'gem') {
+			if (dragMode) return // Don't collect gem when dragging
 			const collected = gemComponent.collect(mouseX, mouseY)
+			if (!collected) return
 			let maxFillTime = 0
-			if (collected) {
-				pondComponent.fillIn(...gemXY)
-				featureComponents.forEach((f) => {
-					if (f?.featureType !== 'tree' && f?.featureType !== 'hill') return
-					const fillTime = f.fillIn(...gemXY)
-					if (fillTime > maxFillTime) maxFillTime = fillTime
-				})
-				console.log('max fill time:', maxFillTime)
-			}
+			maxFillTime = pondComponent.fillIn(...fun.gem.xy)
+			featureComponents.forEach((f) => {
+				if (f?.featureType !== 'tree' && f?.featureType !== 'hill') return
+				const fillTime = f.fillIn(...fun.gem.xy)
+				if (fillTime > maxFillTime) maxFillTime = fillTime
+			})
+			fun.status = 'complete'
+			fun.resultDelay = maxFillTime
 			return
 		}
 		const funMode = get(landscapeFunMode)
@@ -218,13 +241,15 @@
 			// TODO: Use different flash effect in fun modes
 		} else {
 			// TODO: Increase hit zone for mobile taps?
+			// TODO: Use long presses to gradually increase radius?
 
-			// TODO: Don't spawn gem inside component, handle it here
-			const delayedFun: Promise<LandscapeFunMode>[] = []
+			let maxFunTime = 0
+			let funCounts = 0
 			if (funMode === 'sop') {
-				const funResult = pondComponent.doFun(mouseX, mouseY)
-				if (typeof funResult === 'number') {
-					delayedFun.push(sleep(funResult).then(() => funMode))
+				const sopResult = pondComponent.doFun(mouseX, mouseY, dragMode)
+				if (typeof sopResult === 'number') {
+					maxFunTime = sopResult
+					funCounts = 1
 				}
 			} else {
 				featureComponents.forEach((f) => {
@@ -233,51 +258,36 @@
 					if (!treeFun && !hillFun) return
 					const funResult = f.doFun(mouseX, mouseY)
 					if (typeof funResult === 'number') {
-						delayedFun.push(sleep(funResult).then(() => funMode))
+						funCounts++
+						if (funResult > maxFunTime) maxFunTime = funResult
 					}
 				})
 			}
-			Promise.all(delayedFun).then((funModes) => {
-				const allPlucked = featureComponents
-					.filter((f) => f && f.featureType === 'tree')
-					.every((f) => f.funStatus.done)
-				const allPopped = featureComponents
-					.filter((f) => f && f.featureType === 'hill')
-					.every((f) => f.funStatus.done)
-				funStats.update((fs) => {
-					for (const funMode of funModes) {
-						fs.counts[funMode]++
-					}
-					return fs
-				})
-				const allSopped = pondComponent.funStatus.done || landscape.pondTiles.length === 0
-				if (allPlucked && allPopped && allSopped) {
-					// Spawn gem
-					console.log('spawning gem!', mouseX, mouseY)
-					funComplete = true
-					landscape.features.push({
-						type: 'gem',
-						id: landscape.nextID++,
-						x: mouseX, // TODO: Use grid-space coordinates
-						y: mouseY,
-					})
-					gemXY = [mouseX, mouseY]
-					sortFeatures(landscape)
-				}
+			funStats.update((fs) => {
+				fs.counts[funMode] += funCounts
+				return fs
 			})
+			const allPlucked = featureComponents
+				.filter((f) => f && f.featureType === 'tree')
+				.every((f) => f.funStatus.done)
+			const allPopped = featureComponents
+				.filter((f) => f && f.featureType === 'hill')
+				.every((f) => f.funStatus.done)
+			const allSopped = pondComponent.funStatus.done || landscape.pondTiles.length === 0
+			if (allPlucked && allPopped && allSopped) {
+				// Spawn gem
+				landscape.fun = { status: 'gem', gem: { xy: [mouseX, mouseY] }, resultDelay: 0 }
+				landscape.features.push({
+					type: 'gem',
+					id: landscape.nextID++,
+					x: mouseX, // TODO: Spawn at actual last-funned-feature coordinates
+					y: mouseY,
+					delay: maxFunTime,
+				})
+				sortFeatures(landscape)
+			}
 		}
 	}
-
-	let mouseOver = false
-	let mouseX: number
-	let mouseY: number
-
-	const onSVGPointerMove: svelte.JSX.PointerEventHandler<SVGElement> = (event) => {
-		mouseOver = true // OK to redundantly assign, doesn't re-trigger reactivity
-		// TODO: Use event.buttons for dragging fun-mode
-		updateMousePosition(event.offsetX, event.offsetY)
-	}
-	const onMouseLeave = () => (mouseOver = false)
 
 	$: if (svgElement) store.landscapeSVG.set(svgElement)
 </script>
@@ -294,8 +304,9 @@
 		viewBox="-1 -1 {landscape.width * 1.5 * 10 + 2} {landscape.height * 10 + 2}"
 		on:pointerdown={onPointerDown}
 		on:pointermove={onSVGPointerMove}
-		on:mouseleave={onMouseLeave}
+		on:pointerleave={onPointerLeave}
 		on:touchend|preventDefault
+		style:touch-action={$landscapeFunMode ? 'none' : 'manipulation'}
 		bind:this={svgElement}
 	>
 		{#key redraw}
@@ -357,7 +368,12 @@
 						width={landscape.width * 15}
 					/> -->
 				{:else}
-					<Gem x={feature.x} y={feature.y} bind:this={gemComponent} />
+					<Gem
+						x={feature.x}
+						y={feature.y}
+						delay={feature.delay}
+						bind:this={gemComponent}
+					/>
 				{/if}
 			{/each}
 		{/key}
@@ -376,6 +392,9 @@
 			{/key}
 		{/if}
 	</svg>
+	{#if landscape.fun?.status === 'complete'}
+		<FunSummary delay={landscape.fun.resultDelay} />
+	{/if}
 </div>
 
 <style>
@@ -389,7 +408,8 @@
 		position: absolute;
 		bottom: 0;
 		overflow: visible;
-		touch-action: manipulation; /* Allow panning and pinch zooming */
+		/* touch-action: manipulation; Allow panning and pinch zooming */
+		/* touch-action: none; */
 		/* background: #0f21; */
 	}
 	svg :global(*) {

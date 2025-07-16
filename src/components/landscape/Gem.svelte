@@ -72,71 +72,177 @@
 	}
 
 	const outlineFrames = generateOutlineFrames()
+
+	type Sparkle = {
+		xy: XY
+		color: string
+		size: number
+		delay: number
+	}
+	const sparkleColors = ['#ffffff', '#ffbfe4', '#ed98cb']
+	const sparkleAnimation = [
+		{ opacity: 0, transform: 'translateY(-1px)', easing: 'ease-out' },
+		{ opacity: 1, easing: 'ease-in' },
+		{ opacity: 0, transform: 'translateY(1px)' },
+	]
 </script>
 
 <script lang="ts">
+	import {
+		randomChance,
+		randomElement,
+		randomFloat,
+		randomInt,
+		sleep,
+		type XY,
+	} from '$lib/math'
+
 	import { lastGameDetail, funStats } from '$src/store'
+	import { onMount, tick } from 'svelte'
+	import { circIn, cubicIn } from 'svelte/easing'
+	import { fade } from 'svelte/transition'
 
 	export let x: number
 	export let y: number
+	export let delay = 0
 
 	$: originX = x - radius / 2
 	$: originY = y - height / 1.2
 
-	$: collected = $lastGameDetail?.dayNumber === $funStats.lastDayCollected
+	const createSparkle = (): Sparkle => {
+		const xDistance = cubicIn(randomFloat(0.3, 1)) * 15
+		return {
+			xy: [xDistance * (randomChance() ? -1 : 1), randomInt(-7, 7)],
+			size: randomInt(60, 120) / 100 - xDistance / 100, // Diminishes with x distance
+			color: randomElement(sparkleColors),
+			delay: randomInt(0, 800),
+		}
+	}
+	const sparkles: Sparkle[] = new Array(10).fill(0).map(createSparkle)
+	const sparkleElements: SVGGElement[] = []
+
+	async function animateSparkle(sparkleIndex: number) {
+		const sparkle = sparkles[sparkleIndex]
+		if (!sparkle) return
+		const element = sparkleElements[sparkleIndex]
+		if (!element) return
+		await sleep(sparkle.delay)
+		await element.animate(sparkleAnimation, {
+			duration: randomInt(350, 800),
+			fill: 'forwards',
+		}).finished
+		sparkles[sparkleIndex] = createSparkle() // Re-generate sparkle
+		animateSparkle(sparkleIndex)
+	}
+
+	let visible = false
+	let collected = false
+
+	onMount(() => {
+		const visibleTimeout = setTimeout(async () => {
+			visible = true
+			await tick()
+			sparkles.forEach((_, i) => animateSparkle(i))
+		}, delay)
+		return () => clearTimeout(visibleTimeout)
+	})
+
+	// $: collected = $lastGameDetail?.dayNumber === $funStats.lastDayCollected
 
 	export function collect(mouseX: number, mouseY: number) {
 		console.log('collect!', mouseX, mouseY, x, y)
-		return true
+		if (visible && !collected) {
+			collected = true
+			visible = false
+			return true
+		} else {
+			return false
+		}
 	}
 </script>
 
-<g style:position="relative" transform="translate({originX} {originY})">
-	<g class="wobble">
-		<linearGradient id="gemGradient" gradientTransform="rotate(90)">
-			<stop offset="0" stop-color="#fff" />
-			<stop offset="0.5" stop-color="var(--accent-color)" />
-			<stop offset="1" stop-color="#ab387c" />
-		</linearGradient>
-		<path
-			stroke-width={STROKE_HALF}
-			stroke-linecap="round"
-			stroke-linejoin="round"
-			stroke="url(#gemGradient)"
-			fill="var(--accent-color)"
-			d={outlineFrames[0]}
-		>
-			<animate
-				attributeName="d"
-				dur="{DURATION / 4}ms"
-				repeatCount="indefinite"
-				values={outlineFrames.join(';')}
-			/>
-		</path>
-		{#each faceIndexes as _, face}
-			{#each topAndBottom as [transform, colors, opacityValues]}
-				<path {transform} fill={colors[face % 2]}>
+{#if visible}
+	<g
+		style:position="relative"
+		transform="translate({originX} {originY})"
+		out:fade|local={{ duration: 200, easing: cubicIn }}
+	>
+		<g class="wobble">
+			<g class="grow">
+				<linearGradient id="gemGradient" gradientTransform="rotate(90)">
+					<stop offset="0" stop-color="#fff" />
+					<stop offset="0.5" stop-color="var(--accent-color)" />
+					<stop offset="1" stop-color="#ab387c" />
+				</linearGradient>
+				<path
+					stroke-width={STROKE_HALF}
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					stroke="url(#gemGradient)"
+					fill="var(--accent-color)"
+					d={outlineFrames[0]}
+				>
 					<animate
 						attributeName="d"
-						dur="{DURATION}ms"
-						begin="{(face * DURATION) / 4}ms"
+						dur="{DURATION / 4}ms"
 						repeatCount="indefinite"
-						values={faceFrames.join(';')}
-					/>
-					<animate
-						attributeName="opacity"
-						dur="{DURATION}ms"
-						begin="{(face * DURATION) / 4}ms"
-						repeatCount="indefinite"
-						values={opacityValues.join(';')}
+						values={outlineFrames.join(';')}
 					/>
 				</path>
-			{/each}
+				{#each faceIndexes as _, face}
+					{#each topAndBottom as [transform, colors, opacityValues]}
+						<path {transform} fill={colors[face % 2]}>
+							<animate
+								attributeName="d"
+								dur="{DURATION}ms"
+								begin="{(face * DURATION) / 4}ms"
+								repeatCount="indefinite"
+								values={faceFrames.join(';')}
+							/>
+							<animate
+								attributeName="opacity"
+								dur="{DURATION}ms"
+								begin="{(face * DURATION) / 4}ms"
+								repeatCount="indefinite"
+								values={opacityValues.join(';')}
+							/>
+						</path>
+					{/each}
+				{/each}
+			</g>
+		</g>
+		{#each sparkles as { xy: [x, y], size, color }, s (s)}
+			{@const outline = size >= 1}
+			<g bind:this={sparkleElements[s]} opacity="0">
+				<path
+					transform="translate({x},{y}) scale({size})"
+					d="M0,-1.5 L1,0 L0,1.5 L-1,0 Z"
+					stroke={outline ? color : 'none'}
+					fill={outline ? 'none' : color}
+					stroke-width="0.5"
+					stroke-linejoin="round"
+				/>
+			</g>
 		{/each}
 	</g>
-</g>
+{/if}
 
 <style>
+	.grow {
+		animation: grow 400ms both cubic-bezier(0.33, 1, 0.68, 1);
+	}
+
+	@keyframes grow {
+		0% {
+			transform: scale(0.1) translateY(20px);
+			animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1);
+		}
+		30% {
+			transform: scale(1.2) translateY(-3px);
+			animation-timing-function: cubic-bezier(0.32, 0, 0.67, 0);
+		}
+	}
+
 	.wobble {
 		animation: wobble 1s infinite cubic-bezier(0.37, 0, 0.63, 1);
 	}

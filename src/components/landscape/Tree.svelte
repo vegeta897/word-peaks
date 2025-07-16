@@ -78,25 +78,20 @@
 		const xDistance = x - originX
 		const yDistance = y - centerY
 		if (
-			Math.abs(xDistance) < radius * 10.5 &&
-			yDistance < radius * 20.5 &&
-			yDistance > -radius * 10.5
+			Math.abs(xDistance) < radius * 1.5 &&
+			yDistance < radius * 2.5 &&
+			yDistance > -radius * 1.5
 		) {
-			// if (
-			// 	Math.abs(xDistance) < radius * 1.5 &&
-			// 	yDistance < radius * 2.5 &&
-			// 	yDistance > -radius * 1.5
-			// ) {
 			// Pluck it!
-			// TODO: Chance for delay after pull animation, in which trunk vibrates like a string
+			funStatus.done = true
 			plucking = true
-			const pluckDelay = (xDistance + yDistance / 2) * 20
+			const distance = getDistance(xDistance, yDistance)
+			const pluckDelay = distance * 20
 			sleep(pluckDelay).then(() => {
 				const pluckXDir = randomChance() ? 1 : -1
 				pluckRotation = pluckXDir * randomInt(5, 40)
 				animatePluckScaleElement?.beginElement()
 				plucked = true
-				funStatus.done = true
 				const fallingLeafCount = Math.ceil(10 + size * 6)
 				const burstLeafCount = 15
 				for (let i = 0; i < fallingLeafCount; i++) {
@@ -132,6 +127,7 @@
 	let filling = false
 	let filled = false
 	let fillDistance = 0
+	let fillDelay = 0
 	let fillDuration = 0
 	let fillFromXY: XY
 
@@ -142,9 +138,10 @@
 		const yDelta = y - originY
 		fillFromXY = [xDelta, yDelta]
 		fillDistance = getDistance(xDelta, yDelta)
+		fillDelay = fillDistance * 10
 		fillDuration = 500 + fillDistance * 15
 		sleep(fillDuration).then(() => (filled = true))
-		return fillDuration
+		return fillDelay + fillDuration
 	}
 
 	$: growDuration = 800 * (0.8 + size * 0.4)
@@ -367,7 +364,7 @@
 				style:transition="fill 1.5s 1s"
 			/>
 			{#if animatingPluck}
-				<g out:fade={{ duration: 500 }}>
+				<g out:fade|local={{ duration: 500 }}>
 					{#each fallingLeaves as [leafX, leafY, fallDuration, flickerDuration, flickerDelay], l}
 						<g
 							style:transform="translate({leafX}px,{leafY}px)"
@@ -418,7 +415,7 @@
 					stroke-width={STROKE_WIDTH}
 					stroke-linecap="round"
 					style:stroke-dashoffset={fillDistance * -2}
-					style:animation-delay="{fillDistance * 10}ms"
+					style:animation-delay="{fillDelay}ms"
 					style:animation-duration="{fillDuration}ms"
 				/>
 			{/if}

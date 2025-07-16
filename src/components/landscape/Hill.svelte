@@ -151,10 +151,10 @@
 			yDistance > -radius - 0.3 - vertLength
 		) {
 			popping = true
+			funStatus.done = true
 			const popDelay = (xDistance + yDistance) * 20
 			sleep(popDelay).then(() => {
 				popped = true
-				funStatus.done = true
 				tick().then(async () => {
 					animatePoppingPathElement?.beginElement()
 					await sleep(750) // Wait until all fragments fade out
@@ -324,7 +324,12 @@
 			<clipPath id="hill_base_clip_{id}">
 				<ellipse rx={radius} ry={radius / 3} />
 			</clipPath>
-			<ellipse class="popped-base" rx={radius} ry={radius / 3} fill="#0005" />
+			<ellipse
+				class="popped-base"
+				rx={radius}
+				ry={radius / 3}
+				fill="var(--{inColor ? 'before-color' : 'landscape-color'})"
+			/>
 			{#if filled}
 				<g clip-path="url(#hill_base_clip_{id})">
 					<ellipse
@@ -403,7 +408,7 @@
 	}
 
 	.popped-base {
-		animation: fade-color 300ms 200ms ease-out both;
+		animation: fade-color 300ms 200ms ease-out forwards;
 	}
 
 	.popped-ring {
@@ -424,8 +429,8 @@
 	}
 
 	@keyframes fade-color {
-		0% {
-			fill: var(--before-color);
+		100% {
+			fill: #0005;
 		}
 	}
 
