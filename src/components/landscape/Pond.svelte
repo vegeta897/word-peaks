@@ -25,6 +25,7 @@
 		getDistance,
 		getDistanceBetween,
 		getNeighbors8,
+		midXY,
 		randomFloat,
 		randomInt,
 		sleep,
@@ -107,6 +108,7 @@
 		path: string
 		shelfPath: string
 		subTiles: Map<string, SubTile>
+		subTilesStatic: Map<string, SubTile>
 		subTileVertices: Map<string, XY>
 		brokenPath: string
 		animatedBreaks: {
@@ -153,13 +155,14 @@
 		const clickedFrozenPond = frozenPonds.find((f) => f.tiles.has(clickedTile.grid))
 		if (clickedFrozenPond) {
 			if (Date.now() < lastFreeze + clickedFrozenPond.freezeDelay) return // Debounce
+			const minCrawlDistance = dragMode ? 0 : 1.75
+			const maxCrawlDistance = dragMode ? 1 : 2
 			const breakableSubTiles: Map<string, SubTile> = new Map()
 			const openTiles: Map<string, XY> = new Map([[clickedTile.grid, clickedTile.xy]])
 			while (openTiles.size > 0) {
 				const [grid, xy] = [...openTiles][0]
 				openTiles.delete(grid)
 				breakIce(clickedFrozenPond, grid, xy, breakableSubTiles)
-				if (dragMode) break // TODO: Maybe do _some_ crawling while dragging
 				getNeighbors8(...xy).forEach((nXY, n) => {
 					const neighborGrid = xyToGrid(nXY)
 					if (openTiles.has(neighborGrid) || !clickedFrozenPond.tiles.has(neighborGrid))
@@ -171,7 +174,7 @@
 						breakIce(clickedFrozenPond, neighborGrid, nXY, breakableSubTiles)
 					} else {
 						const distance = getDistanceBetween(clickedTile.xy, nXY)
-						if (distance > randomFloat(1.75, 2)) return
+						if (distance > randomFloat(minCrawlDistance, maxCrawlDistance)) return
 						openTiles.set(neighborGrid, nXY)
 					}
 				})
@@ -182,62 +185,73 @@
 				const willBreak = [...subTile.tileGrids].every(
 					(tg) => !clickedFrozenPond.tiles.has(tg)
 				)
-				if (willBreak) {
-					clickedFrozenPond.subTiles.delete(subTileGrid)
-					const [x, y] = subTile.subTileXY
-					// TODO: Detect subTiles on pond edges/corners, so they can be reduced in size
-					const points: [XY, XY, XY, XY] = [
-						clickedFrozenPond.subTileVertices.get(xyToGrid(subTile.subTileXY))!,
-						clickedFrozenPond.subTileVertices.get(xyToGrid([x + 1, y]))!,
-						clickedFrozenPond.subTileVertices.get(xyToGrid([x + 1, y + 1]))!,
-						clickedFrozenPond.subTileVertices.get(xyToGrid([x, y + 1]))!,
-					]
-					const shelfPathData: PathDataCommand[] = []
-					for (let p = 1; p <= 4; p++) {
-						const prev = points[p - 1]
-						const curr = points[p % 4]
-						if (curr[0] < prev[0]) {
-							shelfPathData.push(
-								['M', prev],
-								['L', [prev[0], prev[1] + 0.35]],
-								['L', [curr[0], curr[1] + 0.35]],
-								['L', curr],
-								['Z']
-							)
-						}
-					}
-					const xDistance = x / 2 - normalizedXY[0]
-					const yDistance = y / 2 - normalizedXY[1]
-					const distance = getDistance(xDistance, yDistance)
-					const xMagnitude = xDistance / distance
-					const yMagnitude = yDistance / distance
-					const force = 1 / Math.min(4, distance + 1)
-					const iceShard: IceShard = {
-						subTile,
-						origin: [
-							(points[0][0] + points[2][0]) / 2,
-							(points[0][1] + points[2][1]) / 2,
-						],
-						rotation: randomInt(-160, 160),
-						velocity: [
-							randomInt(-5, 5) + xMagnitude * force * 15,
-							randomInt(-5, 5) + yMagnitude * force * 15,
-							-randomInt(15, 25) * (1 - Math.min(3, distance) / 4),
-						],
-						// delay: 0,
-						duration: randomInt(250, 450),
-						mainPath: stringifyPathData([
-							...points.map((p, i) => [i === 0 ? 'M' : 'L', p] as [string, XY]),
-						]),
-						shelfPath: stringifyPathData(shelfPathData),
-					}
-					const sectionIndex = Math.round(distance * 2)
-					shardSectionMap.set(iceShard, sectionIndex)
-					breakSections[sectionIndex] = [
-						...(breakSections[sectionIndex] || []),
-						subTile.subTileXY,
-					]
+				if (!willBreak) return
+				clickedFrozenPond.subTiles.delete(subTileGrid)
+				const [x, y] = subTile.subTileXY
+				const { subTileVertices, subTilesStatic } = clickedFrozenPond
+				const points: XY[] = [
+					subTileVertices.get(xyToGrid(subTile.subTileXY))!,
+					subTileVertices.get(xyToGrid([x + 1, y]))!,
+					subTileVertices.get(xyToGrid([x + 1, y + 1]))!,
+					subTileVertices.get(xyToGrid([x, y + 1]))!,
+				]
+				if (!subTilesStatic.has(xyToGrid([x, y - 1]))) {
+					points[0] = midXY(points[0], points[3])
+					points[1] = midXY(points[1], points[2])
+				} else if (!subTilesStatic.has(xyToGrid([x, y + 1]))) {
+					points[3] = midXY(points[3], points[0])
+					points[2] = midXY(points[2], points[1])
 				}
+				if (!subTilesStatic.has(xyToGrid([x - 1, y]))) {
+					points[0] = midXY(points[0], points[1])
+					points[3] = midXY(points[3], points[2])
+				} else if (!subTilesStatic.has(xyToGrid([x + 1, y]))) {
+					points[1] = midXY(points[1], points[0])
+					points[2] = midXY(points[2], points[3])
+				}
+				const shelfPathData: PathDataCommand[] = []
+				for (let p = 1; p <= 4; p++) {
+					const prev = points[p - 1]
+					const curr = points[p % 4]
+					if (curr[0] < prev[0]) {
+						shelfPathData.push(
+							['M', prev],
+							['L', [prev[0], prev[1] + 0.35]],
+							['L', [curr[0], curr[1] + 0.35]],
+							['L', curr],
+							['Z']
+						)
+					}
+				}
+				const xDistance = x / 2 - normalizedXY[0]
+				const yDistance = y / 2 - normalizedXY[1]
+				const distance = getDistance(xDistance, yDistance)
+				const xMagnitude = xDistance / distance
+				const yMagnitude = yDistance / distance
+				const force = 1 / Math.min(4, distance + 1)
+				const iceShard: IceShard = {
+					subTile,
+					origin: [(points[0][0] + points[2][0]) / 2, (points[0][1] + points[2][1]) / 2],
+					rotation: randomInt(-160, 160),
+					velocity: [
+						randomInt(-5, 5) + xMagnitude * force * 15,
+						randomInt(-5, 5) + yMagnitude * force * 15,
+						-randomInt(15, 25) * (1 - Math.min(3, distance) / 4),
+					],
+					// delay: 0,
+					duration: randomInt(250, 450),
+					mainPath: stringifyPathData([
+						...points.map((p, i) => [i === 0 ? 'M' : 'L', p] as [string, XY]),
+						['Z'],
+					]),
+					shelfPath: stringifyPathData(shelfPathData),
+				}
+				const sectionIndex = Math.round(distance * 2)
+				shardSectionMap.set(iceShard, sectionIndex)
+				breakSections[sectionIndex] = [
+					...(breakSections[sectionIndex] || []),
+					subTile.subTileXY,
+				]
 			})
 			const animatedBreak: FrozenPond['animatedBreaks'][number] = {
 				mainPaths: [],
@@ -318,6 +332,7 @@
 				emptyTiles: new Map(),
 				path: '',
 				shelfPath: '',
+				subTilesStatic: new Map(),
 				subTiles: new Map(),
 				subTileVertices: new Map(),
 				brokenPath: '',
@@ -364,6 +379,7 @@
 									tileGrids: new Set([grid]),
 								}
 								freezingPond.subTiles.set(subTileGrid, subTile)
+								freezingPond.subTilesStatic.set(subTileGrid, subTile)
 							} else {
 								subTile.tileGrids.add(grid)
 							}
