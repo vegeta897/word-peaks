@@ -2,6 +2,7 @@ import type { Board, GameMode } from '$lib/data-model'
 import { toast } from '@zerodevx/svelte-toast'
 import { dev } from '$app/environment'
 import { getWormHoleColor, wormHolePositions } from '$src/components/Worm.svelte'
+import { WORD_LENGTH } from './constants'
 
 export function getShareTitle({
 	gameWon,
@@ -74,7 +75,9 @@ export async function shareImage(blob: Blob, name: string): Promise<void> {
 	if (navigator.share) await navigator.share(shareData)
 }
 
+const MARGIN = 48
 const TILE_SIZE = 88
+const TILE_SPACE = 12
 
 export function drawResults(
 	canvas: HTMLCanvasElement,
@@ -103,9 +106,13 @@ export function drawResults(
 	}
 ): void {
 	if (!canvas) return
-	canvas.width = 504 + (guessTimes ? longestStringLength(guessTimes) * 28 + 6 : 0)
+	canvas.width =
+		MARGIN * 2 +
+		(TILE_SIZE + TILE_SPACE) * WORD_LENGTH +
+		(guessTimes ? longestStringLength(guessTimes) * 28 + 6 : 0)
 	canvas.style.maxWidth = `min(100%, ${Math.round(canvas.width / 2)}px)`
-	canvas.height = guesses.length * 100 + 60 + (showURL ? 44 : 0)
+	canvas.height =
+		MARGIN * 2 + guesses.length * (TILE_SIZE + TILE_SPACE) + 54 + (showURL ? 46 : 0)
 	canvas.style.maxHeight = `${Math.round(canvas.height / 2)}px`
 	const ctx = canvas.getContext('2d')!
 	ctx.fillStyle = highContrast ? '#161a25' : '#312236'
@@ -147,9 +154,9 @@ export function drawResults(
 	const arrowRadius =
 		TILE_SIZE *
 		(tileSharpness <= 1 ? 0.14 + tileSharpness * 0.36 : 0.5 + (tileSharpness - 1) * 0.36)
-	boardContent.forEach((row, r) => {
+	boardContent.forEach((rowTiles, r) => {
 		if (r >= guesses.length) return
-		row.forEach((tile, t) => {
+		rowTiles.forEach((tile, t) => {
 			let topRadius = TILE_SIZE * 0.14
 			let bottomRadius = TILE_SIZE * 0.14
 			const correctTile = tile.distance === 0
@@ -162,27 +169,44 @@ export function drawResults(
 				ctx.fillStyle = highContrast ? '#da3f8b' : '#e38f2f'
 				topRadius = arrowRadius
 			}
-			const x = 8 + t * 100
-			const y = 8 + r * 100
+			const x = MARGIN + t * (TILE_SIZE + TILE_SPACE)
+			const y = MARGIN + r * (TILE_SIZE + TILE_SPACE)
 			roundedRectangle(x, y, TILE_SIZE, TILE_SIZE, topRadius, bottomRadius)
 		})
 		if (guessTimes) {
 			ctx.fillStyle = '#a7a1a9'
-			ctx.fillText(guessTimes[r], canvas.width - 6, r * 100 + 55)
+			ctx.fillText(
+				guessTimes[r],
+				canvas.width - MARGIN + 2,
+				MARGIN + r * (TILE_SIZE + TILE_SPACE) + 48
+			)
 		}
 	})
 	ctx.textBaseline = 'alphabetic'
 	ctx.fillStyle = '#cccccc'
-	if (totalTime) ctx.fillText(totalTime, canvas.width - 6, guesses.length * 100 + 44)
+	if (totalTime)
+		ctx.fillText(
+			totalTime,
+			canvas.width - MARGIN + 2,
+			MARGIN + guesses.length * (TILE_SIZE + TILE_SPACE) + 48
+		)
 	ctx.font = '40px Arial'
 	ctx.textAlign = totalTime ? 'left' : 'center'
-	ctx.fillText(caption, totalTime ? 8 : canvas.width / 2, guesses.length * 100 + 44)
+	ctx.fillText(
+		caption,
+		totalTime ? MARGIN : canvas.width / 2,
+		MARGIN + guesses.length * (TILE_SIZE + TILE_SPACE) + 48
+	)
 	if (showURL) {
 		ctx.font = '40px Arial'
 		let url = 'wordpeaks.com'
 		if (hash) url += '/#' + hash
 		ctx.fillStyle = '#a7a1a9'
-		ctx.fillText(url, totalTime ? 8 : canvas.width / 2, guesses.length * 100 + 92)
+		ctx.fillText(
+			url,
+			totalTime ? MARGIN : canvas.width / 2,
+			MARGIN + guesses.length * (TILE_SIZE + TILE_SPACE) + 96
+		)
 	}
 	if (aprilFools()) {
 		const holeRadius = Math.round((TILE_SIZE * 0.33) / 2)
@@ -191,9 +215,15 @@ export function drawResults(
 			row.forEach((tile, t) => {
 				if (t !== wormHolePositions[r][0]) return
 				const holeX =
-					8 + t * 100 + (wormHolePositions[r][1] / 100) * TILE_SIZE + holeRadius
+					MARGIN +
+					t * (TILE_SIZE + TILE_SPACE) +
+					(wormHolePositions[r][1] / 100) * TILE_SIZE +
+					holeRadius
 				const holeY =
-					8 + r * 100 + (wormHolePositions[r][2] / 100) * TILE_SIZE + holeRadius
+					MARGIN +
+					r * (TILE_SIZE + TILE_SPACE) +
+					(wormHolePositions[r][2] / 100) * TILE_SIZE +
+					holeRadius
 				ctx.fillStyle = getWormHoleColor(tile.polarity, highContrast)
 				ctx.beginPath()
 				ctx.moveTo(holeX, holeY - holeRadius)

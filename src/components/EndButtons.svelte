@@ -456,7 +456,7 @@
 	}
 
 	.image-results {
-		padding: 1.5rem;
+		padding: 1rem;
 		border-radius: 1rem;
 		display: flex;
 		flex-direction: column;
@@ -469,7 +469,7 @@
 	.image-results button {
 		height: 3rem;
 		padding: 0 1rem;
-		margin-top: 1rem;
+		margin: 1rem 0;
 	}
 
 	.image-results button.close-button {
