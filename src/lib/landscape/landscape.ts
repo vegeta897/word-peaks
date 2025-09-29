@@ -1,7 +1,7 @@
 import type { Board, Tile as LetterTile } from '$lib/data-model'
 import Rand from 'rand-seed'
 import { createPond } from './pond'
-import { type XY, xyToGrid } from '../math'
+import { randomElement, type XY, xyToGrid } from '../math'
 import { createHill } from './hill'
 import { createTrees } from './tree'
 
@@ -41,10 +41,9 @@ export type Landscape = {
 	pondDelay?: number
 	totalDelay: number
 	mini?: boolean
-	fun?: {
-		status: 'gem' | 'complete'
-		resultDelay: number
-		gem: { xy: XY }
+	fun: {
+		resultDelay?: number
+		gem?: { status: 'hidden' | 'found' | 'collected'; xy: XY }
 	}
 }
 
@@ -62,6 +61,7 @@ export const initLandscape = (): Landscape => ({
 	pondRows: new Set(),
 	nextID: 1,
 	totalDelay: 0,
+	fun: {},
 })
 
 export function clearLandscape(landscape: Landscape) {
@@ -74,7 +74,7 @@ export function clearLandscape(landscape: Landscape) {
 	landscape.pondRows.clear()
 	landscape.nextID = 1
 	landscape.pondDelay = undefined
-	landscape.fun = undefined
+	landscape.fun = {}
 }
 
 export const LANDSCAPE_FEATURE_DELAY = 30
@@ -83,7 +83,8 @@ export function getLandscape(
 	landscape: Landscape,
 	board: Board,
 	answer: string,
-	currentRow: number
+	currentRow: number,
+	gameFinished: boolean
 ): Landscape {
 	// No initial delay if loading a partially/fully completed puzzle
 	landscape.totalDelay = currentRow > 1 && landscape.rowsGenerated === 0 ? 0 : 500
@@ -118,6 +119,16 @@ export function getLandscape(
 			}
 		}
 		landscape.rowsGenerated++
+	}
+	if (gameFinished) {
+		// TODO: Spawn hidden gem in random featured tile (use tileMap)
+		const seed = answer + board.map(rowToWord).join('')
+		const rng = new Rand(seed)
+		const gemTile = randomElement(
+			[...landscape.tileMap.values()].filter((t) => t.feature),
+			() => rng.next()
+		)
+		console.log('spawned hidden gem at', gemTile.x, gemTile.y)
 	}
 	sortFeatures(landscape)
 	return { ...landscape }

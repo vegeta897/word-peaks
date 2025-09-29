@@ -88,14 +88,7 @@
 </script>
 
 <script lang="ts">
-	import {
-		randomChance,
-		randomElement,
-		randomFloat,
-		randomInt,
-		sleep,
-		type XY,
-	} from '$lib/math'
+	import { randomChance, randomElement, randomFloat, randomInt, type XY } from '$lib/math'
 
 	import { lastGameDetail, funStats } from '$src/store'
 	import { onMount, tick } from 'svelte'
@@ -126,8 +119,8 @@
 		if (!sparkle) return
 		const element = sparkleElements[sparkleIndex]
 		if (!element) return
-		await sleep(sparkle.delay)
 		await element.animate(sparkleAnimation, {
+			delay: sparkle.delay,
 			duration: randomInt(350, 800),
 			fill: 'forwards',
 		}).finished

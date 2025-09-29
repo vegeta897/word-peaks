@@ -55,9 +55,9 @@
 			class="tile"
 			class:filled={tile.letter !== ''}
 			class:current
+			class:dim={!inCurrentRow || $gameFinished}
 			class:before-pre={!tile.scored && tile.polarity < 0}
 			class:after-pre={!tile.scored && tile.polarity > 0}
-			class:finished={$gameFinished}
 			class:clickable={inCurrentRow}
 			class:invalid={$invalidWordPreview && inCurrentRow}
 			out:fade|local={{ delay: tileFlipDelay + tileFlipDuration * 0.6, duration: 0 }}
@@ -232,7 +232,7 @@
 		text-shadow: 1px 1px 1px #0003;
 		user-select: none;
 	}
-	.tile.finished {
+	.tile.dim {
 		border-color: #433a46;
 	}
 	.tile.filled {

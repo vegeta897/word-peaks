@@ -11,6 +11,8 @@
 	import lang from '$lib/translations/lang.json'
 	import Screen from '$com/Screen.svelte'
 
+	// TODO: Add version/build number or last updated date
+
 	const languages = Object.entries(lang).map(([value, label]) => ({ value, label }))
 
 	const { storedLocale, keyboardLayout, highContrast, showAllHints } = store

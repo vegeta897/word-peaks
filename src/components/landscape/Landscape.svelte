@@ -1,7 +1,6 @@
 <script lang="ts">
 	import * as store from '$src/store'
 	import { get } from 'svelte/store'
-	import type { LandscapeFunMode } from '$lib/landscape/fun'
 	import {
 		initLandscape,
 		clearLandscape,
@@ -11,7 +10,7 @@
 	import Tree from './Tree.svelte'
 	import Hill from './Hill.svelte'
 	import Pond from './Pond.svelte'
-	import { getDistance, sleep, type XY } from '$lib/math'
+	import { getDistance, type XY } from '$lib/math'
 	import { dev } from '$app/env'
 	import PondRow from './PondRow.svelte'
 	import Gem from './Gem.svelte'
@@ -89,7 +88,8 @@
 			landscape,
 			get(store.boardContent),
 			get(store.answer),
-			currentRow
+			currentRow,
+			get(store.gameFinished)
 		)
 		store.landscape.set(landscape)
 		hide = false
@@ -177,6 +177,8 @@
 	// TODO: "Find today's gem!" Store counts used to find gem, and total counts
 	// Lower counts to gems ratio is favorable
 
+	// TODO: Fun size slider/buttons, to allow players to be more precise
+
 	let mouseOver = false
 	let dragging = false
 	let mouseX: number
@@ -206,23 +208,23 @@
 	}
 
 	const interact = (dragMode = false) => {
-		const fun = landscape.fun
-		if (fun?.status === 'complete') {
+		if (landscape.fun.gem?.status === 'collected') {
 			return
 		}
-		if (fun?.status === 'gem') {
+		if (landscape.fun.gem?.status === 'found') {
+			const gem = landscape.fun.gem
 			if (dragMode) return // Don't collect gem when dragging
 			const collected = gemComponent.collect(mouseX, mouseY)
 			if (!collected) return
 			let maxFillTime = 0
-			maxFillTime = pondComponent.fillIn(...fun.gem.xy)
+			maxFillTime = pondComponent.fillIn(...gem.xy)
 			featureComponents.forEach((f) => {
 				if (f?.featureType !== 'tree' && f?.featureType !== 'hill') return
-				const fillTime = f.fillIn(...fun.gem.xy)
+				const fillTime = f.fillIn(...gem.xy)
 				if (fillTime > maxFillTime) maxFillTime = fillTime
 			})
-			fun.status = 'complete'
-			fun.resultDelay = maxFillTime
+			gem.status = 'collected'
+			landscape.fun.resultDelay = maxFillTime
 			return
 		}
 		const funMode = get(landscapeFunMode)
@@ -248,10 +250,13 @@
 			if (funMode === 'sop') {
 				const sopResult = pondComponent.doFun(mouseX, mouseY, dragMode)
 				if (typeof sopResult === 'number') {
-					maxFunTime = sopResult
-					funCounts = 1
+					funCounts += sopResult // Frozen tile break count
 				}
 			} else {
+				// TODO: Maybe put fun status in the Feature object in the landscape
+				// Export a function from the feature component for hit tests
+				// But this seems convoluted unless the component can be reactive to the fun state
+				// Being reactive like that seems more complex than just doing it in the hit test function
 				featureComponents.forEach((f) => {
 					const treeFun = f?.featureType === 'tree' && funMode === 'pluck'
 					const hillFun = f?.featureType === 'hill' && funMode === 'pop'
@@ -276,7 +281,10 @@
 			const allSopped = pondComponent.funStatus.done || landscape.pondTiles.length === 0
 			if (allPlucked && allPopped && allSopped) {
 				// Spawn gem
-				landscape.fun = { status: 'gem', gem: { xy: [mouseX, mouseY] }, resultDelay: 0 }
+				// TODO: Export a "gem" boolean property from feature component
+				// Include <Gem> component within the feature, handling unique appear animations
+				// e.g. sparkles spraying out of tree hole
+				landscape.fun.gem = { status: 'found', xy: [mouseX, mouseY] }
 				landscape.features.push({
 					type: 'gem',
 					id: landscape.nextID++,
@@ -321,7 +329,7 @@
 				mini={landscape.mini}
 				forceColor={$landscapeForceColor}
 				answer={$answer}
-				spawnIceShards={(y, shardSections) => pondRows[y].addShardSections(shardSections)}
+				spawnIceShards={(y, shardSection) => pondRows[y].addShardSection(shardSection)}
 			/>
 			{#each landscape.features as feature, f (feature.id)}
 				{#if feature.type === 'tree'}
@@ -392,7 +400,7 @@
 			{/key}
 		{/if}
 	</svg>
-	{#if landscape.fun?.status === 'complete'}
+	{#if landscape.fun?.gem?.status === 'collected'}
 		<FunSummary delay={landscape.fun.resultDelay} />
 	{/if}
 </div>

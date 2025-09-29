@@ -1,43 +1,72 @@
 <script lang="ts">
-	import { sleep } from '$lib/math'
-	import type { IceShardSection } from './Pond.svelte'
+	import { tick } from 'svelte'
+	import {
+		easeInParabolic,
+		easeOutParabolic,
+		type IceShardSection,
+	} from '$lib/landscape/ice'
 
 	export let forceColor: boolean
 
 	let iceShardSections: IceShardSection[] = []
+	let iceShardElements: SVGGElement[] = []
 
-	// TODO: Maybe simplify all this by getting rid of "break sections"
-	// Make break area smaller, and just use one section for all of it
-	// Simpler code, better perf
-	// Try to fake shard animations radiating from epicenter
-	// Can't delay drawing shelf because it may not be covered by unbroken ice
-
-	export function addShardSections(shardSections: IceShardSection[]) {
-		for (const shardSection of shardSections) {
-			if (!shardSection) continue
-			iceShardSections.push(shardSection)
-			sleep(shardSection.expires).then(() => {
-				iceShardSections = [...iceShardSections.filter((s) => s !== shardSection)]
-			})
-		}
+	export async function addShardSection(shardSection: IceShardSection) {
+		iceShardSections.push(shardSection)
 		iceShardSections = iceShardSections
+		await tick()
+		const animations: Promise<Animation>[] = []
+		for (let i = 0; i < shardSection.shards.length; i++) {
+			const shard = shardSection.shards[i]
+			if (!shard) continue
+			const element = iceShardElements[shardSection.id * 100 + i]
+			if (!element) continue
+			const keyframes: Keyframe[] = [{ transform: 'none', easing: easeOutParabolic }]
+			let runningDuration = 0
+			for (let b = 0; b < shard.bounces.length; b++) {
+				const [duration, height] = shard.bounces[b]
+				keyframes.push(
+					{
+						transform: `translateY(${-height}px)`,
+						opacity: 1,
+						easing: easeInParabolic,
+						offset: (runningDuration + duration / 2) / shard.duration,
+					},
+					{
+						transform: 'translateY(3.5px)',
+						opacity: b === shard.bounces.length - 1 ? 0 : 1,
+						easing: easeOutParabolic,
+						offset: (runningDuration + duration) / shard.duration,
+					}
+				)
+				runningDuration += duration
+			}
+			animations.push(
+				element.animate(keyframes, {
+					duration: shard.duration,
+					delay: shardSection.delay,
+					fill: 'forwards',
+				}).finished
+			)
+		}
+		await Promise.all(animations)
+		iceShardSections = [...iceShardSections.filter((s) => s !== shardSection)]
 	}
 </script>
 
 {#each iceShardSections as { id, delay, shards } (id)}
 	<g class="shard-section" style:animation-delay="{delay}ms">
-		{#each shards as { origin, rotation, velocity, duration, mainPath, shelfPath }}
+		{#each shards as { origin, rotation, velocity, duration, mainPath, shelfPath }, s}
 			<g
 				class="ice-shard"
 				style:transform-origin="{origin[0] * 15}px {origin[1] * 10 - 3.5}px"
-				style:transform="translateY({velocity[2]}px) scale(0.6)"
-				style:animation-delay="{delay}ms"
-				style:animation-duration="{duration}ms"
+				bind:this={iceShardElements[id * 100 + s]}
 			>
 				<g
 					class="ice-shard-sub"
 					style:transform-origin="{origin[0] * 15}px {origin[1] * 10 - 3.5}px"
-					style:transform="translate({velocity[0]}px, {velocity[1]}px) rotate({rotation}deg)"
+					style:transform="translate({velocity[0]}px, {velocity[1]}px) rotate({rotation}deg)
+					scale(0.6)"
 					style:animation-delay="{delay}ms"
 					style:animation-duration="{duration}ms"
 				>
@@ -57,6 +86,12 @@
 						fill={forceColor ? '#B2CFFF' : 'var(--landscape-color)'}
 						d={mainPath}
 					/>
+					<!-- <circle
+						cx="{origin[0] * 15}px"
+						cy="{origin[1] * 10 - 2}px"
+						r="0.5"
+						fill="red"
+					/> -->
 				</g>
 			</g>
 		{/each}
@@ -75,8 +110,7 @@
 	}
 
 	.ice-shard {
-		animation: transform-from-init cubic-bezier(0, 0.55, 0.45, 1) backwards,
-			fade cubic-bezier(0.64, 0, 0.78, 0) forwards;
+		/* animation: fade 1s cubic-bezier(0.64, 0, 0.78, 0) forwards; */
 	}
 
 	.ice-shard-sub {

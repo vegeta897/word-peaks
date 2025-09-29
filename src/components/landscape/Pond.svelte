@@ -1,24 +1,3 @@
-<script lang="ts" context="module">
-	export type IceShardSection = {
-		id: number
-		delay: number
-		expires: number
-		shards: IceShard[]
-	}
-
-	export type IceShard = {
-		subTile: SubTile
-		origin: XY
-		rotation: number
-		velocity: [number, number, number] // XYZ
-		// delay: number
-		duration: number
-		mainPath: string
-		shelfPath: string
-	}
-	type SubTile = { pondRow: number; subTileXY: XY; tileGrids: Set<string> }
-</script>
-
 <script lang="ts">
 	import { bezierEasing } from '$lib/animation'
 	import {
@@ -36,9 +15,15 @@
 	import { createPondPath, createSubTilePath } from '$lib/landscape/pond'
 	import { highContrast } from '$src/store'
 	import { type PathDataCommand, stringifyPathData } from '$lib/paths'
-	import { cubicIn, cubicOut } from 'svelte/easing'
+	import { cubicIn } from 'svelte/easing'
 	import { fade } from 'svelte/transition'
 	import Rand from 'rand-seed'
+	import {
+		type IceShardSection,
+		type IceShard,
+		type SubTile,
+		calculateBounces,
+	} from '$lib/landscape/ice'
 
 	export const funStatus = { done: false, clean: false }
 
@@ -51,7 +36,7 @@
 	export let mini = false
 	export let forceColor: boolean
 	export let answer: string
-	export let spawnIceShards: (y: number, shardSections: IceShardSection[]) => void
+	export let spawnIceShards: (y: number, shardSection: IceShardSection) => void
 
 	$: maxDistance = getDistance(landscapeWidth, landscapeHeight)
 	$: expandDuration = maxDistance * 70
@@ -111,13 +96,6 @@
 		subTilesStatic: Map<string, SubTile>
 		subTileVertices: Map<string, XY>
 		brokenPath: string
-		animatedBreaks: {
-			mainPaths: string[]
-			shelfPaths: string[]
-			timing: number[]
-			duration: number
-			breakAnimateElement: SVGAnimateElement | null
-		}[]
 	}
 	let frozenPonds: FrozenPond[] = []
 	const emptyTilesMap: Map<string, XY> = new Map()
@@ -155,6 +133,7 @@
 		const clickedFrozenPond = frozenPonds.find((f) => f.tiles.has(clickedTile.grid))
 		if (clickedFrozenPond) {
 			if (Date.now() < lastFreeze + clickedFrozenPond.freezeDelay) return // Debounce
+			const tileCountBeforeBreak = clickedFrozenPond.tiles.size
 			const minCrawlDistance = dragMode ? 0 : 1.75
 			const maxCrawlDistance = dragMode ? 1 : 2
 			const breakableSubTiles: Map<string, SubTile> = new Map()
@@ -179,8 +158,7 @@
 					}
 				})
 			}
-			const shardSectionMap: Map<IceShard, number> = new Map()
-			const breakSections: XY[][] = []
+			const shards: IceShard[] = []
 			breakableSubTiles.forEach((subTile, subTileGrid) => {
 				const willBreak = [...subTile.tileGrids].every(
 					(tg) => !clickedFrozenPond.tiles.has(tg)
@@ -195,6 +173,7 @@
 					subTileVertices.get(xyToGrid([x + 1, y + 1]))!,
 					subTileVertices.get(xyToGrid([x, y + 1]))!,
 				]
+				// Push in corners on edges of pond
 				if (!subTilesStatic.has(xyToGrid([x, y - 1]))) {
 					points[0] = midXY(points[0], points[3])
 					points[1] = midXY(points[1], points[2])
@@ -209,12 +188,12 @@
 					points[1] = midXY(points[1], points[0])
 					points[2] = midXY(points[2], points[3])
 				}
-				const shelfPathData: PathDataCommand[] = []
+				const shardShelfPathData: PathDataCommand[] = []
 				for (let p = 1; p <= 4; p++) {
 					const prev = points[p - 1]
 					const curr = points[p % 4]
 					if (curr[0] < prev[0]) {
-						shelfPathData.push(
+						shardShelfPathData.push(
 							['M', prev],
 							['L', [prev[0], prev[1] + 0.35]],
 							['L', [curr[0], curr[1] + 0.35]],
@@ -229,85 +208,40 @@
 				const xMagnitude = xDistance / distance
 				const yMagnitude = yDistance / distance
 				const force = 1 / Math.min(4, distance + 1)
+				const zVelocity = 3 + cubicIn(randomFloat(0, 1)) * 40 * force
 				const iceShard: IceShard = {
 					subTile,
 					origin: [(points[0][0] + points[2][0]) / 2, (points[0][1] + points[2][1]) / 2],
 					rotation: randomInt(-160, 160),
 					velocity: [
-						randomInt(-5, 5) + xMagnitude * force * 15,
-						randomInt(-5, 5) + yMagnitude * force * 15,
-						-randomInt(15, 25) * (1 - Math.min(3, distance) / 4),
+						randomInt(-5, 5) + xMagnitude * force * 35,
+						randomInt(-5, 5) + yMagnitude * force * 25,
 					],
-					// delay: 0,
-					duration: randomInt(250, 450),
+					...calculateBounces(zVelocity),
 					mainPath: stringifyPathData([
 						...points.map((p, i) => [i === 0 ? 'M' : 'L', p] as [string, XY]),
 						['Z'],
 					]),
-					shelfPath: stringifyPathData(shelfPathData),
+					shelfPath: stringifyPathData(shardShelfPathData),
 				}
-				const sectionIndex = Math.round(distance * 2)
-				shardSectionMap.set(iceShard, sectionIndex)
-				breakSections[sectionIndex] = [
-					...(breakSections[sectionIndex] || []),
-					subTile.subTileXY,
-				]
+				shards.push(iceShard)
 			})
-			const animatedBreak: FrozenPond['animatedBreaks'][number] = {
-				mainPaths: [],
-				shelfPaths: [],
-				timing: [],
-				duration: 0, // Set after creating break frames
-				breakAnimateElement: null,
-			}
-			// const cumulativeBreakArea: XY[] = []
-			for (let i = 1; i < breakSections.length; i++) {
-				if (!breakSections[i]) continue
-				// cumulativeBreakArea.push(...breakSections[i])
-				const unbrokenArea = breakSections[i].concat(...breakSections.slice(i + 1))
-				const { mainPath, shelfPath } = createSubTilePath(
-					unbrokenArea,
-					clickedFrozenPond.subTileVertices
-				)
-				animatedBreak.mainPaths.push(stringifyPathData(mainPath))
-				animatedBreak.shelfPaths.push(stringifyPathData(shelfPath))
-				animatedBreak.timing.push(
-					cubicIn(animatedBreak.timing.length / (breakSections.length - 1))
-				)
-			}
-			animatedBreak.duration =
-				cubicOut(Math.min(8, animatedBreak.timing.length) / 8) * 250
-			animatedBreak.mainPaths.push('Z')
-			animatedBreak.shelfPaths.push('Z')
-			animatedBreak.timing.push(1)
-			if (animatedBreak.timing.length !== animatedBreak.mainPaths.length) {
-				console.log(breakSections, animatedBreak)
-			}
-			const shardSectionsByRow: Map<number, IceShardSection[]> = new Map()
-			shardSectionMap.forEach((section, shard) => {
-				const delay = animatedBreak.duration * animatedBreak.timing[section]
-				let shardRow = shardSectionsByRow.get(shard.subTile.pondRow)
-				if (!shardRow) {
-					shardRow = []
-					shardSectionsByRow.set(shard.subTile.pondRow, shardRow)
-				}
-				let shardSection = shardRow[section]
+			const shardSectionsByRow: Map<number, IceShardSection> = new Map()
+			shards.forEach((shard) => {
+				let shardSection = shardSectionsByRow.get(shard.subTile.pondRow)
 				if (!shardSection) {
 					shardSection = {
 						id: iceShardSectionId++,
-						delay,
-						expires: delay + 450,
+						delay: 0,
 						shards: [],
 					}
-					shardRow[section] = shardSection
+					shardSectionsByRow.set(shard.subTile.pondRow, shardSection)
 				}
 				shardSection.shards.push(shard)
 			})
-			shardSectionsByRow.forEach((sections, y) => {
-				spawnIceShards(y, sections)
+			shardSectionsByRow.forEach((section, y) => {
+				spawnIceShards(y, section)
 			})
-			clickedFrozenPond.animatedBreaks.push(animatedBreak)
-			tick().then(() => animatedBreak.breakAnimateElement?.beginElement())
 			const { mainPath, shelfPath } = createSubTilePath(
 				[...clickedFrozenPond.subTiles.values()].map((st) => st.subTileXY),
 				clickedFrozenPond.subTileVertices
@@ -319,7 +253,7 @@
 			if (emptyTilesMap.size === tilesMap.size) {
 				funStatus.done = true
 			}
-			return animatedBreak.duration
+			return tileCountBeforeBreak - clickedFrozenPond.tiles.size
 		} else {
 			// Freeze a pond
 			lastFreeze = Date.now()
@@ -336,7 +270,6 @@
 				subTiles: new Map(),
 				subTileVertices: new Map(),
 				brokenPath: '',
-				animatedBreaks: [],
 			}
 			const tileList: XY[] = []
 			const rng = new Rand(answer + clickedTile.grid)
@@ -641,7 +574,7 @@
 				/>
 			</g>
 		{/key}
-		{#each frozenPonds as { radius, origin, freezeDelay, gradientElement, path, shelfPath, subTiles, subTileVertices, brokenPath, tiles, animatedBreaks }, f (f)}
+		{#each frozenPonds as { radius, origin, freezeDelay, gradientElement, path, shelfPath, subTiles, subTileVertices, brokenPath, tiles }, f (f)}
 			<radialGradient
 				id="pond_freeze_gradient_{f}"
 				gradientUnits="userSpaceOnUse"
@@ -690,42 +623,6 @@
 						? 200
 						: 1000}ms ease"
 				/>
-				{#each animatedBreaks as { mainPaths, shelfPaths, timing, duration, breakAnimateElement }, b (b)}
-					<path
-						stroke-width="0.25"
-						stroke-linejoin="round"
-						stroke={forceColor ? '#56A9FF' : 'var(--landscape-color)'}
-						fill={forceColor ? '#56A9FF' : 'var(--landscape-color)'}
-					>
-						<animate
-							attributeName="d"
-							id="pond_break_animate_{f}_{b}"
-							bind:this={breakAnimateElement}
-							values={shelfPaths.join(';')}
-							keyTimes={timing.join(';')}
-							calcMode="discrete"
-							dur="{duration}ms"
-							fill="freeze"
-							begin="indefinite"
-						/>
-					</path>
-					<path
-						stroke-width="0.25"
-						stroke-linejoin="round"
-						stroke={forceColor ? '#B2CFFF' : 'var(--landscape-color)'}
-						fill={forceColor ? '#B2CFFF' : 'var(--landscape-color)'}
-					>
-						<animate
-							attributeName="d"
-							values={mainPaths.join(';')}
-							keyTimes={timing.join(';')}
-							calcMode="discrete"
-							dur="{duration}ms"
-							fill="freeze"
-							begin="pond_break_animate_{f}_{b}.begin"
-						/>
-					</path>
-				{/each}
 			</g>
 			<clipPath id="broken_path_{f}"> <path d={brokenPath} /> </clipPath>
 			<path

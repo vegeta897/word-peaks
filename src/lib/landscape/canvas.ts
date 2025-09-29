@@ -90,7 +90,7 @@ export function drawLandscapeToCanvas(
 				ctx.fillStyle = treeColor
 				ctx.fill()
 			}
-		} else {
+		} else if (type === 'hill') {
 			const centerX = (0.5 + x + (xJitter || 0) + (mini ? 1 : 1.5)) * TILE_WIDTH
 			const centerY = (1.5 + y + (yJitter || 0) + 1) * TILE_HEIGHT
 			const radius = ((mini ? 0.8 : 1.35) + 0.2 * (size || 1)) * TILE_HEIGHT

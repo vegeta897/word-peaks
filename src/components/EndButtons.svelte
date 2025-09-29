@@ -167,7 +167,8 @@
 		<div class="actions" class:full-width={showScoreShareMenu}>
 			{#if showScoreShareMenu}
 				<!-- TODO: Make sharing more intuitive -->
-				<!-- Use a modal, or the board area? -->
+				<!-- Plan: Share button opens modal containing share text/image and options, 
+				with a copy button which also closes the modal. Tab or switch between text/image -->
 				<div class="share-buttons">
 					<button on:click={shareText}>{$t('main.results.text')}</button>
 					<button on:click={onBoardImageShare}>{$t('main.results.image')}</button>
