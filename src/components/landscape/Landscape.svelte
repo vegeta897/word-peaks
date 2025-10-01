@@ -168,6 +168,7 @@
 
 	let mouseOver = false
 	let dragging = false
+	let dragId = 0
 	let mouseX: number
 	let mouseY: number
 
@@ -185,6 +186,7 @@
 		// TODO: Handle multi touch
 		if (event.pointerType === 'mouse' && event.button !== 0) return
 		dragging = true
+		dragId++ // Distinguish dragging
 		event.preventDefault()
 		updateMousePosition(event.offsetX, event.offsetY)
 		interact()
@@ -248,7 +250,7 @@
 				const treeFun = f?.featureType === 'tree' && funMode === 'pluck'
 				const hillFun = f?.featureType === 'hill' && funMode === 'pop'
 				if (!treeFun && !hillFun) return
-				const funResult = f.doFun(mouseX, mouseY)
+				const funResult = f.doFun(mouseX, mouseY, dragId)
 				if (typeof funResult === 'number') {
 					funCounts++
 					if (funResult > maxFunTime) maxFunTime = funResult

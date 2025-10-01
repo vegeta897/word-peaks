@@ -7,6 +7,7 @@
 	import { stringifyPathData } from '$lib/paths'
 	import { fade } from 'svelte/transition'
 	import PondFun, { type PondFunResult } from './PondFun.svelte'
+	import { get } from 'svelte/store'
 
 	export const funStatus: { status: 'waiting' | 'started' | 'done' } = {
 		status: 'waiting',
@@ -28,7 +29,7 @@
 	let floods: Flood[] = []
 	let floodID = 0
 	export async function flashColor(x: number, y: number, duration: number) {
-		if (landscapeForceColor) return
+		if (get(landscapeForceColor)) return
 		const fullDuration = duration + 800
 		const expandKeyTime = expandDuration / fullDuration
 		const fadeKeyTime = Math.max(expandKeyTime, 1 - 800 / fullDuration)
@@ -152,7 +153,7 @@
 	</g>
 	<g opacity={animate ? 0 : 1}>
 		<!-- Static ponds -->
-		{#if !landscapeForceColor}
+		{#if !$landscapeForceColor}
 			<g clip-path="url(#pond_path)" out:fade|local={{ duration: 200 }}>
 				<path fill="var(--landscape-color)" d={pondPath} />
 				<path
@@ -166,8 +167,8 @@
 			</g>
 		{/if}
 		<path
-			fill={landscapeForceColor ? 'var(--after-color)' : '#fff0'}
-			style:transition="fill {landscapeForceColor ? 200 : 1000}ms ease"
+			fill={$landscapeForceColor ? 'var(--after-color)' : '#fff0'}
+			style:transition="fill {$landscapeForceColor ? 200 : 1000}ms ease"
 			d={pondPath}
 		/>
 		{#each floods as flood (flood)}

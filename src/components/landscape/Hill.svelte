@@ -141,7 +141,7 @@
 	let popping = false
 	let popped = false
 
-	export function doFun(x: number, y: number): void | number {
+	export function doFun(x: number, y: number, _dragId: number): void | number {
 		if (popping) return
 		const xDistance = x - centerX
 		const yDistance = y - centerY

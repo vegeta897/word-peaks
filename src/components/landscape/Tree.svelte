@@ -35,7 +35,7 @@
 	let animationFinished = true
 	let animateOpacityElement: SVGAnimateElement
 	let animateSkewElement: SVGAnimateTransformElement
-	let animatePluckScaleElement: SVGAnimateElement
+	let animatePluckElement: SVGAnimateElement
 
 	let inColor = false
 	$: inColor = forceColor
@@ -61,9 +61,11 @@
 		lastTimeout = thisTimeout
 	}
 
-	let plucking = false
+	let willBurst = false
+	let bursting = false
+	let bursted = false
+	let burstDragId = 0
 	let plucked = false
-	let animatingPluck = true
 	let pluckRotation = 0
 	let fallingLeaves: [
 		...XY,
@@ -73,8 +75,8 @@
 	][] = []
 	let burstLeaves: XY[] = []
 
-	export function doFun(x: number, y: number): void | number {
-		if (plucking) return
+	export function doFun(x: number, y: number, dragId: number): void | number {
+		if (willBurst || plucked) return
 		const xDistance = x - originX
 		const yDistance = y - centerY
 		if (
@@ -82,45 +84,45 @@
 			yDistance < radius * 2.5 &&
 			yDistance > -radius * 1.5
 		) {
-			// Pluck it!
-			funStatus.done = true
-			plucking = true
 			const distance = getDistance(xDistance, yDistance)
-			const pluckDelay = distance * 20
-			sleep(pluckDelay).then(() => {
+			if (!bursting && !bursted) {
+				// Burst it!
+				willBurst = true
+				burstDragId = dragId
+				const burstDelay = Math.max(0, distance - radius) * 20
+				sleep(burstDelay).then(() => {
+					willBurst = false
+					bursting = true
+					const fallingLeafCount = Math.ceil(10 + size * 6)
+					const burstLeafCount = 15
+					for (let i = 0; i < fallingLeafCount; i++) {
+						fallingLeaves.push([
+							-xDistance + randomFloat(-13, 13),
+							circleY + randomFloat(-9, 9),
+							randomInt(1600, 3000),
+							randomInt(500, 1300),
+							randomInt(400, 1000),
+						])
+					}
+					for (let i = 0; i < burstLeafCount; i++) {
+						burstLeaves.push([-xDistance + randomFloat(-13, 13), randomFloat(-9, 9)])
+					}
+					sleep(3000).then(() => {
+						bursting = false
+						bursted = true
+					})
+				})
+				// If not part of the same interaction that caused the burst
+			} else if (dragId !== burstDragId) {
+				// Pluck it!
+				funStatus.done = true
+				// TODO: Don't make it random
 				const pluckXDir = randomChance() ? 1 : -1
-				pluckRotation = pluckXDir * randomInt(5, 40)
-				animatePluckScaleElement?.beginElement()
+				pluckRotation = pluckXDir * randomInt(30, 90)
 				plucked = true
-				const fallingLeafCount = Math.ceil(10 + size * 6)
-				const burstLeafCount = 15
-				for (let i = 0; i < fallingLeafCount; i++) {
-					fallingLeaves.push([
-						pluckRotation / 6 + randomFloat(-13, 13),
-						circleY - 15 + randomFloat(-9, 9),
-						randomInt(1600, 3000),
-						randomInt(500, 1300),
-						randomInt(400, 1000),
-					])
-				}
-				for (let i = 0; i < burstLeafCount; i++) {
-					burstLeaves.push([
-						pluckRotation / 6 + randomFloat(-13, 13),
-						circleY - 15 + randomFloat(-9, 9),
-					])
-				}
-				sleep(3000).then(() => (animatingPluck = false))
-			})
-			return pluckDelay
-		} else {
-			// Almost pluck
-			const distance = getDistance(xDistance, yDistance)
-			const force = 20 - distance
-			if (force < 0) return
-			const xMagnitude = xDistance / distance
-			skewX = xMagnitude * force * -0.8
-			nudgeY = force * 0.1
-			animateSkewElement?.beginElement()
+				animatePluckElement?.beginElement()
+				return 500
+			}
 		}
 	}
 
@@ -175,23 +177,21 @@
 
 <!-- Position relative to fix stacking context bug in FF -->
 <g class="tree" style:position="relative" transform="translate({originX} {originY})">
-	{#if animatingPluck}
+	{#if !bursting && !bursted}
 		<g opacity={willAnimate ? 0 : 1}>
 			<g>
 				<line
-					stroke={plucked ? '#0000' : 'var(--tertiary-color)'}
+					stroke="var(--tertiary-color)"
 					stroke-width={STROKE_WIDTH * 2.5}
 					stroke-linecap="round"
 					y2={circleY + circleTranslateY}
-					style:transition="stroke 150ms ease-in"
 				/>
 				<circle
 					cy={circleY}
 					r={radius + STROKE_HALF * 1.5}
-					fill={plucked ? '#0000' : 'var(--tertiary-color)'}
+					fill="var(--tertiary-color)"
 					style:transform="translateY({circleTranslateY}px)"
-					style:transition="transform {hover ? 50 : 200}ms ease-out, r 200ms ease-out,
-					fill 150ms ease-in"
+					style:transition="transform {hover ? 50 : 200}ms ease-out, r 200ms ease-out"
 				>
 					<animate
 						attributeName="cy"
@@ -226,7 +226,6 @@
 						style:transition="fill {inColor ? 200 : 1000}ms {y * 20}ms ease, stroke {inColor
 							? 200
 							: 1000}ms {y * 20}ms ease, r 200ms ease-out"
-						class:plucked-treetop={plucked}
 					>
 						<animate
 							attributeName="cy"
@@ -239,24 +238,6 @@
 						/>
 					</circle>
 				</g>
-				<animate
-					attributeName="opacity"
-					begin="tree_pluck_scale_animate_{id}.end"
-					values="1;0"
-					calcMode="spline"
-					keySplines={bezierEasing.cubicIn}
-					dur="200ms"
-					fill="freeze"
-				/>
-				<animateTransform
-					attributeName="transform"
-					type="rotate"
-					dur="350ms"
-					begin="tree_pluck_scale_animate_{id}.end"
-					calcMode="spline"
-					values="0;{pluckRotation}"
-					keySplines={bezierEasing.cubicOut}
-				/>
 			</g>
 			<animate
 				id="animate_tree_{id}"
@@ -278,26 +259,6 @@
 				keyTimes="0;0.3;1"
 				calcMode="spline"
 				dur="600ms"
-				keySplines="{bezierEasing.cubicOut};{bezierEasing.cubicIn}"
-			/>
-			<animateTransform
-				id="tree_pluck_scale_animate_{id}"
-				bind:this={animatePluckScaleElement}
-				attributeName="transform"
-				type="scale"
-				begin="indefinite"
-				dur="150ms"
-				calcMode="spline"
-				values="1 1;1 1.5"
-				keySplines={bezierEasing.cubicOut}
-			/>
-			<animateTransform
-				attributeName="transform"
-				type="translate"
-				dur="350ms"
-				begin="tree_pluck_scale_animate_{id}.end"
-				calcMode="spline"
-				values="0 -5;0 -10;0 0"
 				keySplines="{bezierEasing.cubicOut};{bezierEasing.cubicIn}"
 			/>
 		</g>
@@ -350,30 +311,84 @@
 				/>
 			</line>
 		{/if}
-	{/if}
-	{#if plucked}
+	{:else}
+		<!-- Fun -->
+		<g>
+			<path
+				stroke="var(--{inColor ? 'correct-color' : 'landscape-color'})"
+				stroke-width={STROKE_WIDTH}
+				stroke-linecap="round"
+				d="M0,0 V{circleY}"
+				style:transition="fill {inColor ? 200 : 1000}ms {y * 20}ms ease, stroke {inColor
+					? 200
+					: 1000}ms {y * 20}ms ease"
+				style:transform-origin="0 {circleY}px"
+			>
+				<animate
+					id="tree_pluck_animate_{id}"
+					bind:this={animatePluckElement}
+					attributeName="d"
+					begin="indefinite"
+					dur="200ms"
+					calcMode="spline"
+					keyTimes="0;0.8;1"
+					values="M0,0 L0,{circleY};M0,0 L{pluckRotation * -0.03},{circleY *
+						1.5};M0,{circleY * 0.5} L0,{circleY * 1.5}"
+					keySplines="{bezierEasing.sineOut};{bezierEasing.cubicOut}"
+					fill="freeze"
+				/>
+				<animateTransform
+					attributeName="transform"
+					type="rotate"
+					begin="tree_pluck_animate_{id}.begin+160ms"
+					values="0;{pluckRotation * 2}"
+					keyTimes="0;1"
+					calcMode="spline"
+					dur="600ms"
+					keySplines={bezierEasing.sineOut}
+				/>
+			</path>
+			<animateTransform
+				attributeName="transform"
+				type="translate"
+				begin="tree_pluck_animate_{id}.begin+160ms"
+				values="0 0;0 -5;0 0"
+				calcMode="spline"
+				dur="300ms"
+				keySplines="{bezierEasing.sineOut};{bezierEasing.sineIn}"
+			/>
+			<animate
+				attributeName="opacity"
+				begin="tree_pluck_animate_{id}.end"
+				values="1;0"
+				calcMode="spline"
+				keySplines={bezierEasing.cubicIn}
+				dur="200ms"
+				fill="freeze"
+			/>
+		</g>
 		<g
 			opacity={filled ? 0 : 1}
 			style:transition="opacity 0.5s 1.5s cubic-bezier(0.32, 0, 0.67, 0)"
 		>
 			<circle
 				r={STROKE_HALF}
-				fill={animatingPluck
-					? `var(--${inColor ? 'correct-color' : 'landscape-color'})`
-					: '#0006'}
+				fill={plucked
+					? '#0006'
+					: `var(--${inColor ? 'correct-color' : 'landscape-color'})`}
 				style:transition="fill 1.5s 1s"
 			/>
-			{#if animatingPluck}
-				<g out:fade|local={{ duration: 500 }}>
+			{#if willBurst || bursting}
+				<g out:fade|local={{ duration: 500 }} style:transform="translateY({circleY}px)">
 					{#each fallingLeaves as [leafX, leafY, fallDuration, flickerDuration, flickerDelay], l}
 						<g
 							style:transform="translate({leafX}px,{leafY}px)"
 							class="burst"
-							style:animation-delay="{100 + l * 10}ms"
+							style:animation-delay="{0 + l * 10}ms"
 						>
 							<g
 								class="falling"
-								style:transform="translate({(Math.round(leafX * 5) % 10) * 0.06}px,25px)"
+								style:transform="translate({(Math.round(leafX * 5) % 10) * 0.06}px,20px)"
 								style:animation-duration="{fallDuration}ms"
 							>
 								<circle
@@ -394,7 +409,7 @@
 							<g
 								style:transform="translate({leafX}px,{leafY}px)"
 								class="burst"
-								style:animation-delay="{100 + l * 10}ms"
+								style:animation-delay="{l * 10}ms"
 							>
 								<circle
 									r={STROKE_HALF}
@@ -435,12 +450,12 @@
 	}
 
 	.burst {
-		animation: burst 200ms 200ms cubic-bezier(0.33, 1, 0.68, 1) both;
+		animation: burst 300ms cubic-bezier(0.33, 1, 0.68, 1) both;
 	}
 
 	@keyframes burst {
 		0% {
-			transform: translate(0, -20px) scale(6);
+			transform: translate(0, 0) scale(6);
 			opacity: 0;
 		}
 	}
@@ -465,17 +480,6 @@
 		}
 		100% {
 			opacity: 1;
-		}
-	}
-
-	.plucked-treetop {
-		animation: expand 300ms 100ms forwards,
-			fade 300ms 10ms cubic-bezier(0.32, 0, 0.67, 0) forwards;
-	}
-
-	@keyframes expand {
-		100% {
-			transform: scale(1.7);
 		}
 	}
 
