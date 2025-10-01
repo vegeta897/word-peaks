@@ -25,7 +25,7 @@ export const easeOutParabolic = 'cubic-bezier(0.33, 0.67, 0.67, 1)'
 const gravity = 80
 const elasticityMin = 0.1
 const elasticityMax = 0.4
-const restVelocity = 2
+const restVelocity = 3
 
 export const calculateBounces = (velocity: number) => {
 	let duration = 0

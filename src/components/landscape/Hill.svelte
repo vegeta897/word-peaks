@@ -338,7 +338,7 @@
 						ry={radius / 3}
 						fill="var(--accent-color)"
 						style:transform="translateY({radius / 1.4}px)"
-						style:animation-delay="{500 + fillDistance * 20}ms"
+						style:animation-delay="{300 + fillDistance * 15}ms"
 					/>
 				</g>
 			{/if}

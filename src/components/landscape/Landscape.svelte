@@ -122,21 +122,8 @@
 	// Hide landscape until it updates to avoid flashing on FF
 	store.landscapeWideView.subscribe(() => (hide = true))
 
-	type FlashColorHandler = (x: number, y: number, duration: number) => void
-	const featureComponents: {
-		flashColor: FlashColorHandler
-		doFun: (x: number, y: number) => void | number
-		fillIn: (x: number, y: number) => number
-		featureType: 'tree' | 'hill'
-		// TODO: Maybe add a "component" prop to this, track fun status outside of component
-		funStatus: { done: boolean; clean: boolean }
-	}[] = []
-	let pondComponent: {
-		flashColor: FlashColorHandler
-		doFun: (x: number, y: number, dragMode: boolean) => void | number
-		fillIn: (x: number, y: number) => number
-		funStatus: { done: boolean; clean: boolean }
-	}
+	const featureComponents: (Tree | Hill)[] = []
+	let pondComponent: Pond
 	let gemComponent: {
 		collect: (x: number, y: number) => boolean
 	}
@@ -240,60 +227,60 @@
 			pondComponent.flashColor(mouseX, mouseY, duration)
 			lastFlashAt = now
 			lastFlashXY = [mouseX, mouseY]
-			// TODO: Use different flash effect in fun modes
+			return
+		}
+		// TODO: Use different flash effect in fun modes (???)
+		// TODO: Increase hit zone for mobile taps?
+		// TODO: Use long presses to gradually increase radius?
+		let maxFunTime = 0
+		let funCounts = 0
+		if (funMode === 'sop') {
+			const sopResult = pondComponent.doFun(mouseX, mouseY, dragMode)
+			if (sopResult?.brokenTiles) {
+				funCounts += sopResult.brokenTiles
+			}
 		} else {
-			// TODO: Increase hit zone for mobile taps?
-			// TODO: Use long presses to gradually increase radius?
-
-			let maxFunTime = 0
-			let funCounts = 0
-			if (funMode === 'sop') {
-				const sopResult = pondComponent.doFun(mouseX, mouseY, dragMode)
-				if (typeof sopResult === 'number') {
-					funCounts += sopResult // Frozen tile break count
+			// TODO: Maybe put fun status in the Feature object in the landscape
+			// Export a function from the feature component for hit tests
+			// But this seems convoluted unless the component can be reactive to the fun state
+			// Being reactive like that seems more complex than just doing it in the hit test function
+			featureComponents.forEach((f) => {
+				const treeFun = f?.featureType === 'tree' && funMode === 'pluck'
+				const hillFun = f?.featureType === 'hill' && funMode === 'pop'
+				if (!treeFun && !hillFun) return
+				const funResult = f.doFun(mouseX, mouseY)
+				if (typeof funResult === 'number') {
+					funCounts++
+					if (funResult > maxFunTime) maxFunTime = funResult
 				}
-			} else {
-				// TODO: Maybe put fun status in the Feature object in the landscape
-				// Export a function from the feature component for hit tests
-				// But this seems convoluted unless the component can be reactive to the fun state
-				// Being reactive like that seems more complex than just doing it in the hit test function
-				featureComponents.forEach((f) => {
-					const treeFun = f?.featureType === 'tree' && funMode === 'pluck'
-					const hillFun = f?.featureType === 'hill' && funMode === 'pop'
-					if (!treeFun && !hillFun) return
-					const funResult = f.doFun(mouseX, mouseY)
-					if (typeof funResult === 'number') {
-						funCounts++
-						if (funResult > maxFunTime) maxFunTime = funResult
-					}
-				})
-			}
-			funStats.update((fs) => {
-				fs.counts[funMode] += funCounts
-				return fs
 			})
-			const allPlucked = featureComponents
-				.filter((f) => f && f.featureType === 'tree')
-				.every((f) => f.funStatus.done)
-			const allPopped = featureComponents
-				.filter((f) => f && f.featureType === 'hill')
-				.every((f) => f.funStatus.done)
-			const allSopped = pondComponent.funStatus.done || landscape.pondTiles.length === 0
-			if (allPlucked && allPopped && allSopped) {
-				// Spawn gem
-				// TODO: Export a "gem" boolean property from feature component
-				// Include <Gem> component within the feature, handling unique appear animations
-				// e.g. sparkles spraying out of tree hole
-				landscape.fun.gem = { status: 'found', xy: [mouseX, mouseY] }
-				landscape.features.push({
-					type: 'gem',
-					id: landscape.nextID++,
-					x: mouseX, // TODO: Spawn at actual last-funned-feature coordinates
-					y: mouseY,
-					delay: maxFunTime,
-				})
-				sortFeatures(landscape)
-			}
+		}
+		funStats.update((fs) => {
+			fs.counts[funMode] += funCounts
+			return fs
+		})
+		const allPlucked = featureComponents
+			.filter((f) => f && f.featureType === 'tree')
+			.every((f) => f.funStatus.done)
+		const allPopped = featureComponents
+			.filter((f) => f && f.featureType === 'hill')
+			.every((f) => f.funStatus.done)
+		const allSopped =
+			pondComponent.funStatus.status === 'done' || landscape.pondTiles.length === 0
+		if (allPlucked && allPopped && allSopped) {
+			// Spawn gem
+			// TODO: Export a "gem" boolean property from feature component
+			// Include <Gem> component within the feature, handling unique appear animations
+			// e.g. sparkles spraying out of tree hole
+			landscape.fun.gem = { status: 'found', xy: [mouseX, mouseY] }
+			landscape.features.push({
+				type: 'gem',
+				id: landscape.nextID++,
+				x: mouseX, // TODO: Spawn at actual last-funned-feature coordinates
+				y: mouseY,
+				delay: maxFunTime,
+			})
+			sortFeatures(landscape)
 		}
 	}
 
@@ -327,8 +314,6 @@
 				landscapeWidth={landscape.width}
 				landscapeHeight={landscape.height}
 				mini={landscape.mini}
-				forceColor={$landscapeForceColor}
-				answer={$answer}
 				spawnIceShards={(y, shardSection) => pondRows[y].addShardSection(shardSection)}
 			/>
 			{#each landscape.features as feature, f (feature.id)}
@@ -368,7 +353,7 @@
 						bind:this={featureComponents[f]}
 					/>
 				{:else if feature.type === 'pond-row'}
-					<PondRow bind:this={pondRows[feature.y]} forceColor={$landscapeForceColor} />
+					<PondRow bind:this={pondRows[feature.y]} />
 					<!-- <rect
 						fill="#f001"
 						y={feature.y * 10 + 1}
