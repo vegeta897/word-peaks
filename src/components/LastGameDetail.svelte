@@ -5,6 +5,7 @@
 	import * as store from '$src/store'
 	import { fade } from 'svelte/transition'
 	import { cubicOut } from 'svelte/easing'
+	import { randomElementWeighted } from '$lib/math'
 
 	const { preciseTimes } = store
 
@@ -17,6 +18,12 @@
 	$: store.guessTimeStrings.set(guessTimeStrings)
 	$: gameWon =
 		lastGameDetail.guesses[lastGameDetail.guesses.length - 1] === lastGameDetail.answer
+
+	const winEmojis = ['🎉', '🥳', '🎊', '🔥', '🎆', '🤩', '✨', '🌟', '🏆', '🏅']
+	const winEmojisWeights = [20, 2, 1, 2, 2, 1, 1, 1, 2, 1]
+	$: gameEndMessage = gameWon
+		? `${$t('main.results.win')} ${randomElementWeighted(winEmojis, winEmojisWeights)}`
+		: `${$t('main.results.lose')} ☹️`
 </script>
 
 <section transition:fade|local={{ duration: 250, easing: cubicOut }}>
@@ -46,9 +53,7 @@
 			</tr>
 		{/each}
 	</table>
-	<h2>
-		{gameWon ? `${$t('main.results.win')} 🎉` : `${$t('main.results.lose')} ☹️`}
-	</h2>
+	<h2>{gameEndMessage}</h2>
 	<div class="info">
 		<div class="info-item">
 			<strong style="letter-spacing: 0.2rem">
