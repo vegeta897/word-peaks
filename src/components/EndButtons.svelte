@@ -34,6 +34,7 @@
 		hideLandscape,
 		landscapeFunMode,
 		funStats,
+		reduceMotion,
 	} = store
 
 	export let gameMode: GameMode
@@ -248,6 +249,7 @@
 			<button
 				title={$t('main.other.wide_view')}
 				class:cta-bg={$landscapeWideView}
+				class:animated-glow={!$landscapeWideView}
 				on:click={() => {
 					landscapeWideView.set(!$landscapeWideView)
 					landscapeFunMode.set(null)
@@ -269,7 +271,7 @@
 			</button>
 			<button
 				title={$t('main.other.redraw')}
-				disabled={landscapeRedrawCooldown}
+				disabled={landscapeRedrawCooldown || $reduceMotion}
 				on:click={() => {
 					landscapeRedrawCooldown = true
 					setTimeout(() => (landscapeRedrawCooldown = false), 2000)
@@ -533,6 +535,29 @@
 		top: -5px;
 	}
 
+	.animated-glow {
+		position: relative;
+	}
+
+	.animated-glow::after {
+		/* Pseudo-element used because it's way more performant than animating box-shadow */
+		content: '';
+		z-index: -1;
+		width: 100%;
+		height: 100%;
+		border-radius: 6px;
+		position: absolute;
+		box-shadow: 0 0 6px 2px var(--accent-color);
+		animation: pulse 3s ease-in infinite;
+	}
+
+	@keyframes pulse {
+		50% {
+			opacity: 0.3;
+			animation-timing-function: ease-out;
+		}
+	}
+
 	@media (max-width: 430px) {
 		button {
 			font-size: 1.25em;
@@ -567,6 +592,12 @@
 		}
 		.landscape-controls {
 			display: none;
+		}
+	}
+
+	@media (prefers-reduced-motion) {
+		.animated-glow::after {
+			animation: none;
 		}
 	}
 </style>

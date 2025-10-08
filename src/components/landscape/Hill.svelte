@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { onMount, tick } from 'svelte'
 	import { bezierEasing } from '$lib/animation'
+	import { reduceMotion } from '$src/store'
 	import { getDistance, randomChance, randomFloat, randomInt, sleep } from '$lib/math'
 	import Gem from './Gem.svelte'
-	import { fade } from 'svelte/transition'
 
 	export const featureType = 'hill'
 	export const funStatus = { done: false, clean: false }
@@ -63,6 +63,7 @@
 	$: vertLength = mini ? 7 : 10
 	$: centerMass = centerY - vertLength
 	$: hover =
+		!$reduceMotion &&
 		!popMode &&
 		mouseOver &&
 		Math.abs(centerX - mouseX) < radius + STROKE_HALF &&
@@ -141,7 +142,7 @@
 	let popping = false
 	let popped = false
 
-	export function doFun(x: number, y: number, _dragId: number): void | number {
+	export function doFun(x: number, y: number): void | number {
 		if (popping) return
 		const xDistance = x - centerX
 		const yDistance = y - centerY

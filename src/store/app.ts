@@ -1,4 +1,4 @@
-import { derived, writable } from 'svelte/store'
+import { derived, get, writable } from 'svelte/store'
 import type { Writable, Readable } from 'svelte/store'
 import { writable as storageWritable } from 'svelte-local-storage-store'
 import type { Stats, GameDetail, TimeStats } from '$lib/stats'
@@ -7,6 +7,7 @@ import { gameMode } from '$src/store/game-state'
 import type { KeyboardLayout } from '$lib/constants'
 import { type Landscape } from '$lib/landscape/landscape'
 import { type FunStats, type LandscapeFunMode, newFunStats } from '$lib/landscape/fun'
+import { browser } from '$app/env'
 
 export const storeVersion: Writable<number> = storageWritable('wp-version', 0)
 export const storedLocale: Writable<string> = storageWritable('wp-locale', '')
@@ -25,7 +26,19 @@ export const keyboardLayout: Writable<KeyboardLayout> = storageWritable(
 	'alphabetic'
 )
 export const dyslexicFont: Writable<boolean> = storageWritable('wp-dyslexicFont', false)
-export const allowDancing: Writable<boolean> = storageWritable('wp-allowDancing', true)
+export const reduceMotion: Writable<boolean> = writable(
+	browser ? matchMedia('(prefers-reduced-motion').matches : false
+)
+if (browser) {
+	const reduceMotionQuery = window.matchMedia('(prefers-reduced-motion)')
+	reduceMotionQuery.addEventListener('change', () =>
+		reduceMotion.set(reduceMotionQuery.matches)
+	)
+}
+export const allowDancing: Writable<boolean> = storageWritable(
+	'wp-allowDancing',
+	get(reduceMotion)
+)
 export const hideLandscape: Writable<boolean> = storageWritable('wp-hideLandscape', false)
 export const shareURL: Writable<boolean> = storageWritable('wp-shareURL', true)
 export const shareTimes: Writable<boolean> = storageWritable('wp-shareTimes', false)
@@ -65,5 +78,6 @@ export const landscapeRedraw: Writable<'instant' | 'animate' | null> = writable(
 export const landscapeSVG: Writable<SVGElement | null> = writable(null)
 export const landscapeFunMode: Writable<LandscapeFunMode | null> = writable(null)
 export const funStats: Writable<FunStats> = storageWritable('wp-funStats', newFunStats())
+export const leafCount: Writable<number> = writable(0)
 
 export const newUser: Writable<boolean> = writable(false)

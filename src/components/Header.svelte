@@ -7,6 +7,7 @@
 		lastPlayedDaily,
 		boardContent,
 		gameFinished,
+		reduceMotion,
 	} from '$src/store'
 	import { OptionsIconPathData } from '$lib/constants'
 	import { browser } from '$app/env'
@@ -61,7 +62,7 @@
 				</button>
 				{#if $gameMode !== 'daily'}
 					<button
-						transition:fly={{ x: -10, duration: 150 }}
+						transition:fly={{ x: -10, duration: $reduceMotion ? 0 : 150 }}
 						on:click={newRandomWord}
 						class="new-random"
 						title={$t('main.other.new_word')}
@@ -257,6 +258,20 @@
 		}
 		h1 {
 			font-size: 1.375em;
+		}
+	}
+
+	@media (prefers-reduced-motion) {
+		* {
+			transition: none !important;
+		}
+		.menu-buttons button.bulge:hover span {
+			transform: none;
+			font-size: 100%;
+		}
+
+		.menu-buttons button:hover svg rect {
+			transform: none !important;
 		}
 	}
 </style>

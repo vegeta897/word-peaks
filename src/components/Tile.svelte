@@ -8,6 +8,7 @@
 		currentTile,
 		gameFinished,
 		currentRow,
+		reduceMotion,
 	} from '$src/store'
 	import type { Tile } from '$lib/data-model'
 	import { fly, fade, type FlyParams } from 'svelte/transition'
@@ -20,9 +21,9 @@
 	let animate = !tile.scored
 	currentRow.subscribe(() => (animate = !tile.scored))
 
-	$: tileFlipDelay = tile.id * 150
+	$: tileFlipDelay = $reduceMotion ? 0 : tile.id * 150
 
-	const tileFlipDuration = 500
+	$: tileFlipDuration = $reduceMotion ? 0 : 500
 	const typeAnimation: FlyParams = { duration: 100, y: '50%', easing: quadOut }
 </script>
 
@@ -332,6 +333,13 @@
 		.hint {
 			font-size: 0.45em;
 			gap: 3px;
+		}
+	}
+
+	@media (prefers-reduced-motion) {
+		* {
+			animation: none !important;
+			transition: none !important;
 		}
 	}
 </style>

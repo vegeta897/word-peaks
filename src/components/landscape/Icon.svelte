@@ -340,4 +340,11 @@
 			transition: transform 150ms ease-out;
 		}
 	}
+
+	@media (prefers-reduced-motion) {
+		* {
+			transition: none !important;
+			animation: none !important;
+		}
+	}
 </style>
