@@ -76,11 +76,11 @@
 		}
 		if (firstDraw || landscape.rowsGenerated > 0) {
 			firstDraw = false
-			animate = true
+			animate = !get(store.reduceMotion)
 		}
 		const redrawMode = get(store.landscapeRedraw)
 		if (redrawMode) {
-			animate = redrawMode === 'animate'
+			animate = redrawMode === 'animate' && !get(store.reduceMotion)
 			store.landscapeRedraw.set(null)
 		}
 		if (currentRow === landscape.rowsGenerated) return
@@ -92,6 +92,8 @@
 			get(store.gameFinished)
 		)
 		store.landscape.set(landscape)
+		store.leafCount.set(0)
+		lastFlashXY = null
 		hide = false
 	}
 
@@ -123,13 +125,15 @@
 	store.landscapeWideView.subscribe(() => (hide = true))
 
 	const featureComponents: (Tree | Hill)[] = []
+	$: treeComponents = featureComponents.filter((c) => c?.featureType === 'tree')
+	$: hillComponents = featureComponents.filter((c) => c?.featureType === 'hill')
 	let pondComponent: Pond
 	let gemComponent: {
 		collect: (x: number, y: number) => boolean
 	}
 
 	function updateMousePosition(offsetX: number, offsetY: number) {
-		mouseX = -1 + (offsetX / svgWidth) * (landscape.width * 1.5 * 10 + 2)
+		mouseX = -1 + (offsetX / svgWidth) * (landscape.width * 15 + 2)
 		mouseY = -1 + (offsetY / svgHeight) * (landscape.height * 10 + 2)
 	}
 
@@ -168,7 +172,7 @@
 
 	let mouseOver = false
 	let dragging = false
-	let dragId = 0
+	let gestureId = 0
 	let mouseX: number
 	let mouseY: number
 
@@ -176,36 +180,43 @@
 		mouseOver = true // OK to redundantly assign, doesn't re-trigger reactivity
 		updateMousePosition(event.offsetX, event.offsetY)
 		// Ignore dragging from outside of landscape
-		if (dragging === false && event.buttons > 0) return
+		if (!dragging && event.buttons > 0) return
 		dragging = event.buttons === 1
-		if (event.buttons !== 1) return
+		if (!dragging) return
 		event.preventDefault()
-		interact(true)
+		interact('dragging')
 	}
 	const onPointerDown: svelte.JSX.PointerEventHandler<SVGElement> = (event) => {
 		// TODO: Handle multi touch
 		if (event.pointerType === 'mouse' && event.button !== 0) return
 		dragging = true
-		dragId++ // Distinguish dragging
+		gestureId++ // Distinguish gestures
 		event.preventDefault()
 		updateMousePosition(event.offsetX, event.offsetY)
 		interact()
 	}
+	const onPointerUp: svelte.JSX.PointerEventHandler<SVGElement> = (event) => {
+		if (event.pointerType === 'mouse' && event.button !== 0) return
+		dragging = false
+		event.preventDefault()
+		updateMousePosition(event.offsetX, event.offsetY)
+		interact('pointerUp')
+	}
 	const onPointerLeave: svelte.JSX.PointerEventHandler<SVGElement> = (event) => {
 		dragging = event.buttons === 1
 		mouseOver = false
+		interact('pointerUp')
 	}
 
-	const interact = (dragMode = false) => {
-		if (landscape.fun.gem?.status === 'collected') {
-			return
-		}
+	const interact = (mode?: 'dragging' | 'pointerUp') => {
+		if (landscape.fun.gem?.status === 'collected') return
 		if (landscape.fun.gem?.status === 'found') {
-			const gem = landscape.fun.gem
-			if (dragMode) return // Don't collect gem when dragging
+			// Don't collect if dragging or pointerUp
+			if (mode === 'dragging' || mode === 'pointerUp') return
 			const collected = gemComponent.collect(mouseX, mouseY)
 			if (!collected) return
 			let maxFillTime = 0
+			const gem = landscape.fun.gem
 			maxFillTime = pondComponent.fillIn(...gem.xy)
 			featureComponents.forEach((f) => {
 				if (f?.featureType !== 'tree' && f?.featureType !== 'hill') return
@@ -218,6 +229,8 @@
 		}
 		const funMode = get(landscapeFunMode)
 		if (funMode === null) {
+			if (mode === 'dragging' || mode === 'pointerUp') return
+			if (get(store.reduceMotion)) return
 			const now = Date.now()
 			// This is brilliant
 			flashDurationExtra = Math.max(
@@ -232,41 +245,47 @@
 			return
 		}
 		// TODO: Use different flash effect in fun modes (???)
-		// TODO: Increase hit zone for mobile taps?
-		// TODO: Use long presses to gradually increase radius?
 		let maxFunTime = 0
 		let funCounts = 0
 		if (funMode === 'sop') {
-			const sopResult = pondComponent.doFun(mouseX, mouseY, dragMode)
+			// TODO: Create a store for fun statuses, index by feature ID, or pond XY coordinate
+			if (mode === 'pointerUp') return
+			const sopResult = pondComponent.doFun(mouseX, mouseY, mode === 'dragging')
 			if (sopResult?.brokenTiles) {
 				funCounts += sopResult.brokenTiles
 			}
 		} else {
-			// TODO: Maybe put fun status in the Feature object in the landscape
-			// Export a function from the feature component for hit tests
-			// But this seems convoluted unless the component can be reactive to the fun state
-			// Being reactive like that seems more complex than just doing it in the hit test function
-			featureComponents.forEach((f) => {
-				const treeFun = f?.featureType === 'tree' && funMode === 'pluck'
-				const hillFun = f?.featureType === 'hill' && funMode === 'pop'
-				if (!treeFun && !hillFun) return
-				const funResult = f.doFun(mouseX, mouseY, dragId)
-				if (typeof funResult === 'number') {
-					funCounts++
-					if (funResult > maxFunTime) maxFunTime = funResult
+			if (funMode === 'pluck') {
+				const interaction = {
+					gestureId,
+					touch: svgWidth < 450, // TODO: Make a size switch near fun buttons, default based on landscape size
+					dragging,
+					pointerUp: mode === 'pointerUp',
 				}
-			})
+				treeComponents.forEach((f) => {
+					const treePluck = f.doFun(mouseX, mouseY, interaction)
+					if (typeof treePluck === 'number') {
+						funCounts++
+						if (treePluck > maxFunTime) maxFunTime = treePluck
+					}
+				})
+			} else if (mode !== 'pointerUp') {
+				hillComponents.forEach((f) => {
+					const hillPop = f.doFun(mouseX, mouseY)
+					if (typeof hillPop === 'number') {
+						funCounts++
+						if (hillPop > maxFunTime) maxFunTime = hillPop
+					}
+				})
+			}
 		}
+		if (funCounts === 0) return // No fun was had
 		funStats.update((fs) => {
 			fs.counts[funMode] += funCounts
 			return fs
 		})
-		const allPlucked = featureComponents
-			.filter((f) => f && f.featureType === 'tree')
-			.every((f) => f.funStatus.done)
-		const allPopped = featureComponents
-			.filter((f) => f && f.featureType === 'hill')
-			.every((f) => f.funStatus.done)
+		const allPlucked = treeComponents.every((f) => f.funStatus.done)
+		const allPopped = hillComponents.every((f) => f.funStatus.done)
 		const allSopped =
 			pondComponent.funStatus.status === 'done' || landscape.pondTiles.length === 0
 		if (allPlucked && allPopped && allSopped) {
@@ -280,7 +299,7 @@
 				id: landscape.nextID++,
 				x: mouseX, // TODO: Spawn at actual last-funned-feature coordinates
 				y: mouseY,
-				delay: maxFunTime,
+				delay: maxFunTime, // TODO: Unnecessary?
 			})
 			sortFeatures(landscape)
 		}
@@ -300,6 +319,7 @@
 		style:left="{Math.floor((containerWidth - svgWidth) / 2)}px"
 		viewBox="-1 -1 {landscape.width * 1.5 * 10 + 2} {landscape.height * 10 + 2}"
 		on:pointerdown={onPointerDown}
+		on:pointerup={onPointerUp}
 		on:pointermove={onSVGPointerMove}
 		on:pointerleave={onPointerLeave}
 		on:touchend|preventDefault

@@ -41,6 +41,7 @@ export const getNeighbors8 = (x: number, y: number) =>
 	neighbors8.map(([nx, ny]) => [x + nx, y + ny]) as XY[]
 
 export const getDistance = (x: number, y: number) => Math.sqrt(x ** 2 + y ** 2)
+export const getDistanceSquared = (x: number, y: number) => x ** 2 + y ** 2
 export const getDistanceBetween = (a: XY, b: XY) =>
 	Math.sqrt((b[0] - a[0]) ** 2 + (b[1] - a[1]) ** 2)
 export const getManhattanDistanceBetween = (a: XY, b: XY) =>

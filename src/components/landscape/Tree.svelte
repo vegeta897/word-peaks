@@ -1,15 +1,18 @@
 <script lang="ts">
-	import { onMount } from 'svelte'
+	import { onMount, tick } from 'svelte'
 	import { bezierEasing } from '$lib/animation'
 	import {
 		getDistance,
 		randomInt,
-		randomChance,
 		type XY,
 		randomFloat,
 		sleep,
+		getDistanceSquared,
 	} from '$lib/math'
 	import { fade } from 'svelte/transition'
+	import { type Interaction } from '$lib/landscape/fun'
+	import { leafCount, reduceMotion } from '$src/store'
+	import { sineIn } from 'svelte/easing'
 
 	export const featureType = 'tree'
 	export const funStatus = { done: false, clean: false }
@@ -61,12 +64,21 @@
 		lastTimeout = thisTimeout
 	}
 
+	const PLUCK_RANGE = 10
+	const PLUCK_DISTANCE = 25
 	let willBurst = false
 	let bursting = false
 	let bursted = false
-	let burstDragId = 0
+	let burstGestureId: null | number = null
 	let plucked = false
+	let pluckStartXY: null | XY = null
+	let trunkTipDeltaXY: XY = [0, 0]
+	let pluckForce = 0
+	let pluckAngle = 0
+	let halfPluckLength = 0
 	let pluckRotation = 0
+	let pluckDuration = 200
+	let trunkOrigin: XY = [0, 0]
 	let fallingLeaves: [
 		...XY,
 		fallDuration: number,
@@ -75,55 +87,101 @@
 	][] = []
 	let burstLeaves: XY[] = []
 
-	export function doFun(x: number, y: number, dragId: number): void | number {
+	export function doFun(
+		x: number,
+		y: number,
+		{ gestureId, touch, pointerUp }: Interaction
+	): void | number {
 		if (willBurst || plucked) return
 		const xDistance = x - originX
 		const yDistance = y - centerY
-		if (
-			Math.abs(xDistance) < radius * 1.5 &&
-			yDistance < radius * 2.5 &&
-			yDistance > -radius * 1.5
-		) {
-			const distance = getDistance(xDistance, yDistance)
-			if (!bursting && !bursted) {
+		if (!bursting && !bursted) {
+			if (pointerUp) return
+			const checkRadiusSquared = (radius * (touch ? 3 : 2)) ** 2
+			const distanceSquared = getDistanceSquared(xDistance, yDistance)
+			if (distanceSquared < checkRadiusSquared) {
 				// Burst it!
 				willBurst = true
-				burstDragId = dragId
-				const burstDelay = Math.max(0, distance - radius) * 20
+				burstGestureId = gestureId
+				const burstDelay = Math.max(0, distanceSquared - checkRadiusSquared / 2)
 				sleep(burstDelay).then(() => {
 					willBurst = false
 					bursting = true
-					const fallingLeafCount = Math.ceil(10 + size * 6)
-					const burstLeafCount = 15
+					let fallingLeafCount = Math.ceil(10 + size * 6)
+					let burstLeafCount = 6
+					let fallDuration = randomInt(1500, 2400)
+					let cleanupDelay = fallDuration - 800
+					leafCount.update((count) => {
+						const reduction = Math.max(1, count / 30)
+						fallingLeafCount = Math.max(4, Math.ceil(fallingLeafCount / reduction))
+						burstLeafCount = Math.max(4, Math.ceil(burstLeafCount / reduction))
+						cleanupDelay = Math.round(cleanupDelay / (Math.max(3, reduction) / 3))
+						return count + fallingLeafCount
+					})
 					for (let i = 0; i < fallingLeafCount; i++) {
 						fallingLeaves.push([
 							-xDistance + randomFloat(-13, 13),
 							circleY + randomFloat(-9, 9),
-							randomInt(1600, 3000),
+							fallDuration,
 							randomInt(500, 1300),
 							randomInt(400, 1000),
 						])
 					}
 					for (let i = 0; i < burstLeafCount; i++) {
-						burstLeaves.push([-xDistance + randomFloat(-13, 13), randomFloat(-9, 9)])
+						burstLeaves.push([-xDistance + randomFloat(-8, 8), randomFloat(-6, 6)])
 					}
-					sleep(3000).then(() => {
+					sleep(cleanupDelay).then(() => {
 						bursting = false
 						bursted = true
+						leafCount.update((count) => Math.max(0, count - fallingLeafCount))
 					})
 				})
-				// If not part of the same interaction that caused the burst
-			} else if (dragId !== burstDragId) {
-				// Pluck it!
-				funStatus.done = true
-				// TODO: Don't make it random
-				const pluckXDir = randomChance() ? 1 : -1
-				pluckRotation = pluckXDir * randomInt(30, 90)
-				plucked = true
-				animatePluckElement?.beginElement()
-				return 500
 			}
+			return
 		}
+		if (pluckStartXY === null && !pointerUp) {
+			if (gestureId === burstGestureId) return // Can't pluck in same gesture as burst
+			const distance = getDistance(xDistance, yDistance)
+			if (distance <= PLUCK_RANGE * (touch ? 1.5 : 1)) {
+				pluckStartXY = [x, y]
+			}
+			return
+		}
+		if (pluckStartXY) {
+			const pluckDistance = PLUCK_DISTANCE * (touch ? 1.5 : 1)
+			if (pointerUp) {
+				// Pluck if released near top edge
+				if (y < 1.5) {
+					y = centerY - pluckDistance - 0.1
+				} else {
+					pluckStartXY = null
+					trunkTipDeltaXY = [0, 0]
+					return
+				}
+			}
+			const cursorDistance = getDistance(x - originX, y - centerY)
+			if (cursorDistance > pluckDistance) {
+				// Pluck it
+				funStatus.done = true
+				plucked = true
+				trunkOrigin = [trunkTipDeltaXY[0] / 2, (trunkTipDeltaXY[1] - trunkLength) / 2]
+				halfPluckLength = getDistance(...trunkOrigin)
+				pluckAngle = Math.atan2(trunkOrigin[1], trunkOrigin[0]) * (180 / Math.PI) + 90
+				pluckRotation = Math.sign(trunkOrigin[0]) * randomInt(180, 300)
+				pluckForce = randomInt(20, 40) / 10
+				pluckDuration = randomInt(100, 250)
+				tick().then(() => animatePluckElement?.beginElement())
+				return 200
+			}
+			const dragDeltaXY: XY = [x - pluckStartXY[0], y - pluckStartXY[1]]
+			const dragDistance = getDistance(...dragDeltaXY)
+			const cursorWeight = Math.min(cursorDistance, dragDistance) / pluckDistance
+			dragDeltaXY[0] += (x - originX - dragDeltaXY[0]) * cursorWeight
+			dragDeltaXY[1] += (y - centerY - dragDeltaXY[1]) * cursorWeight
+			const dampener = 1 - sineIn(cursorDistance / pluckDistance) * 0.35
+			trunkTipDeltaXY = [dragDeltaXY[0] * dampener, dragDeltaXY[1] * dampener]
+		}
+		return
 	}
 
 	let filling = false
@@ -149,18 +207,19 @@
 	$: growDuration = 800 * (0.8 + size * 0.4)
 
 	$: width = 8.5 + size * 0.25 * 10
-	$: trunkLength = width / 2
+	$: trunkLength = width
 	$: radius = width / 2
 
 	$: originX = (x + xJitter + 0.5) * 1.5 * 10
 	$: originY = (y + yJitter + 0.5) * 10
-	$: centerY = originY - trunkLength - radius
+	$: centerY = originY - trunkLength
 	$: hover =
+		!$reduceMotion &&
 		!pluckMode &&
 		mouseOver &&
 		Math.abs(originX - mouseX) < radius * 1.5 &&
 		Math.abs(centerY - mouseY) < radius * 1.5
-	$: circleY = -trunkLength - radius
+	$: circleY = -trunkLength
 	$: circleTranslateY = hover ? 3 : 0
 
 	onMount(async () => {
@@ -208,9 +267,7 @@
 					stroke-width={STROKE_WIDTH}
 					stroke-linecap="round"
 					y2={circleY + circleTranslateY}
-					style:transition="fill {inColor ? 200 : 1000}ms {y * 20}ms ease, stroke {inColor
-						? 200
-						: 1000}ms {y * 20}ms ease"
+					style:transition="stroke {inColor ? 200 : 1000}ms {y * 20}ms ease"
 				/>
 				<g
 					style:transform="translateY({circleTranslateY}px)"
@@ -313,113 +370,17 @@
 		{/if}
 	{:else}
 		<!-- Fun -->
-		<g>
-			<path
-				stroke="var(--{inColor ? 'correct-color' : 'landscape-color'})"
-				stroke-width={STROKE_WIDTH}
-				stroke-linecap="round"
-				d="M0,0 V{circleY}"
-				style:transition="fill {inColor ? 200 : 1000}ms {y * 20}ms ease, stroke {inColor
-					? 200
-					: 1000}ms {y * 20}ms ease"
-				style:transform-origin="0 {circleY}px"
-			>
-				<animate
-					id="tree_pluck_animate_{id}"
-					bind:this={animatePluckElement}
-					attributeName="d"
-					begin="indefinite"
-					dur="200ms"
-					calcMode="spline"
-					keyTimes="0;0.8;1"
-					values="M0,0 L0,{circleY};M0,0 L{pluckRotation * -0.03},{circleY *
-						1.5};M0,{circleY * 0.5} L0,{circleY * 1.5}"
-					keySplines="{bezierEasing.sineOut};{bezierEasing.cubicOut}"
-					fill="freeze"
-				/>
-				<animateTransform
-					attributeName="transform"
-					type="rotate"
-					begin="tree_pluck_animate_{id}.begin+160ms"
-					values="0;{pluckRotation * 2}"
-					keyTimes="0;1"
-					calcMode="spline"
-					dur="600ms"
-					keySplines={bezierEasing.sineOut}
-				/>
-			</path>
-			<animateTransform
-				attributeName="transform"
-				type="translate"
-				begin="tree_pluck_animate_{id}.begin+160ms"
-				values="0 0;0 -5;0 0"
-				calcMode="spline"
-				dur="300ms"
-				keySplines="{bezierEasing.sineOut};{bezierEasing.sineIn}"
-			/>
-			<animate
-				attributeName="opacity"
-				begin="tree_pluck_animate_{id}.end"
-				values="1;0"
-				calcMode="spline"
-				keySplines={bezierEasing.cubicIn}
-				dur="200ms"
-				fill="freeze"
-			/>
-		</g>
 		<g
 			opacity={filled ? 0 : 1}
 			style:transition="opacity 0.5s 1.5s cubic-bezier(0.32, 0, 0.67, 0)"
 		>
 			<circle
-				r={STROKE_HALF}
+				r={plucked ? STROKE_HALF : 0}
 				fill={plucked
 					? '#0006'
 					: `var(--${inColor ? 'correct-color' : 'landscape-color'})`}
-				style:transition="fill 1.5s 1s"
+				style:transition="fill 2s"
 			/>
-			{#if willBurst || bursting}
-				<g out:fade|local={{ duration: 500 }} style:transform="translateY({circleY}px)">
-					{#each fallingLeaves as [leafX, leafY, fallDuration, flickerDuration, flickerDelay], l}
-						<g
-							style:transform="translate({leafX}px,{leafY}px)"
-							class="burst"
-							style:animation-delay="{0 + l * 10}ms"
-						>
-							<g
-								class="falling"
-								style:transform="translate({(Math.round(leafX * 5) % 10) * 0.06}px,20px)"
-								style:animation-duration="{fallDuration}ms"
-							>
-								<circle
-									style:animation="shimmer"
-									style:animation-iteration-count={Math.floor(
-										(fallDuration - flickerDelay) / flickerDuration
-									)}
-									style:animation-duration="{flickerDuration}ms"
-									style:animation-delay="{flickerDelay}ms"
-									r={STROKE_WIDTH * (0.3 + (fallDuration % 4) / 16)}
-									fill="var(--{inColor ? 'correct-color' : 'landscape-color'})"
-								/>
-							</g>
-						</g>
-					{/each}
-					<g class="burst-group">
-						{#each burstLeaves as [leafX, leafY], l}
-							<g
-								style:transform="translate({leafX}px,{leafY}px)"
-								class="burst"
-								style:animation-delay="{l * 10}ms"
-							>
-								<circle
-									r={STROKE_HALF}
-									fill="var(--{inColor ? 'correct-color' : 'landscape-color'})"
-								/>
-							</g>
-						{/each}
-					</g>
-				</g>
-			{/if}
 			{#if filling}
 				<path
 					class="fill-line"
@@ -435,12 +396,116 @@
 				/>
 			{/if}
 		</g>
+		<path
+			stroke="var(--{inColor ? 'correct-color' : 'landscape-color'})"
+			stroke-width={STROKE_WIDTH}
+			stroke-linecap="round"
+			d="M0,0 L{trunkTipDeltaXY[0]},{circleY + trunkTipDeltaXY[1]}"
+			style:transition="stroke {inColor ? 200 : 1000}ms {y * 20}ms ease{pluckStartXY
+				? ''
+				: ', d 50ms cubic-bezier(0.33, 1, 0.68, 1)'}"
+		>
+			<animate
+				id="tree_pluck_animate_{id}"
+				bind:this={animatePluckElement}
+				attributeName="d"
+				begin="indefinite"
+				dur="{pluckDuration}ms"
+				calcMode="spline"
+				keyTimes="0;1"
+				values="M0,{halfPluckLength} V{-halfPluckLength};M0,{trunkLength /
+					2} V{-trunkLength / 2}"
+				keySplines={bezierEasing.cubicOut}
+				fill="freeze"
+			/>
+			<animateTransform
+				attributeName="transform"
+				type="translate"
+				begin="tree_pluck_animate_{id}.begin"
+				values="0 {trunkOrigin[1]};0 {-Math.abs(trunkOrigin[1]) - 6};0 {trunkOrigin[1]}"
+				calcMode="spline"
+				dur="{pluckDuration + 200}ms"
+				keySplines="{bezierEasing.sineOut};{bezierEasing.sineIn}"
+				fill="freeze"
+			/>
+			<animateTransform
+				attributeName="transform"
+				type="translate"
+				begin="tree_pluck_animate_{id}.begin"
+				values="{trunkOrigin[0]} 0;{trunkOrigin[0] * pluckForce} 0"
+				dur="{pluckDuration + 200}ms"
+				fill="freeze"
+				additive="sum"
+			/>
+			<animateTransform
+				attributeName="transform"
+				type="rotate"
+				begin="tree_pluck_animate_{id}.begin"
+				values="{pluckAngle};{pluckAngle + pluckRotation}"
+				calcMode="spline"
+				dur="500ms"
+				keySplines={bezierEasing.sineOut}
+				fill="freeze"
+				additive="sum"
+			/>
+			<animate
+				attributeName="opacity"
+				begin="tree_pluck_animate_{id}.end"
+				values="1;0"
+				calcMode="spline"
+				keySplines={bezierEasing.cubicIn}
+				dur="200ms"
+				fill="freeze"
+			/>
+		</path>
+		{#if willBurst || bursting}
+			<g out:fade|local={{ duration: 500 }} style:transform="translateY({circleY}px)">
+				{#each fallingLeaves as [leafX, leafY, fallDuration, flickerDuration, flickerDelay], l}
+					<g
+						style:transform="translate({leafX}px,{leafY}px)"
+						class="burst"
+						style:animation-delay="{0 + l * 10}ms"
+					>
+						<g
+							class="falling"
+							style:transform="translate({(Math.round(leafX * 5) % 10) * 0.2}px,20px)"
+							style:animation-duration="{fallDuration}ms"
+						>
+							<circle
+								style:animation="shimmer"
+								style:animation-iteration-count={Math.floor(
+									(fallDuration - flickerDelay) / flickerDuration
+								)}
+								style:animation-duration="{flickerDuration}ms"
+								style:animation-delay="{flickerDelay}ms"
+								r={STROKE_WIDTH * (0.3 + (fallDuration % 4) / 16)}
+								fill="var(--{inColor ? 'correct-color' : 'landscape-color'})"
+							/>
+						</g>
+					</g>
+				{/each}
+				<g class="burst-group">
+					{#each burstLeaves as [leafX, leafY], l}
+						<g
+							style:transform="translate({leafX}px,{leafY}px)"
+							class="burst"
+							style:animation-delay="{l * 10}ms"
+						>
+							<circle
+								r={STROKE_HALF * 1.5}
+								fill="var(--{inColor ? 'correct-color' : 'landscape-color'})"
+							/>
+						</g>
+					{/each}
+				</g>
+			</g>
+		{/if}
 	{/if}
 </g>
 
 <style>
 	.burst-group {
-		animation: fade 300ms 200ms ease-in forwards;
+		animation: fade 200ms 50ms ease-in forwards;
 	}
 
 	@keyframes fade {
@@ -450,7 +515,7 @@
 	}
 
 	.burst {
-		animation: burst 300ms cubic-bezier(0.33, 1, 0.68, 1) both;
+		animation: burst 200ms cubic-bezier(0.33, 1, 0.68, 1) both;
 	}
 
 	@keyframes burst {

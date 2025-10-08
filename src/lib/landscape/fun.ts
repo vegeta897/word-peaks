@@ -20,3 +20,10 @@ export function newFunStats(): FunStats {
 		cleaned: 0,
 	}
 }
+
+export type Interaction = {
+	gestureId: number
+	touch: boolean
+	dragging: boolean
+	pointerUp: boolean
+}
