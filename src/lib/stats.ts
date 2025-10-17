@@ -112,8 +112,8 @@ export function recordGuessTime(row: number) {
 				resetPauseState()
 			}
 			const pauseTotal = get(store.pauseInfo)[gameMode].pauseTotal
-			guessTimes[row] = new Date().getTime() - pauseTotal
-			return guessTimes
+			const guessTime = new Date().getTime() - pauseTotal
+			return [...guessTimes.slice(0, row), guessTime]
 		}
 	)
 }
