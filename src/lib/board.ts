@@ -151,7 +151,7 @@ export async function submitRow() {
 		// Show end screen after waiting for tiles to flip
 		setTimeout(() => {
 			store.showEndView.set(true)
-			if (won) store.landscapeForceColor.set(true)
+			if (won) store.landscapeColor.set(true)
 		}, 6 * 150 + 250)
 		finishGame(won)
 	} else {

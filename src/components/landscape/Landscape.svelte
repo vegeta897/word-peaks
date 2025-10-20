@@ -1,29 +1,25 @@
 <script lang="ts">
 	import * as store from '$src/store'
 	import { get } from 'svelte/store'
-	import {
-		initLandscape,
-		clearLandscape,
-		getLandscape,
-		sortFeatures,
-	} from '$lib/landscape/landscape'
+	import { initLandscape, clearLandscape, getLandscape } from '$lib/landscape/landscape'
 	import Tree from './Tree.svelte'
 	import Hill from './Hill.svelte'
 	import Pond from './Pond.svelte'
 	import { getDistance, type XY } from '$lib/math'
 	import { dev } from '$app/env'
 	import PondRow from './PondRow.svelte'
-	import Gem from './Gem.svelte'
 	import FunSummary from './FunSummary.svelte'
+	import { funState, initFunState, clearFunState } from '$lib/landscape/fun'
+	import PondLilyPads from './PondLilyPads.svelte'
 
 	// Pie in the sky idea:
 	// Split the grid into actual 3d orthographic (bevelled?) tiles
 	// Maybe user can shuffle them around
 
-	const { landscapeForceColor, landscapeFunMode, funStats, answer } = store
+	const { landscapeFunMode, funStats, answer, landscapeWideView, landscapeComponents } =
+		store
 
 	let initializing = true
-	let svgElement: SVGElement
 	let containerWidth: number
 	let containerHeight: number
 	let svgWidth = 0
@@ -34,7 +30,7 @@
 	let redraw = 0
 
 	let landscape = initLandscape()
-	let pondRows: PondRow[] = []
+	let pondRowComponents: PondRow[] = []
 
 	const IDEAL_TILE_COUNT = 240
 	const IDEAL_TILE_COUNT_MINI = 170
@@ -89,10 +85,12 @@
 			get(store.boardContent),
 			get(store.answer),
 			currentRow,
-			get(store.gameFinished)
+			get(store.landscapeWideView)
 		)
 		store.landscape.set(landscape)
 		store.leafCount.set(0)
+		if (get(landscapeWideView)) initFunState(landscape, get(store.answer))
+		else clearFunState()
 		lastFlashXY = null
 		hide = false
 	}
@@ -124,13 +122,12 @@
 	// Hide landscape until it updates to avoid flashing on FF
 	store.landscapeWideView.subscribe(() => (hide = true))
 
-	const featureComponents: (Tree | Hill)[] = []
-	$: treeComponents = featureComponents.filter((c) => c?.featureType === 'tree')
-	$: hillComponents = featureComponents.filter((c) => c?.featureType === 'hill')
-	let pondComponent: Pond
-	let gemComponent: {
-		collect: (x: number, y: number) => boolean
-	}
+	$: treeComponents = $landscapeComponents.features.filter(
+		(c) => c?.featureType === 'tree'
+	)
+	$: hillComponents = $landscapeComponents.features.filter(
+		(c) => c?.featureType === 'hill'
+	)
 
 	function updateMousePosition(offsetX: number, offsetY: number) {
 		mouseX = -1 + (offsetX / svgWidth) * (landscape.width * 15 + 2)
@@ -187,7 +184,6 @@
 		interact('dragging')
 	}
 	const onPointerDown: svelte.JSX.PointerEventHandler<SVGElement> = (event) => {
-		// TODO: Handle multi touch
 		if (event.pointerType === 'mouse' && event.button !== 0) return
 		dragging = true
 		gestureId++ // Distinguish gestures
@@ -209,26 +205,30 @@
 	}
 
 	const interact = (mode?: 'dragging' | 'pointerUp') => {
-		if (landscape.fun.gem?.status === 'collected') return
-		if (landscape.fun.gem?.status === 'found') {
-			// Don't collect if dragging or pointerUp
-			if (mode === 'dragging' || mode === 'pointerUp') return
-			const collected = gemComponent.collect(mouseX, mouseY)
-			if (!collected) return
-			let maxFillTime = 0
-			const gem = landscape.fun.gem
-			maxFillTime = pondComponent.fillIn(...gem.xy)
-			featureComponents.forEach((f) => {
-				if (f?.featureType !== 'tree' && f?.featureType !== 'hill') return
-				const fillTime = f.fillIn(...gem.xy)
-				if (fillTime > maxFillTime) maxFillTime = fillTime
-			})
-			gem.status = 'collected'
-			landscape.fun.resultDelay = maxFillTime
-			return
-		}
-		const funMode = get(landscapeFunMode)
-		if (funMode === null) {
+		// const fun = get(funStatus)
+		// if (fun.gem?.status === 'collected') return
+		// if (fun.gem?.status === 'found') {
+		// 	// Don't collect if dragging or pointerUp
+		// 	if (mode === 'dragging' || mode === 'pointerUp') return
+		// 	const gem = fun.gem
+		// 	const collected = gem.component?.collect(mouseX, mouseY)
+		// 	if (!collected) return
+		// 	let maxFillTime = 0
+		// 	const components = get(landscapeComponents)
+		// 	maxFillTime = components.pond?.fillIn(...gem.xy) || 0
+		// 	components.features.forEach((f) => {
+		// 		const fillTime = f.fillIn(...gem.xy)
+		// 		if (fillTime > maxFillTime) maxFillTime = fillTime
+		// 	})
+		// 	gem.status = 'collected'
+		// 	fun.resultDelay = maxFillTime
+		// 	return
+		// }
+
+		// TODO: Consider simplifying the hit detection to grid-based
+		// Can use some y-offset grids to account for tree and hill height
+
+		if ($landscapeFunMode === null) {
 			if (mode === 'dragging' || mode === 'pointerUp') return
 			if (get(store.reduceMotion)) return
 			const now = Date.now()
@@ -237,9 +237,13 @@
 				0,
 				Math.min(3500, flashDurationExtra + lastFlashAt + 250 - now)
 			)
-			const duration = landscapeSpan * 70 + flashDurationExtra
-			featureComponents.forEach((f) => f?.flashColor(mouseX, mouseY, duration))
-			pondComponent.flashColor(mouseX, mouseY, duration)
+			// Don't flash color in wide view, too complex to handle fun elements
+			const duration = get(landscapeWideView)
+				? 0
+				: landscapeSpan * 70 + flashDurationExtra
+			const components = get(landscapeComponents)
+			components.features.forEach((f) => f?.flashColor(mouseX, mouseY, duration))
+			components.pond?.flashColor(mouseX, mouseY, duration)
 			lastFlashAt = now
 			lastFlashXY = [mouseX, mouseY]
 			return
@@ -247,21 +251,22 @@
 		// TODO: Use different flash effect in fun modes (???)
 		let maxFunTime = 0
 		let funCounts = 0
-		if (funMode === 'sop') {
-			// TODO: Create a store for fun statuses, index by feature ID, or pond XY coordinate
+		const components = get(landscapeComponents)
+		if ($landscapeFunMode === 'sop') {
 			if (mode === 'pointerUp') return
-			const sopResult = pondComponent.doFun(mouseX, mouseY, mode === 'dragging')
+			const sopResult = components.pond?.doFun(mouseX, mouseY, mode === 'dragging')
 			if (sopResult?.brokenTiles) {
 				funCounts += sopResult.brokenTiles
 			}
 		} else {
-			if (funMode === 'pluck') {
+			if ($landscapeFunMode === 'pluck') {
 				const interaction = {
 					gestureId,
 					touch: svgWidth < 450, // TODO: Make a size switch near fun buttons, default based on landscape size
 					dragging,
 					pointerUp: mode === 'pointerUp',
 				}
+				// TODO: No longer need maxFunTime
 				treeComponents.forEach((f) => {
 					const treePluck = f.doFun(mouseX, mouseY, interaction)
 					if (typeof treePluck === 'number') {
@@ -281,36 +286,22 @@
 		}
 		if (funCounts === 0) return // No fun was had
 		funStats.update((fs) => {
-			fs.counts[funMode] += funCounts
+			fs.counts[$landscapeFunMode] += funCounts
 			return fs
 		})
-		const allPlucked = treeComponents.every((f) => f.funStatus.done)
-		const allPopped = hillComponents.every((f) => f.funStatus.done)
-		const allSopped =
-			pondComponent.funStatus.status === 'done' || landscape.pondTiles.length === 0
-		if (allPlucked && allPopped && allSopped) {
-			// Spawn gem
-			// TODO: Export a "gem" boolean property from feature component
-			// Include <Gem> component within the feature, handling unique appear animations
-			// e.g. sparkles spraying out of tree hole
-			landscape.fun.gem = { status: 'found', xy: [mouseX, mouseY] }
-			landscape.features.push({
-				type: 'gem',
-				id: landscape.nextID++,
-				x: mouseX, // TODO: Spawn at actual last-funned-feature coordinates
-				y: mouseY,
-				delay: maxFunTime, // TODO: Unnecessary?
-			})
-			sortFeatures(landscape)
-		}
+		// const allPlucked = treeComponents.every((f) => f.funStatus?.done)
+		// const allPopped = hillComponents.every((f) => f.funStatus.done)
+		// const allSopped =
+		// 	components.pond?.funStatus.status === 'done' || landscape.pondTiles.length === 0
+		// if (allPlucked && allPopped && allSopped) {
+		// 	// TODO: Cleaned
+		// }
 	}
-
-	$: if (svgElement) store.landscapeSVG.set(svgElement)
 </script>
 
 <div bind:clientWidth={containerWidth} bind:clientHeight={containerHeight}>
 	<!-- Viewbox scaled by 10 to avoid FF's crappy rasterization in some places -->
-	{#if dev}{$answer}{/if}
+	{#if dev && !$landscapeWideView}{$answer}{/if}
 	<svg
 		style:display={hide ? 'none' : 'block'}
 		xmlns="http://www.w3.org/2000/svg"
@@ -324,11 +315,10 @@
 		on:pointerleave={onPointerLeave}
 		on:touchend|preventDefault
 		style:touch-action={$landscapeFunMode ? 'none' : 'manipulation'}
-		bind:this={svgElement}
 	>
 		{#key redraw}
 			<Pond
-				bind:this={pondComponent}
+				bind:this={$landscapeComponents.pond}
 				tiles={landscape.pondTiles}
 				newTiles={landscape.newPondTiles}
 				{animate}
@@ -336,59 +326,49 @@
 				landscapeWidth={landscape.width}
 				landscapeHeight={landscape.height}
 				mini={landscape.mini}
-				spawnIceShards={(y, shardSection) => pondRows[y].addShardSection(shardSection)}
+				spawnIceShards={(y, shardSection) =>
+					pondRowComponents[y].addShardSection(shardSection)}
 			/>
-			{#each landscape.features as feature, f (feature.id)}
-				{#if feature.type === 'tree'}
-					<Tree
-						id={feature.id}
-						x={feature.x}
-						y={feature.y}
-						xJitter={feature.xJitter}
-						yJitter={feature.yJitter}
-						size={feature.size}
-						{animate}
-						delay={feature.delay}
-						{mouseOver}
-						{mouseX}
-						{mouseY}
-						forceColor={$landscapeForceColor}
-						pluckMode={$landscapeFunMode === 'pluck'}
-						bind:this={featureComponents[f]}
-					/>
-				{:else if feature.type === 'hill'}
-					<Hill
-						id={feature.id}
-						x={feature.x}
-						y={feature.y}
-						xJitter={feature.xJitter}
-						yJitter={feature.yJitter}
-						size={feature.size}
-						mini={landscape.mini}
-						{animate}
-						delay={feature.delay}
-						{mouseOver}
-						{mouseX}
-						{mouseY}
-						forceColor={$landscapeForceColor}
-						popMode={$landscapeFunMode === 'pop'}
-						bind:this={featureComponents[f]}
-					/>
-				{:else if feature.type === 'pond-row'}
-					<PondRow bind:this={pondRows[feature.y]} />
-					<!-- <rect
-						fill="#f001"
-						y={feature.y * 10 + 1}
-						height="8"
-						width={landscape.width * 15}
-					/> -->
-				{:else}
-					<Gem
-						x={feature.x}
-						y={feature.y}
-						delay={feature.delay}
-						bind:this={gemComponent}
-					/>
+			<PondLilyPads />
+			{#each landscape.featureRows as row, y}
+				{#each row.features as feature (feature.id)}
+					{#if feature.type === 'tree'}
+						<Tree
+							id={feature.id}
+							x={feature.x}
+							y={feature.y}
+							xJitter={feature.xJitter}
+							yJitter={feature.yJitter}
+							size={feature.size}
+							{animate}
+							delay={feature.delay}
+							{mouseOver}
+							{mouseX}
+							{mouseY}
+							pluckMode={$landscapeFunMode === 'pluck'}
+							bind:this={$landscapeComponents.features[feature.id]}
+						/>
+					{:else}
+						<Hill
+							id={feature.id}
+							x={feature.x}
+							y={feature.y}
+							xJitter={feature.xJitter}
+							yJitter={feature.yJitter}
+							size={feature.size}
+							mini={landscape.mini}
+							{animate}
+							delay={feature.delay}
+							{mouseOver}
+							{mouseX}
+							{mouseY}
+							popMode={$landscapeFunMode === 'pop'}
+							bind:this={$landscapeComponents.features[feature.id]}
+						/>
+					{/if}
+				{/each}
+				{#if row.pond}
+					<PondRow bind:this={pondRowComponents[y]} />
 				{/if}
 			{/each}
 		{/key}
@@ -407,8 +387,8 @@
 			{/key}
 		{/if}
 	</svg>
-	{#if landscape.fun?.gem?.status === 'collected'}
-		<FunSummary delay={landscape.fun.resultDelay} />
+	{#if false}
+		<FunSummary />
 	{/if}
 </div>
 

@@ -8,6 +8,7 @@
 
 <script lang="ts">
 	import { bezierEasing } from '$lib/animation'
+	import { updatePondFun } from '$lib/landscape/fun'
 	import {
 		type SubTile,
 		type IceShard,
@@ -27,21 +28,22 @@
 		xyToGrid,
 	} from '$lib/math'
 	import { type PathDataCommand, stringifyPathData } from '$lib/paths'
-	import { answer, highContrast, landscapeForceColor } from '$src/store'
+	import { answer, highContrast, landscapeColor as fullColor } from '$src/store'
 	import Rand from 'rand-seed'
 	import { tick } from 'svelte'
 	import { cubicIn } from 'svelte/easing'
-	import { get } from 'svelte/store'
 	import { fade } from 'svelte/transition'
+	import Sparkles from './Sparkles.svelte'
 
-	export let tilesMap: Map<string, XY>
+	export let tiles: XY[]
 	export let pondPath: string
 	export let landscapeWidth: number
 	export let landscapeHeight: number
 	export let maxDistance: number
 	export let spawnIceShards: (y: number, shardSection: IceShardSection) => void
 
-	let nonFrozenTilesMap: Map<string, XY>
+	$: tilesMap = new Map(tiles.map((xy) => [xyToGrid(xy), xy]))
+	let nonFrozenTilesMap: typeof tilesMap
 	let nonFrozenPath: string
 	let lastFreeze = 0
 	$: freezeDelay =
@@ -63,6 +65,7 @@
 	let frozenPonds: FrozenPond[] = []
 	const emptyTilesMap: Map<string, XY> = new Map()
 	let iceShardSectionId = 0
+	let sparkles: { xy: XY; count: number }[] = [] // TODO: Change to sea-floor gems
 
 	export function doFun(x: number, y: number, dragMode: boolean): PondFunResult {
 		const normalizedXY: XY = [x / 10 / 1.5, y / 10]
@@ -235,7 +238,7 @@
 				brokenPath: '',
 			}
 			const tileList: XY[] = []
-			const rng = new Rand(get(answer) + clickedTile.grid)
+			const rng = new Rand($answer + clickedTile.grid)
 			const getRng = () => rng.next()
 			const openTiles: Map<string, XY> = new Map([[clickedTile.grid, clickedTile.xy]])
 			while (openTiles.size > 0) {
@@ -244,6 +247,7 @@
 				nonFrozenTilesMap.delete(grid)
 				const subTiles: Map<string, SubTile> = new Map()
 				freezingPond.tiles.set(grid, { subTiles, xy })
+				updatePondFun(grid, xy, { state: 'frozen' })
 				tileList.push(xy)
 				for (let fxi = 0; fxi < 4; fxi++) {
 					const xDir = fxi % 2 ? 1 : -1
@@ -314,6 +318,9 @@
 		pond.tiles.get(tileGrid)!.subTiles.forEach((st, g) => breakableSubTiles.set(g, st))
 		pond.emptyTiles.set(tileGrid, tileXY)
 		pond.tiles.delete(tileGrid)
+		// const juice = $funStatus.pondTiles.get(tileGrid)?.juice || 0
+		// if (juice > 0) sparkles = [...sparkles, { xy: tileXY, count: juice * 3 }]
+		updatePondFun(tileGrid, tileXY, { state: 'broken' })
 	}
 
 	let filled = false
@@ -345,7 +352,7 @@
 		{#key nonFrozenPath}
 			<g out:fade|local={{ delay: freezeDelay, duration: 0 }}>
 				<clipPath id="non_frozen_clip"> <path d={nonFrozenPath} /> </clipPath>
-				{#if !$landscapeForceColor}
+				{#if !$fullColor}
 					<g clip-path="url(#non_frozen_clip)" out:fade|local={{ duration: 200 }}>
 						<path fill="var(--landscape-color)" d={nonFrozenPath} />
 						<path
@@ -364,9 +371,9 @@
 					</g>
 				{/if}
 				<path
-					fill={$landscapeForceColor ? 'var(--after-color)' : '#fff0'}
+					fill={$fullColor ? 'var(--after-color)' : '#fff0'}
 					d={nonFrozenPath}
-					style:transition="fill {$landscapeForceColor ? 200 : 1000}ms ease"
+					style:transition="fill {$fullColor ? 200 : 1000}ms ease"
 				/>
 			</g>
 		{/key}
@@ -380,8 +387,8 @@
 				r={radius}
 			>
 				<stop
-					stop-color={$landscapeForceColor ? '#B2CFFF' : 'var(--landscape-color)'}
-					style:transition="stop-color {$landscapeForceColor ? 200 : 1000}ms ease"
+					stop-color="var(--{$fullColor ? 'ice-color' : 'landscape-color'})"
+					style:transition="stop-color {$fullColor ? 200 : 1000}ms ease"
 				>
 					<animate
 						bind:this={gradientElement}
@@ -396,7 +403,7 @@
 						begin="indefinite"
 					/>
 				</stop>
-				<stop stop-color={$landscapeForceColor ? '#B2CFFF00' : '#fff0'}>
+				<stop stop-color={$fullColor ? '#B2CFFF00' : '#fff0'}>
 					<animate
 						attributeName="offset"
 						values="0;1.01"
@@ -412,10 +419,10 @@
 				<path
 					stroke-width="0.25"
 					stroke-linejoin="round"
-					stroke={$landscapeForceColor ? '#56A9FF' : 'var(--landscape-color)'}
-					fill={$landscapeForceColor ? '#56A9FF' : 'var(--landscape-color)'}
+					stroke="var(--{$fullColor ? 'ice-shelf-color' : 'landscape-color'})"
+					fill="var(--{$fullColor ? 'ice-shelf-color' : 'landscape-color'})"
 					d={shelfPath}
-					style:transition="fill {$landscapeForceColor ? 200 : 1000}ms ease, stroke {$landscapeForceColor
+					style:transition="fill {$fullColor ? 200 : 1000}ms ease, stroke {$fullColor
 						? 200
 						: 1000}ms ease"
 				/>
@@ -430,6 +437,15 @@
 				d={path}
 			/>
 		{/each}
+		{#each sparkles as { xy: [x, y], count }}
+			<Sparkles
+				x={(x + 0.5) * 15}
+				y={(y + 0.5) * 10}
+				{count}
+				disperseX={10}
+				disperseY={7}
+			/>
+		{/each}
 		{#if filled}
 			<radialGradient
 				id="pond_fill_gradient"
@@ -441,7 +457,7 @@
 			>
 				<stop
 					stop-color="var(--accent-color)"
-					style:transition="stop-color {$landscapeForceColor ? 200 : 1000}ms ease"
+					style:transition="stop-color {$fullColor ? 200 : 1000}ms ease"
 				>
 					<animate
 						bind:this={fillingGradientElement}

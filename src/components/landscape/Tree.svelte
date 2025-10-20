@@ -8,31 +8,49 @@
 		randomFloat,
 		sleep,
 		getDistanceSquared,
+		randomChance,
 	} from '$lib/math'
 	import { fade } from 'svelte/transition'
-	import { type Interaction } from '$lib/landscape/fun'
-	import { leafCount, reduceMotion } from '$src/store'
+	import { updateTreeFun, funState, type Interaction } from '$lib/landscape/fun'
+	import { leafCount, reduceMotion, landscapeColor as fullColor } from '$src/store'
 	import { sineIn } from 'svelte/easing'
+	import Gem from './Gem.svelte'
+	import Sparkles from './Sparkles.svelte'
 
 	export const featureType = 'tree'
-	export const funStatus = { done: false, clean: false }
 
 	export let id: number
 	export let x: number
 	export let y: number
-	export let xJitter = 0
-	export let yJitter = 0
-	export let size = 1
+	export let xJitter: number
+	export let yJitter: number
+	export let size: number
 	export let animate: boolean
-	export let delay = 0
+	export let delay: number
 	export let mouseOver: boolean
 	export let mouseX: number
 	export let mouseY: number
-	export let forceColor: boolean
 	export let pluckMode: boolean
 
 	const STROKE_WIDTH = 0.2 * 10
 	const STROKE_HALF = STROKE_WIDTH / 2
+
+	$: xy = [x, y] as XY
+	$: growDuration = 800 * (0.8 + size * 0.4)
+	$: width = 8.5 + size * 0.25 * 10
+	$: trunkLength = width
+	$: radius = width / 2
+	$: originX = (x + 0.5 + xJitter) * 1.5 * 10
+	$: originY = (y + 0.5 + yJitter) * 10
+	$: centerY = originY - trunkLength
+	$: hover =
+		!$reduceMotion &&
+		!pluckMode &&
+		mouseOver &&
+		Math.abs(originX - mouseX) < radius * 1.5 &&
+		Math.abs(centerY - mouseY) < radius * 1.5
+	$: circleY = -trunkLength
+	$: circleTranslateY = hover ? 3 : 0
 
 	let willAnimate = true
 	let animationFinished = true
@@ -41,7 +59,7 @@
 	let animatePluckElement: SVGAnimateElement
 
 	let inColor = false
-	$: inColor = forceColor
+	$: inColor = $fullColor
 	let lastTimeout: NodeJS.Timer
 	let skewX = 0
 	let nudgeY = 10
@@ -55,11 +73,11 @@
 			nudgeY = (yMagnitude * force) / 240
 			animateSkewElement?.beginElement()
 		}
-		if (forceColor) return
+		if ($fullColor || duration === 0) return
 		const flashDelay = distance * 7
 		setTimeout(() => (inColor = true), flashDelay)
 		const thisTimeout = setTimeout(() => {
-			if (lastTimeout === thisTimeout) inColor = forceColor
+			if (lastTimeout === thisTimeout) inColor = $fullColor
 		}, Math.max(duration, flashDelay))
 		lastTimeout = thisTimeout
 	}
@@ -83,9 +101,30 @@
 		...XY,
 		fallDuration: number,
 		flickerDuration: number,
-		flickerDelay: number
+		flickerDelay: number,
+		snow: boolean
 	][] = []
-	let burstLeaves: XY[] = []
+	let burstLeaves: [...XY, snow: boolean][] = []
+	let juice = 0 // TODO: Change to gem factor
+	const { features } = funState
+	$: snowy = $features.tree[id]?.snowy
+	$: snowcapPath = snowy ? generateSnowcapPath(radius, circleY) : ''
+
+	function generateSnowcapPath(radius: number, circleY: number) {
+		const leftDir = randomChance() ? 1 : -1
+		const rightDir = -leftDir
+		const leftAngle = randomFloat(0, 0.5)
+		const rightAngle = randomFloat(0, 0.5)
+		const x1 = Math.cos(leftAngle) * -radius
+		const y1 = circleY - Math.sin(leftAngle) * radius
+		const x2 = Math.cos(rightAngle) * radius
+		const y2 = circleY - Math.sin(rightAngle) * radius
+		return `M${x1},${y1} C${randomFloat(-3, 2)},${
+			circleY + radius * randomFloat(0.2, 0.8) * leftDir
+		} ${randomFloat(-2, 3)},${
+			circleY + radius * randomFloat(0.2, 0.8) * rightDir
+		} ${x2},${y2} A${radius},${radius} 0 0 0 ${x1},${y1} Z`
+	}
 
 	export function doFun(
 		x: number,
@@ -107,6 +146,7 @@
 				sleep(burstDelay).then(() => {
 					willBurst = false
 					bursting = true
+					updateTreeFun(id, xy, { state: 'burst' })
 					let fallingLeafCount = Math.ceil(10 + size * 6)
 					let burstLeafCount = 6
 					let fallDuration = randomInt(1500, 2400)
@@ -125,10 +165,15 @@
 							fallDuration,
 							randomInt(500, 1300),
 							randomInt(400, 1000),
+							snowy && i >= fallingLeafCount / 4,
 						])
 					}
 					for (let i = 0; i < burstLeafCount; i++) {
-						burstLeaves.push([-xDistance + randomFloat(-8, 8), randomFloat(-6, 6)])
+						burstLeaves.push([
+							-xDistance + randomFloat(-8, 8),
+							randomFloat(-6, 6),
+							snowy && i >= burstLeafCount / 4,
+						])
 					}
 					sleep(cleanupDelay).then(() => {
 						bursting = false
@@ -162,16 +207,16 @@
 			const cursorDistance = getDistance(x - originX, y - centerY)
 			if (cursorDistance > pluckDistance) {
 				// Pluck it
-				funStatus.done = true
+				updateTreeFun(id, xy, { state: 'plucked' })
 				plucked = true
 				trunkOrigin = [trunkTipDeltaXY[0] / 2, (trunkTipDeltaXY[1] - trunkLength) / 2]
 				halfPluckLength = getDistance(...trunkOrigin)
 				pluckAngle = Math.atan2(trunkOrigin[1], trunkOrigin[0]) * (180 / Math.PI) + 90
-				pluckRotation = Math.sign(trunkOrigin[0]) * randomInt(180, 300)
+				pluckRotation = Math.sign(trunkOrigin[0]) * randomInt(120, 320)
 				pluckForce = randomInt(20, 40) / 10
 				pluckDuration = randomInt(100, 250)
 				tick().then(() => animatePluckElement?.beginElement())
-				return 200
+				return 0
 			}
 			const dragDeltaXY: XY = [x - pluckStartXY[0], y - pluckStartXY[1]]
 			const dragDistance = getDistance(...dragDeltaXY)
@@ -203,24 +248,6 @@
 		sleep(fillDuration).then(() => (filled = true))
 		return fillDelay + fillDuration
 	}
-
-	$: growDuration = 800 * (0.8 + size * 0.4)
-
-	$: width = 8.5 + size * 0.25 * 10
-	$: trunkLength = width
-	$: radius = width / 2
-
-	$: originX = (x + xJitter + 0.5) * 1.5 * 10
-	$: originY = (y + yJitter + 0.5) * 10
-	$: centerY = originY - trunkLength
-	$: hover =
-		!$reduceMotion &&
-		!pluckMode &&
-		mouseOver &&
-		Math.abs(originX - mouseX) < radius * 1.5 &&
-		Math.abs(centerY - mouseY) < radius * 1.5
-	$: circleY = -trunkLength
-	$: circleTranslateY = hover ? 3 : 0
 
 	onMount(async () => {
 		willAnimate = animate
@@ -294,6 +321,14 @@
 							keySplines="{bezierEasing.cubicOut};{bezierEasing.cubicIn}"
 						/>
 					</circle>
+					{#if snowy}
+						<path
+							in:fade|local={{ duration: 300 + 400 * size, delay: 100 + 300 * size }}
+							fill="var(--{inColor ? 'snow-color' : 'landscape-color'})"
+							style:transition="fill {inColor ? 200 : 1000}ms {y * 20}ms ease"
+							d={snowcapPath}
+						/>
+					{/if}
 				</g>
 			</g>
 			<animate
@@ -370,32 +405,27 @@
 		{/if}
 	{:else}
 		<!-- Fun -->
-		<g
-			opacity={filled ? 0 : 1}
-			style:transition="opacity 0.5s 1.5s cubic-bezier(0.32, 0, 0.67, 0)"
-		>
-			<circle
-				r={plucked ? STROKE_HALF : 0}
-				fill={plucked
-					? '#0006'
-					: `var(--${inColor ? 'correct-color' : 'landscape-color'})`}
-				style:transition="fill 2s"
+		{#if filling}
+			<path
+				class="fill-line"
+				d="M0,0 C0,-{fillDistance} {fillFromXY[0] / 1.2},{fillFromXY[1] -
+					fillDistance} {fillFromXY.join(',')}"
+				fill="none"
+				stroke="var(--accent-color)"
+				stroke-width={STROKE_WIDTH}
+				stroke-linecap="round"
+				style:stroke-dashoffset={fillDistance * -2}
+				style:animation-delay="{fillDelay}ms"
+				style:animation-duration="{fillDuration}ms"
+				opacity={filled ? 0 : 1}
+				style:transition="opacity 0.5s 1.5s cubic-bezier(0.32, 0, 0.67, 0)"
 			/>
-			{#if filling}
-				<path
-					class="fill-line"
-					d="M0,0 C0,-{fillDistance} {fillFromXY[0] / 1.2},{fillFromXY[1] -
-						fillDistance} {fillFromXY.join(',')}"
-					fill="none"
-					stroke="var(--accent-color)"
-					stroke-width={STROKE_WIDTH}
-					stroke-linecap="round"
-					style:stroke-dashoffset={fillDistance * -2}
-					style:animation-delay="{fillDelay}ms"
-					style:animation-duration="{fillDuration}ms"
-				/>
-			{/if}
-		</g>
+		{/if}
+		{#if plucked}
+			<circle r={STROKE_HALF} fill="#0006" />
+			<!-- <Gem x={0} y={-11} bind:this={gemComponent} /> -->
+			<!-- TODO: Sparkles spouting from hole -->
+		{/if}
 		<path
 			stroke="var(--{inColor ? 'correct-color' : 'landscape-color'})"
 			stroke-width={STROKE_WIDTH}
@@ -460,7 +490,7 @@
 		</path>
 		{#if willBurst || bursting}
 			<g out:fade|local={{ duration: 500 }} style:transform="translateY({circleY}px)">
-				{#each fallingLeaves as [leafX, leafY, fallDuration, flickerDuration, flickerDelay], l}
+				{#each fallingLeaves as [leafX, leafY, fallDuration, flickerDuration, flickerDelay, snow], l}
 					<g
 						style:transform="translate({leafX}px,{leafY}px)"
 						class="burst"
@@ -479,13 +509,17 @@
 								style:animation-duration="{flickerDuration}ms"
 								style:animation-delay="{flickerDelay}ms"
 								r={STROKE_WIDTH * (0.3 + (fallDuration % 4) / 16)}
-								fill="var(--{inColor ? 'correct-color' : 'landscape-color'})"
+								fill="var(--{inColor
+									? snow
+										? 'snow-color'
+										: 'correct-color'
+									: 'landscape-color'})"
 							/>
 						</g>
 					</g>
 				{/each}
 				<g class="burst-group">
-					{#each burstLeaves as [leafX, leafY], l}
+					{#each burstLeaves as [leafX, leafY, snow], l}
 						<g
 							style:transform="translate({leafX}px,{leafY}px)"
 							class="burst"
@@ -493,12 +527,19 @@
 						>
 							<circle
 								r={STROKE_HALF * 1.5}
-								fill="var(--{inColor ? 'correct-color' : 'landscape-color'})"
+								fill="var(--{inColor
+									? snow
+										? 'snow-color'
+										: 'correct-color'
+									: 'landscape-color'})"
 							/>
 						</g>
 					{/each}
 				</g>
 			</g>
+			{#if juice > 0}
+				<Sparkles count={juice * 4} y={circleY} disperseX={15} disperseY={7} />
+			{/if}
 		{/if}
 	{/if}
 </g>

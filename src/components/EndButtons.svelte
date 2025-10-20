@@ -29,7 +29,7 @@
 
 	const {
 		landscapeWideView,
-		landscapeForceColor,
+		landscapeColor,
 		landscapeRedraw,
 		hideLandscape,
 		landscapeFunMode,
@@ -118,7 +118,7 @@
 
 	async function onLandscapeShare() {
 		const landscapeCanvas = await import('$lib/landscape/canvas')
-		const color = get(store.landscapeForceColor)
+		const color = get(store.landscapeColor)
 		landscapeCanvas.drawLandscapeToCanvas(canvas, get(store.landscape), {
 			color,
 			highContrast: get(store.highContrast),
@@ -264,10 +264,10 @@
 			</button>
 			<button
 				title={$t('main.other.color')}
-				class:cta-bg={$landscapeForceColor}
-				on:click={() => landscapeForceColor.set(!$landscapeForceColor)}
+				class:cta-bg={$landscapeColor}
+				on:click={() => landscapeColor.set(!$landscapeColor)}
 			>
-				<Icon icon="color" active={$landscapeForceColor} />
+				<Icon icon="color" active={$landscapeColor} />
 			</button>
 			<button
 				title={$t('main.other.redraw')}

@@ -8,6 +8,9 @@ import type { KeyboardLayout } from '$lib/constants'
 import { type Landscape } from '$lib/landscape/landscape'
 import { type FunStats, type LandscapeFunMode, newFunStats } from '$lib/landscape/fun'
 import { browser } from '$app/env'
+import Pond from '$src/components/landscape/Pond.svelte'
+import Tree from '$src/components/landscape/Tree.svelte'
+import Hill from '$src/components/landscape/Hill.svelte'
 
 export const storeVersion: Writable<number> = storageWritable('wp-version', 0)
 export const storedLocale: Writable<string> = storageWritable('wp-locale', '')
@@ -69,13 +72,14 @@ export const showEndView: Writable<boolean> = writable(false)
 export const guessTimeStrings: Writable<string[]> = writable([])
 export const totalGuessTimeString: Writable<string> = writable()
 
-export const landscape: Writable<Landscape> = writable()
+export const landscape: Writable<Landscape> = writable() // Used in onLandScapeShare()
+export const landscapeComponents: Writable<{ pond?: Pond; features: (Tree | Hill)[] }> =
+	writable({ features: [] }) // TODO: Maybe just keep this in Landscape and export a getComponents() method
 export const landscapeNewGame: Writable<boolean> = writable(false)
 export const landscapeNewRow: Writable<boolean> = writable(false)
 export const landscapeWideView: Writable<boolean> = writable(false)
-export const landscapeForceColor: Writable<boolean> = writable(false)
+export const landscapeColor: Writable<boolean> = writable(true)
 export const landscapeRedraw: Writable<'instant' | 'animate' | null> = writable(null)
-export const landscapeSVG: Writable<SVGElement | null> = writable(null)
 export const landscapeFunMode: Writable<LandscapeFunMode | null> = writable(null)
 export const funStats: Writable<FunStats> = storageWritable('wp-funStats', newFunStats())
 export const leafCount: Writable<number> = writable(0)

@@ -4,15 +4,29 @@ import {
 	getNewCenterOfMass,
 	type Landscape,
 	getCenterWeight,
+	addFeature,
 } from '$lib/landscape/landscape'
 import { randomElementWeighted, xyToGrid, randomFloat, getNeighbors8 } from '$lib/math'
 
-export function createTrees(getRng: () => number, landscape: Landscape, win: boolean) {
-	const { features, tileMap, width, height } = landscape
+export function createTrees(
+	getRng: () => number,
+	landscape: Landscape,
+	win: boolean,
+	wideView: boolean
+) {
+	const { tileMap, width, height } = landscape
 	const treeCount = landscape.mini ? 4 : 6
+	const minY = wideView ? 2 : 1
+	const minX = wideView ? 1 : 0
+	const maxX = width - (wideView ? 2 : 1)
 	for (let i = 0; i < treeCount; i++) {
 		const openTiles = [...tileMap].filter(
-			([, tile]) => !tile.feature && tile.connected && tile.y > 0
+			([, tile]) =>
+				!tile.feature &&
+				tile.connected &&
+				tile.y >= minY &&
+				tile.x >= minX &&
+				tile.x <= maxX
 		)
 		if (openTiles.length === 0) break
 		const [, tile] = randomElementWeighted(
@@ -36,12 +50,12 @@ export function createTrees(getRng: () => number, landscape: Landscape, win: boo
 			id: landscape.nextID++,
 			x: tile.x,
 			y: tile.y,
-			xJitter: randomFloat(-0.35, 0.35, getRng),
+			xJitter: randomFloat(-0.3, 0.3, getRng),
 			yJitter: randomFloat(-0.35, 0.25, getRng),
 			size: getRng(),
 			delay: landscape.totalDelay,
 		}
-		features.push(tile.feature)
+		addFeature(landscape, tile.feature)
 		landscape.centerOfMass = getNewCenterOfMass(landscape, tile.x, tile.y, 1)
 		landscape.totalDelay += LANDSCAPE_FEATURE_DELAY
 	}

@@ -99,9 +99,6 @@
 	export let y: number
 	export let delay = 0
 
-	$: originX = x - radius / 2
-	$: originY = y - height / 1.2
-
 	const createSparkle = (): Sparkle => {
 		const xDistance = cubicIn(randomFloat(0.3, 1)) * 15
 		return {
@@ -157,7 +154,7 @@
 {#if visible}
 	<g
 		style:position="relative"
-		transform="translate({originX} {originY})"
+		transform="translate({x} {y})"
 		out:fade|local={{ duration: 200, easing: cubicIn }}
 	>
 		<g class="wobble">
@@ -222,7 +219,7 @@
 
 <style>
 	.grow {
-		animation: grow 400ms both cubic-bezier(0.33, 1, 0.68, 1);
+		animation: grow 1000ms both cubic-bezier(0.33, 1, 0.68, 1);
 	}
 
 	@keyframes grow {
@@ -231,8 +228,8 @@
 			animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1);
 		}
 		30% {
-			transform: scale(1.2) translateY(-3px);
-			animation-timing-function: cubic-bezier(0.32, 0, 0.67, 0);
+			transform: scale(1.3) translateY(-8px);
+			animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
 		}
 	}
 

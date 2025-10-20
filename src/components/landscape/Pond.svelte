@@ -1,17 +1,12 @@
 <script lang="ts">
 	import { bezierEasing } from '$lib/animation'
-	import { getDistance, xyToGrid, type XY } from '$lib/math'
+	import { getDistance, type XY } from '$lib/math'
 	import { type ComponentProps, tick } from 'svelte'
 	import { createPondPath } from '$lib/landscape/pond'
-	import { landscapeForceColor } from '$src/store'
+	import { landscapeColor as fullColor } from '$src/store'
 	import { stringifyPathData } from '$lib/paths'
 	import { fade } from 'svelte/transition'
 	import PondFun, { type PondFunResult } from './PondFun.svelte'
-	import { get } from 'svelte/store'
-
-	export const funStatus: { status: 'waiting' | 'started' | 'done' } = {
-		status: 'waiting',
-	}
 
 	export let tiles: XY[] = []
 	export let newTiles: XY[] = []
@@ -29,7 +24,7 @@
 	let floods: Flood[] = []
 	let floodID = 0
 	export async function flashColor(x: number, y: number, duration: number) {
-		if (get(landscapeForceColor)) return
+		if ($fullColor || duration === 0) return
 		const fullDuration = duration + 800
 		const expandKeyTime = expandDuration / fullDuration
 		const fadeKeyTime = Math.max(expandKeyTime, 1 - 800 / fullDuration)
@@ -51,7 +46,6 @@
 
 	let pondPath: string
 	let previousPondPath: string
-	let tilesMap: Map<string, XY>
 
 	let dripTiles: XY[] = []
 	let dripsID = 0
@@ -61,12 +55,13 @@
 
 	let pondFunComponenet: PondFun
 	let havingFun = false
+	let funDone = false
 
 	export function doFun(x: number, y: number, dragMode: boolean): PondFunResult {
-		if (funStatus.status === 'done') return { done: true }
+		if (funDone) return { done: true }
 		const funResult = pondFunComponenet.doFun(x, y, dragMode)
 		if (!havingFun && funResult?.frozePond) havingFun = true
-		if (funResult?.done) funStatus.status = 'done'
+		if (funResult?.done) funDone = true
 		return funResult
 	}
 
@@ -75,7 +70,6 @@
 	async function onTiles() {
 		previousPondPath = pondPath
 		pondPath = stringifyPathData(createPondPath(tiles))
-		tilesMap = new Map(tiles.map((xy) => [xyToGrid(xy), xy]))
 		if (animate && previousPondPath !== pondPath && newTiles.length > 0) {
 			dripsID++
 			dripTiles = newTiles
@@ -95,7 +89,6 @@
 
 <clipPath id="pond_path"> <path d={pondPath} /> </clipPath>
 {#if !havingFun}
-	<clipPath id="prev_pond_path"> <path d={previousPondPath} /> </clipPath>
 	<g clip-path="url(#pond_path)">
 		{#key dripsID}
 			{#each dripTiles as [x, y], t}
@@ -124,6 +117,7 @@
 	</g>
 	<g opacity={animate ? 1 : 0}>
 		<!-- Expanding ponds -->
+		<clipPath id="prev_pond_path"> <path d={previousPondPath} /> </clipPath>
 		<g clip-path="url(#prev_pond_path)">
 			<path fill="var(--landscape-color)" d={previousPondPath} />
 			<path
@@ -153,7 +147,7 @@
 	</g>
 	<g opacity={animate ? 0 : 1}>
 		<!-- Static ponds -->
-		{#if !$landscapeForceColor}
+		{#if !$fullColor}
 			<g clip-path="url(#pond_path)" out:fade|local={{ duration: 200 }}>
 				<path fill="var(--landscape-color)" d={pondPath} />
 				<path
@@ -167,8 +161,8 @@
 			</g>
 		{/if}
 		<path
-			fill={$landscapeForceColor ? 'var(--after-color)' : '#fff0'}
-			style:transition="fill {$landscapeForceColor ? 200 : 1000}ms ease"
+			fill={$fullColor ? 'var(--after-color)' : '#fff0'}
+			style:transition="fill {$fullColor ? 200 : 1000}ms ease"
 			d={pondPath}
 		/>
 		{#each floods as flood (flood)}
@@ -242,7 +236,7 @@
 <PondFun
 	{pondPath}
 	{maxDistance}
-	{tilesMap}
+	{tiles}
 	{landscapeWidth}
 	{landscapeHeight}
 	{spawnIceShards}

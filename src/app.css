@@ -23,6 +23,9 @@
 	--heading-color: rgba(255, 255, 255, 0.8);
 	--text-color: #cccccc;
 	--landscape-color: #dddddd;
+	--ice-color: #b2cfff;
+	--ice-shelf-color: #56a9ff;
+	--snow-color: #d3fcff;
 	--toastContainerLeft: calc(50vw - 8rem);
 	--toastContainerTop: 2rem;
 	--toastContainerRight: auto;

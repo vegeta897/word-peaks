@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { tick } from 'svelte'
-	import { landscapeForceColor } from '$src/store'
+	import { landscapeColor } from '$src/store'
 	import {
 		easeInParabolic,
 		easeOutParabolic,
@@ -72,16 +72,16 @@
 						transform="translate(0 -3.5)"
 						stroke-width="0.5"
 						stroke-linejoin="round"
-						stroke={$landscapeForceColor ? '#56A9FF' : 'var(--landscape-color)'}
-						fill={$landscapeForceColor ? '#56A9FF' : 'var(--landscape-color)'}
+						stroke="var(--{$landscapeColor ? 'ice-shelf-color' : 'landscape-color'})"
+						fill="var(--{$landscapeColor ? 'ice-shelf-color' : 'landscape-color'})"
 						d={shelfPath}
 					/>
 					<path
 						transform="translate(0 -3.5)"
 						stroke-width="0.5"
 						stroke-linejoin="round"
-						stroke={$landscapeForceColor ? '#B2CFFF' : 'var(--landscape-color)'}
-						fill={$landscapeForceColor ? '#B2CFFF' : 'var(--landscape-color)'}
+						stroke="var(--{$landscapeColor ? 'ice-color' : 'landscape-color'})"
+						fill="var(--{$landscapeColor ? 'ice-color' : 'landscape-color'})"
 						d={mainPath}
 					/>
 				</g>

@@ -1,26 +1,34 @@
 <script lang="ts">
 	import { onMount, tick } from 'svelte'
 	import { bezierEasing } from '$lib/animation'
-	import { reduceMotion } from '$src/store'
-	import { getDistance, randomChance, randomFloat, randomInt, sleep } from '$lib/math'
+	import { reduceMotion, landscapeColor as fullColor } from '$src/store'
+	import {
+		getDistance,
+		randomChance,
+		randomFloat,
+		randomInt,
+		sleep,
+		type XY,
+	} from '$lib/math'
 	import Gem from './Gem.svelte'
+	import { updateHillFun, funState } from '$lib/landscape/fun'
+	import Sparkles from './Sparkles.svelte'
+	import HillIvy from './HillIvy.svelte'
 
 	export const featureType = 'hill'
-	export const funStatus = { done: false, clean: false }
 
 	export let id: number
 	export let x: number
 	export let y: number
-	export let xJitter = 0
-	export let yJitter = 0
+	export let xJitter: number
+	export let yJitter: number
 	export let mini = false
-	export let size = 1
+	export let size: number
 	export let animate: boolean
-	export let delay = 0
+	export let delay: number
 	export let mouseOver: boolean
 	export let mouseX: number
 	export let mouseY: number
-	export let forceColor: boolean
 	export let popMode: boolean
 
 	const STROKE_WIDTH = 2
@@ -33,7 +41,7 @@
 	let animatePoppingPathElement: SVGAnimateElement
 
 	let inColor = false
-	$: inColor = forceColor
+	$: inColor = $fullColor
 	let lastTimeout: NodeJS.Timer
 	let nudgeX = 0
 	let nudgeScaleY = 1
@@ -47,17 +55,18 @@
 			nudgeScaleY = 1 + (yMagnitude * force) / 240
 			animateSkewElement?.beginElement()
 		}
-		if (forceColor) return
+		if ($fullColor || duration === 0) return
 		const flashDelay = distance * 7
 		setTimeout(async () => (inColor = true), flashDelay)
 		const thisTimeout = setTimeout(async () => {
-			if (lastTimeout === thisTimeout) inColor = forceColor
+			if (lastTimeout === thisTimeout) inColor = $fullColor
 		}, Math.max(duration, flashDelay))
 		lastTimeout = thisTimeout
 	}
 
-	$: centerX = (x + xJitter + (mini ? 1 : 1.5)) * 10 * 1.5
-	$: centerY = (y + yJitter + 1) * 10
+	$: xy = [x, y] as XY
+	$: centerX = (x + xJitter + (mini ? 1 : 1.5)) * 15
+	$: centerY = (y + yJitter) * 10
 	$: radius = (mini ? 8 : 13.5) + 2 * size
 	$: diameter = radius * 2
 	$: vertLength = mini ? 7 : 10
@@ -75,22 +84,13 @@
 		? 2
 		: 5)} a${radius} ${radius} 0 0 1 ${diameter} 0 v5 ${hillBottomSegment}`
 	$: hillBottomPath = `M${radius} -6 v6 ${hillBottomSegment} v-6`
-	$: hillAnimationClip = `M${-radius - STROKE_HALF} 0 v${
+	$: hillAnimationClip = `M${-radius - STROKE_HALF} 0 l${-radius},${
 		-vertLength - radius - STROKE_HALF
-	} h${diameter + STROKE_WIDTH} v${vertLength + radius + STROKE_HALF} a${
+	} h${diameter * 2 + STROKE_WIDTH} l${-radius},${vertLength + radius + STROKE_HALF} a${
 		radius + STROKE_HALF
 	} ${radius / 3 + STROKE_HALF} 0 0 1 ${-diameter - STROKE_WIDTH} 0`
 	$: popUpTranslate = mini ? 25 : 33
 
-	const FRAGMENT_COUNT = 10
-	let popFragments: [delay: number, magnitude: number, size: number][] = new Array(
-		FRAGMENT_COUNT
-	)
-		.fill(0)
-		.map((_, i) => {
-			const center = 1 - Math.abs((i + 0.5) / FRAGMENT_COUNT - 0.5) * 0.5
-			return [randomInt(0, 200), randomInt(8, 45), (randomInt(4, 12) / 2) * center]
-		})
 	function createPopRingPath(radius: number) {
 		const startAtRadians = randomFloat(0, Math.PI * 2)
 		let ringPercent = 0
@@ -139,11 +139,54 @@
 	}
 	$: popRingTopPath = popped ? createPopRingPath(radius) : ''
 
-	let popping = false
 	let popped = false
+	let popFragments: [delay: number, magnitude: number, size: number, snow: boolean][] = []
+	let juice = 0 // TODO: Changed to gem factor
+	const { features } = funState
+	$: snowy = $features.hill[id]?.snowy
+	$: snowcapPath = snowy ? generateSnowcapPath(radius, vertLength) : ''
+
+	function generateSnowcapPath(radius: number, vertLength: number) {
+		const waves = 4
+		const curves = 1 + (waves - 1) * 2
+		const paddedRadius = radius + STROKE_HALF
+		const edgeAngle = randomFloat(0.4, 0.6)
+		const edgeX = Math.cos(edgeAngle) * -paddedRadius
+		const edgeY = -vertLength - Math.sin(edgeAngle) * paddedRadius
+		const circleY = edgeY - (Math.sin(edgeAngle) * paddedRadius) / 2
+		const angleRange = Math.PI - edgeAngle * 2
+		const angleStep = angleRange / curves
+		let slope = 1
+		let path = `M${edgeX},${edgeY}`
+		for (let i = 0; i < curves; i++) {
+			const sweep = (i + 1) / curves
+			const variation = 1 - Math.abs(sweep - 0.5) / 0.5
+			const angle =
+				Math.PI -
+				edgeAngle -
+				angleRange * sweep +
+				((randomFloat(-1, 1) * angleStep) / 6) * variation
+			const toX = Math.cos(angle) * paddedRadius
+			const toY = circleY + (Math.sin(angle) * paddedRadius) / 2
+			const c1X = Math.cos(angle + (angleStep * 2) / 3) * paddedRadius
+			const c1Y =
+				circleY +
+				(Math.sin(angle + (angleStep * 2) / 3) * paddedRadius) / 2 +
+				randomFloat(0.6, 1.3 + variation / 2) * slope
+			const c2X = Math.cos(angle + angleStep / 3) * paddedRadius
+			const c2Y =
+				circleY +
+				(Math.sin(angle + angleStep / 3) * paddedRadius) / 2 +
+				randomFloat(0.6, 1.3 + variation / 2) * slope
+			path += ` C${c1X},${c1Y} ${c2X},${c2Y} ${toX},${toY}`
+			slope *= -1
+		}
+		path += ` A${paddedRadius},${paddedRadius} 0 0 0 ${edgeX},${edgeY} Z`
+		return path
+	}
 
 	export function doFun(x: number, y: number): void | number {
-		if (popping) return
+		if (popped) return
 		const xDistance = x - centerX
 		const yDistance = y - centerY
 		if (
@@ -151,19 +194,24 @@
 			yDistance < radius / 3 &&
 			yDistance > -radius - 0.3 - vertLength
 		) {
-			popping = true
-			funStatus.done = true
-			const popDelay = (xDistance + yDistance) * 20
-			sleep(popDelay).then(() => {
-				popped = true
-				tick().then(async () => {
-					animatePoppingPathElement?.beginElement()
-					await sleep(750) // Wait until all fragments fade out
-					// TODO: Replace this with #if-ing out hidden elements
-					popFragments.length = 0 // Clean up fragments
-				})
+			popped = true
+			updateHillFun(id, xy, { state: 'popped' })
+			const particleCount = snowy ? 16 : 10
+			for (let i = 0; i < particleCount; i++) {
+				const central = 1 - Math.abs((i + 0.5) / particleCount - 0.5) * 0.5
+				popFragments.push([
+					randomInt(0, 200),
+					randomInt(8, 45),
+					(randomInt(4, 12) / 2) * central,
+					snowy && randomChance(0.3),
+				])
+			}
+			tick().then(async () => {
+				animatePoppingPathElement?.beginElement()
+				await sleep(750) // Wait until all fragments fade out
+				popFragments.length = 0 // Clean up fragments
 			})
-			return popDelay
+			return 0
 		}
 	}
 
@@ -207,26 +255,36 @@
 			d={hillBottomPath}
 		/>
 		<g>
-			<path
-				fill="none"
-				stroke="var(--tertiary-color)"
-				stroke-width={STROKE_WIDTH * 2.5}
-				d={hillTopPath}
+			<g
 				style:transform="translateY({hover ? (mini ? 2.5 : 4) : 0}px)"
 				style:transition="transform {hover ? 75 : 200}ms ease-out"
-			/>
-			<path
-				fill="var(--{inColor ? 'before-color' : 'tertiary-color'})"
-				stroke="var(--{inColor ? 'before-color' : 'landscape-color'})"
-				stroke-width={STROKE_WIDTH}
-				stroke-linecap="round"
-				d={hillTopPath}
-				style:transform="translateY({hover ? (mini ? 2.5 : 4) : 0}px)"
-				style:transition="transform {hover ? 75 : 200}ms ease-out, fill {inColor
-					? 200
-					: 1000}ms {y * 20}ms ease, stroke
-				{inColor ? 200 : 1000}ms {y * 20}ms ease"
-			/>
+			>
+				<path
+					fill="none"
+					stroke="var(--tertiary-color)"
+					stroke-width={STROKE_WIDTH * 2.5}
+					d={hillTopPath}
+				/>
+				<path
+					fill="var(--{inColor ? 'before-color' : 'tertiary-color'})"
+					stroke="var(--{inColor ? 'before-color' : 'landscape-color'})"
+					stroke-width={STROKE_WIDTH}
+					stroke-linecap="round"
+					d={hillTopPath}
+					style:transition="fill {inColor ? 200 : 1000}ms {y * 20}ms ease, stroke
+					{inColor ? 200 : 1000}ms {y * 20}ms ease"
+				/>
+				{#if snowy}
+					<path
+						fill="var(--{inColor ? 'snow-color' : 'landscape-color'})"
+						style:transition="fill {inColor ? 200 : 1000}ms {y * 20}ms ease"
+						style:animation-duration="{300 + 400 * size}ms"
+						style:animation-delay="{100 + 300 * size}ms"
+						class="snowcap"
+						d={snowcapPath}
+					/>
+				{/if}
+			</g>
 			{#if !popped}
 				<animateTransform
 					attributeName="transform"
@@ -356,14 +414,18 @@
 				class="popped-ring"
 			/>
 			<!-- <g transform="translate(0 -16)"><Gem /></g> -->
-			{#each popFragments as [delay, magnitude, fSize], f}
-				<g transform="rotate({-30 + 60 * (f / (FRAGMENT_COUNT - 1))})">
+			{#each popFragments as [delay, magnitude, fSize, snow], f}
+				<g transform="rotate({-30 + 60 * (f / (popFragments.length - 1))})">
 					<ellipse
-						cx={-radius * 0.8 + radius * 1.6 * (f / (FRAGMENT_COUNT - 1))}
+						cx={-radius * 0.8 + radius * 1.6 * (f / (popFragments.length - 1))}
 						cy={-radius / 1}
 						rx={fSize}
 						ry={fSize * 2.5}
-						fill="var(--{inColor ? 'before-color' : 'landscape-color'})"
+						fill="var(--{inColor
+							? snow
+								? 'snow-color'
+								: 'before-color'
+							: 'landscape-color'})"
 						class="fragment"
 						style:animation-delay="{150 + delay + 250}ms"
 					>
@@ -399,7 +461,11 @@
 				</g>
 			{/each}
 		</g>
+		{#if juice > 0}
+			<Sparkles count={juice * 12} y={-vertLength} disperseX={20} disperseY={12} />
+		{/if}
 	{/if}
+	<HillIvy {id} {y} {size} {hover} {nudgeX} {popped} />
 </g>
 
 <style>
@@ -418,6 +484,10 @@
 
 	.fragment {
 		animation: fade 150ms cubic-bezier(0.32, 0, 0.67, 0) forwards;
+	}
+
+	.snowcap {
+		animation: fade 300ms cubic-bezier(0.33, 1, 0.68, 1) reverse backwards;
 	}
 
 	@keyframes fade {

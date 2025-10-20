@@ -42,7 +42,7 @@ export function playDaily() {
 	resetGuess()
 	const gameFinished = get(store.gameFinished)
 	store.showEndView.set(gameFinished)
-	store.landscapeForceColor.set(gameFinished)
+	store.landscapeColor.set(gameFinished)
 	store.landscapeNewGame.set(true)
 	store.landscapeWideView.set(false)
 }
@@ -66,7 +66,7 @@ export function playRandom(word?: string) {
 	resetGuess()
 	const gameFinished = get(store.gameFinished)
 	store.showEndView.set(gameFinished)
-	store.landscapeForceColor.set(gameFinished)
+	store.landscapeColor.set(gameFinished)
 	store.landscapeNewGame.set(true)
 	store.landscapeWideView.set(false)
 }

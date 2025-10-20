@@ -43,7 +43,7 @@ function fillPond(
 	getRng: () => number,
 	landscape: Landscape
 ) {
-	const { width, height, tileMap, centerX, centerY } = landscape
+	const { width, height, tileMap } = landscape
 	const newTiles: Map<string, XY> = new Map()
 	const openPondTiles = new Map([[startGrid, { weight: 1, x, y }]])
 	const pondSize = landscape.mini ? 4 : 6
@@ -95,7 +95,7 @@ function fillPond(
 	newTiles.forEach((xy) => {
 		landscape.pondTiles.push(xy)
 		landscape.newPondTiles.push(xy)
-		tileMap.get(xyToGrid(xy))!.feature = 'pond'
+		tileMap.get(xyToGrid(xy))!.feature = { type: 'pond' }
 		pondCenterOfMass[0] = (pondCenterOfMass[0] * pondWeight + xy[0]) / (pondWeight + 1)
 		pondCenterOfMass[1] = (pondCenterOfMass[1] * pondWeight + xy[1]) / (pondWeight + 1)
 		pondWeight++
@@ -106,15 +106,7 @@ function fillPond(
 			if (!nTile) return
 			nTile.connected += n < 4 ? 1 : Math.max(nTile.connected, 0.5)
 		})
-		if (!landscape.pondRows.has(xy[1])) {
-			landscape.pondRows.add(xy[1])
-			landscape.features.push({
-				type: 'pond-row',
-				id: landscape.nextID++,
-				x: 0,
-				y: xy[1],
-			})
-		}
+		landscape.featureRows[xy[1]].pond = true
 	})
 	landscape.centerOfMass = getNewCenterOfMass(landscape, ...pondCenterOfMass, pondWeight)
 	return true

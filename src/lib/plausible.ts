@@ -6,6 +6,7 @@ import { browser, dev } from '$app/env'
 // https://www.npmjs.com/package/plausible-tracker#tracking-custom-events-and-goals
 // https://plausible.pixelatomy.com/vegeta897.github.io%2Fword-peaks/settings/properties
 // Switch to this fork! https://github.com/Barbapapazes/plausible-tracker
+// TODO: Track repeated guess in one game
 
 type EventName =
 	| 'gameWon'

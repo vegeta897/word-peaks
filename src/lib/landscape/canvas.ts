@@ -9,7 +9,7 @@ const WHITE = '#dddddd'
 
 export function drawLandscapeToCanvas(
 	canvas: HTMLCanvasElement,
-	{ width, height, features, pondTiles, mini }: Landscape,
+	{ width, height, featureRows, pondTiles, mini }: Landscape,
 	{ color, highContrast }: { color: boolean; highContrast: boolean }
 ) {
 	if (!canvas) return
@@ -34,9 +34,9 @@ export function drawLandscapeToCanvas(
 	ctx.fillStyle = pondColor
 	ctx.fill(pondPath)
 	ctx.lineWidth = TILE_HEIGHT * 0.2
+	ctx.save()
+	ctx.clip(pondPath)
 	if (!color) {
-		ctx.save()
-		ctx.clip(pondPath)
 		const shiftedPondPath = new Path2D(
 			stringifyPathData(
 				createPondPath(pondTiles),
@@ -50,10 +50,10 @@ export function drawLandscapeToCanvas(
 		ctx.fill(shiftedPondPath)
 		ctx.strokeStyle = WHITE
 		ctx.stroke(shiftedPondPath)
-		ctx.restore()
 	}
 	ctx.strokeStyle = pondColor
 	ctx.stroke(pondPath)
+	ctx.restore()
 	ctx.lineCap = 'round'
 	ctx.lineJoin = 'round'
 	const lineWidth = TILE_HEIGHT * 0.2
@@ -63,52 +63,54 @@ export function drawLandscapeToCanvas(
 	const hillColor = highContrast ? '#da3f8b' : '#e38f2f'
 	const hillStrokeColor = color ? hillColor : WHITE
 	const hillFillColor = color ? hillColor : bgColor
-	for (const { type, x, y, xJitter, yJitter, size } of features) {
-		if (type === 'tree') {
-			const centerX = (0.5 + x + (xJitter || 0) + 0.5) * TILE_WIDTH
-			const centerY = (1.5 + y + (yJitter || 0) + 0.5) * TILE_HEIGHT
-			const radius = ((0.85 + (size || 1) * 0.25) * TILE_HEIGHT) / 2
-			ctx.lineWidth = thickLineWidth
-			ctx.strokeStyle = bgColor
-			ctx.beginPath()
-			ctx.moveTo(centerX, centerY)
-			ctx.lineTo(centerX, centerY - radius)
-			ctx.stroke()
-			ctx.arc(centerX, centerY - radius * 2, radius + TILE_HEIGHT * 0.15, 0, TAU)
-			ctx.fillStyle = bgColor
-			ctx.fill()
-			ctx.strokeStyle = treeStrokeColor
-			ctx.lineWidth = lineWidth
-			ctx.beginPath()
-			ctx.moveTo(centerX, centerY)
-			ctx.lineTo(centerX, centerY - radius)
-			ctx.stroke()
-			ctx.beginPath()
-			ctx.arc(centerX, centerY - radius * 2, radius - TILE_HEIGHT * 0.1, 0, TAU)
-			ctx.stroke()
-			if (color) {
-				ctx.fillStyle = treeColor
+	for (const row of featureRows) {
+		for (const { type, x, y, xJitter, yJitter, size } of row.features) {
+			if (type === 'tree') {
+				const centerX = (1 + x + xJitter) * TILE_WIDTH
+				const centerY = (2 + y + yJitter) * TILE_HEIGHT
+				const radius = ((0.85 + size * 0.25) * TILE_HEIGHT) / 2
+				ctx.lineWidth = thickLineWidth
+				ctx.strokeStyle = bgColor
+				ctx.beginPath()
+				ctx.moveTo(centerX, centerY)
+				ctx.lineTo(centerX, centerY - radius)
+				ctx.stroke()
+				ctx.arc(centerX, centerY - radius * 2, radius + TILE_HEIGHT * 0.15, 0, TAU)
+				ctx.fillStyle = bgColor
 				ctx.fill()
+				ctx.strokeStyle = treeStrokeColor
+				ctx.lineWidth = lineWidth
+				ctx.beginPath()
+				ctx.moveTo(centerX, centerY)
+				ctx.lineTo(centerX, centerY - radius)
+				ctx.stroke()
+				ctx.beginPath()
+				ctx.arc(centerX, centerY - radius * 2, radius - TILE_HEIGHT * 0.1, 0, TAU)
+				ctx.stroke()
+				if (color) {
+					ctx.fillStyle = treeColor
+					ctx.fill()
+				}
+			} else if (type === 'hill') {
+				const centerX = ((mini ? 1.5 : 2) + x + xJitter) * TILE_WIDTH
+				const centerY = (1.5 + y + yJitter) * TILE_HEIGHT
+				const radius = ((mini ? 0.8 : 1.35) + 0.2 * size) * TILE_HEIGHT
+				const hilltopY = centerY - TILE_HEIGHT / 2 - (mini ? 0.2 : 0.5) * TILE_HEIGHT
+				ctx.lineWidth = thickLineWidth
+				ctx.strokeStyle = bgColor
+				ctx.beginPath()
+				ctx.moveTo(centerX - radius, centerY)
+				ctx.lineTo(centerX - radius, hilltopY)
+				ctx.arc(centerX, hilltopY, radius, Math.PI, 0)
+				ctx.lineTo(centerX + radius, centerY)
+				ctx.ellipse(centerX, centerY, radius, radius / 3, 0, 0, Math.PI)
+				ctx.stroke()
+				ctx.lineWidth = lineWidth
+				ctx.strokeStyle = hillStrokeColor
+				ctx.fillStyle = hillFillColor
+				ctx.fill()
+				ctx.stroke()
 			}
-		} else if (type === 'hill') {
-			const centerX = (0.5 + x + (xJitter || 0) + (mini ? 1 : 1.5)) * TILE_WIDTH
-			const centerY = (1.5 + y + (yJitter || 0) + 1) * TILE_HEIGHT
-			const radius = ((mini ? 0.8 : 1.35) + 0.2 * (size || 1)) * TILE_HEIGHT
-			const hilltopY = centerY - TILE_HEIGHT / 2 - (mini ? 0.2 : 0.5) * TILE_HEIGHT
-			ctx.lineWidth = thickLineWidth
-			ctx.strokeStyle = bgColor
-			ctx.beginPath()
-			ctx.moveTo(centerX - radius, centerY)
-			ctx.lineTo(centerX - radius, hilltopY)
-			ctx.arc(centerX, hilltopY, radius, Math.PI, 0)
-			ctx.lineTo(centerX + radius, centerY)
-			ctx.ellipse(centerX, centerY, radius, radius / 3, 0, 0, Math.PI)
-			ctx.stroke()
-			ctx.lineWidth = lineWidth
-			ctx.strokeStyle = hillStrokeColor
-			ctx.fillStyle = hillFillColor
-			ctx.fill()
-			ctx.stroke()
 		}
 	}
 }
