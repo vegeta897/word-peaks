@@ -35,6 +35,7 @@
 	let canvasBlob: Blob
 	let canvasImageURL: string
 	let canvasImageAltText: string
+	let imageFileName: string
 	let canvasWidth = 0
 	let canvasHeight = 0
 	let shareTitleText: string
@@ -114,10 +115,8 @@
 			hideArrows: get(store.hideArrows),
 			tileSharpness: get(store.tileSharpness),
 		})
-		canvas.toBlob((blob) => {
-			canvasBlob = blob!
-			shareImage(canvasBlob, `${hash || dayNumber}`)
-		})
+		canvas.toBlob((blob) => (canvasBlob = blob!))
+		imageFileName = `${hash || dayNumber}`
 		canvasImageURL = canvas.toDataURL()
 		canvasImageAltText = `Word Peaks #${hash || dayNumber} results`
 		canvasWidth = canvas.width
@@ -135,10 +134,8 @@
 			highContrast: get(store.highContrast),
 		})
 		const { hash, dayNumber } = get(store.lastGameDetail)!
-		canvas.toBlob((blob) => {
-			canvasBlob = blob!
-			shareImage(canvasBlob, `${hash || dayNumber}-landscape${color ? '-color' : ''}`)
-		})
+		canvas.toBlob((blob) => (canvasBlob = blob!))
+		imageFileName = `${hash || dayNumber}-landscape${color ? '-color' : ''}`
 		canvasImageURL = canvas.toDataURL()
 		canvasImageAltText = `Word Peaks #${hash || dayNumber} landscape`
 		canvasWidth = canvas.width
@@ -153,6 +150,14 @@
 			copyImage(canvasBlob)
 			showImageShare = false
 			successToast(get(t)('main.messages.image_copied'))
+		} catch (e) {
+			errorToast()
+		}
+	}
+
+	function onShareImage() {
+		try {
+			shareImage(canvasBlob, imageFileName)
 		} catch (e) {
 			errorToast()
 		}
@@ -281,7 +286,10 @@
 				style:max-width="min(100%, {Math.round(canvasWidth / 2)}px"
 				style:max-height="{Math.round(canvasHeight / 2)}px"
 			/>
-			<button on:click={onCopyImage}>{$t('main.results.copy_image')}</button>
+			<div class="image-results-buttons">
+				<button on:click={onCopyImage}>{$t('main.results.copy_image')}</button>
+				<button on:click={onShareImage}>{$t('main.results.share')}</button>
+			</div>
 			<button
 				title="Close"
 				class="close-button"
@@ -466,10 +474,17 @@
 		position: relative;
 	}
 
+	.image-results-buttons {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.75rem;
+		margin: 1rem 0;
+	}
+
 	.image-results button {
 		height: 3rem;
 		padding: 0 1rem;
-		margin: 1rem 0;
 	}
 
 	.image-results button.close-button {

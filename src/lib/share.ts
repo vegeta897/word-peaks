@@ -71,7 +71,6 @@ export async function shareImage(blob: Blob, name: string): Promise<void> {
 		}),
 	]
 	const shareData = { files: filesArray }
-	// Fail silently, image will appear to copy
 	if (navigator.share) await navigator.share(shareData)
 }
 
