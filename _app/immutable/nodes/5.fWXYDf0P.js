@@ -1,0 +1,1 @@
+import{s as t}from"../chunks/xJMVqMs0.js";import{S as e,i as n}from"../chunks/Ce3wb7rx.js";import{g as a,b as r}from"../chunks/C8x3DscN.js";import{e as m,g as i}from"../chunks/D-u7XSBR.js";function c(s){{const o=m(i());a(`${r}/#${o}`)}return[]}class d extends e{constructor(o){super(),n(this,o,c,null,t,{})}}export{d as component};
