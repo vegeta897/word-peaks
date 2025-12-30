@@ -9,7 +9,7 @@
 	import { dev } from '$app/env'
 	import PondRow from './PondRow.svelte'
 	import FunSummary from './FunSummary.svelte'
-	import { funState, initFunState, clearFunState } from '$lib/landscape/fun'
+	import { initFunState, clearFunState } from '$lib/landscape/fun'
 	import PondLilyPads from './PondLilyPads.svelte'
 
 	// Pie in the sky idea:
@@ -35,6 +35,11 @@
 	const IDEAL_TILE_COUNT = 240
 	const IDEAL_TILE_COUNT_MINI = 170
 
+	function clearLandscapeAndFun() {
+		clearLandscape(landscape)
+		clearFunState()
+	}
+
 	function updateDimensions(width: number, height: number) {
 		const ratio = height / (width / 1.5)
 		let tileHeight = height / Math.sqrt(IDEAL_TILE_COUNT * ratio) // Yay math
@@ -55,7 +60,7 @@
 		landscape.centerY = Math.floor(newHeight / 2)
 		animate = false
 		redraw++
-		clearLandscape(landscape)
+		clearLandscapeAndFun()
 		updateLandscape()
 	}
 
@@ -65,9 +70,7 @@
 		if (initializing || !landscape.width) return
 		const currentRow = get(store.currentRow)
 		if (currentRow === 0) {
-			if (landscape.rowsGenerated > 0) {
-				clearLandscape(landscape)
-			}
+			if (landscape.rowsGenerated > 0) clearLandscapeAndFun()
 			return
 		}
 		if (firstDraw || landscape.rowsGenerated > 0) {
@@ -90,7 +93,7 @@
 		store.landscape.set(landscape)
 		store.leafCount.set(0)
 		if (get(landscapeWideView)) initFunState(landscape, get(store.answer))
-		else clearFunState()
+		// else clearFunState()
 		lastFlashXY = null
 		hide = false
 	}
@@ -104,7 +107,7 @@
 		store.landscapeNewGame.set(false)
 		firstDraw = true
 		redraw++
-		clearLandscape(landscape)
+		clearLandscapeAndFun()
 		// Skip update if landscapeWideView is true, because it is about to change
 		if (!get(store.landscapeWideView)) updateLandscape()
 	})
@@ -116,7 +119,7 @@
 	store.landscapeRedraw.subscribe((redrawType) => {
 		if (redrawType === null) return
 		redraw++
-		clearLandscape(landscape)
+		clearLandscapeAndFun()
 		updateLandscape()
 	})
 	// Hide landscape until it updates to avoid flashing on FF
@@ -166,6 +169,17 @@
 	// Lower counts to gems ratio is favorable
 
 	// TODO: Fun size slider/buttons, to allow players to be more precise
+
+	// TODO: Button with bars for frost, plant, gem, opens flower zone modal
+	// Small area with 3 buttons on top to dispense each material
+	// Material falls to the ground as dots like fish food
+	// Material grows flowers, step by step. Plant first for stems, gem and frost for bud and petals (any order)
+	// Flowers (or stems) wither and die if they don't receive material for x days
+	// Lily pads and vines are their own materials with distinct purposes?
+	// Small area is in a glass box, can slightly rotate/tilt for pseudo-3d effect
+
+	// TODO: Radically different idea:
+	// Ice and lily pads placed on a horizontal level, lily pads are jumps, ice slides
 
 	let mouseOver = false
 	let dragging = false
@@ -408,7 +422,7 @@
 		/* background: #0f21; */
 	}
 	svg :global(*) {
-		pointer-events: none;
+		pointer-events: none; /* Ignore pointer events on all svg children */
 	}
 	.flash {
 		animation: flash_out 250ms forwards cubic-bezier(0.61, 1, 0.88, 1);

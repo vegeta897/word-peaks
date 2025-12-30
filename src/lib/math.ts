@@ -50,3 +50,5 @@ export const getManhattanDistanceBetween = (a: XY, b: XY) =>
 export const midXY = (a: XY, b: XY): XY => [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2]
 
 export const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+
+export const TAU = Math.PI * 2

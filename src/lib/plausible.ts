@@ -3,9 +3,10 @@ import { browser, dev } from '$app/env'
 
 // TODO: Consolidate into one game finished event
 // with many properties about the game and user's options
-// https://www.npmjs.com/package/plausible-tracker#tracking-custom-events-and-goals
 // https://plausible.pixelatomy.com/vegeta897.github.io%2Fword-peaks/settings/properties
-// Switch to this fork! https://github.com/Barbapapazes/plausible-tracker
+
+// TODO: Switch to this! https://www.npmjs.com/package/@plausible-analytics/tracker
+
 // TODO: Track repeated guess in one game
 
 type EventName =

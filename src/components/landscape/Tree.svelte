@@ -9,13 +9,18 @@
 		sleep,
 		getDistanceSquared,
 		randomChance,
+		TAU,
 	} from '$lib/math'
 	import { fade } from 'svelte/transition'
 	import { updateTreeFun, funState, type Interaction } from '$lib/landscape/fun'
 	import { leafCount, reduceMotion, landscapeColor as fullColor } from '$src/store'
 	import { sineIn } from 'svelte/easing'
-	import Gem from './Gem.svelte'
-	import Sparkles from './Sparkles.svelte'
+	import BouncyParticles, {
+		calculateBounces,
+		type Particle,
+	} from './BouncyParticles.svelte'
+	// import Gem from './Gem.svelte'
+	// import Sparkles from './Sparkles.svelte'
 
 	export const featureType = 'tree'
 
@@ -37,10 +42,10 @@
 
 	$: xy = [x, y] as XY
 	$: growDuration = 800 * (0.8 + size * 0.4)
-	$: width = 8.5 + size * 0.25 * 10
+	$: width = 8.5 + size * 2.5
 	$: trunkLength = width
 	$: radius = width / 2
-	$: originX = (x + 0.5 + xJitter) * 1.5 * 10
+	$: originX = (x + 0.5 + xJitter) * 15
 	$: originY = (y + 0.5 + yJitter) * 10
 	$: centerY = originY - trunkLength
 	$: hover =
@@ -105,10 +110,13 @@
 		snow: boolean
 	][] = []
 	let burstLeaves: [...XY, snow: boolean][] = []
-	let juice = 0 // TODO: Change to gem factor
 	const { features } = funState
 	$: snowy = $features.tree[id]?.snowy
 	$: snowcapPath = snowy ? generateSnowcapPath(radius, circleY) : ''
+	$: crystalized = $features.tree[id]?.crystalized
+	$: crystalShards = crystalized
+		? generateCrystalShards(radius, circleY)
+		: { burstPath: '', shards: [] }
 
 	function generateSnowcapPath(radius: number, circleY: number) {
 		const leftDir = randomChance() ? 1 : -1
@@ -124,6 +132,51 @@
 		} ${randomFloat(-2, 3)},${
 			circleY + radius * randomFloat(0.2, 0.8) * rightDir
 		} ${x2},${y2} A${radius},${radius} 0 0 0 ${x1},${y1} Z`
+	}
+
+	interface CrystalShard extends Particle {
+		path: string
+	}
+
+	function generateCrystalShards(radius: number, circleY: number) {
+		const startAngle = randomFloat(0, TAU)
+		const shards: CrystalShard[] = []
+		let angleDelta = 0
+		let burstPath = `M${Math.cos(startAngle) * radius},${
+			circleY + Math.sin(startAngle) * radius
+		}`
+		do {
+			let shardPath = `M0,0 l${Math.cos(startAngle + angleDelta) * radius},${
+				Math.sin(startAngle + angleDelta) * radius
+			}`
+			const previousAngle = angleDelta
+			const shardDelta = randomFloat(0.5, 1.4)
+			angleDelta = Math.min(TAU, angleDelta + shardDelta)
+			if (TAU - angleDelta < 0.3) angleDelta = TAU
+			const toAngle = startAngle + angleDelta
+			shardPath += ` A${radius} ${radius} 0 0 1 ${Math.cos(toAngle) * radius},${
+				Math.sin(toAngle) * radius
+			} Z`
+			const midAngle = startAngle + (previousAngle + angleDelta) / 2
+			const speed = randomFloat(radius * 2, radius * 4)
+			burstPath += ` L${Math.cos(midAngle) * (speed / 2 + radius)},${
+				circleY + Math.sin(midAngle) * (speed / 2 + radius)
+			} L${Math.cos(toAngle) * radius},${circleY + Math.sin(toAngle) * radius}`
+			if (shardDelta < 0.7) continue // Don't render small shards
+			const yOrigin = (Math.sin(midAngle) * radius * 2) / 3
+			const yVelocity = Math.sin(midAngle) * speed * 8
+			const { duration, bounces } = calculateBounces(yVelocity, circleY + yOrigin)
+			shards.push({
+				path: shardPath,
+				origin: [(Math.cos(midAngle) * radius * 2) / 3, yOrigin],
+				velocity: [Math.cos(midAngle) * speed, (yVelocity / 32) * 0],
+				rotation: randomInt(-180, 180),
+				duration,
+				bounces,
+			})
+		} while (angleDelta < TAU)
+		burstPath += ' Z'
+		return { shards, burstPath }
 	}
 
 	export function doFun(
@@ -147,39 +200,48 @@
 					willBurst = false
 					bursting = true
 					updateTreeFun(id, xy, { state: 'burst' })
-					let fallingLeafCount = Math.ceil(10 + size * 6)
-					let burstLeafCount = 6
-					let fallDuration = randomInt(1500, 2400)
-					let cleanupDelay = fallDuration - 800
-					leafCount.update((count) => {
-						const reduction = Math.max(1, count / 30)
-						fallingLeafCount = Math.max(4, Math.ceil(fallingLeafCount / reduction))
-						burstLeafCount = Math.max(4, Math.ceil(burstLeafCount / reduction))
-						cleanupDelay = Math.round(cleanupDelay / (Math.max(3, reduction) / 3))
-						return count + fallingLeafCount
-					})
-					for (let i = 0; i < fallingLeafCount; i++) {
-						fallingLeaves.push([
-							-xDistance + randomFloat(-13, 13),
-							circleY + randomFloat(-9, 9),
-							fallDuration,
-							randomInt(500, 1300),
-							randomInt(400, 1000),
-							snowy && i >= fallingLeafCount / 4,
-						])
+					let particleCount = 0
+					let cleanupDelay = 2000
+					if (crystalized) {
+						// TODO: ?
+					} else {
+						let fallingLeafCount = Math.ceil(10 + size * 6)
+						let burstLeafCount = 6
+						let fallDuration = randomInt(1500, 2400)
+						cleanupDelay = fallDuration - 800
+						leafCount.update((count) => {
+							const reduction = Math.max(1, count / 30)
+							fallingLeafCount = Math.max(4, Math.ceil(fallingLeafCount / reduction))
+							particleCount = fallingLeafCount
+							burstLeafCount = Math.max(4, Math.ceil(burstLeafCount / reduction))
+							cleanupDelay = Math.round(cleanupDelay / (Math.max(3, reduction) / 3))
+							return count + particleCount
+						})
+						for (let i = 0; i < fallingLeafCount; i++) {
+							fallingLeaves.push([
+								-xDistance + randomFloat(-13, 13),
+								circleY + randomFloat(-9, 9),
+								fallDuration,
+								randomInt(500, 1300),
+								randomInt(400, 1000),
+								snowy && i >= fallingLeafCount / 4,
+							])
+						}
+						for (let i = 0; i < burstLeafCount; i++) {
+							burstLeaves.push([
+								-xDistance + randomFloat(-8, 8),
+								randomFloat(-6, 6),
+								snowy && i >= burstLeafCount / 4,
+							])
+						}
+						sleep(cleanupDelay).then(() => {
+							bursting = false
+							bursted = true
+							if (particleCount > 0) {
+								leafCount.update((count) => Math.max(0, count - particleCount))
+							}
+						})
 					}
-					for (let i = 0; i < burstLeafCount; i++) {
-						burstLeaves.push([
-							-xDistance + randomFloat(-8, 8),
-							randomFloat(-6, 6),
-							snowy && i >= burstLeafCount / 4,
-						])
-					}
-					sleep(cleanupDelay).then(() => {
-						bursting = false
-						bursted = true
-						leafCount.update((count) => Math.max(0, count - fallingLeafCount))
-					})
 				})
 			}
 			return
@@ -290,7 +352,7 @@
 					/>
 				</circle>
 				<line
-					stroke="var(--{inColor ? 'correct-color' : 'landscape-color'})"
+					stroke="var(--{inColor ? 'correct' : 'landscape'}-color)"
 					stroke-width={STROKE_WIDTH}
 					stroke-linecap="round"
 					y2={circleY + circleTranslateY}
@@ -304,8 +366,16 @@
 					<circle
 						cy={circleY}
 						r={radius - STROKE_HALF}
-						fill="var(--{inColor ? 'correct-color' : 'tertiary-color'})"
-						stroke="var(--{inColor ? 'correct-color' : 'landscape-color'})"
+						fill="var(--{inColor
+							? crystalized
+								? 'before'
+								: 'correct'
+							: 'tertiary'}-color)"
+						stroke="var(--{inColor
+							? crystalized
+								? 'before'
+								: 'correct'
+							: 'landscape'}-color)"
 						stroke-width={STROKE_WIDTH}
 						style:transition="fill {inColor ? 200 : 1000}ms {y * 20}ms ease, stroke {inColor
 							? 200
@@ -406,6 +476,7 @@
 	{:else}
 		<!-- Fun -->
 		{#if filling}
+			<!-- TODO: Remove -->
 			<path
 				class="fill-line"
 				d="M0,0 C0,-{fillDistance} {fillFromXY[0] / 1.2},{fillFromXY[1] -
@@ -537,9 +608,27 @@
 					{/each}
 				</g>
 			</g>
-			{#if juice > 0}
-				<Sparkles count={juice * 4} y={circleY} disperseX={15} disperseY={7} />
+			{#if crystalized}
+				<BouncyParticles
+					particles={crystalShards.shards}
+					let:particle
+					on:done={() => {
+						bursting = false
+						bursted = true
+					}}
+				>
+					<path d={particle.path} fill="var(--before-color)" />
+				</BouncyParticles>
+				<path
+					d={crystalShards.burstPath}
+					style:transform-origin="0 {circleY}px"
+					fill="var(--before-color)"
+					class="shard-burst"
+				/>
 			{/if}
+			<!-- {#if juice > 0}
+				<Sparkles count={juice * 4} y={circleY} disperseX={15} disperseY={7} />
+			{/if} -->
 		{/if}
 	{/if}
 </g>
@@ -597,6 +686,17 @@
 	@keyframes fill-line-dash {
 		100% {
 			stroke-dashoffset: 4.9;
+		}
+	}
+
+	.shard-burst {
+		animation: shard-burst 100ms ease-in forwards;
+	}
+
+	@keyframes shard-burst {
+		100% {
+			transform: scale(0.5);
+			opacity: 0;
 		}
 	}
 </style>

@@ -24,6 +24,7 @@
 	} from '$lib/data-model'
 	import Icon from './landscape/Icon.svelte'
 	import { landscapeFunModes } from '$lib/landscape/fun'
+	import FunTasks from './FunTasks.svelte'
 
 	// TODO: Move coffee link to footer
 
@@ -95,6 +96,7 @@
 	}
 
 	async function onBoardImageShare() {
+		// TODO: Show suggested alt text
 		showScoreShareMenu = false
 		const { hash, dayNumber } = get(store.lastGameDetail)!
 		drawResults(canvas, {
@@ -223,12 +225,7 @@
 					>{mode}</button
 				>
 			{/each}
-			<div style="padding-left: 0.5rem; grid-column: 1 / span 2; height: 0;">
-				Gems: {$funStats.totalGems}<br />
-				Pops: {$funStats.counts.pop}<br />
-				Sops: {$funStats.counts.sop}<br />
-				Plucks: {$funStats.counts.pluck}
-			</div>
+			<FunTasks />
 			<!-- <div class="promo">
 				<a
 					on:auxclick={() => trackEvent('promoLinkFollow')}

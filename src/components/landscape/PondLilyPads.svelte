@@ -1,18 +1,24 @@
 <script lang="ts">
 	import { type FunState, funState } from '$lib/landscape/fun'
-	import { type XY, randomFloat, randomInt } from '$lib/math'
+	import { TAU, type XY, randomFloat, randomInt } from '$lib/math'
 	import { landscapeColor } from '$src/store'
 
 	const { pondTiles } = funState
 
 	let lilyPads: Map<
 		string,
-		{ grid: string; center: XY; path: string; duration: number; frozen?: boolean }
+		{
+			grid: string
+			center: XY
+			path: string
+			duration: number
+			frozen?: boolean
+			crystalized?: boolean
+		}
 	> = new Map()
 	$: getLilyPadTiles($pondTiles)
 
 	function getLilyPadTiles(pondTiles: FunState['pondTiles']) {
-		// console.log('checking pond tiles...', pondTiles.size)
 		for (const [grid, tile] of pondTiles) {
 			if (!tile.lily) continue
 			if (tile.state === 'frozen') {
@@ -21,6 +27,9 @@
 			} else if (tile.state === 'broken') {
 				lilyPads.delete(grid)
 				continue
+			} else if (tile.crystalized) {
+				lilyPads.get(grid)!.crystalized = true
+				continue
 			}
 			if (lilyPads.has(grid)) continue
 			const [xString, yString] = grid.split(':')
@@ -28,7 +37,7 @@
 			const cy = (+yString + randomFloat(0.4, 0.6)) * 10
 			const rx = randomFloat(3.8, 4.5)
 			const ry = rx //(rx * 2) / 3
-			const p1Angle = randomFloat(0, Math.PI * 2)
+			const p1Angle = randomFloat(0, TAU)
 			const p2Angle = p1Angle + randomFloat(0.9, 1.1)
 			const [p1x, p1y]: XY = [cx + Math.cos(p1Angle) * rx, cy + Math.sin(p1Angle) * ry]
 			const [p2x, p2y] = [cx + Math.cos(p2Angle) * rx, cy + Math.sin(p2Angle) * ry]
@@ -43,11 +52,13 @@
 	}
 </script>
 
-{#each [...lilyPads.values()] as { grid, path, frozen, duration, center: [cx, cy] } (grid)}
+{#each [...lilyPads.values()] as { grid, path, frozen, crystalized, duration, center: [cx, cy] } (grid)}
 	{@const color = `var(--${
 		$landscapeColor
 			? frozen
 				? 'ice-shelf'
+				: crystalized
+				? 'before'
 				: 'correct'
 			: frozen
 			? 'tertiary'
@@ -57,13 +68,12 @@
 		d={path}
 		fill={color}
 		stroke={color}
-		style:transition="stroke {$landscapeColor && !frozen ? 200 : 1000}ms ease, fill {$landscapeColor &&
-		!frozen
-			? 200
-			: 1000}ms ease, opacity 1000ms ease"
+		style:transition="stroke {$landscapeColor && !frozen && !crystalized ? 200 : 1000}ms
+		ease, fill {$landscapeColor && !frozen && !crystalized ? 200 : 1000}ms ease, opacity
+		1000ms ease"
 		stroke-linejoin="round"
 		stroke-width="0.8"
-		opacity={frozen && $landscapeColor ? 0.5 : 1}
+		opacity={frozen && $landscapeColor ? 0.6 : 1}
 		class="lily"
 		style:transform-origin="{cx}px {cy}px"
 		style:animation-delay="{500 + duration}ms"

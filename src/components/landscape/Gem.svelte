@@ -13,10 +13,10 @@
 	function generateFaceFrames() {
 		const frames: string[] = []
 		for (let i = 0; i < FRAMES; i++) {
-			const p1Radians = (i / FRAMES) * Math.PI * 2
+			const p1Radians = (i / FRAMES) * TAU
 			const p1x = radius * Math.cos(p1Radians)
 			const p1y = radius * Math.sin(p1Radians) * tilt
-			const p2Radians = (i / FRAMES + 1 / 4) * Math.PI * 2
+			const p2Radians = (i / FRAMES + 1 / 4) * TAU
 			const p2x = radius * Math.cos(p2Radians)
 			const p2y = radius * Math.sin(p2Radians) * tilt
 			frames.push(`M0,${-height} L${p1x},${p1y} L${p2x},${p2y} Z`)
@@ -37,16 +37,16 @@
 		const frames: string[] = []
 		const paddedRadius = radius * outlinePadding
 		for (let i = 0; i < FRAMES / 4; i++) {
-			const p1Radians = (i / FRAMES) * Math.PI * 2
+			const p1Radians = (i / FRAMES) * TAU
 			const p1x = paddedRadius * Math.cos(p1Radians)
 			const p1y = paddedRadius * Math.sin(p1Radians) * tilt
-			const p2Radians = (i / FRAMES + 1 / 4) * Math.PI * 2
+			const p2Radians = (i / FRAMES + 1 / 4) * TAU
 			const p2x = paddedRadius * Math.cos(p2Radians)
 			const p2y = paddedRadius * Math.sin(p2Radians) * tilt
-			const p3Radians = (i / FRAMES + 2 / 4) * Math.PI * 2
+			const p3Radians = (i / FRAMES + 2 / 4) * TAU
 			const p3x = paddedRadius * Math.cos(p3Radians)
 			const p3y = paddedRadius * Math.sin(p3Radians) * tilt
-			const p4Radians = (i / FRAMES + 3 / 4) * Math.PI * 2
+			const p4Radians = (i / FRAMES + 3 / 4) * TAU
 			const p4x = paddedRadius * Math.cos(p4Radians)
 			const p4y = paddedRadius * Math.sin(p4Radians) * tilt
 			const p4yOfP1y = (height + p4y) / (height + p1y)
@@ -88,7 +88,14 @@
 </script>
 
 <script lang="ts">
-	import { randomChance, randomElement, randomFloat, randomInt, type XY } from '$lib/math'
+	import {
+		randomChance,
+		randomElement,
+		randomFloat,
+		randomInt,
+		TAU,
+		type XY,
+	} from '$lib/math'
 
 	import { lastGameDetail, funStats } from '$src/store'
 	import { onMount, tick } from 'svelte'

@@ -250,14 +250,25 @@
 	}
 
 	@media (max-width: 390px) {
+		h1 {
+			font-size: 1.375em;
+		}
 		.game-mode-buttons button {
 			padding: 0 0.5rem;
 		}
 		.menu-buttons button {
 			margin-left: 0.5rem;
 		}
+	}
+
+	@media (max-width: 359px) {
 		h1 {
-			font-size: 1.375em;
+			font-size: 1.125em;
+		}
+		.menu-buttons button {
+			margin-left: 0.5rem;
+			width: 40px;
+			height: 40px;
 		}
 	}
 
@@ -269,7 +280,6 @@
 			transform: none;
 			font-size: 100%;
 		}
-
 		.menu-buttons button:hover svg rect {
 			transform: none !important;
 		}

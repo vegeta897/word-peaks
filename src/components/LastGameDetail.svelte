@@ -48,6 +48,7 @@
 						bind:timeString={guessTimeStrings[g]}
 						ms={lastGameDetail.guessTimes[g + 1] - lastGameDetail.guessTimes[g]}
 						decimals={$preciseTimes ? 2 : 0}
+						onClick={() => preciseTimes.set(!$preciseTimes)}
 					/>
 				</td>
 			</tr>
@@ -68,6 +69,7 @@
 					ms={lastGameDetail.guessTimes[lastGameDetail.guessTimes.length - 1] -
 						lastGameDetail.guessTimes[0]}
 					decimals={$preciseTimes ? 2 : 0}
+					onClick={() => preciseTimes.set(!$preciseTimes)}
 				/>
 			</strong>
 			{$t('main.summary.total_time')}

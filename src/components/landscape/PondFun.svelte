@@ -9,12 +9,7 @@
 <script lang="ts">
 	import { bezierEasing } from '$lib/animation'
 	import { updatePondFun } from '$lib/landscape/fun'
-	import {
-		type SubTile,
-		type IceShard,
-		type IceShardSection,
-		calculateBounces,
-	} from '$lib/landscape/ice'
+	import type { SubTile, IceShard, IceShardSection } from '$lib/landscape/ice'
 	import { createSubTilePath, createPondPath } from '$lib/landscape/pond'
 	import {
 		getDistance,
@@ -34,6 +29,7 @@
 	import { cubicIn } from 'svelte/easing'
 	import { fade } from 'svelte/transition'
 	import Sparkles from './Sparkles.svelte'
+	import { calculateBounces } from './BouncyParticles.svelte'
 
 	export let tiles: XY[]
 	export let pondPath: string
@@ -103,11 +99,15 @@
 			const maxCrawlDistance = dragMode ? 1 : 1.5
 			const breakableSubTiles: Map<string, SubTile> = new Map()
 			const openTiles: Map<string, XY> = new Map([[clickedTile.grid, clickedTile.xy]])
+			const breakXYs: XY[] = []
+			const breakGrids: string[] = []
 			// Select tiles to break
 			while (openTiles.size > 0) {
 				const [grid, xy] = [...openTiles][0]
 				openTiles.delete(grid)
 				breakIce(clickedFrozenPond, grid, xy, breakableSubTiles)
+				breakXYs.push(xy)
+				breakGrids.push(grid)
 				getNeighbors8(...xy).forEach((nXY, n) => {
 					const neighborGrid = xyToGrid(nXY)
 					if (openTiles.has(neighborGrid) || !clickedFrozenPond.tiles.has(neighborGrid))
@@ -124,6 +124,7 @@
 					// }
 				})
 			}
+			updatePondFun(breakGrids, breakXYs, { state: 'broken' })
 			const shards: IceShard[] = []
 			breakableSubTiles.forEach((subTile, subTileGrid) => {
 				const willBreak = [...subTile.tileGrids].every(
@@ -174,12 +175,16 @@
 				const xMagnitude = xDistance / distance
 				const yMagnitude = yDistance / distance
 				const force = 1 / Math.min(4, distance + 1)
-				const zVelocity = 3 + cubicIn(randomFloat(0, 1)) * 40 * force
+				const zVelocity = -100 - cubicIn(randomFloat(0, 1)) * 120 * force
 				const iceShard: IceShard = {
 					subTile,
-					origin: [(points[0][0] + points[2][0]) / 2, (points[0][1] + points[2][1]) / 2],
+					origin: [
+						((points[0][0] + points[2][0]) / 2) * 15,
+						((points[0][1] + points[2][1]) / 2) * 10 - 3.5,
+					],
 					rotation: randomInt(-160, 160),
 					velocity: [
+						// 0, 0,
 						randomInt(-5, 5) + xMagnitude * force * 35,
 						randomInt(-5, 5) + yMagnitude * force * 25,
 					],
@@ -196,11 +201,7 @@
 			shards.forEach((shard) => {
 				let shardSection = shardSectionsByRow.get(shard.subTile.pondRow)
 				if (!shardSection) {
-					shardSection = {
-						id: iceShardSectionId++,
-						delay: 0,
-						shards: [],
-					}
+					shardSection = { id: iceShardSectionId++, shards: [] }
 					shardSectionsByRow.set(shard.subTile.pondRow, shardSection)
 				}
 				shardSection.shards.push(shard)
@@ -237,7 +238,8 @@
 				subTileVertices: new Map(),
 				brokenPath: '',
 			}
-			const tileList: XY[] = []
+			const freezingXYs: XY[] = []
+			const freezingGrids: string[] = []
 			const rng = new Rand($answer + clickedTile.grid)
 			const getRng = () => rng.next()
 			const openTiles: Map<string, XY> = new Map([[clickedTile.grid, clickedTile.xy]])
@@ -247,8 +249,8 @@
 				nonFrozenTilesMap.delete(grid)
 				const subTiles: Map<string, SubTile> = new Map()
 				freezingPond.tiles.set(grid, { subTiles, xy })
-				updatePondFun(grid, xy, { state: 'frozen' })
-				tileList.push(xy)
+				freezingXYs.push(xy)
+				freezingGrids.push(grid)
 				for (let fxi = 0; fxi < 4; fxi++) {
 					const xDir = fxi % 2 ? 1 : -1
 					const subPointX = xy[0] * 2 + fxi
@@ -295,7 +297,8 @@
 						openTiles.set(nGrid, nXY)
 				})
 			}
-			const freezingPondPathData = createPondPath(tileList)
+			updatePondFun(freezingGrids, freezingXYs, { state: 'frozen' })
+			const freezingPondPathData = createPondPath(freezingXYs)
 			freezingPond.path = stringifyPathData(freezingPondPathData)
 			frozenPonds = [...frozenPonds, freezingPond]
 			// Draw all ponds as non-frozen first so we can transition them away
@@ -311,16 +314,15 @@
 
 	function breakIce(
 		pond: FrozenPond,
-		tileGrid: string,
-		tileXY: XY,
+		grid: string,
+		xy: XY,
 		breakableSubTiles: Map<string, SubTile>
 	) {
-		pond.tiles.get(tileGrid)!.subTiles.forEach((st, g) => breakableSubTiles.set(g, st))
-		pond.emptyTiles.set(tileGrid, tileXY)
-		pond.tiles.delete(tileGrid)
+		pond.tiles.get(grid)!.subTiles.forEach((st, g) => breakableSubTiles.set(g, st))
+		pond.emptyTiles.set(grid, xy)
+		pond.tiles.delete(grid)
 		// const juice = $funStatus.pondTiles.get(tileGrid)?.juice || 0
 		// if (juice > 0) sparkles = [...sparkles, { xy: tileXY, count: juice * 3 }]
-		updatePondFun(tileGrid, tileXY, { state: 'broken' })
 	}
 
 	let filled = false

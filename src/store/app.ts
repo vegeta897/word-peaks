@@ -8,9 +8,9 @@ import type { KeyboardLayout } from '$lib/constants'
 import { type Landscape } from '$lib/landscape/landscape'
 import { type FunStats, type LandscapeFunMode, newFunStats } from '$lib/landscape/fun'
 import { browser } from '$app/env'
-import Pond from '$src/components/landscape/Pond.svelte'
-import Tree from '$src/components/landscape/Tree.svelte'
-import Hill from '$src/components/landscape/Hill.svelte'
+import Pond from '$com/landscape/Pond.svelte'
+import Tree from '$com/landscape/Tree.svelte'
+import Hill from '$com/landscape/Hill.svelte'
 
 export const storeVersion: Writable<number> = storageWritable('wp-version', 0)
 export const storedLocale: Writable<string> = storageWritable('wp-locale', '')

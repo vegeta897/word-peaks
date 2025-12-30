@@ -33,11 +33,11 @@
 	{#if $highContrast}
 		<style>
 			body {
-				--before-color: #da3f8b;
-				--correct-color: #64ba2e;
-				--primary-color: #000;
-				--secondary-color: #0e1118;
-				--tertiary-color: #161a25;
+				--before-color: var(--before-high-contrast-color);
+				--correct-color: var(--correct-high-contrast-color);
+				--primary-color: var(--primary-high-contrast-color);
+				--secondary-color: var(--secondary-high-contrast-color);
+				--tertiary-color: var(--tertiary-high-contrast-color);
 			}
 		</style>
 	{/if}

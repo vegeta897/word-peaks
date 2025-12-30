@@ -7,6 +7,7 @@
 	export let dimming: boolean = true
 	export let decimals = 0
 	export let timeString: string = ''
+	export let onClick: (() => void) | undefined = undefined
 
 	let spanElement: HTMLSpanElement
 	$: timeString = spanElement?.innerText
@@ -40,7 +41,13 @@
 
 {#if !countdown || msTotal > 0}
 	<slot name="title" />
-	<span bind:this={spanElement} class={$$props.class}>
+	<!-- svelte-ignore a11y-click-events-have-key-events -->
+	<span
+		bind:this={spanElement}
+		class={$$props.class}
+		on:click={onClick}
+		style:cursor={onClick ? 'pointer' : 'default'}
+	>
 		<span class:fade={dimming && hours === 0}>{showHours ? hours : ''}</span><span
 			class:fade={dimming && minutes === 0 && hours === 0}
 			>{showHours ? ':' + padZero(minutes) : minutes}</span

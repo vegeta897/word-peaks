@@ -14,11 +14,16 @@
 	--primary-color: #161a25;
 	--secondary-color: #221c2e;
 	--tertiary-color: #312236;
+	--primary-high-contrast-color: #000;
+	--secondary-high-contrast-color: #0e1118;
+	--tertiary-high-contrast-color: #161a25;
 	--accent-color: #de49a2;
 	--cta-color: #096fb7;
 	--correct-color: #15a850;
+	--correct-high-contrast-color: #64ba2e;
 	--error-color: #ac2847;
 	--before-color: #e38f2f;
+	--before-high-contrast-color: #da3f8b;
 	--after-color: #567de8;
 	--heading-color: rgba(255, 255, 255, 0.8);
 	--text-color: #cccccc;

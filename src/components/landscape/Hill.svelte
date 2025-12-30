@@ -8,6 +8,7 @@
 		randomFloat,
 		randomInt,
 		sleep,
+		TAU,
 		type XY,
 	} from '$lib/math'
 	import Gem from './Gem.svelte'
@@ -64,7 +65,6 @@
 		lastTimeout = thisTimeout
 	}
 
-	$: xy = [x, y] as XY
 	$: centerX = (x + xJitter + (mini ? 1 : 1.5)) * 15
 	$: centerY = (y + yJitter) * 10
 	$: radius = (mini ? 8 : 13.5) + 2 * size
@@ -92,7 +92,7 @@
 	$: popUpTranslate = mini ? 25 : 33
 
 	function createPopRingPath(radius: number) {
-		const startAtRadians = randomFloat(0, Math.PI * 2)
+		const startAngle = randomFloat(0, TAU)
 		let ringPercent = 0
 		let ringSegment = 0
 		let peakStart = [0, 0]
@@ -100,17 +100,17 @@
 		let bigPeak = randomChance()
 		let path = ''
 		while (ringPercent <= 1) {
-			const radians = startAtRadians + Math.PI * 2 * ringPercent
-			const x = radius * Math.cos(radians) * (peak ? 1.1 : 1)
-			const baseY = (radius * Math.sin(radians)) / 3
+			const angleDelta = startAngle + TAU * ringPercent
+			const x = radius * Math.cos(angleDelta) * (peak ? 1.1 : 1)
+			const baseY = (radius * Math.sin(angleDelta)) / 3
 			if (path === '') {
 				path += `M${x},${baseY}`
 				peakStart = [x, baseY]
 			} else {
 				const y = peak ? baseY - (bigPeak ? randomInt(5, 7) : randomInt(2, 4)) : baseY
 				const cRadians = peak
-					? radians - 0.1
-					: startAtRadians + (ringPercent - ringSegment) * Math.PI * 2 + 0.1
+					? angleDelta - 0.1
+					: startAngle + (ringPercent - ringSegment) * TAU + 0.1
 				const cx = radius * Math.cos(cRadians)
 				const cBaseY = (radius * Math.sin(cRadians)) / 3
 				path += `Q${cx},${cBaseY} ${x},${y}`
@@ -185,17 +185,17 @@
 		return path
 	}
 
-	export function doFun(x: number, y: number): void | number {
+	export function doFun(cursorX: number, cursorY: number): void | number {
 		if (popped) return
-		const xDistance = x - centerX
-		const yDistance = y - centerY
+		const xDistance = cursorX - centerX
+		const yDistance = cursorY - centerY
 		if (
 			Math.abs(xDistance) < radius * 1.2 &&
 			yDistance < radius / 3 &&
 			yDistance > -radius - 0.3 - vertLength
 		) {
 			popped = true
-			updateHillFun(id, xy, { state: 'popped' })
+			updateHillFun(id, [x, y], { state: 'popped' })
 			const particleCount = snowy ? 16 : 10
 			for (let i = 0; i < particleCount; i++) {
 				const central = 1 - Math.abs((i + 0.5) / particleCount - 0.5) * 0.5

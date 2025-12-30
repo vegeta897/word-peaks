@@ -3,7 +3,7 @@
 	import { sineIn } from 'svelte/easing'
 	import { landscapeColor as fullColor } from '$src/store'
 	import { bezierEasing } from '$lib/animation'
-	import { randomFloat, randomInt } from '$lib/math'
+	import { randomChance, randomFloat, randomInt } from '$lib/math'
 
 	export let id: number
 	export let y: number
@@ -13,23 +13,27 @@
 	export let popped: boolean
 
 	const { features } = funState
+	type IvyVine = { leaves: number[][]; leftFirst: boolean; speed: number }
 	$: ivyVines = $features.hill[id] && growIvy($features.hill[id].ivy)
 
-	function growIvy(
-		ivy: number[]
-	): ({ leaves: number[][]; leftFirst: boolean; speed: number } | false)[] {
-		return ivy.slice(0, 3).map((v, i) => {
-			if (!v) return false
-			return (
+	function growIvy(ivy: number): (IvyVine | false)[] {
+		const vines: (IvyVine | false)[] = []
+		for (let i = 0; i < 3; i++) {
+			if ((ivy & (1 << i)) === 0) {
+				vines.push(false)
+				continue
+			}
+			vines.push(
 				(ivyVines && ivyVines[i]) || {
 					leaves: leaves
 						.slice(0, randomInt(6, 9))
 						.map(() => [randomInt(-16, 6), randomInt(8, 28)]),
-					leftFirst: i === 2,
+					leftFirst: i === 1 ? randomChance() : i === 2,
 					speed: randomFloat(i === 1 ? 0.8 : 0.6, 1.2), // Middle grows fastest
 				}
 			)
-		})
+		}
+		return vines
 	}
 
 	const BASE_HALF = 0.6
