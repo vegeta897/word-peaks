@@ -264,10 +264,10 @@
 				<a
 					on:auxclick={() => trackEvent('promoLinkFollow')}
 					on:click={() => trackEvent('promoLinkFollow')}
-					href="https://buymeacoffee.com/vegeta897"
+					href="https://www.youtube.com/watch?v=W1dyNcRGRXY"
 				>
-					<span class="hide-on-small-screens">{$t('main.footer.donate')}</span>
-					<span class="hide-on-big-screens">{$t('main.footer.donate_short')}</span>
+					<span class="hide-on-small-screens">abolish & prosecute ICE</span>
+					<span class="hide-on-big-screens">abolish ICE</span>
 				</a>
 			</div>
 		</div>
@@ -506,6 +506,15 @@
 		display: none;
 	}
 
+	@media (max-width: 490px) {
+		.hide-on-small-screens {
+			display: none;
+		}
+		.hide-on-big-screens {
+			display: initial;
+		}
+	}
+
 	@media (max-width: 430px) {
 		button {
 			font-size: 1.25em;
@@ -522,12 +531,6 @@
 		}
 		.landscape-controls {
 			gap: 0.375rem;
-		}
-		.hide-on-small-screens {
-			display: none;
-		}
-		.hide-on-big-screens {
-			display: initial;
 		}
 	}
 
