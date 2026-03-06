@@ -14,7 +14,7 @@ const config = {
 	kit: {
 		adapter: adapter(),
 		paths: {
-			base: '/peaks-2023',
+			base: '/peaks-2024',
 		},
 		alias: {
 			$src: 'src',

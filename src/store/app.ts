@@ -7,7 +7,7 @@ import { gameMode } from '$src/store/game-state'
 import type { KeyboardLayout } from '$lib/constants'
 import type { Landscape } from '$lib/landscape/landscape'
 
-const PREFIX = 'wp23-'
+const PREFIX = 'wp24-'
 
 const prefixPersisted = <T extends Parameters<typeof persisted>[1]>(
 	key: string,

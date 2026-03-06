@@ -11,7 +11,7 @@ import { persisted } from 'svelte-persisted-store'
 import { ROWS } from '$lib/constants'
 import { newPauseState, type PauseState } from '$src/lib/stats'
 
-const PREFIX = 'wp23-'
+const PREFIX = 'wp24-'
 
 const prefixPersisted = <T extends Parameters<typeof persisted>[1]>(
 	key: string,

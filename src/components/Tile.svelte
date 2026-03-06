@@ -47,7 +47,6 @@
 				tile.letter &&
 				tile.letterBounds &&
 				(tile.letter < tile.letterBounds[0] || tile.letter > tile.letterBounds[1])))}
-	class:pea={isAprilFools}
 	style={`animation-delay: ${
 		tile.id * ($notEnoughLetters || $invalidHardModeGuess ? 20 : 0)
 	}ms; --tile-animation-delay: ${tileFlipDelay}ms; --tile-animation-duration: ${tileFlipDuration}ms;`}
@@ -70,7 +69,7 @@
 			class:invalid={$invalidWordPreview && inCurrentRow}
 			out:fade={{
 				delay: tileFlipDelay + tileFlipDuration * 0.6,
-				duration: tile.polarity === 0 && isAprilFools ? 100 : 0,
+				duration: 0,
 			}}
 		>
 			{#if tile.letter}<div in:fly|global={typeAnimation}>{tile.letter}</div>{/if}
@@ -119,10 +118,6 @@
 		box-shadow: 0 0 10px var(--correct-color);
 	}
 
-	.tile-container.animate.correct.pea::after {
-		border-radius: 100%;
-	}
-
 	.tile-background {
 		width: 100%;
 		height: 100%;
@@ -130,10 +125,6 @@
 		position: absolute;
 		top: 0;
 		left: 0;
-	}
-
-	.correct.pea .tile-background {
-		border-radius: 100%;
 	}
 
 	.correct .tile-background {
