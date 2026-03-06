@@ -12,7 +12,6 @@
 	import LastGameDetail from './LastGameDetail.svelte'
 	import { cubicOut } from 'svelte/easing'
 	import { aprilFools } from '$lib/share'
-	import Worm from './Worm.svelte'
 	import { pauseTimer, resumeTimer } from '$src/lib/stats'
 
 	const {
@@ -101,9 +100,6 @@
 			danceClickProgress = 0
 		}
 	}
-
-	// Using answer as a dependency so this will refresh when the next word starts
-	$: isAprilFools = $answer && aprilFools()
 </script>
 
 <div class="container" style="--row-count: {ROWS}">
@@ -144,9 +140,6 @@
 								{/each}
 							</div>
 						{/each}
-						{#if isAprilFools}
-							<Worm />
-						{/if}
 					</div>
 				{:else}
 					{#key $gameMode}

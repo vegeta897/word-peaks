@@ -33,7 +33,7 @@
 		</style>
 	{/if}
 	{#if isAprilFools}
-		<title>Worm Peaks</title>
+		<title>Word Peas</title>
 	{/if}
 </svelte:head>
 

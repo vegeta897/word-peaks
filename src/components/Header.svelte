@@ -28,14 +28,14 @@
 
 	// Using answer as a dependency so this will refresh when the next word starts
 	$: isAprilFools = $answer && aprilFools()
-	$: wormActive =
-		isAprilFools && $boardContent.some((r) => r.some((t) => t.scored && t.distance > 0))
+	$: peaColor =
+		isAprilFools && $boardContent.some((r) => r.some((t) => t.scored && t.distance === 0))
 </script>
 
 <header class:high-contrast={$highContrast}>
 	<div class="heading-container">
 		<h1>
-			<span class:worm={wormActive}>{isAprilFools ? 'Worm' : 'Word'}</span> Peaks
+			Word <span class:pea={peaColor}>{isAprilFools ? 'Peas' : 'Peaks'}</span>
 			{#if browser}
 				<small class="game-mode">
 					{#if $gameMode === 'daily'}
@@ -184,8 +184,8 @@
 		padding: 0 0.25rem;
 	}
 
-	.worm {
-		color: var(--accent-color);
+	.pea {
+		color: var(--correct-color);
 		transition: color 2s ease-in;
 	}
 

@@ -88,12 +88,7 @@
 			if (lastGameDetail.hash) url += `/#${lastGameDetail.hash}`
 		}
 		copyText(
-			shareTitleText +
-				(aprilFools() ? ' 🪱' : '') +
-				'\n\n' +
-				getEmojiGrid(emojiGridParams) +
-				totalTime +
-				url
+			shareTitleText + '\n\n' + getEmojiGrid(emojiGridParams) + totalTime + url
 		).then(
 			() => successToast(get(t)('main.messages.score_copied')),
 			() => errorToast()

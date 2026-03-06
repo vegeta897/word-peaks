@@ -9,9 +9,11 @@
 		currentTile,
 		gameFinished,
 		currentRow,
+		lastPlayedDaily,
 	} from '$src/store'
 	import type { Tile } from '$lib/data-model'
 	import { onDestroy } from 'svelte'
+	import { aprilFools } from '$src/lib/share'
 
 	export let tile: Omit<Tile, 'magnitude'>
 	export let current = false
@@ -26,6 +28,8 @@
 
 	const tileFlipDuration = 500
 	const typeAnimation = { duration: 100, from: 'bottom', easing: quadOut }
+
+	$: isAprilFools = $lastPlayedDaily && aprilFools()
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events a11y-interactive-supports-focus -->
@@ -43,6 +47,7 @@
 				tile.letter &&
 				tile.letterBounds &&
 				(tile.letter < tile.letterBounds[0] || tile.letter > tile.letterBounds[1])))}
+	class:pea={isAprilFools}
 	style={`animation-delay: ${
 		tile.id * ($notEnoughLetters || $invalidHardModeGuess ? 20 : 0)
 	}ms; --tile-animation-delay: ${tileFlipDelay}ms; --tile-animation-duration: ${tileFlipDuration}ms;`}
@@ -63,7 +68,10 @@
 			class:finished={$gameFinished}
 			class:clickable={inCurrentRow}
 			class:invalid={$invalidWordPreview && inCurrentRow}
-			out:fade={{ delay: tileFlipDelay + tileFlipDuration * 0.6, duration: 0 }}
+			out:fade={{
+				delay: tileFlipDelay + tileFlipDuration * 0.6,
+				duration: tile.polarity === 0 && isAprilFools ? 100 : 0,
+			}}
 		>
 			{#if tile.letter}<div in:fly|global={typeAnimation}>{tile.letter}</div>{/if}
 			{#if tile.letterBounds && !tile.letter && showHint}
@@ -111,6 +119,10 @@
 		box-shadow: 0 0 10px var(--correct-color);
 	}
 
+	.tile-container.animate.correct.pea::after {
+		border-radius: 100%;
+	}
+
 	.tile-background {
 		width: 100%;
 		height: 100%;
@@ -118,6 +130,10 @@
 		position: absolute;
 		top: 0;
 		left: 0;
+	}
+
+	.correct.pea .tile-background {
+		border-radius: 100%;
 	}
 
 	.correct .tile-background {
