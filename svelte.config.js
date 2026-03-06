@@ -14,7 +14,7 @@ const config = {
 	kit: {
 		adapter: adapter(),
 		paths: {
-			base: dev || netlify ? '' : '/word-peaks',
+			base: '/peaks-2025',
 		},
 		alias: {
 			$src: 'src',

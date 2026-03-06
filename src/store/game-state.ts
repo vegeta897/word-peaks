@@ -11,22 +11,29 @@ import { persisted } from 'svelte-persisted-store'
 import { ROWS } from '$lib/constants'
 import { newPauseState, type PauseState } from '$src/lib/stats'
 
-export const answerDaily: Writable<string> = persisted('wp-answer', '')
-export const answerRandom: Writable<string> = persisted('wp-answerRandom', '')
+const PREFIX = 'wp25-'
 
-export const guessesDaily: Writable<string[]> = persisted('wp-guesses', [])
-export const guessesRandom: Writable<string[]> = persisted('wp-guessesRandom', [])
+const prefixPersisted = <T extends Parameters<typeof persisted>[1]>(
+	key: string,
+	initialValue: T
+) => persisted(PREFIX + key, initialValue)
 
-export const lastPlayedDailyWasHard: Writable<boolean> = persisted(
-	'wp-lastPlayedWasHard',
+export const answerDaily: Writable<string> = prefixPersisted('answer', '')
+export const answerRandom: Writable<string> = prefixPersisted('answerRandom', '')
+
+export const guessesDaily: Writable<string[]> = prefixPersisted('guesses', [])
+export const guessesRandom: Writable<string[]> = prefixPersisted('guessesRandom', [])
+
+export const lastPlayedDailyWasHard: Writable<boolean> = prefixPersisted(
+	'lastPlayedWasHard',
 	false
 )
-export const lastPlayedRandomWasHard: Writable<boolean> = persisted(
-	'wp-lastPlayedRandomWasHard',
+export const lastPlayedRandomWasHard: Writable<boolean> = prefixPersisted(
+	'lastPlayedRandomWasHard',
 	false
 )
 
-const hardModeStored: Writable<boolean> = persisted('wp-hardMode', false)
+const hardModeStored: Writable<boolean> = prefixPersisted('hardMode', false)
 export const hardMode: Readable<boolean> = derived(
 	hardModeStored,
 	($hardModeStored) => $hardModeStored
@@ -68,17 +75,18 @@ export function updateGuesses(fn: Updater<string[]>): void {
 	;(get(gameMode) === 'daily' ? guessesDaily : guessesRandom).update(fn)
 }
 
-export const guessTimesDaily: Writable<number[]> = persisted('wp-guessTimesDaily', [])
-export const guessTimesRandom: Writable<number[]> = persisted('wp-guessTimesRandom', [])
+export const guessTimesDaily: Writable<number[]> = prefixPersisted('guessTimesDaily', [])
+export const guessTimesRandom: Writable<number[]> = prefixPersisted(
+	'guessTimesRandom',
+	[]
+)
 export const guessTimes: Readable<number[]> = derived(
 	[gameMode, guessTimesDaily, guessTimesRandom],
 	([$gameMode, $guessTimesDaily, $guessTimesRandom]) =>
 		$gameMode === 'daily' ? $guessTimesDaily : $guessTimesRandom
 )
-export const pauseInfo: Writable<{ daily: PauseState; random: PauseState }> = persisted(
-	'wp-pauseInfo',
-	{ daily: newPauseState(), random: newPauseState() }
-)
+export const pauseInfo: Writable<{ daily: PauseState; random: PauseState }> =
+	prefixPersisted('pauseInfo', { daily: newPauseState(), random: newPauseState() })
 
 export const currentRow: Readable<number> = derived(
 	guesses,
