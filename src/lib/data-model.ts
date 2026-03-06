@@ -140,13 +140,14 @@ export function hasEnoughLetters(boardContent: Board, row: number): boolean {
 }
 
 const firstDay = new Date(2022, 1, 25) // 2022-02-25
+const aprilFools = new Date(2025, 3, 1)
 
 export const getDayNumber = (): number => {
 	let dayCount = 0
 	const start = new Date(firstDay)
 	const today = new Date()
 	today.setHours(0, 0, 0, 0)
-	while (start < today) {
+	while (start < today && start < aprilFools) {
 		dayCount++
 		start.setDate(start.getDate() + 1)
 	}
