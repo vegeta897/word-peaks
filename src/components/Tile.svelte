@@ -152,15 +152,18 @@
 		border-top-right-radius: var(--tile-arrow-radius);
 	}
 
+	.before.animate .tile-clip {
+		animation: bloop-up var(--tile-animation-duration) var(--tile-animation-delay) both;
+	}
+
 	.before .tile-background {
-		border-top-left-radius: var(--tile-arrow-radius);
-		border-top-right-radius: var(--tile-arrow-radius);
 		background: var(--before-color);
 	}
 
 	.before.animate .tile-background {
-		animation: bloop-up var(--tile-animation-duration) var(--tile-animation-delay)
-			backwards;
+		animation:
+			fly-up var(--tile-animation-duration) var(--tile-animation-delay) backwards,
+			bloop-up var(--tile-animation-duration) var(--tile-animation-delay) backwards;
 	}
 
 	.after .tile-clip {
@@ -168,24 +171,45 @@
 		border-bottom-right-radius: var(--tile-arrow-radius);
 	}
 
+	.after.animate .tile-clip {
+		animation: bloop-down var(--tile-animation-duration) var(--tile-animation-delay) both;
+	}
+
 	.after .tile-background {
-		border-bottom-left-radius: var(--tile-arrow-radius);
-		border-bottom-right-radius: var(--tile-arrow-radius);
 		background: var(--after-color);
 	}
 
 	.after.animate .tile-background {
-		animation: bloop-down var(--tile-animation-duration) var(--tile-animation-delay)
-			backwards;
+		animation:
+			fly-down var(--tile-animation-duration) var(--tile-animation-delay) backwards,
+			bloop-down var(--tile-animation-duration) var(--tile-animation-delay) backwards;
+	}
+
+	@keyframes bloop-up {
+		0% {
+			animation-timing-function: ease-in;
+		}
+		40% {
+			border-top-left-radius: 50%;
+			border-top-right-radius: 50%;
+			animation-timing-function: ease-out;
+		}
+		60% {
+			border-top-left-radius: 14%;
+			border-top-right-radius: 14%;
+			animation-timing-function: ease-in;
+		}
+		100% {
+			border-top-left-radius: var(--tile-arrow-radius);
+			border-top-right-radius: var(--tile-arrow-radius);
+		}
 	}
 
 	@keyframes bloop-down {
 		0% {
-			transform: translateY(-102%);
 			animation-timing-function: ease-in;
 		}
 		40% {
-			transform: translateY(0);
 			border-bottom-left-radius: 50%;
 			border-bottom-right-radius: 50%;
 			animation-timing-function: ease-out;
@@ -201,25 +225,23 @@
 		}
 	}
 
-	@keyframes bloop-up {
+	@keyframes fly-up {
 		0% {
 			transform: translateY(102%);
 			animation-timing-function: ease-in;
 		}
 		40% {
 			transform: translateY(0);
-			border-top-left-radius: 50%;
-			border-top-right-radius: 50%;
-			animation-timing-function: ease-out;
 		}
-		60% {
-			border-top-left-radius: 14%;
-			border-top-right-radius: 14%;
+	}
+
+	@keyframes fly-down {
+		0% {
+			transform: translateY(-102%);
 			animation-timing-function: ease-in;
 		}
-		100% {
-			border-top-left-radius: var(--tile-arrow-radius);
-			border-top-right-radius: var(--tile-arrow-radius);
+		40% {
+			transform: translateY(0);
 		}
 	}
 
