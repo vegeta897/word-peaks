@@ -36,13 +36,13 @@
 	let idleSessionID = 0
 
 	async function waitForIdle() {
-		if (isAprilFools) return
 		if (!get(store.allowDancing)) return
 		if (canAnimate === false) return
 		idle = false
 		danceClickProgress = 0
 		const thisIdleSessionID = ++idleSessionID
 		clearTimeout(idleTimeout!)
+		if (isAprilFools) return
 		if (!get(gameFinished) && get(store.openScreen) === null && !document.hidden) {
 			await new Promise<void>((resolve) => {
 				idleTimeout = setTimeout(() => {
