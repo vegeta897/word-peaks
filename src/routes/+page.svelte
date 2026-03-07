@@ -6,7 +6,7 @@
 	import Stats from '$com/Stats.svelte'
 	import Tutorial from '$com/Tutorial.svelte'
 	import Options from '$com/Options.svelte'
-	import { decodeWord, playDaily, playRandom } from '$lib/data-model'
+	import { decodeWord, playDaily, playRandom } from '$src/lib/game'
 	import * as store from '$src/store'
 	import { browser } from '$app/environment'
 	// TODO: Change to app/state when migrating to svelte 5

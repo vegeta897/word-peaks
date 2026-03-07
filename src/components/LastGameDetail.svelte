@@ -5,10 +5,8 @@
 	import * as store from '$src/store'
 	import { fade } from 'svelte/transition'
 	import { cubicOut } from 'svelte/easing'
-	import { aprilFools } from '$src/lib/share'
-	import { getWormHoleColor, wormHolePositions } from './Worm.svelte'
 
-	const { preciseTimes, lastPlayedDaily, highContrast } = store
+	const { preciseTimes } = store
 
 	export let lastGameDetail: GameDetail
 
@@ -19,8 +17,6 @@
 	$: store.guessTimeStrings.set(guessTimeStrings)
 	$: gameWon =
 		lastGameDetail.guesses[lastGameDetail.guesses.length - 1] === lastGameDetail.answer
-
-	$: isAprilFools = $lastPlayedDaily && aprilFools()
 </script>
 
 <section transition:fade={{ duration: 250, easing: cubicOut }}>
@@ -36,41 +32,6 @@
 								class:after={letter > lastGameDetail.answer[l]}
 							>
 								{letter.toUpperCase()}
-								{#if isAprilFools && l === wormHolePositions[g][0]}
-									{@const left = wormHolePositions[g][1]}
-									{@const top = wormHolePositions[g][2]}
-									{@const polarity =
-										letter < lastGameDetail.answer[l]
-											? -1
-											: letter > lastGameDetail.answer[l]
-												? 1
-												: 0}
-									<div
-										class="worm-hole"
-										style:left="{left}%"
-										style:top="{top}%"
-										style:background={getWormHoleColor(polarity, $highContrast)}
-									></div>
-									{#if g === lastGameDetail.guesses.length - 1}
-										<svg
-											xmlns="http://www.w3.org/2000/svg"
-											viewBox="0 0 15 15"
-											width="150%"
-											height="150%"
-											class="worm"
-											style:left="{left}%"
-											style:top="{top}%"
-										>
-											<path
-												fill="none"
-												stroke="var(--accent-color)"
-												stroke-width="2.5"
-												stroke-linecap="round"
-												d="M1.65,1.65 C6,5 0,5 5,9"
-											></path>
-										</svg>
-									{/if}
-								{/if}
 							</div>
 						{/each}
 					</div>
@@ -208,32 +169,6 @@
 		font-weight: 700;
 		font-size: 0.8em;
 		margin-top: 2px;
-	}
-
-	.worm-hole {
-		pointer-events: none;
-		position: absolute;
-		width: 33%;
-		height: 33%;
-		border-radius: 100%;
-		background: #0008;
-	}
-
-	.worm {
-		pointer-events: none;
-		position: absolute;
-	}
-
-	.worm path {
-		stroke-dasharray: 10 100;
-		stroke-dashoffset: 9.5;
-		animation: worm-out 1.5s ease-out forwards;
-	}
-
-	@keyframes worm-out {
-		100% {
-			stroke-dashoffset: 0;
-		}
 	}
 
 	@media (max-width: 720px) {

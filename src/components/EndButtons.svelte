@@ -22,8 +22,9 @@
 		playDaily,
 		playRandom,
 		type GameMode,
-	} from '$lib/data-model'
+	} from '$src/lib/game'
 	import Icon from './landscape/Icon.svelte'
+	import { getHerdText } from '$src/lib/herd'
 
 	const { landscapeWideView, landscapeForceColor, landscapeRedraw, hideLandscape } = store
 
@@ -89,8 +90,9 @@
 		}
 		copyText(
 			shareTitleText +
-				(aprilFools() ? ' 🪱' : '') +
-				'\n\n' +
+				'\n' +
+				(aprilFools() ? getHerdText(get(store.boardContent)) : '') +
+				'\n' +
 				getEmojiGrid(emojiGridParams) +
 				totalTime +
 				url

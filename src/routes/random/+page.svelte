@@ -2,7 +2,7 @@
 	import { goto } from '$app/navigation'
 	import { browser } from '$app/environment'
 	import { base } from '$app/paths'
-	import { encodeWord, getRandomWord } from '$lib/data-model'
+	import { encodeWord, getRandomWord } from '$src/lib/game'
 
 	if (browser) {
 		const hash = encodeWord(getRandomWord())

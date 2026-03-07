@@ -1,12 +1,8 @@
 import type { Readable, Updater, Writable } from 'svelte/store'
 import { derived, get, writable } from 'svelte/store'
-import type { Board, GameMode } from '$lib/data-model'
-import {
-	createNewBoard,
-	getValidLetterBounds,
-	getValidLetters,
-	scoreTile,
-} from '$lib/data-model'
+import type { GameMode } from '$src/lib/game'
+import { createNewBoard, type Board } from '$src/lib/board'
+import { getValidLetterBounds, getValidLetters, scoreTile } from '$src/lib/game'
 import { persisted } from 'svelte-persisted-store'
 import { ROWS } from '$lib/constants'
 import { newPauseState, type PauseState } from '$src/lib/stats'
@@ -114,9 +110,10 @@ export function initGameState() {
 			for (let r = 0; r < ROWS; r++) {
 				if (r < guessed.length) {
 					const guessedWord = guessed[r]
-					newBoardContent[r] = [...guessedWord].map((letter, l) =>
-						scoreTile(letter, get(answer), l)
-					)
+					newBoardContent[r] = [...guessedWord].map((letter, l) => ({
+						...newBoardContent[r][l],
+						...scoreTile(letter, get(answer), l),
+					}))
 				} else if (r > 0 && r === guessed.length) {
 					newBoardContent[r].forEach((tile, t) => {
 						tile.letterBounds = getValidLetterBounds(

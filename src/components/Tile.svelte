@@ -10,8 +10,9 @@
 		gameFinished,
 		currentRow,
 	} from '$src/store'
-	import type { Tile } from '$lib/data-model'
+	import type { Tile } from '$lib/board'
 	import { onDestroy } from 'svelte'
+	import { randomChance } from '$src/lib/math'
 
 	export let tile: Omit<Tile, 'magnitude'>
 	export let current = false
@@ -51,9 +52,15 @@
 	{#if tile.scored}
 		<div class="tile-clip">
 			<div class="tile-background" />
+			{#if tile.animal}
+				<div class="animal-container animal-scored">
+					<span> {tile.animal} </span>
+				</div>
+			{/if}
 			<div class="tile scored filled">{tile.letter}</div>
 		</div>
 	{:else}
+		{@const displayHint = tile.letterBounds && !tile.letter && showHint}
 		<div
 			class="tile"
 			class:filled={tile.letter !== ''}
@@ -66,13 +73,24 @@
 			out:fade={{ delay: tileFlipDelay + tileFlipDuration * 0.6, duration: 0 }}
 		>
 			{#if tile.letter}<div in:fly|global={typeAnimation}>{tile.letter}</div>{/if}
-			{#if tile.letterBounds && !tile.letter && showHint}
+			{#if tile.letterBounds && displayHint}
 				<span class="hint"
 					>{tile.letterBounds[0]}
 					{#if tile.letterBounds[0] !== tile.letterBounds[1]}
 						<span class="small">...</span>{tile.letterBounds[1]}
 					{/if}
 				</span>
+			{/if}
+			{#if tile.animal}
+				<div
+					class="tile-clip animal-container"
+					class:flip={randomChance()}
+					aria-hidden="true"
+				>
+					<span class="emoji" class:animal-hint={displayHint}>
+						{tile.animal}
+					</span>
+				</div>
 			{/if}
 		</div>
 	{/if}
@@ -129,8 +147,12 @@
 			ease-in backwards;
 	}
 
+	.before .tile-clip {
+		border-top-left-radius: var(--tile-arrow-radius);
+		border-top-right-radius: var(--tile-arrow-radius);
+	}
+
 	.before .tile-background {
-		/* https://blog.logrocket.com/creating-custom-css-range-slider-javascript-upgrades/ */
 		border-top-left-radius: var(--tile-arrow-radius);
 		border-top-right-radius: var(--tile-arrow-radius);
 		background: var(--before-color);
@@ -139,6 +161,11 @@
 	.before.animate .tile-background {
 		animation: bloop-up var(--tile-animation-duration) var(--tile-animation-delay)
 			backwards;
+	}
+
+	.after .tile-clip {
+		border-bottom-left-radius: var(--tile-arrow-radius);
+		border-bottom-right-radius: var(--tile-arrow-radius);
 	}
 
 	.after .tile-background {
@@ -292,6 +319,56 @@
 	.shake {
 		animation: shake ease-out;
 		animation-duration: 300ms;
+	}
+
+	.animal-container {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.emoji {
+		font-size: 0.5em;
+		filter: contrast(70%) sepia(100%) hue-rotate(-60deg);
+		opacity: 0.25;
+		transition:
+			transform 120ms ease-out,
+			opacity 100ms ease-out;
+		user-select: none;
+	}
+
+	.filled .emoji {
+		opacity: 1;
+		filter: none;
+		transform: translateY(65%);
+	}
+
+	.animal-hint {
+		transform: translateY(-35%);
+	}
+
+	.flip {
+		transform: scaleX(-1);
+	}
+
+	.animal-container.animal-scored {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+	}
+
+	.animal-scored span {
+		position: absolute;
+		font-size: var(--tile-font-size);
+		transform: translate(70%, 10%);
+		mix-blend-mode: screen;
+		animation: animal-slide 300ms var(--tile-animation-delay) ease-out both;
+	}
+
+	@keyframes animal-slide {
+		0% {
+			transform: translate(120%, 10%);
+		}
 	}
 
 	@keyframes shimmy {

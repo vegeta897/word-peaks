@@ -1,4 +1,4 @@
-import type { Board, Tile } from '$lib/data-model'
+import type { Board, Tile } from '$src/lib/board'
 import Rand from 'rand-seed'
 import { createPond } from './pond'
 import { type XY, xyToGrid } from '../math'
@@ -13,6 +13,7 @@ export type Feature = {
 	yJitter: number
 	size: number
 	delay: number
+	animal?: string
 } & ({ type: 'hill' } | { type: 'tree' })
 
 type OpenTile = {
@@ -40,6 +41,7 @@ export type Landscape = {
 	pondDelay?: number
 	totalDelay: number
 	mini?: boolean
+	pondAnimals?: { animal: string; x: number; y: number; face: number }[]
 }
 
 export const LANDSCAPE_FEATURE_DELAY = 30
@@ -69,11 +71,11 @@ export function getLandscape(
 		const winningRow = rowWord === answer
 		for (const tile of rowTiles) {
 			if (tile.polarity === 0) {
-				createTrees(getRng, landscape, winningRow)
+				createTrees(getRng, landscape, winningRow, tile.animal)
 			} else if (tile.polarity < 0) {
-				createHill(getRng, landscape)
+				createHill(getRng, landscape, tile.animal)
 			} else {
-				createPond(getRng, landscape)
+				createPond(getRng, landscape, tile.animal)
 			}
 		}
 		landscape.rowsGenerated++

@@ -11,7 +11,7 @@
 <svelte:head>
 	{#if $highContrast}
 		<style>
-			body {
+			:root {
 				--before-color: #da3f8b;
 				--correct-color: #64ba2e;
 				--primary-color: #000;
@@ -33,7 +33,7 @@
 		</style>
 	{/if}
 	{#if isAprilFools}
-		<title>Worm Peaks</title>
+		<title>Herd Peaks</title>
 	{/if}
 </svelte:head>
 
