@@ -87,7 +87,7 @@
 					class:flip={randomChance()}
 					aria-hidden="true"
 				>
-					<span class="emoji" class:animal-hint={displayHint}>
+					<span class="animal-emoji" class:animal-hint={displayHint}>
 						{tile.animal}
 					</span>
 				</div>
@@ -349,7 +349,7 @@
 		justify-content: center;
 	}
 
-	.emoji {
+	.animal-emoji {
 		font-size: 0.5em;
 		filter: contrast(70%) sepia(100%) hue-rotate(-60deg);
 		opacity: 0.25;
@@ -359,7 +359,7 @@
 		user-select: none;
 	}
 
-	.filled .emoji {
+	.filled .animal-emoji {
 		opacity: 1;
 		filter: none;
 		transform: translateY(65%);
