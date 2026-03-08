@@ -1,5 +1,5 @@
-import { encodeWord } from '$lib/data-model'
-import type { GameMode } from '$lib/data-model'
+import { encodeWord } from '$src/lib/game'
+import type { GameMode } from '$src/lib/game'
 import * as store from '$src/store'
 import { get } from 'svelte/store'
 import { ROWS } from './constants'

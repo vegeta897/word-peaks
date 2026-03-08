@@ -11,9 +11,8 @@
 	import { fade } from 'svelte/transition'
 	import LastGameDetail from './LastGameDetail.svelte'
 	import { cubicOut } from 'svelte/easing'
-	import { aprilFools } from '$lib/share'
-	import Worm from './Worm.svelte'
 	import { pauseTimer, resumeTimer } from '$src/lib/stats'
+	import { aprilFools } from '$src/lib/share'
 
 	const {
 		boardContent,
@@ -43,6 +42,7 @@
 		danceClickProgress = 0
 		const thisIdleSessionID = ++idleSessionID
 		clearTimeout(idleTimeout!)
+		if (isAprilFools) return
 		if (!get(gameFinished) && get(store.openScreen) === null && !document.hidden) {
 			await new Promise<void>((resolve) => {
 				idleTimeout = setTimeout(() => {
@@ -84,7 +84,7 @@
 
 	async function danceClick(t: number) {
 		// TODO: Make all tiles start with a synchronized dance
-		if (!get(store.allowDancing)) return
+		if (!get(store.allowDancing) || isAprilFools) return
 		if (canAnimate === null) canAnimate = animationSupported()
 		if (!canAnimate) return
 		if (danceClickProgress === t) {
@@ -117,7 +117,7 @@
 					>
 						{#each $boardContent as boardRow, r}
 							<div class="tile-row">
-								{#each boardRow as tile, t (r + '.' + t)}
+								{#each boardRow as tile, t ($answer + r + '.' + t)}
 									<Tile
 										{tile}
 										current={r === $currentRow && t === $currentTile}
@@ -130,7 +130,7 @@
 												class="dance-tile"
 												style:opacity={danceClickProgress / 5 || 1}
 												on:click={() => danceClick(t)}
-												out:fade|global={{ duration: 500 }}
+												out:fade|global={{ duration: danceClickProgress === 5 ? 500 : 0 }}
 											>
 												{'DANCE'.substring(0, danceClickProgress)[t] || ''}
 											</div>
@@ -144,9 +144,6 @@
 								{/each}
 							</div>
 						{/each}
-						{#if isAprilFools}
-							<Worm />
-						{/if}
 					</div>
 				{:else}
 					{#key $gameMode}

@@ -9,9 +9,10 @@ import {
 	xyToGrid,
 	getDistance,
 	type XY,
+	randomInt,
 } from '$lib/math'
 
-export function createPond(getRng: () => number, landscape: Landscape) {
+export function createPond(getRng: () => number, landscape: Landscape, animal?: string) {
 	const { openTiles } = landscape
 	let generatedPond = false
 	while (!generatedPond) {
@@ -24,7 +25,7 @@ export function createPond(getRng: () => number, landscape: Landscape) {
 			),
 			getRng
 		)
-		generatedPond = fillPond(startGrid, openTile.x, openTile.y, getRng, landscape)
+		generatedPond = fillPond(startGrid, openTile.x, openTile.y, getRng, landscape, animal)
 	}
 	if (generatedPond && landscape.pondDelay === undefined) {
 		landscape.pondDelay = landscape.totalDelay
@@ -37,7 +38,8 @@ function fillPond(
 	x: number,
 	y: number,
 	getRng: () => number,
-	landscape: Landscape
+	landscape: Landscape,
+	animal?: string
 ) {
 	const { width, height, tileMap, centerX, centerY } = landscape
 	const newTiles: Map<string, XY> = new Map()
@@ -88,6 +90,21 @@ function fillPond(
 	newTiles.forEach((t) => tileMap.set(xyToGrid(t), 'pond'))
 	landscape.pondTiles.push(...newTiles.values())
 	landscape.newPondTiles.push(...newTiles.values())
+	if (animal) {
+		if (!landscape.pondAnimals) landscape.pondAnimals = []
+		const tileIndex = randomInt(
+			landscape.pondTiles.length - 1 - (newTiles.size - 1),
+			landscape.pondTiles.length - 1,
+			getRng
+		)
+		const tile = landscape.pondTiles[tileIndex]
+		landscape.pondAnimals.push({
+			x: tile[0],
+			y: tile[1],
+			animal,
+			face: tileIndex % 2 === 0 ? 1 : -1,
+		})
+	}
 	return true
 }
 

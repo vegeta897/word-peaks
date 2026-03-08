@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte'
 	import { bezierEasing } from '$lib/transitions'
 	import { getDistance } from '$lib/math'
+	import Animal from './Animal.svelte'
 
 	const STROKE_WIDTH = 0.2
 	const STROKE_HALF = STROKE_WIDTH / 2
@@ -19,10 +20,12 @@
 	export let mouseX: number
 	export let mouseY: number
 	export let forceColor: boolean
+	export let animal = ''
 
 	let willAnimate = true
 	let animateElement: SVGAnimateElement
 	let animateSkewElement: SVGAnimateTransformElement
+	let animalComponent: Animal
 
 	let inColor = false
 	$: inColor = forceColor
@@ -38,6 +41,7 @@
 			nudgeX = xMagnitude * force * 4
 			nudgeY = (yMagnitude * force) / 24
 			animateSkewElement?.beginElement()
+			if (force > 1) animalComponent?.bump(distance)
 		}
 		if (forceColor) return
 		const flashDelay = distance * 70
@@ -202,4 +206,16 @@
 			keySplines="{bezierEasing.expoIn};0 0 0 0;{bezierEasing.expoOut}"
 		/>
 	</line>
+	{#if animal}
+		<Animal
+			{animal}
+			{xJitter}
+			{yJitter}
+			xOffset={0.5}
+			yOffset={0}
+			xOrigin={-xJitter * 1.5}
+			delay={animate ? delay : 0}
+			bind:this={animalComponent}
+		/>
+	{/if}
 </g>

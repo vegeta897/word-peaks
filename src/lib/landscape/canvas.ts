@@ -8,7 +8,7 @@ const WHITE = '#dddddd'
 
 export function drawLandscapeToCanvas(
 	canvas: HTMLCanvasElement,
-	{ width, height, features, pondTiles, mini }: Landscape,
+	{ width, height, features, pondTiles, mini, pondAnimals }: Landscape,
 	{ color, highContrast }: { color: boolean; highContrast: boolean }
 ) {
 	if (!canvas) return
@@ -47,6 +47,24 @@ export function drawLandscapeToCanvas(
 	}
 	ctx.strokeStyle = pondColor
 	ctx.stroke(pondPath)
+	if (pondAnimals) {
+		for (const { animal, x, y, face } of pondAnimals) {
+			ctx.font = `${TILE_HEIGHT * 1.25}px Arial`
+			ctx.textAlign = 'center'
+			ctx.save()
+			ctx.translate((x + 1) * TILE_WIDTH, (y + 2.35) * TILE_HEIGHT)
+			if (face < 0) {
+				ctx.scale(-1, 1)
+			}
+			ctx.clip(
+				new Path2D(
+					`M0,${-0.25 * TILE_HEIGHT} h${-1.5 * TILE_HEIGHT} v${-3 * TILE_HEIGHT} h${3 * TILE_HEIGHT}  v${3 * TILE_HEIGHT} z`
+				)
+			)
+			ctx.fillText(animal, 0, 0)
+			ctx.restore()
+		}
+	}
 	ctx.lineCap = 'round'
 	ctx.lineJoin = 'round'
 	const lineWidth = TILE_HEIGHT * 0.2
@@ -56,7 +74,7 @@ export function drawLandscapeToCanvas(
 	const hillColor = highContrast ? '#da3f8b' : '#e38f2f'
 	const hillStrokeColor = color ? hillColor : WHITE
 	const hillFillColor = color ? hillColor : bgColor
-	for (const { type, x, y, xJitter, yJitter, size } of features) {
+	for (const { type, x, y, xJitter, yJitter, size, animal } of features) {
 		if (type === 'tree') {
 			const centerX = (0.5 + x + xJitter + 0.5) * TILE_WIDTH
 			const centerY = (1.5 + y + yJitter + 0.5) * TILE_HEIGHT
@@ -83,6 +101,17 @@ export function drawLandscapeToCanvas(
 				ctx.fillStyle = treeColor
 				ctx.fill()
 			}
+			if (animal) {
+				ctx.font = `${TILE_HEIGHT * 1.5}px Arial`
+				ctx.textAlign = 'center'
+				ctx.save()
+				ctx.translate(centerX - xJitter * TILE_WIDTH, centerY - yJitter * TILE_HEIGHT)
+				if (xJitter < 0) {
+					ctx.scale(-1, 1)
+				}
+				ctx.fillText(animal, 0.33 * TILE_WIDTH, 0)
+				ctx.restore()
+			}
 		} else {
 			const centerX = (0.5 + x + xJitter + (mini ? 1 : 1.5)) * TILE_WIDTH
 			const centerY = (1.5 + y + yJitter + 1) * TILE_HEIGHT
@@ -102,6 +131,20 @@ export function drawLandscapeToCanvas(
 			ctx.fillStyle = hillFillColor
 			ctx.fill()
 			ctx.stroke()
+			if (animal) {
+				ctx.font = `${TILE_HEIGHT * 1.5}px Arial`
+				ctx.textAlign = 'center'
+				ctx.save()
+				ctx.translate(
+					centerX - xJitter * TILE_WIDTH,
+					centerY + (mini ? 0.3 : 0.6 - yJitter) * TILE_HEIGHT
+				)
+				if (xJitter < 0) {
+					ctx.scale(-1, 1)
+				}
+				ctx.fillText(animal, (mini ? 0.4 : 1) * TILE_WIDTH, 0)
+				ctx.restore()
+			}
 		}
 	}
 }

@@ -1,4 +1,4 @@
-import { derived, writable } from 'svelte/store'
+import { derived, get, writable } from 'svelte/store'
 import type { Writable, Readable } from 'svelte/store'
 import { persisted } from 'svelte-persisted-store'
 import type { Stats, GameDetail, TimeStats } from '$lib/stats'
@@ -6,6 +6,7 @@ import { newStats, newTimeStats } from '$lib/stats'
 import { gameMode } from '$src/store/game-state'
 import type { KeyboardLayout } from '$lib/constants'
 import type { Landscape } from '$lib/landscape/landscape'
+import { randomInt } from '$src/lib/math'
 
 export const storeVersion: Writable<number> = persisted('wp-version', 0)
 export const storedLocale: Writable<string> = persisted('wp-locale', '')
@@ -79,3 +80,6 @@ export const landscapeSVG: Writable<SVGElement | null> = writable(null)
 export const newUser: Writable<boolean> = writable(false)
 
 export const dismissPromo: Writable<number> = persisted('wp-dismissPromo', 0)
+
+export const uid: Writable<string> = persisted('wp-uid', '')
+if (!get(uid)) uid.set(randomInt(100000, 999999).toString())

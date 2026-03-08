@@ -11,6 +11,7 @@
 	import { bezierEasing } from '$lib/transitions'
 	import type { PointerEventHandler } from 'svelte/elements'
 	import { dev } from '$app/environment'
+	import Animal from './Animal.svelte'
 
 	const { landscapeForceColor, answer } = store
 
@@ -76,6 +77,7 @@
 		landscape.newPondTiles.length = 0
 		landscape.nextID = 1
 		landscape.pondDelay = undefined
+		landscape.pondAnimals = undefined
 	}
 
 	function updateLandscape() {
@@ -141,6 +143,7 @@
 	let pondComponent: {
 		flashColor: FlashColorHandler
 	}
+	const pondAnimalComponents: Animal[] = []
 
 	function updateMousePosition({
 		offsetX,
@@ -173,6 +176,15 @@
 		const duration = landscapeSpan * 70 + flashDurationExtra
 		featureComponents.forEach((f) => f?.flashColor(mouseX, mouseY, duration))
 		pondComponent.flashColor(mouseX, mouseY, duration)
+		if (landscape.pondAnimals) {
+			landscape.pondAnimals.forEach((animal, a) => {
+				const distance = getDistance(
+					(animal.x + 0.5) * 1.5 - mouseX,
+					animal.y + 0.5 - mouseY
+				)
+				if (distance < 3) pondAnimalComponents[a]?.bump(distance)
+			})
+		}
 		lastFlashAt = now
 	}
 
@@ -217,6 +229,20 @@
 				mini={landscape.mini}
 				forceColor={$landscapeForceColor}
 			/>
+			{#if landscape.pondAnimals}
+				{#each landscape.pondAnimals as { x, y, face, animal }, a}
+					<Animal
+						bind:this={pondAnimalComponents[a]}
+						{animal}
+						xOrigin={(x + 0.5) * 1.5}
+						xOffset={(x + 0.5) * 1.5}
+						yOffset={y + 0.85}
+						{face}
+						delay={animate ? 500 : 0}
+						sunken
+					/>
+				{/each}
+			{/if}
 			{#each landscape.features as feature, f (feature.id)}
 				{#if feature.type === 'tree'}
 					<Tree
@@ -232,6 +258,7 @@
 						{mouseX}
 						{mouseY}
 						forceColor={$landscapeForceColor}
+						animal={feature.animal}
 						bind:this={featureComponents[f]}
 					/>
 				{:else}
@@ -249,6 +276,7 @@
 						{mouseX}
 						{mouseY}
 						forceColor={$landscapeForceColor}
+						animal={feature.animal}
 						bind:this={featureComponents[f]}
 					/>
 				{/if}

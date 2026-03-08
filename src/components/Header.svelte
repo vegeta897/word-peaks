@@ -5,14 +5,14 @@
 		highContrast,
 		gameMode,
 		lastPlayedDaily,
-		boardContent,
 		gameFinished,
 		answer,
+		guesses,
 	} from '$src/store'
 	import { OptionsIconPathData } from '$lib/constants'
 	import { browser } from '$app/environment'
 	import { aprilFools } from '$lib/share'
-	import { getRandomWord, playDaily, playRandom } from '$lib/data-model'
+	import { getRandomWord, playDaily, playRandom } from '$src/lib/game'
 	import { fly } from 'svelte/transition'
 	import { toast } from '@zerodevx/svelte-toast'
 	import { get } from 'svelte/store'
@@ -28,14 +28,13 @@
 
 	// Using answer as a dependency so this will refresh when the next word starts
 	$: isAprilFools = $answer && aprilFools()
-	$: wormActive =
-		isAprilFools && $boardContent.some((r) => r.some((t) => t.scored && t.distance > 0))
+	$: herdActive = isAprilFools && $guesses.length > 0
 </script>
 
 <header class:high-contrast={$highContrast}>
 	<div class="heading-container">
 		<h1>
-			<span class:worm={wormActive}>{isAprilFools ? 'Worm' : 'Word'}</span> Peaks
+			<span class:herd={herdActive}>{isAprilFools ? 'Herd' : 'Word'}</span> Peaks
 			{#if browser}
 				<small class="game-mode">
 					{#if $gameMode === 'daily'}
@@ -184,8 +183,8 @@
 		padding: 0 0.25rem;
 	}
 
-	.worm {
-		color: var(--accent-color);
+	.herd {
+		color: #eec556;
 		transition: color 2s ease-in;
 	}
 

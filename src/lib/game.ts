@@ -1,9 +1,9 @@
 import targetWords from '$lib/words/targets-filtered.json'
 import { get } from 'svelte/store'
-import { resetBoard, resetGuess } from './board'
+import { resetBoard, resetGuess, type Board, type Tile } from './board'
 import { randomElement } from './math'
 import * as store from '$src/store'
-import { ROWS, WORD_LENGTH, alphabet } from './constants'
+import { WORD_LENGTH, alphabet } from './constants'
 import { pushState } from '$app/navigation'
 import { tick } from 'svelte'
 import { pauseTimer, resumeTimer } from './stats'
@@ -18,15 +18,6 @@ export async function isValidWord(word: string): Promise<boolean> {
 	return dictionary!.includes(word)
 }
 
-export type Tile = {
-	id: number
-	letter: string
-	scored: boolean
-	distance: number
-	polarity: -1 | 0 | 1
-	letterBounds?: [string, string]
-}
-export type Board = Tile[][]
 export type GameMode = 'daily' | 'random'
 
 export function playDaily() {
@@ -44,10 +35,10 @@ export function playDaily() {
 	const newGame =
 		get(store.lastPlayedDaily) !== getDayNumber() || get(store.answerDaily) !== dailyWord
 	if (newGame) {
-		resetBoard()
 		store.guessesDaily.set([])
 		store.lastPlayedDaily.set(dayNumber)
 		store.answerDaily.set(dailyWord)
+		resetBoard()
 	}
 	resetGuess()
 	const gameFinished = get(store.gameFinished)
@@ -74,9 +65,9 @@ export function playRandom(word?: string) {
 		pushState(window.location.pathname + `#${hash}` + window.location.search, {})
 	)
 	if (newGame) {
-		resetBoard()
 		store.guessesRandom.set([])
 		store.answerRandom.set(answer)
+		resetBoard()
 	}
 	resetGuess()
 	const gameFinished = get(store.gameFinished)
@@ -84,18 +75,6 @@ export function playRandom(word?: string) {
 	store.landscapeForceColor.set(gameFinished)
 	store.landscapeNewGame.set(true)
 	store.landscapeWideView.set(false)
-}
-
-export function createNewBoard(): Board {
-	const board = []
-	for (let i = 0; i < ROWS; i++) {
-		const row: Tile[] = []
-		board[i] = row
-		for (let j = 0; j < WORD_LENGTH; j++) {
-			row.push({ id: j, letter: '', scored: false, distance: 0, polarity: 0 })
-		}
-	}
-	return board
 }
 
 export function scoreTile(letter: string, answer: string, tile: number): Tile {

@@ -1,19 +1,44 @@
 import { get } from 'svelte/store'
 import * as store from '$src/store'
 import {
-	createNewBoard,
 	getBoardRowString,
 	getValidLetterBounds,
 	hasEnoughLetters,
 	isValidWord,
 	loadDictionary,
-} from '$lib/data-model'
+} from '$src/lib/game'
 import { t } from '$lib/translations'
 import { trackEvent } from '$lib/plausible'
 import { toast } from '@zerodevx/svelte-toast'
 import type { SvelteToastOptions } from '@zerodevx/svelte-toast'
 import { recordGuessTime, finishGame } from '$lib/stats'
-import { WORD_LENGTH } from './constants'
+import { ROWS, WORD_LENGTH } from './constants'
+import { herdifyBoard } from './herd'
+import { aprilFools } from './share'
+
+export type Tile = {
+	id: number
+	letter: string
+	scored: boolean
+	distance: number
+	polarity: -1 | 0 | 1
+	letterBounds?: [string, string]
+	animal?: string
+}
+export type Board = Tile[][]
+
+export function createNewBoard(): Board {
+	const board = []
+	for (let i = 0; i < ROWS; i++) {
+		const row: Tile[] = []
+		board[i] = row
+		for (let j = 0; j < WORD_LENGTH; j++) {
+			row.push({ id: j, letter: '', scored: false, distance: 0, polarity: 0 })
+		}
+	}
+	if (aprilFools()) herdifyBoard(board, get(store.answer) + get(store.uid))
+	return board
+}
 
 export function resetBoard() {
 	store.boardContent.set(createNewBoard())
@@ -148,10 +173,13 @@ export async function submitRow() {
 			gameMode === 'daily' ? 'lastPlayedDailyWasHard' : 'lastPlayedRandomWasHard'
 		].set(get(store.hardMode))
 		// Show end screen after waiting for tiles to flip
-		setTimeout(() => {
-			store.showEndView.set(true)
-			if (won) store.landscapeForceColor.set(true)
-		}, 6 * 150 + 250)
+		setTimeout(
+			() => {
+				store.showEndView.set(true)
+				if (won) store.landscapeForceColor.set(true)
+			},
+			6 * 150 + 250
+		)
 		finishGame(won)
 	} else {
 		store.currentTile.set(0)

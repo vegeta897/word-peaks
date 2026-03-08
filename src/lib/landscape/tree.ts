@@ -9,7 +9,8 @@ import { randomElementWeighted, getNeighbors, xyToGrid, randomFloat } from '$lib
 export function createTrees(
 	getRng: () => number,
 	landscape: Landscape,
-	winningRow: boolean
+	winningRow: boolean,
+	animal?: string
 ) {
 	const { features, tileMap, openTiles, width, height } = landscape
 	const treeCount = landscape.mini ? 4 : 6
@@ -23,8 +24,8 @@ export function createTrees(
 				y === 0 // Trees at the top would be cut off
 					? 0
 					: winningRow
-					? centerWeight ** 3
-					: centerWeight * ((nearTrees || 0) + 1)
+						? centerWeight ** 3
+						: centerWeight * ((nearTrees || 0) + 1)
 			),
 			getRng
 		)
@@ -55,6 +56,7 @@ export function createTrees(
 			size: getRng(),
 			delay: landscape.totalDelay,
 		}
+		if (animal && i === 0) feature.animal = animal
 		features.push(feature)
 		landscape.totalDelay += LANDSCAPE_FEATURE_DELAY
 		tileMap.set(grid, feature)

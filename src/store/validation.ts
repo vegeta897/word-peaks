@@ -1,6 +1,6 @@
 import { get } from 'svelte/store'
 import * as app from '$src/store/app'
-import type { GameMode } from '$lib/data-model'
+import type { GameMode } from '$src/lib/game'
 import type { GameDetail } from '$lib/stats'
 import { newStats, newTimeStats } from '$lib/stats'
 import * as game from '$src/store/game-state'

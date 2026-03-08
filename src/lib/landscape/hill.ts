@@ -12,7 +12,7 @@ import {
 	randomFloat,
 } from '$lib/math'
 
-export function createHill(getRng: () => number, landscape: Landscape) {
+export function createHill(getRng: () => number, landscape: Landscape, animal?: string) {
 	const hillSize = landscape.mini ? 4 : 6
 	const { features, tileMap, openTiles, width, height } = landscape
 	let validXY: false | XY = false
@@ -63,6 +63,7 @@ export function createHill(getRng: () => number, landscape: Landscape) {
 		size: getRng(),
 		delay: landscape.totalDelay,
 	}
+	if (animal) feature.animal = animal
 	features.push(feature)
 	landscape.totalDelay += LANDSCAPE_FEATURE_DELAY * hillSize
 	for (const hillGrid of hillGrids) {
