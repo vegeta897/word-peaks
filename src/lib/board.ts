@@ -16,6 +16,7 @@ import { recordGuessTime, finishGame } from '$lib/stats'
 import { ROWS, WORD_LENGTH } from './constants'
 import { herdifyBoard } from './herd'
 import { aprilFools } from './share'
+import { dev } from '$app/environment'
 
 export type Tile = {
 	id: number
@@ -170,7 +171,7 @@ export async function submitRow() {
 		if (gameMode === 'daily') {
 			trackEvent('dailyFinish')
 			const nlgid = get(store.nlgid)
-			if (nlgid && get(store.nlgEnabled)) {
+			if (!dev && nlgid && get(store.nlgEnabled)) {
 				const score = won ? rowNumber + 1 : 'X'
 				const date = new Date(getDayEndTime(get(store.lastPlayedDaily)))
 				date.setDate(date.getDate() - 1)

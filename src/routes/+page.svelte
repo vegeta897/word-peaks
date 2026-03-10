@@ -23,9 +23,10 @@
 	const wordFromHash = decodeWord(get(page).url.hash?.slice(1))
 
 	// Nice Light Games player ID
-	const nlgid = get(page).url.searchParams.get('nlgid')
+	let nlgid: string | null = null
 
 	onMount(() => {
+		nlgid = get(page).url.searchParams.get('nlgid')
 		if (!get(store.answerDaily) && !get(store.answerRandom)) {
 			store.newUser.set(true)
 			openScreen.set('tutorial')

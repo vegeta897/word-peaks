@@ -86,18 +86,19 @@
 		},
 	]
 
-	if (
-		get(store.nlgEnabled) ||
-		get(store.nlgid) ||
-		get(page).url.searchParams.get('nlgid')
-	) {
-		toggleOptions.push({
-			store: store.nlgEnabled,
-			label: 'main.options.nlg_tracking',
-		})
-	}
-
-	onMount(() => onLanguageChange(get(storedLocale)))
+	onMount(() => {
+		onLanguageChange(get(storedLocale))
+		if (
+			get(store.nlgEnabled) ||
+			get(store.nlgid) ||
+			get(page).url.searchParams.get('nlgid')
+		) {
+			toggleOptions.push({
+				store: store.nlgEnabled,
+				label: 'main.options.nlg_tracking',
+			})
+		}
+	})
 
 	$: keyboard = _keyboardLayoutOptions.find((o) => o.value === $keyboardLayout)!
 	$: language = languages.find((o) => o.value === $storedLocale)!
