@@ -1,7 +1,7 @@
 <script lang="ts">
-	import Toggle from 'svelte-toggle'
+	import Toggle from './Toggle.svelte'
 	import { trackEvent } from '$lib/plausible'
-	import { get, type Writable } from 'svelte/store'
+	import { get } from 'svelte/store'
 	import { t } from '$lib/translations'
 	import * as store from '$src/store'
 	import { toast } from '@zerodevx/svelte-toast'
@@ -37,23 +37,18 @@
 	const successToast = (message: string) => toast.push(message, toastOptions)
 	const errorToast = () => toast.push(get(t)('main.messages.could_not_do'), toastOptions)
 
-	const toggle = (prop: Writable<boolean>) => () => prop.set(!get(prop))
-
 	const toggleOptions = [
 		{
-			bind: store.shareURL,
+			store: store.shareURL,
 			label: 'main.options.include_link',
-			click: toggle(store.shareURL),
 		},
 		{
-			bind: store.shareTimes,
+			store: store.shareTimes,
 			label: 'main.options.include_times',
-			click: toggle(store.shareTimes),
 		},
 		{
-			bind: store.hideArrows,
+			store: store.hideArrows,
 			label: 'main.options.hide_arrows',
-			click: toggle(store.hideArrows),
 		},
 	]
 
@@ -122,18 +117,8 @@
 				<button on:click={onBoardImageShare}>{$t('main.results.image')}</button>
 			</div>
 			<div class="results-options">
-				{#each toggleOptions as toggleOption}
-					<Toggle
-						toggled={get(toggleOption.bind)}
-						on:click={toggleOption.click}
-						hideLabel
-						label={$t(toggleOption.label)}
-						style="transform: scale(var(--toggle-scale)); touch-action: manipulation; flex-basis: 2.5rem;"
-						toggledColor="var(--accent-color)"
-						untoggledColor="#695d6e"
-					>
-						<div class="label">{$t(toggleOption.label)}</div>
-					</Toggle>
+				{#each toggleOptions as { store, label }}
+					<Toggle {store} label={$t(label)} small />
 				{/each}
 			</div>
 		{:else}
@@ -316,11 +301,6 @@
 		background: #3388de;
 	}
 
-	button:focus {
-		outline: 1px solid #fff;
-		outline-offset: 2px;
-	}
-
 	.results-buttons {
 		width: calc(var(--board-width) - 2.5rem);
 		height: 100%;
@@ -339,13 +319,6 @@
 		flex-direction: column;
 		justify-content: space-evenly;
 		--toggle-scale: 1.2;
-	}
-
-	.label {
-		order: -1;
-		flex-grow: 1;
-		font-size: 1.2em;
-		padding-right: 0.625rem;
 	}
 
 	.hide-on-big-screens {

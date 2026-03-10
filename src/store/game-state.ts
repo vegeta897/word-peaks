@@ -22,18 +22,8 @@ export const lastPlayedRandomWasHard: Writable<boolean> = persisted(
 	false
 )
 
-const hardModeStored: Writable<boolean> = persisted('wp-hardMode', false)
-export const hardMode: Readable<boolean> = derived(
-	hardModeStored,
-	($hardModeStored) => $hardModeStored
-)
-export const changeHardMode = (changeTo: boolean) => {
-	if (!get(gameFinished) && (<string[]>get(guesses)).length > 0)
-		throw "Can't change that during a game!"
-	hardModeStored.set(changeTo)
-}
-
 export const gameMode: Writable<GameMode> = writable('daily')
+export const hardMode: Writable<boolean> = persisted('wp-hardMode', false)
 
 export const lastPlayedWasHard: Readable<boolean> = derived(
 	[gameMode, lastPlayedDailyWasHard, lastPlayedRandomWasHard],

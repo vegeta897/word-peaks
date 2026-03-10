@@ -22,6 +22,9 @@
 
 	const wordFromHash = decodeWord(get(page).url.hash?.slice(1))
 
+	// Nice Light Games player ID
+	const nlgid = get(page).url.searchParams.get('nlgid')
+
 	onMount(() => {
 		if (!get(store.answerDaily) && !get(store.answerRandom)) {
 			store.newUser.set(true)
@@ -53,6 +56,11 @@
 		{/if}
 	</section>
 	<Footer />
+	{#if nlgid}
+		{#await import('$com/NiceLight.svelte') then module}
+			<svelte:component this={module.default} {nlgid} />
+		{/await}
+	{/if}
 </div>
 {#if $openScreen === 'options'}
 	<Options />

@@ -64,7 +64,7 @@
 		left: 0;
 		right: 0;
 		bottom: 0;
-		padding: 1rem;
+		padding: 1.5rem;
 		justify-content: center;
 		align-items: center;
 	}

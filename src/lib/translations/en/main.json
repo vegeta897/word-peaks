@@ -77,6 +77,7 @@
 		"help_translate": "Add or fix translations on <a href=\"https://crowdin.com/project/wordle-peaks\">Crowdin</a> or <a href=\"https://github.com/vegeta897/word-peaks#translate\">GitHub</a>",
 		"keyboard_layout": "Keyboard layout",
 		"hard_mode": "Hard mode",
+		"hard_mode_error": "Can't change that during a game!",
 		"high_contrast_mode": "High contrast mode",
 		"show_all_hints": "Show all hints in row",
 		"preview_invalid_words": "Preview invalid words",
@@ -90,6 +91,7 @@
 		"include_times": "Include times",
 		"hide_arrows": "Hide arrows",
 		"show_precise_times": "Show precise times",
+		"nlg_tracking": "Nice Light Games score tracking",
 		"tile_sharpness": "Tile sharpness"
 	},
 	"footer": {
@@ -102,6 +104,10 @@
 		"wide_view": "Wide view",
 		"color": "Color",
 		"redraw": "Redraw",
-		"back": "Back"
+		"back": "Back",
+		"allow_nlg_tracking": "Allow <strong>Nice Light Games</strong> to track your score?",
+		"allow_tracking": "Allow tracking",
+		"no_thanks": "No thanks",
+		"can_change_in_settings": "You can change this later in the settings ⚙ menu"
 	}
 }

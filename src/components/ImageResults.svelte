@@ -124,9 +124,4 @@
 	button:hover {
 		background: #3388de;
 	}
-
-	button:focus {
-		outline: 1px solid #fff;
-		outline-offset: 2px;
-	}
 </style>

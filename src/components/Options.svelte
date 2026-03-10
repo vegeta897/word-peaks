@@ -1,11 +1,12 @@
 <script lang="ts">
-	import Toggle from 'svelte-toggle'
+	import Toggle from './Toggle.svelte'
 	import Select from 'svelte-select'
 	import * as store from '$src/store'
 	import type { Writable } from 'svelte/store'
-	import { get, writable } from 'svelte/store'
+	import { get } from 'svelte/store'
+	import { page } from '$app/stores'
 	import { toast } from '@zerodevx/svelte-toast'
-	import { beforeUpdate, onMount } from 'svelte'
+	import { onMount } from 'svelte'
 	import { keyboardLayoutOptions } from '$lib/constants'
 	import { loadTranslations, t } from '$lib/translations'
 	import lang from '$lib/translations/lang.json'
@@ -14,8 +15,7 @@
 
 	const languages = Object.entries(lang).map(([value, label]) => ({ value, label }))
 
-	const { storedLocale, keyboardLayout, highContrast, showAllHints, tileSharpness } =
-		store
+	const { storedLocale, keyboardLayout, tileSharpness } = store
 
 	let _keyboardLayoutOptions = [...keyboardLayoutOptions]
 
@@ -31,65 +31,72 @@
 		_keyboardLayoutOptions = _keyboardLayoutOptions
 	}
 
-	const hardModeToggle: Writable<boolean> = writable(false)
-	function toggleHardMode() {
-		try {
-			store.changeHardMode(!get(hardModeToggle))
-		} catch (err) {
+	function validateHardMode() {
+		if (!get(store.gameFinished) && get(store.guesses).length > 0) {
 			toast.pop()
-			toast.push(err as string, { theme: { '--toastBackground': 'var(--error-color)' } })
+			toast.push(get(t)('main.options.hard_mode_error'), {
+				theme: { '--toastBackground': 'var(--error-color)' },
+			})
+			return false
 		}
+		return true
 	}
 
-	const toggle = (prop: Writable<boolean>) => () => prop.set(!get(prop))
-
-	const toggleOptions = [
-		{ bind: hardModeToggle, label: 'main.options.hard_mode', click: toggleHardMode },
+	const toggleOptions: {
+		store: Writable<boolean | undefined>
+		label: string
+		validate?: () => boolean
+	}[] = [
 		{
-			bind: highContrast,
+			store: store.hardMode,
+			label: 'main.options.hard_mode',
+			validate: validateHardMode,
+		},
+		{
+			store: store.highContrast,
 			label: 'main.options.high_contrast_mode',
-			click: toggle(highContrast),
 		},
 		{
-			bind: showAllHints,
+			store: store.showAllHints,
 			label: 'main.options.show_all_hints',
-			click: toggle(showAllHints),
 		},
 		{
-			bind: store.previewInvalidWords,
+			store: store.previewInvalidWords,
 			label: 'main.options.preview_invalid_words',
-			click: toggle(store.previewInvalidWords),
 		},
 		{
-			bind: store.swapEnterBackspace,
+			store: store.swapEnterBackspace,
 			label: 'main.options.swap_enter_backspace',
-			click: toggle(store.swapEnterBackspace),
 		},
 		{
-			bind: store.dyslexicFont,
+			store: store.dyslexicFont,
 			label: 'main.options.use_dyslexic_font',
-			click: toggle(store.dyslexicFont),
 		},
 		{
-			bind: store.hideLandscape,
+			store: store.hideLandscape,
 			label: 'main.options.hide_landscape',
-			click: toggle(store.hideLandscape),
 		},
 		{
-			bind: store.allowDancing,
+			store: store.allowDancing,
 			label: 'main.options.allow_dancing_letters',
-			click: toggle(store.allowDancing),
 		},
 		{
-			bind: store.preciseTimes,
+			store: store.preciseTimes,
 			label: 'main.options.show_precise_times',
-			click: toggle(store.preciseTimes),
 		},
 	]
 
-	beforeUpdate(() => {
-		hardModeToggle.set(get(store.hardMode))
-	})
+	if (
+		get(store.nlgEnabled) ||
+		get(store.nlgid) ||
+		get(page).url.searchParams.get('nlgid')
+	) {
+		toggleOptions.push({
+			store: store.nlgEnabled,
+			label: 'main.options.nlg_tracking',
+		})
+	}
+
 	onMount(() => onLanguageChange(get(storedLocale)))
 
 	$: keyboard = _keyboardLayoutOptions.find((o) => o.value === $keyboardLayout)!
@@ -125,17 +132,11 @@
 				inputStyles="box-sizing: border-box;"
 			/>
 		</div>
-		{#each toggleOptions as toggleOption}
-			<Toggle
-				toggled={get(toggleOption.bind)}
-				on:click={toggleOption.click}
-				hideLabel
-				label={$t(toggleOption.label)}
-				style="transform: scale(1.6); touch-action: manipulation; flex-basis: 2.5rem;"
-				toggledColor="var(--accent-color)"
-				untoggledColor="#695d6e"><div class="label">{$t(toggleOption.label)}</div></Toggle
-			>
-		{/each}
+		<div class="toggle-container">
+			{#each toggleOptions as { store, label, validate }}
+				<Toggle {store} {validate} label={$t(label)} />
+			{/each}
+		</div>
 		<div class="slider-container">
 			<label>
 				{$t('main.options.tile_sharpness')}
@@ -183,9 +184,16 @@
 	.label {
 		order: -1;
 		flex-grow: 1.5;
-		font-size: 1.2em;
+		font-size: 1.25em;
 		margin: 0.8rem 0;
 		padding: 0.4rem 0.8rem 0.4rem 0;
+	}
+
+	.toggle-container {
+		display: flex;
+		flex-direction: column;
+		gap: 1.5rem;
+		margin: 1.5rem 0;
 	}
 
 	.slider-container {
@@ -197,7 +205,7 @@
 
 	.slider-container label {
 		flex-grow: 1;
-		font-size: 1.2em;
+		font-size: 1.25em;
 		display: flex;
 		flex-direction: column;
 		padding-right: 2rem;
@@ -240,12 +248,23 @@
 		.label {
 			flex-grow: 1;
 		}
+		.label,
+		.slider-container label {
+			font-size: 1.125em;
+		}
 	}
 
 	@media (max-width: 400px) {
 		.select-container {
 			flex-direction: column;
 			align-items: flex-start;
+		}
+	}
+
+	@media (max-width: 360px) {
+		.label,
+		.slider-container label {
+			font-size: 1em;
 		}
 	}
 </style>

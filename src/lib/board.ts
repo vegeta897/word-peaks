@@ -2,6 +2,7 @@ import { get } from 'svelte/store'
 import * as store from '$src/store'
 import {
 	getBoardRowString,
+	getDayEndTime,
 	getValidLetterBounds,
 	hasEnoughLetters,
 	isValidWord,
@@ -166,7 +167,28 @@ export async function submitRow() {
 	if (get(store.gameFinished)) {
 		const won = get(store.gameWon)
 		trackEvent(won ? 'gameWon' : 'gameLost')
-		if (gameMode === 'daily') trackEvent('dailyFinish')
+		if (gameMode === 'daily') {
+			trackEvent('dailyFinish')
+			const nlgid = get(store.nlgid)
+			if (nlgid && get(store.nlgEnabled)) {
+				const score = won ? rowNumber + 1 : 'X'
+				const date = new Date(getDayEndTime(get(store.lastPlayedDaily)))
+				date.setDate(date.getDate() - 1)
+				console.log(date)
+				const yy = date.getFullYear() - 2000
+				const mm = (date.getMonth() + 1).toString().padStart(2, '0')
+				const dd = date.getDate().toString().padStart(2, '0')
+				const yymmdd = `${yy}${mm}${dd}`
+				console.log('yymmdd:', yymmdd)
+				console.log('score:', score)
+				// fetch('https://api.nicelight.games/plays/done', {
+				// 	method: 'POST',
+				// 	headers: { 'Content-Type': 'application/json' },
+				// 	body: JSON.stringify({ nlgid, score, date: yymmdd }),
+				// }).catch(() => {})
+				// TODO: Show result in toast
+			}
+		}
 		if (get(store.newUser)) trackEvent('firstFinish')
 		store.newUser.set(false)
 		store[

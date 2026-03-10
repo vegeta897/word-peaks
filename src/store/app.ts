@@ -83,3 +83,9 @@ export const dismissPromo: Writable<number> = persisted('wp-dismissPromo', 0)
 
 export const uid: Writable<string> = persisted('wp-uid', '')
 if (!get(uid)) uid.set(randomInt(100000, 999999).toString())
+
+export const nlgEnabled: Writable<boolean | undefined> = persisted(
+	'wp-nlgEnabled',
+	undefined
+)
+export const nlgid: Writable<string> = persisted('wp-nlgid', '')
