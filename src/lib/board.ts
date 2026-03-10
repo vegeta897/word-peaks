@@ -174,19 +174,14 @@ export async function submitRow() {
 				const score = won ? rowNumber + 1 : 'X'
 				const date = new Date(getDayEndTime(get(store.lastPlayedDaily)))
 				date.setDate(date.getDate() - 1)
-				console.log(date)
 				const yy = date.getFullYear() - 2000
 				const mm = (date.getMonth() + 1).toString().padStart(2, '0')
 				const dd = date.getDate().toString().padStart(2, '0')
-				const yymmdd = `${yy}${mm}${dd}`
-				console.log('yymmdd:', yymmdd)
-				console.log('score:', score)
-				// fetch('https://api.nicelight.games/plays/done', {
-				// 	method: 'POST',
-				// 	headers: { 'Content-Type': 'application/json' },
-				// 	body: JSON.stringify({ nlgid, score, date: yymmdd }),
-				// }).catch(() => {})
-				// TODO: Show result in toast
+				fetch('https://api.nicelight.games/plays/done', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ nlgid, score, date: yy + mm + dd }),
+				}).catch((error) => console.log('Failed to send score to NLG', error))
 			}
 		}
 		if (get(store.newUser)) trackEvent('firstFinish')

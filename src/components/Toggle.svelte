@@ -65,7 +65,7 @@
 		background: #fff;
 		top: 2px;
 		left: 2px;
-		transition: transform 0.1s;
+		transition: transform 0.1s ease-out;
 		border-radius: 100%;
 	}
 
@@ -80,7 +80,6 @@
 
 	.toggle button.checked::before {
 		transform: translateX(32px);
-		transition: transform 0.1s;
 	}
 
 	.toggle button.small.checked::before {
