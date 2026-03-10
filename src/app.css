@@ -20,6 +20,7 @@
 	--toastBarHeight: 0;
 	--toastBackground: var(--tertiary-color);
 	--toastMsgPadding: 0.75rem 2rem;
+	--toastBorderRadius: 1rem;
 }
 
 body,

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { showEndView, gameMode } from '$src/store'
+	import { showEndView, gameMode, lastGameDetail } from '$src/store'
 	import { fade } from 'svelte/transition'
 	import { cubicOut } from 'svelte/easing'
 	import EndButtons from './EndButtons.svelte'
@@ -16,7 +16,9 @@
 <section>
 	{#if $showEndView}
 		<div transition:fade|global={{ duration: transitionDuration, easing: cubicOut }}>
-			<EndButtons gameMode={$gameMode} />
+			{#key $lastGameDetail}
+				<EndButtons gameMode={$gameMode} />
+			{/key}
 		</div>
 	{:else}
 		<div transition:fade|global={{ duration: transitionDuration, easing: cubicOut }}>

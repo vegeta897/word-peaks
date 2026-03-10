@@ -5,41 +5,32 @@
 	import { t } from '$lib/translations'
 	import * as store from '$src/store'
 	import { toast } from '@zerodevx/svelte-toast'
-	import {
-		copyImage,
-		copyText,
-		drawResults,
-		getShareTitle,
-		shareImage,
-		getEmojiGrid,
-		aprilFools,
-	} from '$lib/share'
+	import { copyText, getShareTitle, getEmojiGrid, aprilFools } from '$lib/share'
 	import { onMount } from 'svelte'
 	import Time from './Time.svelte'
 	import {
-		getDayEnd,
+		getDayEndTime,
 		getRandomWord,
 		playDaily,
 		playRandom,
 		type GameMode,
-	} from '$src/lib/game'
+	} from '$lib/game'
 	import Icon from './landscape/Icon.svelte'
-	import { getHerdText } from '$src/lib/herd'
+	import { getHerdText } from '$lib/herd'
+	import ImageResults from './ImageResults.svelte'
 
 	const { landscapeWideView, landscapeForceColor, landscapeRedraw, hideLandscape } = store
 
 	export let gameMode: GameMode
 
 	let showScoreShareMenu: boolean
-	let showImageShare: boolean
-	const canvas = document.createElement('canvas')
-	let canvasBlob: Blob
-	let canvasImageURL: string
-	let canvasImageAltText: string
-	let imageFileName: string
-	let canvasWidth = 0
-	let canvasHeight = 0
-	let shareTitleText: string
+	const shareTitleText = getShareTitle({
+		gameWon: get(store.gameWon),
+		guesses: get(store.guesses),
+		gameMode: get(store.lastGameDetail)!.mode,
+		hardMode: get(store.lastPlayedWasHard),
+		day: get(store.lastGameDetail)!.dayNumber,
+	})
 	let landscapeRedrawCooldown = false
 
 	const toastOptions = { theme: { '--toastBackground': 'var(--cta-color)' } }
@@ -68,7 +59,6 @@
 
 	function shareText() {
 		showScoreShareMenu = false
-		showImageShare = false
 		trackEvent('resultShare')
 		const emojiGridParams: Parameters<typeof getEmojiGrid>[0] = {
 			guesses: get(store.guesses),
@@ -102,89 +92,28 @@
 		)
 	}
 
-	async function onBoardImageShare() {
+	let imageResultsComponent: ImageResults
+
+	function onBoardImageShare() {
 		showScoreShareMenu = false
-		const { hash, dayNumber } = get(store.lastGameDetail)!
-		drawResults(canvas, {
-			highContrast: get(store.highContrast),
-			boardContent: get(store.boardContent),
-			guesses: get(store.guesses),
-			caption: shareTitleText,
-			guessTimes: get(store.shareTimes) ? get(store.guessTimeStrings) : undefined,
-			totalTime: get(store.shareTimes) ? get(store.totalGuessTimeString) : undefined,
-			showURL: get(store.shareURL),
-			hash: hash || undefined,
-			hideArrows: get(store.hideArrows),
-			tileSharpness: get(store.tileSharpness),
-		})
-		canvas.toBlob((blob) => (canvasBlob = blob!))
-		imageFileName = `${hash || dayNumber}`
-		canvasImageURL = canvas.toDataURL()
-		canvasImageAltText = `Word Peaks #${hash || dayNumber} results`
-		canvasWidth = canvas.width
-		canvasHeight = canvas.height
-		showImageShare = true
-		trackEvent('resultShare')
-		canvas.scrollIntoView({ block: 'center' })
+		imageResultsComponent.shareBoardImage()
 	}
 
-	async function onLandscapeShare() {
-		const landscapeCanvas = await import('$lib/landscape/canvas')
-		const color = get(store.landscapeForceColor)
-		landscapeCanvas.drawLandscapeToCanvas(canvas, get(store.landscape), {
-			color,
-			highContrast: get(store.highContrast),
-		})
-		const { hash, dayNumber } = get(store.lastGameDetail)!
-		canvas.toBlob((blob) => (canvasBlob = blob!))
-		imageFileName = `${hash || dayNumber}-landscape${color ? '-color' : ''}`
-		canvasImageURL = canvas.toDataURL()
-		canvasImageAltText = `Word Peaks #${hash || dayNumber} landscape`
-		canvasWidth = canvas.width
-		canvasHeight = canvas.height
-		showImageShare = true
-		trackEvent('landscapeShare')
-		canvas.scrollIntoView({ block: 'center' })
+	function onLandscapeShare() {
+		showScoreShareMenu = false
+		imageResultsComponent.shareLandscapeImage()
 	}
 
-	function onCopyImage() {
-		try {
-			copyImage(canvasBlob)
-			showImageShare = false
-			successToast(get(t)('main.messages.image_copied'))
-		} catch (e) {
-			errorToast()
-		}
-	}
-
-	function onShareImage() {
-		try {
-			shareImage(canvasBlob, imageFileName)
-		} catch (e) {
-			errorToast()
-		}
-	}
-
-	const nextDailyTime = getDayEnd(get(store.lastPlayedDaily)).getTime()
+	const nextDailyTime = getDayEndTime(get(store.lastPlayedDaily))
 	let nextWordReady = nextDailyTime < Date.now()
 	const nextWordInterval = setInterval(
 		() => (nextWordReady = nextDailyTime < Date.now()),
 		1000
 	)
 
-	onMount(() => {
-		shareTitleText = getShareTitle({
-			gameWon: get(store.gameWon),
-			guesses: get(store.guesses),
-			gameMode: get(store.lastGameDetail)!.mode,
-			hardMode: get(store.lastPlayedWasHard),
-			day: get(store.lastGameDetail)!.dayNumber,
-		})
-		return () => clearInterval(nextWordInterval)
-	})
+	onMount(() => clearInterval(nextWordInterval))
 </script>
 
-<svelte:window on:keydown={({ key }) => key === 'Escape' && (showImageShare = false)} />
 <div class="container">
 	<div class="actions" class:full-width={showScoreShareMenu}>
 		{#if showScoreShareMenu}
@@ -274,42 +203,8 @@
 			</div>
 		</div>
 	{/if}
-	<!-- svelte-ignore a11y-click-events-have-key-events a11y-no-noninteractive-element-interactions a11y-click-events-have-key-events -->
-	<div
-		class="modal-backdrop"
-		role="dialog"
-		on:click|self={() => (showImageShare = false)}
-		style:display={showImageShare ? 'flex' : 'none'}
-	>
-		<div class="image-results">
-			<img
-				alt={canvasImageAltText}
-				src={canvasImageURL}
-				style:max-width="min(100%, {Math.round(canvasWidth / 2)}px"
-				style:max-height="{Math.round(canvasHeight / 2)}px"
-			/>
-			<div class="image-results-buttons">
-				<button on:click={onCopyImage}>{$t('main.results.copy_image')}</button>
-				<button on:click={onShareImage}>{$t('main.results.share')}</button>
-			</div>
-			<button
-				title="Close"
-				class="close-button"
-				on:click={() => (showImageShare = false)}
-			>
-				<svg viewBox="0 0 4 4" xmlns="http://www.w3.org/2000/svg" width="32px">
-					<path
-						stroke="currentColor"
-						fill="none"
-						d="M1.2 1.2 l1.6 1.6 M1.2 2.8 l1.6 -1.6"
-						stroke-width="0.5"
-						stroke-linecap="round"
-					/>
-				</svg>
-			</button>
-		</div>
-	</div>
 </div>
+<ImageResults bind:this={imageResultsComponent} {shareTitleText} />
 
 <style>
 	.container {
@@ -451,57 +346,6 @@
 		flex-grow: 1;
 		font-size: 1.2em;
 		padding-right: 0.625rem;
-	}
-
-	.modal-backdrop {
-		position: fixed;
-		top: 0;
-		left: 0;
-		right: 0;
-		bottom: 0;
-		padding: 1rem;
-		background: #1129;
-		justify-content: center;
-		align-items: center;
-	}
-
-	.image-results {
-		padding: 1rem;
-		border-radius: 1rem;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		background: var(--tertiary-color);
-		pointer-events: auto;
-		position: relative;
-	}
-
-	.image-results-buttons {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		gap: 0.75rem;
-		margin: 1rem 0;
-	}
-
-	.image-results button {
-		height: 3rem;
-		padding: 0 1rem;
-	}
-
-	.image-results button.close-button {
-		width: 2.75rem;
-		height: 2.75rem;
-		padding: 0;
-		position: absolute;
-		top: -0.5rem;
-		right: 0.5rem;
-		background: var(--primary-color);
-		border-radius: 100%;
-	}
-
-	.image-results button.close-button:hover {
-		background: var(--secondary-color);
 	}
 
 	.hide-on-big-screens {

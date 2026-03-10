@@ -136,11 +136,11 @@ export function getWordByDay(day: number): string {
 	return targetWords[day % targetWords!.length]
 }
 
-export const getDayEnd = (day: number): Date => {
+export const getDayEndTime = (day: number): number => {
 	const start = new Date(firstDay)
 	let dayEnd = new Date(start)
 	dayEnd.setDate(start.getDate() + day + 1)
-	return dayEnd
+	return dayEnd.getTime()
 }
 
 export const getRandomWord = (): string => randomElement(targetWords)
