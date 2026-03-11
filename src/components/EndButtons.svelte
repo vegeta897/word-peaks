@@ -6,7 +6,7 @@
 	import * as store from '$src/store'
 	import { toast } from '@zerodevx/svelte-toast'
 	import { copyText, getShareTitle, getEmojiGrid, aprilFools } from '$lib/share'
-	import { onMount } from 'svelte'
+	import { onDestroy, onMount } from 'svelte'
 	import Time from './Time.svelte'
 	import {
 		getDayEndTime,
@@ -101,12 +101,14 @@
 
 	const nextDailyTime = getDayEndTime(get(store.lastPlayedDaily))
 	let nextWordReady = nextDailyTime < Date.now()
-	const nextWordInterval = setInterval(
-		() => (nextWordReady = nextDailyTime < Date.now()),
-		1000
-	)
 
-	onMount(() => clearInterval(nextWordInterval))
+	onMount(() => {
+		const nextWordInterval = setInterval(
+			() => (nextWordReady = nextDailyTime < Date.now()),
+			1000
+		)
+		return () => clearInterval(nextWordInterval)
+	})
 </script>
 
 <div class="container">
