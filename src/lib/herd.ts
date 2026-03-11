@@ -2,6 +2,8 @@ import Rand from 'rand-seed'
 import { randomFloat, randomInt } from './math'
 import type { Board } from './board'
 import { browser } from '$app/environment'
+import { toast } from '@zerodevx/svelte-toast'
+import { herdMode } from '$src/store'
 
 export function herdifyBoard(board: Board, seed: string) {
 	if (!browser) return
@@ -47,4 +49,17 @@ export function getHerdText(board: Board) {
 		}
 	}
 	return text
+}
+
+const animalCodes = ['horse', 'rhino', 'tiger', 'llama', 'camel', 'sheep', 'hippo']
+const toastTheme = { theme: { '--toastBackground': 'var(--cta-color)' } }
+
+export function checkAnimalCodes(guesses: string[]) {
+	if (guesses.length < 6) return
+	const guessSet = new Set(guesses)
+	if (guessSet.size < 6) return
+	if (guesses.some((g) => !animalCodes.includes(g))) return
+	herdMode.set(true)
+	toast.pop()
+	toast.push('Herd mode activated! 🦙', toastTheme)
 }

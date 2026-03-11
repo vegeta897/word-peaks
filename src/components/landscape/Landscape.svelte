@@ -135,6 +135,15 @@
 	})
 	// Hide landscape until it updates to avoid flashing on FF
 	store.landscapeWideView.subscribe(() => (hide = true))
+	store.herdMode.subscribe(async (value) => {
+		if (value === undefined) return
+		// Add or clear animals from tiles and landscape
+		store.updateGuesses((g) => [...g])
+		await tick()
+		redraw++
+		clearLandscape()
+		updateLandscape()
+	})
 
 	type FlashColorHandler = (x: number, y: number, duration: number) => void
 	const featureComponents: {

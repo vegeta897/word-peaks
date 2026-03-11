@@ -42,7 +42,7 @@
 		return true
 	}
 
-	const toggleOptions: {
+	let toggleOptions: {
 		store: Writable<boolean | undefined>
 		label: string
 		validate?: () => boolean
@@ -98,6 +98,14 @@
 				label: 'main.options.nlg_tracking',
 			})
 		}
+		if (get(store.herdMode) !== undefined) {
+			toggleOptions.splice(1, 0, {
+				// Right after hard mode, of course
+				store: store.herdMode,
+				label: 'main.options.herd_mode',
+			})
+		}
+		toggleOptions = toggleOptions // Reactivity
 	})
 
 	$: keyboard = _keyboardLayoutOptions.find((o) => o.value === $keyboardLayout)!

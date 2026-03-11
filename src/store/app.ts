@@ -89,3 +89,5 @@ export const nlgEnabled: Writable<boolean | undefined> = persisted(
 	undefined
 )
 export const nlgid: Writable<string> = persisted('wp-nlgid', '')
+
+export const herdMode: Writable<boolean | undefined> = persisted('wp-herdMode', undefined)

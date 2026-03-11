@@ -14,7 +14,7 @@ import { toast } from '@zerodevx/svelte-toast'
 import type { SvelteToastOptions } from '@zerodevx/svelte-toast'
 import { recordGuessTime, finishGame } from '$lib/stats'
 import { ROWS, WORD_LENGTH } from './constants'
-import { herdifyBoard } from './herd'
+import { checkAnimalCodes, herdifyBoard } from './herd'
 import { aprilFools } from './share'
 import { dev } from '$app/environment'
 
@@ -38,7 +38,9 @@ export function createNewBoard(): Board {
 			row.push({ id: j, letter: '', scored: false, distance: 0, polarity: 0 })
 		}
 	}
-	if (aprilFools()) herdifyBoard(board, get(store.answer) + get(store.uid))
+	if (aprilFools() || get(store.herdMode)) {
+		herdifyBoard(board, get(store.answer) + get(store.uid))
+	}
 	return board
 }
 
@@ -184,6 +186,8 @@ export async function submitRow() {
 					body: JSON.stringify({ nlgid, score, date: yy + mm + dd }),
 				}).catch((error) => console.log('Failed to send score to NLG', error))
 			}
+		} else {
+			checkAnimalCodes(get(store.guesses))
 		}
 		if (get(store.newUser)) trackEvent('firstFinish')
 		store.newUser.set(false)
