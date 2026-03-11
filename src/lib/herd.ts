@@ -4,6 +4,7 @@ import type { Board } from './board'
 import { browser } from '$app/environment'
 import { toast } from '@zerodevx/svelte-toast'
 import { herdMode } from '$src/store'
+import { trackEvent } from './plausible'
 
 export function herdifyBoard(board: Board, seed: string) {
 	if (!browser) return
@@ -59,6 +60,7 @@ export function checkAnimalCodes(guesses: string[]) {
 	const guessSet = new Set(guesses)
 	if (guessSet.size < 6) return
 	if (guesses.some((g) => !animalCodes.includes(g))) return
+	trackEvent('herdModeActivate')
 	herdMode.set(true)
 	toast.pop()
 	toast.push('Herd mode activated! 🦙', toastTheme)

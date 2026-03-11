@@ -6,7 +6,7 @@
 	import * as store from '$src/store'
 	import { toast } from '@zerodevx/svelte-toast'
 	import { copyText, getShareTitle, getEmojiGrid, aprilFools } from '$lib/share'
-	import { onDestroy, onMount } from 'svelte'
+	import { onMount } from 'svelte'
 	import Time from './Time.svelte'
 	import {
 		getDayEndTime,

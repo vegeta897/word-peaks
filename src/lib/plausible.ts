@@ -14,13 +14,14 @@ type EventName =
 	| 'danceClick'
 	| 'landscapeShare'
 	| 'statsImported'
+	| 'herdModeActivate'
 
 const plausible = browser
 	? Plausible({
 			domain: 'vegeta897.github.io/word-peaks',
 			hashMode: true,
 			apiHost: 'https://plausible.pixelatomy.com',
-	  })
+		})
 	: { trackPageview() {}, trackEvent() {} }
 
 export const trackPageview = () => track('pageview')
