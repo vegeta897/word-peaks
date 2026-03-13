@@ -6,6 +6,23 @@ import { toast } from '@zerodevx/svelte-toast'
 import { herdMode } from '$src/store'
 import { trackEvent } from './plausible'
 
+function giraffeIsAllowed() {
+	// Check if giraffe is rendered with the Windows 10 emoji set
+	// The Win10 style only has a head so it's bad (for this)
+	const canvas = document.createElement('canvas')
+	canvas.width = 1
+	canvas.height = 1
+	const context = canvas.getContext('2d')
+	if (!context) return true
+	context.font = '24px Arial'
+	context.fillText('🦒', -17, 19)
+	const [r, g, b] = context.getImageData(0, 0, 1, 1).data
+	const badGiraffe = r === 212 && g === 140 && b === 0 // #d48c00
+	return !badGiraffe
+}
+
+const giraffeAllowed = browser && giraffeIsAllowed()
+
 export function herdifyBoard(board: Board, seed: string) {
 	if (!browser) return
 	const rng = new Rand(seed)
@@ -27,6 +44,7 @@ export function herdifyBoard(board: Board, seed: string) {
 		'🦙',
 		'🦛',
 	]
+	if (giraffeAllowed) herd.push('🦒')
 	herd.sort(() => randomFloat(-1, 1, getRng))
 	const tiles = board.reduce((p, c) => [...p, ...c], [])
 	let animalsAdded = 0
