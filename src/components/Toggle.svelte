@@ -12,7 +12,7 @@
 	store.subscribe((value) => (checked = !!value))
 
 	const onClick: MouseEventHandler<HTMLButtonElement> = () => {
-		if (validate()) {
+		if (!validate || validate()) {
 			store.set(!checked)
 		}
 	}
