@@ -182,10 +182,10 @@
 				<a
 					on:auxclick={() => trackEvent('promoLinkFollow')}
 					on:click={() => trackEvent('promoLinkFollow')}
-					href="https://www.youtube.com/watch?v=W1dyNcRGRXY"
+					href="https://buymeacoffee.com/vegeta897"
 				>
-					<span class="hide-on-small-screens">abolish & prosecute ICE</span>
-					<span class="hide-on-big-screens">abolish ICE</span>
+					<span class="hide-on-small-screens">{$t('main.footer.donate')}</span>
+					<span class="hide-on-big-screens">{$t('main.footer.donate_short')}</span>
 				</a>
 			</div>
 		</div>
