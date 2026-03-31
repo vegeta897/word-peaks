@@ -5,8 +5,10 @@ import { type XY, xyToGrid } from '../math'
 import { createHill } from './hill'
 import { createTrees } from './tree'
 
+export type FeatureType = 'hill' | 'tree' | 'pond'
+
 export type Feature = {
-	type: 'hill' | 'tree'
+	type: Exclude<FeatureType, 'pond'>
 	id: number
 	x: number
 	y: number

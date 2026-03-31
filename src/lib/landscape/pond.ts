@@ -9,7 +9,8 @@ import {
 	xyToGrid,
 	type XY,
 	type Dir,
-	getNeighbors8,
+	getNeighbors,
+	neighbors8,
 } from '$lib/math'
 import { type PathDataCommand } from '$lib/paths'
 
@@ -73,7 +74,7 @@ function fillPond(
 		maxX = Math.max(maxX, x)
 		minY = Math.min(minY, y)
 		maxY = Math.max(maxY, y)
-		getNeighbors8(x, y).forEach(([nx, ny], n) => {
+		getNeighbors(x, y, neighbors8).forEach(([nx, ny], n) => {
 			if (nx < 0 || nx >= width || ny < 0 || ny >= height) return
 			const nGrid = xyToGrid([nx, ny])
 			const nTile = tileMap.get(nGrid)
@@ -99,7 +100,7 @@ function fillPond(
 		pondCenterOfMass[0] = (pondCenterOfMass[0] * pondWeight + xy[0]) / (pondWeight + 1)
 		pondCenterOfMass[1] = (pondCenterOfMass[1] * pondWeight + xy[1]) / (pondWeight + 1)
 		pondWeight++
-		getNeighbors8(...xy).forEach(([nx, ny], n) => {
+		getNeighbors(...xy, neighbors8).forEach(([nx, ny], n) => {
 			if (nx < 0 || nx >= width || ny < 0 || ny >= height) return
 			const nGrid = xyToGrid([nx, ny])
 			const nTile = tileMap.get(nGrid)

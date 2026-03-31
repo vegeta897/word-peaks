@@ -14,8 +14,9 @@
 	import {
 		getDistance,
 		getDistanceBetween,
-		getNeighbors8,
+		getNeighbors,
 		midXY,
+		neighbors8,
 		randomFloat,
 		randomInt,
 		sleep,
@@ -108,11 +109,11 @@
 				breakIce(clickedFrozenPond, grid, xy, breakableSubTiles)
 				breakXYs.push(xy)
 				breakGrids.push(grid)
-				getNeighbors8(...xy).forEach((nXY, n) => {
+				getNeighbors(...xy, neighbors8).forEach((nXY, n) => {
 					const neighborGrid = xyToGrid(nXY)
 					if (openTiles.has(neighborGrid) || !clickedFrozenPond.tiles.has(neighborGrid))
 						return
-					// const neighborAlone = !getNeighbors8(...nXY).some((nnXY) =>
+					// const neighborAlone = !getNeighbors(...nXY, neighbors8).some((nnXY) =>
 					// 	clickedFrozenPond.tiles.has(xyToGrid(nnXY))
 					// )
 					// if (neighborAlone) {
@@ -291,7 +292,7 @@
 				}
 				const distance = getDistanceBetween(normalizedXY, [xy[0] + 0.5, xy[1] + 0.5])
 				freezingPond.radius = Math.max(freezingPond.radius, distance + 1)
-				getNeighbors8(...xy).forEach((nXY) => {
+				getNeighbors(...xy, neighbors8).forEach((nXY) => {
 					const nGrid = xyToGrid(nXY)
 					if (!freezingPond.tiles.has(nGrid) && nonFrozenTilesMap.has(nGrid))
 						openTiles.set(nGrid, nXY)

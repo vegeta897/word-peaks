@@ -3,6 +3,7 @@ import type { Landscape } from './landscape'
 import { getNeighbors, type XY, xyToGrid } from '$lib/math'
 import Rand from 'rand-seed'
 import { hillNeighborsFun } from './hill'
+import { createFunPlan } from './fun-plan'
 
 // TODO: Change sop to chill, or ice
 export const landscapeFunModes = ['pop', 'sop', 'pluck'] as const
@@ -44,17 +45,18 @@ type PondFunState = {
 	lily: boolean
 	crystalized: boolean
 }
-type FunTask = {
-	id: number
-	type:
-		| 'tree-pluck'
-		| 'ice-break'
-		| 'hill-pop'
-		| 'lily-grow'
-		| 'ivy-grow'
-		| 'tree-crystalize'
-		| 'lily-crystalize'
-}
+export type FunTaskType =
+	| 'tree-pluck'
+	| 'ice-break'
+	| 'hill-pop'
+	| 'lily-grow'
+	| 'ivy-grow'
+	| 'tree-snow'
+	| 'hill-snow'
+	| 'tree-crystalize'
+	| 'lily-crystalize'
+	| 'tree-crystalize-snow'
+type FunTask = { id: number; type: FunTaskType }
 
 export type FunState = {
 	features: { tree: TreeFunState[]; hill: HillFunState[] } // Indexed by feature ID
@@ -67,6 +69,10 @@ type StoreProps<Type> = {
 	[Property in keyof Type]: Writable<Type[Property]> // Cool!
 }
 
+// TODO: Don't use reactivity to update fun state in features
+// Expose methods on the components for explicit fun updating
+// Why? Because the reactivity is messy and re-triggers unnecessarily
+
 export const funState: StoreProps<FunState> = {
 	features: writable({ tree: [], hill: [] }),
 	featureMap: writable(new Map()),
@@ -74,10 +80,10 @@ export const funState: StoreProps<FunState> = {
 	tasks: writable([]),
 }
 
-// TODO: Crawl for neighbors during init to calculate max possible frost, gem, etc
 export function initFunState(landscape: Landscape, answer: string) {
 	// const rng = new Rand(answer)
 	// const getRng = () => rng.next()
+	const funPlan = createFunPlan(landscape)
 	const features: FunState['features'] = { tree: [], hill: [] }
 	const featureMap: FunState['featureMap'] = new Map()
 	const pondTiles: FunState['pondTiles'] = new Map()
@@ -171,16 +177,16 @@ export function updateHillFun(id: number, [x, y]: XY, updates: Partial<HillFunSt
 	if (updates.state === 'popped') {
 		tryTask('hill-pop')
 		let updatePondTiles = false
-		for (const [nxRel, nyRel] of hillNeighborsFun) {
-			const nXY: XY = [x + nxRel, y + nyRel]
+		getNeighbors(x, y, hillNeighborsFun).forEach((nXY) => {
 			const neighborGrid = xyToGrid(nXY)
 			const featureTile = featureMap.get(neighborGrid)
 			if (featureTile) {
 				const [featureType, [featureId]] = featureTile
-				if (featureType !== 'tree') continue
+				if (featureType !== 'tree') return
 				const featureStatus = features[featureType][featureId]
-				if (featureStatus.state !== 'init' || featureStatus.crystalized) continue
+				if (featureStatus.state !== 'init' || featureStatus.crystalized) return
 				tryTask('tree-crystalize')
+				if (featureStatus.snowy) tryTask('tree-crystalize-snow')
 				featureStatus.crystalized = true
 			} else {
 				const pondTile = pondTiles.get(neighborGrid)
@@ -190,7 +196,7 @@ export function updateHillFun(id: number, [x, y]: XY, updates: Partial<HillFunSt
 					tryTask('lily-crystalize')
 				}
 			}
-		}
+		})
 		if (updatePondTiles) funState.pondTiles.set(pondTiles)
 	}
 	funState.features.set(features)
@@ -217,7 +223,12 @@ export function updatePondFun(
 				if (featureTile === undefined) return
 				const [featureType, [featureId]] = featureTile
 				const featureStatus = features[featureType][featureId]
-				if (featureStatus.state === 'init') {
+				if (featureStatus.state === 'init' && !featureStatus.snowy) {
+					if (featureType === 'tree' && features.tree[featureId].crystalized) {
+						tryTask('tree-crystalize-snow')
+					} else {
+						tryTask((featureType + '-snow') as FunTaskType)
+					}
 					featureStatus.snowy = true
 					updateFeatures = true
 				}

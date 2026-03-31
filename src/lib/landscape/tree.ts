@@ -6,7 +6,13 @@ import {
 	getCenterWeight,
 	addFeature,
 } from '$lib/landscape/landscape'
-import { randomElementWeighted, xyToGrid, randomFloat, getNeighbors8 } from '$lib/math'
+import {
+	randomElementWeighted,
+	xyToGrid,
+	randomFloat,
+	getNeighbors,
+	neighbors8,
+} from '$lib/math'
 
 export function createTrees(
 	getRng: () => number,
@@ -38,7 +44,7 @@ export function createTrees(
 			),
 			getRng
 		)
-		getNeighbors8(tile.x, tile.y).forEach(([nx, ny], n) => {
+		getNeighbors(tile.x, tile.y, neighbors8).forEach(([nx, ny], n) => {
 			if (nx < 0 || nx >= width || ny < 0 || ny >= height) return
 			const nGrid = xyToGrid([nx, ny])
 			const nTile = tileMap.get(nGrid)
