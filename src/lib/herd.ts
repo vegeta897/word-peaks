@@ -64,6 +64,7 @@ export function getHerdText(board: Board) {
 	let text = ''
 	for (const row of board) {
 		for (const tile of row) {
+			if (!tile.letter) return text
 			if (tile.animal) text += tile.animal
 		}
 	}
