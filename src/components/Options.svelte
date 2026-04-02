@@ -142,7 +142,7 @@
 			/>
 		</div>
 		<div class="toggle-container">
-			{#each toggleOptions as { store, label, validate }}
+			{#each toggleOptions as { store, label, validate } (label)}
 				<Toggle {store} {validate} label={$t(label)} />
 			{/each}
 		</div>
