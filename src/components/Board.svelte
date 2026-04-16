@@ -135,7 +135,7 @@
 												{'DANCE'.substring(0, danceClickProgress)[t] || ''}
 											</div>
 										{/if}
-										{#if idle && tile.letter === '' && r > $currentRow}
+										{#if idle && tile.letter === '' && r > $currentRow && !tile.animal}
 											{#await import('$com/Idler.svelte') then module}
 												<svelte:component this={module.default} id={r + ':' + t} />
 											{/await}
